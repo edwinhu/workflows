@@ -1,0 +1,52 @@
+<SEC-DOCUMENT>0000088053-04-000667.txt : 20040827
+<SEC-HEADER>0000088053-04-000667.hdr.sgml : 20040827
+<ACCEPTANCE-DATETIME>20040827085013
+ACCESSION NUMBER:		0000088053-04-000667
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040827
+DATE AS OF CHANGE:		20040827
+EFFECTIVENESS DATE:		20040827
+
+FILER:
+		COMPANY CONFORMED NAME:			SCUDDER INVESTMENTS VIT FUNDS
+		CENTRAL INDEX KEY:			0001006373
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-allfunds.txt
+<DESCRIPTION>N-PX FILING
+<TEXT>
+<PAGE>
+
+ProxyEdge -  Investment Company Report                   Report Date: 07/20/2004
+Meeting Date Range: 07/01/2003 to 06/30/2004
+Selected Accounts: Scudder VIT Equity 500 Index
+
+<TABLE>
+<CAPTION>
+- ------------------------------------------------------------------------------------------------------------------------------------
+         NVIDIA CORPORATION                                                              NVDA        Annual Meeting Date: 07/10/2003
+Issuer: 67066G                                 ISIN:
+SEDOL:
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+ Proposal                                                                       Proposal             Vote             Against
+ Number   Proposal                                                              Type                 Cast              Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+         <S>     <C>    <C>    <C>    <C>    <C>    <C>
+
+   01     DIRECTOR                                                              Management            For               No
+
+   02     TO RATIFY THE SELECTION OF KPMG LLP AS NVIDIA                         Management            For               No
+          S INDEPENDENT AUDITORS FOR THE FISCAL YEAR ENDING
+          JANUARY 25, 2004.
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

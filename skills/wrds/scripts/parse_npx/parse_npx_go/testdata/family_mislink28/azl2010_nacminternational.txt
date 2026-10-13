@@ -1,0 +1,504 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ J+rT8JWm/dz3JyDxFUY1CmPI3rARieGaVOTEJ4Kz8MVA5bf2SSdK98C4M6OTuU1T
+ /d9EXGWl8oFA1fPKrfLEjA==
+
+<SEC-DOCUMENT>0001091439-10-000029.txt : 20100830
+<SEC-HEADER>0001091439-10-000029.hdr.sgml : 20100830
+<ACCEPTANCE-DATETIME>20100830152411
+ACCESSION NUMBER:		0001091439-10-000029
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20100630
+FILED AS OF DATE:		20100830
+DATE AS OF CHANGE:		20100830
+EFFECTIVENESS DATE:		20100830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ALLIANZ VARIABLE INSURANCE PRODUCTS TRUST
+		CENTRAL INDEX KEY:			0001091439
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MN
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-09491
+		FILM NUMBER:		101046590
+
+	BUSINESS ADDRESS:	
+		STREET 1:		5701 GOLDEN HILLS DRIVE
+		CITY:			MINNEAPOLIS
+		STATE:			MN
+		ZIP:			55416
+		BUSINESS PHONE:		763-765-6551
+
+	MAIL ADDRESS:	
+		STREET 1:		5701 GOLDEN HILLS DRIVE
+		CITY:			MINNEAPOLIS
+		STATE:			MN
+		ZIP:			55416
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	USALLIANZ VARIABLE INSURANCE PRODUCTS TRUST
+		DATE OF NAME CHANGE:	19990721
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<SERIES>
+<OWNER-CIK>0001091439
+<SERIES-ID>S000025368
+<SERIES-NAME>AZL NACM International Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000075768
+<CLASS-CONTRACT-NAME>AZL NACM International Growth Fund
+</CLASS-CONTRACT>
+</SERIES>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>vipnpxaug302010.htm
+<DESCRIPTION>VIP NPX 8-30-10
+<TEXT>
+<html>
+<head>
+    <title>vipnpxaug302010.htm</title>
+    <!-- Licensed to: Allianz -->
+    <!-- Document Created using EDGARizer 5.2.1.0 -->
+    <!-- Copyright 1995 - 2009 Thomson Reuters. All rights reserved. -->
+</head>
+
+<body bgcolor="#ffffff" style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">
+<pre>
+<br>
+
+
+========================= AZL NACM INTERNATIONAL FUND ==========================
+
+
+BARCLAYS PLC
+
+Ticker:       BARC           Security ID:  G08036124
+Meeting Date: AUG 6, 2009    Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approval of the Disposal                For       For          Management
+
+
+- --------------------------------------------------------------------------------
+
+BARRATT DEVELOPMENTS PLC
+
+Ticker:       BDEV           Security ID:  G08288105
+Meeting Date: OCT 19, 2009   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Placing and Rights Issue                For       For          Management
+
+
+- --------------------------------------------------------------------------------
+
+CHINA SHANSHUI CEMENT GROUP LIMITED
+
+Ticker:       0691           Security ID:  G2116M101
+Meeting Date: SEP 2, 2009    Meeting Type: Special
+Record Date:  AUG 27, 2009
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Non-Voting Meeting Note                 N/A       N/A          Management
+2     Amendments to Articles                  For       Against      Management
+
+
+- --------------------------------------------------------------------------------
+
+COCA-COLA HELLENIC BOTTLING CO. S.A.
+
+Ticker:       EEEK           Security ID:  X1435J139
+Meeting Date: OCT 16, 2009   Meeting Type: Special
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Non-Voting Meeting Note                 N/A       TNA          Management
+2     Increase in Authorized Capital          For       TNA          Management
+3     Authority to Reduce Share Capital       For       TNA          Management
+4     Amendments to Articles                  For       TNA          Management
+5     Non-Voting Meeting Note                 N/A       TNA          Management
+6     Non-Voting Meeting Note                 N/A       TNA          Management
+
+
+- --------------------------------------------------------------------------------
+
+DIGITAL CHINA HOLDINGS LIMITED
+
+Ticker:       0861           Security ID:  G2759B107
+Meeting Date: AUG 25, 2009   Meeting Type: Annual
+Record Date:  AUG 20, 2009
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Non-Voting Meeting Note                 N/A       N/A          Management
+2     Accounts and Reports                    For       For          Management
+3     Allocation of Profits/Dividends         For       For          Management
+4     Elect HU Zhaoguang                      For       For          Management
+5     Elect QIU Zhongwei                      For       For          Management
+6     Elect Francis WONG Man Chung            For       For          Management
+7     Elect Peter KWAN Ming Heung             For       For          Management
+8     Directors' Fees                         For       For          Management
+9     Appointment of Auditor and Authority to For       For          Management
+      Set Fees
+10    Authority to Issue Shares w/o           For       For          Management
+      Preemptive Rights
+11    Authority to Repurchase Shares          For       For          Management
+12    Authority to Issue Repurchased Shares   For       For          Management
+
+
+- --------------------------------------------------------------------------------
+
+DOWNER EDI LIMITED.
+
+Ticker:       DOW            Security ID:  Q32623151
+Meeting Date: OCT 15, 2009   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accounts and Reports                    For       For          Management
+2     Re-elect Lucio Di Bartolomeo            For       For          Management
+3     Re-elect Christopher Renwick            For       For          Management
+4     Remuneration Report                     For       Against      Management
+
+
+- --------------------------------------------------------------------------------
+
+ELECTRICIT? DE FRANCE
+
+Ticker:       EDF            Security ID:  F2940H113
+Meeting Date: NOV 5, 2009    Meeting Type: Mix
+Record Date:  OCT 30, 2009
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Non-Voting Meeting Note                 N/A       N/A          Management
+2     Non-Voting Meeting Note                 N/A       N/A          Management
+3     Amendments to Articles Regarding Stock  For       For          Management
+      Dividend
+4     Elect Bruno Lafont                      For       For          Management
+5     Elect Henri Proglio                     For       Against      Management
+6     Elect Mirelle Faugere                   For       For          Management
+7     Elect Philippe Crouzet                  For       For          Management
+8     Elect Lord Michael Jay of Ewelme        For       For          Management
+9     Elect Pierre Mariani                    For       For          Management
+10    Forms of Dividend Payment               For       For          Management
+11    Authority to Carry out Formalities      For       For          Management
+12    Non-Voting Meeting Note                 N/A       N/A          Management
+
+
+- --------------------------------------------------------------------------------
+
+ING GROEP N.V.
+
+Ticker:       INGA           Security ID:  N4578E413
+Meeting Date: NOV 25, 2009   Meeting Type: Special
+Record Date:  OCT 30, 2009
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Non-Voting Meeting Note                 N/A       N/A          Management
+2     Non-Voting Agenda Item                  N/A       N/A          Management
+3     Non-Voting Agenda Item                  N/A       N/A          Management
+4     Strategy Plan                           For       For          Management
+5     Authority to Issue Shares w/ or w/o     For       For          Management
+      Preemptive Rights
+6     Non-Voting Agenda Item                  N/A       N/A          Management
+7     Non-Voting Meeting Note                 N/A       N/A          Management
+8     Non-Voting Meeting Note                 N/A       N/A          Management
+
+
+- --------------------------------------------------------------------------------
+
+J SAINSBURY PLC
+
+Ticker:       SBRY           Security ID:  G77732173
+Meeting Date: JUL 15, 2009   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accounts and Reports                    For       For          Management
+2     Directors' Remuneration Report          For       For          Management
+3     Allocation of Profits/Dividends         For       For          Management
+4     Elect Anna Ford                         For       For          Management
+5     Elect John McAdam                       For       Against      Management
+6     Elect Darren Shapland                   For       For          Management
+7     Appointment of Auditor                  For       Against      Management
+8     Authority to Set Auditor's Fees         For       Against      Management
+9     Authority to Issue Shares w/ Preemptive For       For          Management
+      Rights
+10    Authority to Issue Shares w/o           For       For          Management
+      Preemptive Rights
+11    EU Political Donations                  For       For          Management
+12    Authority to Repurchase Shares          For       For          Management
+13    Amendments to Articles - Bundled        For       For          Management
+14    Authority to Set General Meeting Notice For       Against      Management
+      Period at 14 Days
+
+
+- --------------------------------------------------------------------------------
+
+MARINE HARVEST ASA
+
+Ticker:       MHG            Security ID:  R2326D105
+Meeting Date: NOV 6, 2009    Meeting Type: Special
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Non-Voting Meeting Note                 N/A       N/A          Management
+2     Non-Voting Meeting Note                 N/A       N/A          Management
+3     Election of Presiding Chairman and of   For       For          Management
+      an Individual to Check Minutes
+4     Meeting Notice and Agenda               For       For          Management
+5     Authority to Issue Convertible Debt     For       For          Management
+      Instruments
+6     Amendments to Articles Regarding        For       For          Management
+      Meeting Documents
+
+
+- --------------------------------------------------------------------------------
+
+NOBLE GROUP LIMITED
+
+Ticker:       N21            Security ID:  G6542T119
+Meeting Date: OCT 12, 2009   Meeting Type: Special
+Record Date:  OCT 6, 2009
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Allotment of Shares to Ricardo Leiman   For       Abstain      Management
+2     Non-Voting Meeting Note                 N/A       N/A          Management
+3     Non-Voting Meeting Note                 N/A       N/A          Management
+
+
+- --------------------------------------------------------------------------------
+
+SUNCORP-METWAY LIMITED
+
+Ticker:       SUN            Security ID:  Q8802S103
+Meeting Date: OCT 28, 2009   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Non-Voting Agenda Item                  N/A       N/A          Management
+2     Remuneration Report                     For       For          Management
+3     Re-elect Ian Blackburne                 For       For          Management
+4     Re-elect Paula Dwyer                    For       For          Management
+5     Re-elect Ewoud Kulk                     For       For          Management
+6     Re-elect Geoffrey Ricketts              For       For          Management
+7     Amendments to the Constitution          For       For          Management
+
+
+- --------------------------------------------------------------------------------
+
+TSINGTAO BREWERY COMPANY LIMITED
+
+Ticker:       00168          Security ID:  Y8997D102
+Meeting Date: NOV 2, 2009    Meeting Type: Special
+Record Date:  OCT 2, 2009
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Non-Voting Meeting Note                 N/A       N/A          Management
+2     Elect YAMAZAKI Fumio                    For       For          Management
+3     Elect TANG Jun                          For       For          Management
+4     Elect KOJI Akiyoshi as Supervisor;      For       For          Management
+      Supervisors' Fees
+
+
+- --------------------------------------------------------------------------------
+
+VODAFONE GROUP PLC
+
+Ticker:       VOD            Security ID:  G93882135
+Meeting Date: JUL 28, 2009   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accounts and Reports                    For       For          Management
+2     Elect John R.H. Bond                    For       For          Management
+3     Elect John Buchanan                     For       For          Management
+4     Elect Vittorio Colao                    For       For          Management
+5     Elect Michel  Combes                    For       For          Management
+6     Elect Andy Halford                      For       For          Management
+7     Elect Alan Jebson                       For       For          Management
+8     Elect Samuel Jonah                      For       For          Management
+9     Elect Nick Land                         For       Against      Management
+10    Elect Anne Lauvergeon                   For       Against      Management
+11    Elect Simon Murray                      For       For          Management
+12    Elect Steve Pusey                       For       For          Management
+13    Elect Luc Vandevelde                    For       For          Management
+14    Elect Anthony Watson                    For       For          Management
+15    Elect Philip Yea                        For       For          Management
+16    Allocation of Profits/Dividends         For       For          Management
+17    Directors' Remuneration Report          For       For          Management
+18    Appointment of Auditor                  For       For          Management
+19    Authority to Set Auditor's Fees         For       For          Management
+20    Authority to Issue Shares w/ Preemptive For       For          Management
+      Rights
+21    Authority to Issue Shares w/o           For       For          Management
+      Preemptive Rights
+22    Authority to Repurchase Shares          For       For          Management
+23    Amendment to Articles Regarding         For       For          Management
+      Dividend Payments
+24    Authority to Set General Meeting Notice For       Against      Management
+      Period at 14 Days
+25    Non-Voting Meeting Note                 N/A       N/A          Management
+
+
+- --------------------------------------------------------------------------------
+
+VTECH HOLDINGS LIMITED
+
+Ticker:       0303           Security ID:  G9400S108
+Meeting Date: AUG 7, 2009    Meeting Type: Annual
+Record Date:  JUL 30, 2009
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Non-Voting Meeting Note                 N/A       N/A          Management
+2     Accounts and Reports                    For       For          Management
+3     Allocation of Profits/Dividends         For       For          Management
+4     Elect Allan WONG Chi Yun                For       For          Management
+5     Elect Denis Morgie HO Pak Cho           For       For          Management
+6     Elect Andy LEUNG Hon Kwong              For       For          Management
+7     Directors' Fees                         For       For          Management
+8     Appointment of Auditor and Authority to For       For          Management
+      Set Fees
+9     Authority to Repurchase Shares          For       For          Management
+10    Authority to Issue Shares w/o           For       For          Management
+      Preemptive Rights
+11    Authority to Issue Repurchased Shares   For       For          Management
+
+
+- --------------------------------------------------------------------------------
+
+WILMAR INTERNATIONAL LIMITED
+
+Ticker:       F34            Security ID:  Y9586L109
+Meeting Date: OCT 2, 2009    Meeting Type: Special
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approval of Material Dilution           For       For          Management
+2     Approval of Possible Disposal           For       For          Management
+3     Non-Voting Meeting Note                 N/A       N/A          Management
+4     Non-Voting Meeting Note                 N/A       N/A          Management
+
+
+
+
+
+
+========== END NPX REPORT
+
+
+
+
+
+<br>
+
+
+
+
+</pre>
+
+<div id="PGBRK" style="MARGIN-LEFT: 0pt; WIDTH: 100%; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt">&#160;</div>
+
+<div id="GLFTR" style="WIDTH: 100%" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160; </font></div>
+
+<div style="WIDTH: 100%; TEXT-ALIGN: center"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160; </font></div>
+
+<hr style="COLOR: black" noshade size="2">
+<div id="GLHDR" style="WIDTH: 100%" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160; </font></div>
+
+<pre>
+<br>
+
+
+
+
+</pre>
+
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">SIGNATURES</font></div>
+
+<div style="DISPLAY: block; TEXT-INDENT: 0pt"><br>
+</div>
+
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Pursuant to the requirements of the Investment Company Act of 1940, the Registrant has duly caused this report to be signed on its behalf by the undersigned, thereunto duly authorized.</font></div>
+
+<div style="DISPLAY: block; TEXT-INDENT: 0pt"><br>
+</div>
+
+<div style="DISPLAY: block; TEXT-INDENT: 0pt"><br>
+</div>
+
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">(Registrant)&#160;&#160;&#160;&#160;Allianz Variable Insurance Products Trust</font></div>
+
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><br>
+&#160;</div>
+
+<div style="DISPLAY: block; TEXT-INDENT: 0pt"><br>
+</div>
+
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">By:&#160;&#160;&#160;&#160;/s/ Brian Muench</font></div>
+
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;__________________________________________________________</font></div>
+
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Brian Muench, Vice President</font></div>
+
+<div style="DISPLAY: block; TEXT-INDENT: 0pt"><br>
+</div>
+
+<div style="DISPLAY: block; TEXT-INDENT: 0pt"><br>
+</div>
+
+<div style="DISPLAY: block; TEXT-INDENT: 0pt"><br>
+</div>
+
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Date: August 30, 2010</font></div>
+
+<div style="DISPLAY: block; TEXT-INDENT: 0pt"><br>
+</div>
+
+<pre>
+<br>
+
+
+
+
+</pre>
+
+<div id="PGBRK" style="MARGIN-LEFT: 0pt; WIDTH: 100%; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt">&#160;</div>
+
+<div id="GLFTR" style="WIDTH: 100%" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160; </font></div>
+
+<div id="HDR">&#160;</div>
+
+<pre>
+<br>
+
+
+
+
+
+
+
+
+
+</pre>
+</body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

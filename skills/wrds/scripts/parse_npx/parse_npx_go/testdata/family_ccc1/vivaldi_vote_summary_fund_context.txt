@@ -1,0 +1,1442 @@
+ACCESSION NUMBER:		0001398344-21-018043
+CONFORMED SUBMISSION TYPE:	N-PX
+CONFORMED PERIOD OF REPORT:	20210630
+FILED AS OF DATE:		20210831
+		COMPANY CONFORMED NAME:			Investment Managers Series Trust II
+		CENTRAL INDEX KEY:			0001587982
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001587982
+<SERIES-ID>S000048195
+<SERIES-NAME>Vivaldi Merger Arbitrage Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000152358
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VARAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000152359
+<CLASS-CONTRACT-NAME>Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VARBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587982
+<SERIES-ID>S000055376
+<SERIES-NAME>Vivaldi Multi-Strategy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000174208
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>OMOAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000174209
+<CLASS-CONTRACT-NAME>Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>OMOIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<TEXT>
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Form N-PX</FONT></TD>
+    <TD STYLE="font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Proxy Voting Records</FONT></TD>
+    <TD STYLE="font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"># of Proposals:</FONT></TD>
+    <TD STYLE="font-size: 11pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">109</FONT></TD>
+    <TD>&nbsp;</TD>
+    </TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Fund Name:</FONT></TD>
+    <TD STYLE="font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund</FONT></TD>
+    <TD STYLE="font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"># Voted Against Management:</FONT></TD>
+    <TD STYLE="font-size: 11pt; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">0</FONT></TD>
+    <TD>&nbsp;</TD>
+    </TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="width: 13%; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Reporting Period:</FONT></TD>
+    <TD STYLE="width: 27%; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">07/1/20 to 06/30/2021</FONT></TD>
+    <TD STYLE="width: 22%">&nbsp;</TD>
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 32%">&nbsp;</TD>
+    </TR>
+  </TABLE>
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="4" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left; width: 10%; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Institutional Account Name</B></FONT></TD>
+    <TD STYLE="text-align: left; width: 14%; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Company Name</B></FONT></TD>
+    <TD STYLE="text-align: left; width: 6%; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Ticker</B></FONT></TD>
+    <TD STYLE="text-align: left; width: 8%; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Primary CUSIP</B></FONT></TD>
+    <TD STYLE="text-align: left; width: 6%; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Meeting Date</B></FONT></TD>
+    <TD STYLE="text-align: left; width: 8%; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Proponent</B></FONT></TD>
+    <TD STYLE="text-align: left; width: 24%; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Proposal Text</B></FONT></TD>
+    <TD STYLE="text-align: left; width: 8%; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Vote Instruction</B></FONT></TD>
+    <TD STYLE="text-align: left; width: 8%; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Voted</B></FONT></TD>
+    <TD STYLE="text-align: left; width: 8%; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Vote Against Management</B></FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">World Wrestling Entertainment, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WWE</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">98156Q108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;16-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Vincent K. McMahon</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">World Wrestling Entertainment, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WWE</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">98156Q108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;16-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Stephanie McMahon Levesque</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">World Wrestling Entertainment, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WWE</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">98156Q108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;16-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Paul &quot;Triple H&quot; Levesque</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">World Wrestling Entertainment, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WWE</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">98156Q108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;16-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Stuart U. Goldfarb</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">World Wrestling Entertainment, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WWE</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">98156Q108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;16-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Laureen Ong</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">World Wrestling Entertainment, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WWE</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">98156Q108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;16-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Robyn W. Peterson</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">World Wrestling Entertainment, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WWE</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">98156Q108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;16-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Frank A. Riddick, III</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">World Wrestling Entertainment, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WWE</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">98156Q108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;16-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Man Jit Singh</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">World Wrestling Entertainment, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WWE</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">98156Q108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;16-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Jeffrey R. Speed</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">World Wrestling Entertainment, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WWE</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">98156Q108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;16-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Alan M. Wexler</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">World Wrestling Entertainment, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WWE</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">98156Q108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;16-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Ratify Deloitte &amp; Touche LLP as Auditors</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">World Wrestling Entertainment, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WWE</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">98156Q108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;16-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote to Ratify Named Executive Officers' Compensation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Thomas Benninger</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Jan Jones Blackhurst</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Juliana Chugg</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Denise Clark</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Keith Cozza</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director John Dionne</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director James Hunt</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Don Kornstein</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Courtney R. Mather</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director James Nelson</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Anthony Rodio</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote to Ratify Named Executive Officers' Compensation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Caesars Entertainment Corporation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CZR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">127686AA1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;24-Jul-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Ratify Deloitte &amp; Touche LLP as Auditor</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advanced Disposal Services, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">ADSW</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">00790X101</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;25-Aug-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advanced Disposal Services, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">ADSW</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">00790X101</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;25-Aug-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advanced Disposal Services, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">ADSW</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">00790X101</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;25-Aug-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Willis Towers Watson Public Limited Company</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WLTW</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G96629103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;26-Aug-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Scheme of Arrangement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Willis Towers Watson Public Limited Company</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WLTW</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G96629103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;26-Aug-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Scheme of Arrangement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Willis Towers Watson Public Limited Company</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WLTW</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G96629103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;26-Aug-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Amend Articles</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Willis Towers Watson Public Limited Company</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WLTW</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G96629103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;26-Aug-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Willis Towers Watson Public Limited Company</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WLTW</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G96629103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;26-Aug-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CNX Midstream Partners LP</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CNXM</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">12654A101</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;25-Sep-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">National General Holdings Corp.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">NGHC</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">636220303</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Sep-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">National General Holdings Corp.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">NGHC</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">636220303</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Sep-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">National General Holdings Corp.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">NGHC</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">636220303</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Sep-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Varian Medical Systems, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">VAR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">92220P105</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;15-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Varian Medical Systems, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">VAR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">92220P105</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;15-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Varian Medical Systems, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">VAR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">92220P105</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;15-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Robert J. Palmisano</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director David D. Stevens</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Gary D. Blackford</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director J. Patrick Mackin</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director John L. Miclot</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Kevin C. O'Boyle</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Amy S. Paul</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Richard F. Wallman</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Elizabeth H. Weatherman</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Ratify KPMG LLP as Auditor</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Ratify KPMG N.V. as Auditor</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adopt Financial Statements and Statutory Reports</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Discharge of Management Board</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Authorize Repurchase of Up to 10 Percent of Issued Share Capital</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Authorize Board to Issue Shares</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Authorize Board to Exclude Preemptive Rights from Share Issuances</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Wright Medical Group N.V.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WMGI</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">N96617118</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote to Ratify Named Executive Officers' Compensation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Livongo Health, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">LVGO</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">539183103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;29-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Livongo Health, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">LVGO</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">539183103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;29-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Livongo Health, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">LVGO</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">539183103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;29-Oct-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Taubman Centers, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">TCO</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">876664103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Dec-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Taubman Centers, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">TCO</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">876664103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Dec-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Taubman Centers, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">TCO</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">876664103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;28-Dec-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Tiffany &amp; Co.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">TIF</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">886547108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Dec-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Tiffany &amp; Co.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">TIF</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">886547108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Dec-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Tiffany &amp; Co.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">TIF</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">886547108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Dec-20</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Oxford Immunotec Global Plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">OXFD</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G6855A103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;26-Feb-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Scheme of Arrangement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Oxford Immunotec Global Plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">OXFD</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G6855A103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;26-Feb-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Matters Relating to the Acquisition of PerkinElmer (UK) Holdings Limited</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Oxford Immunotec Global Plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">OXFD</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G6855A103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;26-Feb-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Re-registration of the Company as a Private Limited Company by the Name of Oxford Immunotec Global Limited</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Acacia Communications, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">ACIA</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">00401C108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;01-Mar-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Acacia Communications, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">ACIA</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">00401C108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;01-Mar-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Acacia Communications, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">ACIA</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">00401C108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;01-Mar-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Slack Technologies, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WORK</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">83088V102</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;02-Mar-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Slack Technologies, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">WORK</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">83088V102</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;02-Mar-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">RealPage, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">RP</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">75606N109</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;08-Mar-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">RealPage, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">RP</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">75606N109</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;08-Mar-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">RealPage, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">RP</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">75606N109</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;08-Mar-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">HMS Holdings Corp.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">HMSY</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">40425J101</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;26-Mar-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">HMS Holdings Corp.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">HMSY</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">40425J101</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;26-Mar-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">HMS Holdings Corp.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">HMSY</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">40425J101</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;26-Mar-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">GW Pharmaceuticals Plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">GWPH</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">36197T103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;23-Apr-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Scheme of Arrangement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">GW Pharmaceuticals Plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">GWPH</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">36197T103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;23-Apr-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Scheme of Arrangement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">GW Pharmaceuticals Plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">GWPH</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">36197T103</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;23-Apr-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Perspecta Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">PRSP</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">715347100</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;05-May-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Perspecta Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">PRSP</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">715347100</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;05-May-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Perspecta Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">PRSP</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">715347100</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;05-May-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Tribune Publishing Company</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">TPCO</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">89608FAD7</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;21-May-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Tribune Publishing Company</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">TPCO</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">89608FAD7</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;21-May-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Tribune Publishing Company</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">TPCO</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">89608FAD7</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;21-May-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">ESH Hospitality, Inc.</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">26907Y104</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;11-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">ESH Hospitality, Inc.</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">26907Y104</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;11-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Extended Stay America, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">STAY</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">30224P200</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;11-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Extended Stay America, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">STAY</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">30224P200</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;11-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Extended Stay America, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">STAY</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">30224P200</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;11-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Extended Stay America, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">STAY</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">30224P200</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;11-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Do Not Vote</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Extended Stay America, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">STAY</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">30224P200</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;11-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Do Not Vote</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Extended Stay America, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">STAY</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">30224P200</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;11-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Do Not Vote</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">PRA Health Sciences, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">PRAH</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">69354M108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;15-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Approve Merger Agreement</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">PRA Health Sciences, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">PRAH</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">69354M108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;15-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote on Golden Parachutes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">PRA Health Sciences, Inc.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">PRAH</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">69354M108</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;15-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Adjourn Meeting</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Cardtronics plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CATM</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G1991C105</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Juli C. Spottiswood</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Cardtronics plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CATM</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G1991C105</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Edward H. West</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Cardtronics plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CATM</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G1991C105</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Elect Director Rahul Gupta</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Cardtronics plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CATM</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G1991C105</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Ratify KPMG LLP (U.S.) as Auditors</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Cardtronics plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CATM</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G1991C105</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Reappoint KPMG LLP (U.K.) as Statutory Auditors</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Cardtronics plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CATM</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G1991C105</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Authorize Audit Committee to Fix Remuneration of UK Statutory Auditors</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Cardtronics plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CATM</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G1991C105</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote to Ratify Named Executive Officers' Compensation</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Cardtronics plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CATM</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G1991C105</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Advisory Vote to Ratify Directors' Compensation Report</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  <TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Vivaldi Multi-Strategy Fund </FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Cardtronics plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CATM</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G1991C105</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;30-Jun-21</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Accept Financial Statements and Statutory Reports</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Yes</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">No</FONT></TD></TR>
+  </TABLE>
+<P STYLE="text-align: center; font: 11pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt"><FONT STYLE="font: 11pt Times New Roman, Times, Serif; color: #00007F"><B><I>Vote Summary</I></B></FONT></P>
+
+
+
+<P STYLE="margin: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="4" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="20" STYLE="background-color: #004F75; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>LEGG MASON</B></FONT></TD>
+    <TD STYLE="white-space: nowrap; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    </TR>
+  <TR>
+    <TD COLSPAN="5" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Security</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">18469Q108</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Meeting Type</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Special </FONT></TD>
+    </TR>
+  <TR>
+    <TD COLSPAN="5" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Ticker Symbol</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">CTR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Meeting Date</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">06-Jul-2020</FONT></TD>
+    </TR>
+  <TR>
+    <TD COLSPAN="5" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>ISIN</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">US18469Q1085</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Agenda</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">935194706 - Management</FONT></TD>
+    </TR>
+  <TR>
+    <TD COLSPAN="5" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Record Date</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">09-Mar-2020</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Holding Recon Date</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">09-Mar-2020</FONT></TD>
+    </TR>
+  <TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>City /</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Country</B></FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">/</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">United States</FONT></TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Vote Deadline Date</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">02-Jul-2020</FONT></TD>
+    </TR>
+  <TR>
+    <TD COLSPAN="5" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>SEDOL(s)</B></FONT></TD>
+    <TD COLSPAN="6" STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Quick Code</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    </TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="2" STYLE="background-color: #004F75; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Item</B></FONT></TD>
+    <TD COLSPAN="8" STYLE="background-color: #004F75; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Proposal</B></FONT></TD>
+    <TD STYLE="white-space: nowrap; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="background-color: #004F75; text-align: center; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Proposed by</B></FONT></TD>
+    <TD STYLE="white-space: nowrap; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="background-color: #004F75; text-align: center; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Vote</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="background-color: #004F75; text-align: center; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>For/Against Management</B></FONT></TD>
+    <TD STYLE="white-space: nowrap; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    </TR>
+  <TR>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">1.&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="10" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">To approve a New Management Agreement with Legg Mason Partners Fund Advisor, LLC.</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Split</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="white-space: nowrap; vertical-align: top; text-align: center; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Split</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    </TR>
+  <TR>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">2B.&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="10" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">To approve a New Subadvisory Agreement with: ClearBridge Investments, LLC</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: center; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Split</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="white-space: nowrap; vertical-align: top; text-align: center; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Split</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    </TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="white-space: nowrap; width: 2%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 2%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 2%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 2%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 2%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 5%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 3%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 2%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD STYLE="white-space: nowrap; width: 20%; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    </TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="background-color: #004F75; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Account Number</B></FONT></TD>
+    <TD COLSPAN="5" STYLE="background-color: #004F75; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Account Name</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="background-color: #004F75; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Internal Account</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="background-color: #004F75; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Custodian</B></FONT></TD>
+    <TD STYLE="background-color: #004F75; text-align: center; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Ballot Shares</B></FONT></TD>
+    <TD STYLE="white-space: nowrap; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="background-color: #004F75; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Unavailable Shares</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="background-color: #004F75; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Vote Date</B></FONT></TD>
+    <TD STYLE="background-color: #004F75; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Date Confirmed</B></FONT></TD>
+    </TR>
+  <TR>
+    <TD COLSPAN="5" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">145334.22</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">MSTRAT RIVERNORTH</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">145334.22</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">UMB BANK, N.A.</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: top; text-align: right; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">3,260</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="white-space: nowrap; vertical-align: top; text-align: right; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">0</FONT></TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">04-Jun-2020</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">04-Jun-2020</FONT></TD>
+    </TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="20" STYLE="background-color: #004F75; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>WESTERN ASSET GBL HIGH INC FD INC.</B></FONT></TD>
+    <TD STYLE="white-space: nowrap; background-color: #004F75; font-size: 11pt">&nbsp;</TD>
+    </TR>
+  <TR>
+    <TD COLSPAN="5" STYLE="vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Security</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="white-space: nowrap; vertical-align: top; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">95766B109</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom">&nbsp;</TD>

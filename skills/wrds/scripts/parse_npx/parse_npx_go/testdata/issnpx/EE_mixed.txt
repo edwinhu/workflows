@@ -1,0 +1,10 @@
+
+ADVANCED ENERGY INDUSTRIES, INC.
+
+Ticker:       AEIS           Security ID:  007973100
+Meeting Date: MAY 4, 2010    Meeting Type: Annual
+Record Date:  MAR 8, 2010
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1A    Election of Directors                   For       Mixed        Management
+1B    DOUGLAS S. SCHATZ                       Withheld  Against      Management

@@ -1,0 +1,351 @@
+<SEC-DOCUMENT>0001104659-17-054410.txt : 20170830
+<SEC-HEADER>0001104659-17-054410.hdr.sgml : 20170830
+<ACCEPTANCE-DATETIME>20170830093926
+ACCESSION NUMBER:		0001104659-17-054410
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170830
+DATE AS OF CHANGE:		20170830
+EFFECTIVENESS DATE:		20170830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			DELAWARE POOLED TRUST
+		CENTRAL INDEX KEY:			0000875352
+		IRS NUMBER:				232651511
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-06322
+		FILM NUMBER:		171059468
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE COMMERCE SQUARE
+		STREET 2:		2005 MARKET STREET
+		CITY:			PHILADELPHIA
+		STATE:			PA
+		ZIP:			19103
+		BUSINESS PHONE:		18005231918
+
+	MAIL ADDRESS:	
+		STREET 1:		ONE COMMERCE SQUARE
+		STREET 2:		2005 MARKET STREET
+		CITY:			PHILADELPHIA
+		STATE:			PA
+		ZIP:			19103
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	DELAWARE POOLED TRUST INC
+		DATE OF NAME CHANGE:	19920717
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003928
+<SERIES-NAME>THE SELECT 20 PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011032
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPCEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003929
+<SERIES-NAME>Macquarie Labor Select International Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011033
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DELPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003930
+<SERIES-NAME>THE LARGE-CAP GROWTH EQUITY PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011034
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPLGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003931
+<SERIES-NAME>Macquarie Large Cap Value Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011035
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPDEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003935
+<SERIES-NAME>The Focus Smid-Cap Growth Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011039
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DCGTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003937
+<SERIES-NAME>DELAWARE REIT FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011041
+<CLASS-CONTRACT-NAME>CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>DPREX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011043
+<CLASS-CONTRACT-NAME>CLASS C
+<CLASS-CONTRACT-TICKER-SYMBOL>DPRCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011044
+<CLASS-CONTRACT-NAME>CLASS R
+<CLASS-CONTRACT-TICKER-SYMBOL>DPRRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011045
+<CLASS-CONTRACT-NAME>INSTITUTIONAL CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPRSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000174774
+<CLASS-CONTRACT-NAME>Class R6
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003939
+<SERIES-NAME>Macquarie Core Plus Bond Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011048
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DCPFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003940
+<SERIES-NAME>Macquarie Emerging Markets Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011049
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPEMX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000003942
+<SERIES-NAME>Macquarie High Yield Bond Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000011051
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPHYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000875352
+<SERIES-ID>S000025841
+<SERIES-NAME>Macquarie Emerging Markets Portfolio II
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000077274
+<CLASS-CONTRACT-NAME>DPT CLASS
+<CLASS-CONTRACT-TICKER-SYMBOL>DPEGX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a17-17938_14npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+
+
+<html>
+<head>
+
+
+
+  </head>
+<body link=blue lang="EN-US">
+<div>
+<div style="border-bottom:solid windowtext 1.0pt;border-left:none;border-right:none;border-top:solid windowtext 3.0pt;padding:1.0pt 0in 1.0pt 0in;">
+<p style="border:none;margin:0in 0in .0001pt;padding:0in;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+</div>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+<p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="5" face="Times New Roman" style="font-size:18.0pt;font-weight:bold;">UNITED STATES</font></b></p>
+<p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="5" face="Times New Roman" style="font-size:18.0pt;font-weight:bold;">SECURITIES AND EXCHANGE COMMISSION</font></b></p>
+<p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">Washington, DC 20549</font></b></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+<p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="5" face="Times New Roman" style="font-size:18.0pt;font-weight:bold;">FORM&nbsp;N-PX</font></b></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+<p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="3" face="Times New Roman" style="font-size:12.0pt;font-weight:bold;">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT</font></b></p>
+<p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="3" face="Times New Roman" style="font-size:12.0pt;font-weight:bold;">INVESTMENT COMPANIES</font></b></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+<table border="0" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse;">
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Investment Company Act File   Number:</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">811-06322</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">&nbsp;</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Exact Name of Registrant as Specified   in Charter:</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="5" face="Times New Roman" style="font-size:18.0pt;font-weight:bold;">Delaware Pooled&#174;   Trust</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">&nbsp;</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Address of principal executive   offices:</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">2005 Market Street</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">Philadelphia, PA 19103</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">&nbsp;</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Name and address of agent for   service:</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">David F. Connor,&nbsp;Esq.</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">2005 Market Street</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">Philadelphia, PA 19103</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">&nbsp;</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Registrant&#146;s telephone number:</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">(800) 523-1918</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">&nbsp;</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Date of fiscal year end:</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">October&nbsp;31</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">&nbsp;</font></b></p>    </td>   </tr>
+<tr>
+<td width="42%" valign="top" style="padding:0in 0in 0in 0in;width:42.5%;">
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Date of reporting period:</font></p>    </td>
+<td width="57%" valign="top" style="padding:0in 0in 0in 0in;width:57.5%;">
+<p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">July&nbsp;1, 2016 -   June&nbsp;30, 2017</font></b></p>    </td>   </tr>  </table>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+<div style="border-bottom:solid windowtext 3.0pt;border-left:none;border-right:none;border-top:solid windowtext 1.0pt;padding:1.0pt 0in 1.0pt 0in;">
+<p style="border:none;margin:0in 0in .0001pt;padding:0in;"><font size="1" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+</div>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+<div style="margin:0in 0in .0001pt;"><hr size="3" width="100%" noshade align="left" style="color:#010101;"></div>
+</div>
+<!-- SEQ.=1,FOLIO='',FILE='C:\JMS\108183\17-17938-14\task8551101\17938-14-be.htm',USER='108183',CD='Aug 23 05:40 2017' -->
+
+
+<br clear="all" style="page-break-before:always;">
+<div>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">ITEM 1. PROXY VOTING RECORD.</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+<div style="margin:0in 0in .0001pt;"><hr size="3" width="100%" noshade align="left" style="color:#010101;"></div>
+</div>
+<!-- SEQ.=1,FOLIO='',FILE='C:\JMS\108183\17-17938-14\task8551101\17938-14-bg.htm',USER='108183',CD='Aug 23 05:40 2017' -->
+
+
+<br clear="all" style="page-break-before:always;">
+<div>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">============== Delaware REIT Fund&#160; (f/k/a/ DPT - The Real Estate&#160; ==============</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">==============&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Investment Trust Portfolio)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ==============</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">AMERICAN CAMPUS COMMUNITIES, INC.&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker:&#160;&#160;&#160;&#160;&#160;&#160; ACC&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Security ID:&#160; 024835100&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Date: MAY 04, 2017&#160;&#160; Meeting Type: Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Record Date:&#160; MAR 13, 2017&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">#&#160;&#160;&#160;&#160; Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgt Rec&#160;&#160; Vote Cast&#160;&#160;&#160; Sponsor&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1a&#160;&#160;&#160; Elect Director William C. Bayless, Jr.&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1b&#160;&#160;&#160; Elect Director Blakeley W. Chandlee,&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;III&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1c&#160;&#160;&#160; Elect Director G. Steven Dawson&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1d&#160;&#160;&#160; Elect Director Cydney C. Donnell&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1e&#160;&#160;&#160; Elect Director Dennis G. Lopez&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1f&#160;&#160;&#160; Elect Director Edward Lowenthal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1g&#160;&#160;&#160; Elect Director Oliver Luck&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1h&#160;&#160;&#160; Elect Director C. Patrick Oles, Jr.&#160;&#160;&#160;&#160; For&#160; &#160;&#160;&#160;&#160;&#160;For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">2&#160;&#160;&#160;&#160; Ratify Ernst &amp; Young LLP as Auditors&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">3&#160;&#160;&#160;&#160; Advisory Vote to Ratify Named&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;Executive Officers' Compensation&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">4&#160;&#160;&#160;&#160; Advisory Vote on Say on Pay Frequency&#160;&#160; One Year&#160; One Year&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">--------------------------------------------------------------------------------</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">APARTMENT INVESTMENT AND MANAGEMENT COMPANY&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker:&#160;&#160;&#160;&#160;&#160;&#160; AIV&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Security ID:&#160; 03748R101&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Date: APR 25, 2017&#160;&#160; Meeting Type: Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Record Date:&#160; FEB 24, 2017&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">#&#160;&#160;&#160;&#160; Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgt Rec&#160;&#160; Vote Cast&#160;&#160;&#160; Sponsor&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160; Elect Director Terry Considine&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.2&#160;&#160; Elect Director Thomas L. Keltner&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.3&#160;&#160; Elect Director J. Landis Martin&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.4&#160;&#160; Elect Director Robert A. Miller&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>    </td>   </tr>  </table>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+<div style="margin:0in 0in .0001pt;"><hr size="3" width="100%" noshade align="left" style="color:#010101;"></div>
+</div>
+<!-- SEQ.=1,FOLIO='',FILE='C:\JMS\108183\17-17938-14\task8551101\17938-14-jc.htm',USER='108183',CD='Aug 23 05:42 2017' -->
+
+</body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

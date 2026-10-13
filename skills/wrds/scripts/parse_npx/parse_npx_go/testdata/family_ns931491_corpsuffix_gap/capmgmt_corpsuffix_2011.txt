@@ -1,0 +1,370 @@
+<SEC-DOCUMENT>0001398344-11-001891.txt : 20110819
+<SEC-HEADER>0001398344-11-001891.hdr.sgml : 20110819
+<ACCEPTANCE-DATETIME>20110819122708
+ACCESSION NUMBER:		0001398344-11-001891
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110819
+DATE AS OF CHANGE:		20110819
+EFFECTIVENESS DATE:		20110819
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CAPITAL MANAGEMENT INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000931491
+		IRS NUMBER:				566459396
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1130
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08822
+		FILM NUMBER:		111046696
+
+	BUSINESS ADDRESS:	
+		STREET 1:		630 FITZWATERTOWN ROAD
+		STREET 2:		BUILDING "A", 2ND FLOOR
+		CITY:			WILLOW GROVE
+		STATE:			PA
+		ZIP:			19090-1904
+		BUSINESS PHONE:		888-626-3863
+
+	MAIL ADDRESS:	
+		STREET 1:		630 FITZWATERTOWN ROAD
+		STREET 2:		BUILDING "A", 2ND FLOOR
+		CITY:			WILLOW GROVE
+		STATE:			PA
+		ZIP:			19090-1904
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000931491
+<SERIES-ID>S000010455
+<SERIES-NAME>Capital Management Small-Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028880
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CMSSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028881
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CMSVX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000931491
+<SERIES-ID>S000010456
+<SERIES-NAME>Capital Management Mid-Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028882
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CMEIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028883
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CMCIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0003342_npx.txt
+<TEXT>
+
+                                 UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                             Washington, D.C. 20549
+
+                                   FORM N-PX
+
+         ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+
+                               INVESTMENT COMPANY
+
+                  Investment Company Act File Number 811-08822
+                                                     ---------
+                      CAPITAL MANAGEMENT INVESTMENT TRUST
+--------------------------------------------------------------------------------
+               (Exact name of registrant as specified in charter)
+
+ 140 Broadway           New York,          NY                    10005
+--------------------------------------------------------------------------------
+   (Address of principal executive offices)                     (Zip code)
+
+                         Matrix 360 Administration, LLC
+                             630 Fitzwatertown Road
+                             Building A, 2nd floor
+                          Willow Grove, PA 19090-1904
+--------------------------------------------------------------------------------
+                    (Name and address of agent for service)
+
+Registrant's telephone number, including area code: 888.626.3863
+                                                    ------------
+
+Date of fiscal year end:  11/30/2011
+                          ----------
+
+Date of reporting period: 7/1/2010 TO 6/30/2011
+                          ----------------------
+
+
+<PAGE>
+
+
+ITEM 1.     PROXY VOTING RECORD:
+
+            Exhibit A is attached for the Capital Management Mid-Cap Fund and
+            the Capital Management Small-Cap Fund, both series of the Capital
+            Management Investment Trust.
+
+                                   SIGNATURES
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+Capital Management Investment Trust
+
+By Ralph J. Scarpa      /s/ Ralph J. Scarpa
+                        ----------------------------
+President,
+Date: August 18, 2011
+
+
+<PAGE>
+
+
+EXHIBIT A
+---------
+Capital Management Small-Cap Fund
+
+<TABLE>
+<CAPTION>
+UNASSIGNED
+-----------------------------------------------------------------------------------------------------------------
+    ASHFORD HOSPITALITY TRUST, INC.
+-----------------------------------------------------------------------------------------------------------------
+            SECURITY: 044103109                                                  AGENDA NUMBER: 933431114
+            TICKER:   AHT                                                        MEETING TYPE: Annual
+            ISIN:     US0441031095                                               MEETING DATE: 5/17/2011
+-----------------------------------------------------------------------------------------------------------------
+                                                                                                FOR/AGAINST
+                                                                                                MANAGEMENT'S
+PROP. #     PROPOSAL                                      PROPOSED BY       PROPOSAL VOTE      RECOMMENDATION
+-----------------------------------------------------------------------------------------------------------------
+<S>         <C>                                           <C>               <C>                      <C>
+    01      DIRECTOR
+            1    ARCHIE BENNETT, JR.                      Mgmt                   For                 For
+
+            2    MONTY J. BENNETT                         Mgmt                   For                 For
+
+            3    BENJAMIN J. ANSELL, MD                   Mgmt                   For                 For
+
+            4    THOMAS E. CALLAHAN                       Mgmt                   For                 For
+
+            5    MARTIN L. EDELMAN                        Mgmt                   For                 For
+
+            6    W. MICHAEL MURPHY                        Mgmt                   For                 For
+
+            7    PHILLIP S. PAYNE                         Mgmt                   For                 For
+
+    02      TO RATIFY THE APPOINTMENT OF ERNST            Mgmt                   For                 For
+            & YOUNG LLP AS OUR INDEPENDENT
+            REGISTERED PUBLIC ACCOUNTING FIRM
+            FOR THE FISCAL YEAR ENDING
+            DECEMBER 31, 2011.
+
+    03      TO APPROVE THE ADOPTION OF A NEW              Mgmt                   For                 For
+            2011 STOCK INCENTIVE PLAN THAT WILL
+            ALLOW FOR ISSUANCE OF UP TO
+            5,750,000 SHARES OF OUR COMMON
+            STOCK.
+
+    04      TO APPROVE, ON AN ADVISORY BASIS,             Mgmt                   For                 For
+            THE COMPENSATION OF THE COMPANY'S
+            NAMED EXECUTIVE OFFICERS.
+
+    05      TO RECOMMEND, ON AN ADVISORY                  Mgmt                 1 Year                For
+            BASIS, THE FREQUENCY OF FUTURE
+            ADVISORY VOTES ON THE
+            COMPENSATION OF THE COMPANY'S
+            NAMED EXECUTIVE OFFICERS.
+
+UNASSIGNED
+-----------------------------------------------------------------------------------------------------------------
+    BLACK HILLS CORPORATION
+-----------------------------------------------------------------------------------------------------------------
+            SECURITY: 092113109                                                  AGENDA NUMBER: 933426024
+            TICKER:   BKH                                                        MEETING TYPE: Annual
+            ISIN:     US0921131092                                               MEETING DATE: 5/25/2011
+-----------------------------------------------------------------------------------------------------------------
+                                                                                                FOR/AGAINST
+                                                                                                MANAGEMENT'S
+PROP. #     PROPOSAL                                      PROPOSED BY       PROPOSAL VOTE      RECOMMENDATION
+-----------------------------------------------------------------------------------------------------------------
+    01      DIRECTOR
+            1    DAVID R. EMERY                           Mgmt                   For                 For
+
+            2    REBECCA B. ROBERTS                       Mgmt                   For                 For
+
+            3    WARREN L. ROBINSON                       Mgmt                   For                 For
+
+            4    JOHN B. VERING                           Mgmt                   For                 For
+
+    02      RATIFY THE APPOINTMENT OF DELOITTE            Mgmt                   For                 For
+            & TOUCHE LLP TO SERVE AS BLACK
+            HILLS CORPORATION'S INDEPENDENT
+            REGISTERED PUBLIC ACCOUNTING FIRM
+            FOR 2011.
+
+    03      APPROVE THE ADVISORY RESOLUTION               Mgmt                   For                 For
+            ON EXECUTIVE COMPENSATION.
+
+    04      APPROVE HOLDING THE ADVISORY VOTE             Mgmt                 1 Year                For
+            ON EXECUTIVE COMPENSATION EVERY
+            ONE, TWO OR THREE YEARS, AS
+            INDICATED.
+
+UNASSIGNED
+-----------------------------------------------------------------------------------------------------------------
+    CRUCELL N.V.
+-----------------------------------------------------------------------------------------------------------------
+            SECURITY: 228769105                                                  AGENDA NUMBER: 933366608
+            TICKER:   CRXL                                                       MEETING TYPE: Special
+            ISIN:     US2287691057                                               MEETING DATE: 2/8/2011
+-----------------------------------------------------------------------------------------------------------------
+                                                                                                FOR/AGAINST
+                                                                                                MANAGEMENT'S
+PROP. #     PROPOSAL                                      PROPOSED BY       PROPOSAL VOTE      RECOMMENDATION
+-----------------------------------------------------------------------------------------------------------------
+3A          PROPOSAL TO AMEND THE ARTICLES OF             Mgmt                   For
+            ASSOCIATION OF THE COMPANY WITH
+            EFFECT OF THE SETTLEMENT DATE,
+            BEING THE DATE NO LATER THAN THE
+            THIRD BUSINESS DAY AFTER THE DATE
+            THE OFFER HAS BEEN DECLARED
+            UNCONDITIONAL, UNDER THE
+            CONDITION PRECEDENT OF THE
+            CONTEMPLATED OFFER OF JOHNSON &
+            JOHNSON FOR ALL THE ISSUED AND
+            OUTSTANDING SHARES IN THE CAPITAL
+            OF THE COMPANY (THE OFFER) BEING
+            DECLARED UNCONDITIONAL.
+            (RESOLUTION).
+
+3B          PROPOSAL TO AUTHORISE EACH                    Mgmt                   For
+            MEMBER OF THE BOARD OF
+            MANAGEMENT OF THE COMPANY AND
+            ALSO EACH CIVIL LAW NOTARY, DEPUTY
+            CIVIL LAW NOTARY AND NOTARIAL
+            ASSISTANT OF ALLEN & OVERY LLP,
+            EACH OF THEM SEVERALLY, WITH
+            EFFECT OF THE SETTLEMENT DATE,
+            UNDER THE CONDITION PRECEDENT OF
+            THE OFFER BEING DECLARED
+            UNCONDITIONAL, TO APPLY TO THE
+            DUTCH MINISTRY OF JUSTICE FOR THE
+            STATEMENT OF NO OBJECTIONS AND TO
+            HAVE THE DEED OF AMENDMENT OF THE
+            ARTICLES OF ASSOCIATION EXECUTED.
+            (RESOLUTION).
+
+    04      RESIGNATION SUPERVISORY BOARD AND             Mgmt                   For
+            DISCHARGE: RESIGNATION OF MESSRS.
+                  W.M.  BURNS, S.A. DAVIS, P.
+                  SATOW, J.S.S. SHANNON, G.R.
+                  SIBER, F.F. WALLER AND
+
+            C.-E. WILHELMSSON AS MEMBERS OF
+            THE SUPERVISORY BOARD AND THE
+            PROPOSAL TO GRANT DISCHARGE WITH
+            EFFECT OF THE SETTLEMENT DATE,
+            UNDER THE CONDITION PRECEDENT OF
+            THE OFFER BEING DECLARED
+            UNCONDITIONAL. (RESOLUTION).
+
+5A          PROPOSAL TO APPOINT MR. J.H.J.                Mgmt                   For
+            PEETERS AS MEMBER OF THE
+            SUPERVISORY BOARD WITH EFFECT OF
+            THE SETTLEMENT DATE, UNDER THE
+            CONDITION PRECEDENT OF THE OFFER
+            BEING DECLARED UNCONDITIONAL.
+            (RESOLUTION).
+
+5B          PROPOSAL TO APPOINT MR. P. STOFFELS           Mgmt                   For
+            AS MEMBER OF THE SUPERVISORY
+            BOARD WITH EFFECT OF THE
+            SETTLEMENT DATE, UNDER THE
+            CONDITION PRECEDENT OF THE OFFER
+            BEING DECLARED UNCONDITIONAL.
+            (RESOLUTION).
+
+5C          PROPOSAL TO APPOINT MR. T.J. HEYMAN           Mgmt                   For
+            AS MEMBER OF THE SUPERVISORY
+            BOARD WITH EFFECT OF THE
+            SETTLEMENT DATE, UNDER THE
+            CONDITION PRECEDENT OF THE OFFER
+            BEING DECLARED UNCONDITIONAL.
+            (RESOLUTION).
+
+5D          PROPOSAL TO APPOINT MR. J.J.U. VAN            Mgmt                   For
+            HOOF AS MEMBER OF THE
+            SUPERVISORY BOARD WITH EFFECT OF
+            THE SETTLEMENT DATE, UNDER THE
+            CONDITION PRECEDENT OF THE OFFER
+            BEING DECLARED UNCONDITIONAL.
+            (RESOLUTION).
+
+5E          PROPOSAL TO APPOINT MS. J.V.                  Mgmt                   For
+            GRIFFITHS AS MEMBER OF THE
+            SUPERVISORY BOARD WITH EFFECT OF
+            THE SETTLEMENT DATE, UNDER THE
+            CONDITION PRECEDENT OF THE OFFER
+            BEING DECLARED UNCONDITIONAL.
+            (RESOLUTION).
+
+5F          PROPOSAL TO APPOINT MR. B.W. VAN              Mgmt                   For
+            ZIJLL LANGHOUT AS MEMBER OF THE
+            SUPERVISORY BOARD WITH EFFECT OF
+            THE SETTLEMENT DATE, UNDER THE
+            CONDITION PRECEDENT OF THE OFFER
+            BEING DECLARED UNCONDITIONAL.
+            (RESOLUTION).
+
+5G          PROPOSAL TO APPOINT MR. P. KORTE AS           Mgmt                   For
+            MEMBER OF THE SUPERVISORY BOARD
+            WITH EFFECT OF THE SETTLEMENT
+            DATE, UNDER THE CONDITION
+            PRECEDENT OF THE OFFER BEING
+            DECLARED UNCONDITIONAL.
+            (RESOLUTION).
+
+5H          PROPOSAL TO APPOINT MR. D.-J.                 Mgmt                   For
+            ZWEERS AS MEMBER OF THE
+            SUPERVISORY BOARD WITH EFFECT OF
+            THE SETTLEMENT DATE, UNDER THE
+            CONDITION PRECEDENT OF THE OFFER
+            BEING DECLARED UNCONDITIONAL.
+            (RESOLUTION).
+
+5I          PROPOSAL TO APPOINT MR. J.C. BOT AS           Mgmt                   For
+            MEMBER OF THE SUPERVISORY BOARD
+            WITH EFFECT OF THE SETTLEMENT
+            DATE, UNDER THE CONDITION
+            PRECEDENT OF THE OFFER BEING
+            DECLARED UNCONDITIONAL.
+            (RESOLUTION).
+
+</TABLE>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

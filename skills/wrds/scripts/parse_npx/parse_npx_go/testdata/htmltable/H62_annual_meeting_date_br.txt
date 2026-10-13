@@ -1,0 +1,462 @@
+<table border="0" cellpadding="1" cellspacing="0" width="710">
+ <caption><hr noshade size="4"></caption>
+  <tr>    <th width="65"> <div>
+&#160;
+</div>
+</th>
+    <th> <div>
+&#160;
+</div>
+</th>
+    <th> <div><div align="center"><b>
+&#160;
+</b></div></div>
+</th>
+    <th width="90"> <div><div align="center"><b>
+&#160;
+</b></div></div>
+</th>
+    <th width="90"> <div><div align="center"><b>
+&#160;
+</b></div></div>
+</th>
+    <th width="90"> <div><div align="center"><b>
+&#160;
+</b></div></div>
+</th>
+</tr>
+  <tr>    <td colspan="2" rowspan="1" valign="bottom" bgcolor="#dcdcdc"> <div><b>
+ELECTRONIC ARTS INC.
+</b></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div><div align="center"><b>
+&#160;
+</b></div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center"><b>
+ERTS
+</b></div></div>
+</td>
+    <td colspan="2" rowspan="1" valign="bottom" bgcolor="#dcdcdc" width="182"> <div><div align="center"><b>
+Annual Meeting Date:<br> 07/31/2003
+</b></div></div>
+</td>
+</tr>
+  <tr>    <td colspan="2" rowspan="1" valign="bottom" bgcolor="#dcdcdc"> <div><b>
+Issuer: 285512
+</b></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div><div align="center"><b>
+ISIN:
+</b></div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center"><b>
+&#160;
+</b></div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center"><b>
+&#160;
+</b></div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center"><b>
+&#160;
+</b></div></div>
+</td>
+</tr>
+  <tr>    <td valign="bottom" bgcolor="#dcdcdc" width="65"> <div><b>
+SEDOL:
+</b></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div>
+&#160;
+</div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div><div align="center"><b>
+&#160;
+</b></div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center"><b>
+&#160;
+</b></div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center"><b>
+&#160;
+</b></div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center"><b>
+&#160;
+</b></div></div>
+</td>
+</tr>
+  <tr>    <td valign="bottom" bgcolor="#dcdcdc" width="65"> <div>
+&#160;
+</div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div>
+&#160;
+</div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+</tr>
+  <tr>    <td colspan="2" rowspan="1" valign="bottom" bgcolor="#dcdcdc"> <div><b>
+Vote Group: GLOBAL
+</b></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="bottom" bgcolor="#dcdcdc" width="65"> <div>
+&#160;
+</div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div>
+&#160;
+</div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="bottom" bgcolor="#dcdcdc" width="65"> <div>
+Proposal
+</div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div>
+&#160;
+</div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+Proposal
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+Vote
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+Against
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="bottom" bgcolor="#dcdcdc" width="65"> <div>
+Number
+</div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div>
+Proposal
+</div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+Type
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+Cast
+</div></div>
+</td>
+    <td valign="bottom" bgcolor="#dcdcdc" width="90"> <div><div align="center">
+Mgmt.
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="top" width="65"> <div>
+&#160;
+</div>
+</td>
+    <td valign="top"> <div>
+&#160;
+</div>
+</td>
+    <td valign="top"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="top" width="65"> <div>
+01
+</div>
+</td>
+    <td valign="top"> <div>
+ELECTION OF DIRECTORS
+</div>
+</td>
+    <td valign="top"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+Management
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+For
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+No
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="top" width="65"> <div>
+&#160;
+</div>
+</td>
+    <td valign="top"> <div>
+&#160;
+</div>
+</td>
+    <td valign="top"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="top" width="65"> <div>
+02
+</div>
+</td>
+    <td valign="top"> <div>
+AMEND OMNIBUS STOCK OPTION PLAN
+</div>
+</td>
+    <td valign="top"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+Management
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+For
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+No
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="top" width="65"> <div>
+&#160;
+</div>
+</td>
+    <td valign="top"> <div>
+&#160;
+</div>
+</td>
+    <td valign="top"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="top" width="65"> <div>
+03
+</div>
+</td>
+    <td valign="top"> <div>
+AMEND STOCK PURCHASE PLAN
+</div>
+</td>
+    <td valign="top"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+Management
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+For
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+No
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="top" width="65"> <div>
+&#160;
+</div>
+</td>
+    <td valign="top"> <div>
+&#160;
+</div>
+</td>
+    <td valign="top"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="top" width="65"> <div>
+04
+</div>
+</td>
+    <td valign="top"> <div>
+RATIFY APPOINTMENT OF INDEPENDENT AUDITORS
+</div>
+</td>
+    <td valign="top"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+Management
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+For
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+No
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="top" width="65"> <div>
+&#160;
+</div>
+</td>
+    <td valign="top"> <div>
+&#160;
+</div>
+</td>
+    <td valign="top"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+</tr>
+  <tr>    <td valign="top" width="65"> <div>
+&#160;
+</div>
+</td>
+    <td valign="top"> <div>
+&#160;
+</div>
+</td>
+    <td valign="top"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+    <td valign="top" width="90"> <div><div align="center">
+&#160;
+</div></div>
+</td>
+</tr>
+</table>

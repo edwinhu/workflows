@@ -1,0 +1,100 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ GIv4MkVt6rneQBRgHDwM+4IYiLMfJ8+KROW8J6S6BiY0WuVKgNUCjhbdhAnV0O2p
+ BnSqPkpfuY9BYTAl2zigAw==
+
+<SEC-DOCUMENT>0001144204-05-027209.txt : 20050826
+<SEC-HEADER>0001144204-05-027209.hdr.sgml : 20050826
+<ACCEPTANCE-DATETIME>20050826154808
+ACCESSION NUMBER:		0001144204-05-027209
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050826
+DATE AS OF CHANGE:		20050826
+EFFECTIVENESS DATE:		20050826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			TOUCHSTONE VARIABLE SERIES TRUST
+		CENTRAL INDEX KEY:			0000920547
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>v024870_npx-a.htm
+<TEXT>
+<html>
+  <head>
+    <title>
+</title>
+</head>
+  <body bgcolor="#ffffff">
+    <pre>Touchstone Third Avenue Value Fund
+- --------------------------------------------------------------------------------------------------------------------------
+ AGRIUM, INC.                                                                                Agenda Number:  932284122
+- --------------------------------------------------------------------------------------------------------------------------
+    Security:  008916108                                                             Meeting Type:  Special
+      Ticker:  AGU                                                                   Meeting Date:  09-May-2005
+        ISIN:
+- --------------------------------------------------------------------------------------------------------------------------
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+01     DIRECTOR
+       NEIL CARRAGHER                                            Mgmt          For                            For
+       RALPH S. CUNNINGHAM                                       Mgmt          For                            For
+       D. GRANT DEVINE                                           Mgmt          For                            For
+       GERMAINE GIBARA                                           Mgmt          For                            For
+       SUSAN A. HENRY                                            Mgmt          For                            For
+       RUSSELL J. HORNER                                         Mgmt          For                            For
+       FRANK W. KING                                             Mgmt          For                            For
+       FRANK W. PROTO                                            Mgmt          For                            For
+       HARRY G. SCHAEFER                                         Mgmt          For                            For
+       MICHAEL M. WILSON                                         Mgmt          For                            For
+       VICTOR J. ZALESCHUK                                       Mgmt          For                            For
+02     THE APPOINTMENT OF KPMG LLP, CHARTERED ACCOUNTANTS,       Mgmt          For                            For
+       AS AUDITORS OF THE CORPORATION.
+03     THE RESOLUTION APPROVING THE RESERVATION OF               Mgmt          For                            For
+       WILLIAM W. STINSON                                        Mgmt          For                            For
+       DAVID A.  THOMPSON                                        Mgmt          For                            For
+03     APPOINTMENT OF AUDITORS RESOLUTION                        Mgmt          For                            For
+04     THE APPROVAL OF THE  ARRANGEMENT RESOLUTION               Mgmt          For                            For
+       ATTACHED AS APPENDIX  A  TO THE CIRCULAR
+05     THE APPROVAL OF THE  SUBDIVISION RESOLUTION               Mgmt          For                            For
+       ATTACHED AS APPENDIX  B  TO THE CIRCULAR
+06     THE APPROVAL OF  THE  FORDING ARTICLES RESOLUTION         Mgmt          For                            For
+       ATTACHED AS APPENDIX  C  TO THE CIRCULAR
+- --------------------------------------------------------------------------------------------------------------------------
+ FOREST CITY ENTERPRISES, INC.                                                               Agenda Number:  932342556
+- --------------------------------------------------------------------------------------------------------------------------
+    Security:  345550107                                                             Meeting Type:  Annual
+      Ticker:  FCEA                                                                  Meeting Date:  21-Jun-2005
+        ISIN:
+- --------------------------------------------------------------------------------------------------------------------------
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+01     DIRECTOR
+       M.P. ESPOSITO, JR.                                        Mgmt          For                            For
+       JOAN K. SHAFRAN                                           Mgmt          For                            For
+       LOUIS STOKES                                              Mgmt          For                            For
+       STAN ROSS                                                 Mgmt          For                            For
+02     THE PROPOSED AMENDMENT AND RESTATEMENT OF THE             Mgmt          For                            For
+       1994 STOCK PLAN.
+03     THE RATIFICATION OF PRICEWATERHOUSECOOPERS LLP            Mgmt          For                            For
+       AS INDEPENDENT AUDITORS FOR THE COMPANY FOR
+       THE FISCAL YEAR ENDING JANUARY 31, 2006.
+  </body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

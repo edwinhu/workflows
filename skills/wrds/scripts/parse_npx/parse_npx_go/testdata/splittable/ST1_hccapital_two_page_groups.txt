@@ -1,0 +1,602 @@
+<SEC-DOCUMENT>0001193125-17-270540.txt : 20170828
+<SEC-HEADER>0001193125-17-270540.hdr.sgml : 20170828
+<ACCEPTANCE-DATETIME>20170828170448
+ACCESSION NUMBER:		0001193125-17-270540
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170828
+DATE AS OF CHANGE:		20170828
+EFFECTIVENESS DATE:		20170828
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			HC CAPITAL TRUST
+		CENTRAL INDEX KEY:			0000934563
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0630
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08918
+		FILM NUMBER:		171055242
+
+	BUSINESS ADDRESS:	
+		STREET 1:		300 BARR HARBOR DRIVE, SUITE 500
+		CITY:			WEST CONSHOHOCKEN
+		STATE:			PA
+		ZIP:			19428
+		BUSINESS PHONE:		610-828-7200
+
+	MAIL ADDRESS:	
+		STREET 1:		300 BARR HARBOR DRIVE, SUITE 500
+		CITY:			WEST CONSHOHOCKEN
+		STATE:			PA
+		ZIP:			19428
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	HIRTLE CALLAGHAN TRUST
+		DATE OF NAME CHANGE:	20100305
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	HC CAPITAL TRUST
+		DATE OF NAME CHANGE:	20100305
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	HIRTLE CALLAGHAN TRUST
+		DATE OF NAME CHANGE:	19941222
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009376
+<SERIES-NAME>The Intermediate Term Municipal Bond Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025691
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCIMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085455
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCIBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009378
+<SERIES-NAME>The Value Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025693
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCVEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085457
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCVPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009379
+<SERIES-NAME>The Growth Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025694
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCEGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085458
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCGWX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009380
+<SERIES-NAME>The Small Capitalization - Mid Capitalization Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025695
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCCEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085459
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCSAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009381
+<SERIES-NAME>The International Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025696
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCIEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085460
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCIAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009382
+<SERIES-NAME>The Core Fixed Income Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025697
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCIIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085461
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCFNX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009383
+<SERIES-NAME>The Fixed Income Opportunity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025698
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCHYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085462
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCFOX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009384
+<SERIES-NAME>The Short-Term Municipal Bond Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000025699
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCSBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085463
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCSTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000021772
+<SERIES-NAME>The Institutional Value Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000062555
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCIVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085464
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCEIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000021773
+<SERIES-NAME>The Institutional Growth Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000062556
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCIGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085465
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCIWX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000022549
+<SERIES-NAME>The Institutional Small Capitalization - Mid Capitalization Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065217
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCSCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085466
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCISX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000022550
+<SERIES-NAME>The Institutional International Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065218
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCINX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085467
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCITX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000022579
+<SERIES-NAME>The Emerging Markets Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065289
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCEMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085468
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCEPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000023669
+<SERIES-NAME>The Real Estate Securities Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000069687
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCREX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085469
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCRSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000028077
+<SERIES-NAME>THE INTERMEDIATE TERM MUNICIPAL BOND II PORTFOLIO
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085451
+<CLASS-CONTRACT-NAME>HC STRATEGIC SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HCBSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085452
+<CLASS-CONTRACT-NAME>HC ADVISORS SHARES
+<CLASS-CONTRACT-TICKER-SYMBOL>HCBAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000028206
+<SERIES-NAME>The Commodity Returns Strategy Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000086271
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCCAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000086272
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCCSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000029852
+<SERIES-NAME>The U.S. Government Fixed Income Securities Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091786
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCUSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091787
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCUAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000029853
+<SERIES-NAME>The U.S. Corporate Fixed Income Securities Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091788
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCXSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091789
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCXAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000029854
+<SERIES-NAME>The U.S. Mortgage/Asset Backed Fixed Income Securities Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091790
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091791
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCAAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000044187
+<SERIES-NAME>The Inflation Protected Securities Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000137339
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCPBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000137340
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCPAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000049974
+<SERIES-NAME>The ESG Growth Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000157800
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCESX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000157801
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCSGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000052277
+<SERIES-NAME>The Catholic SRI Growth Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000164402
+<CLASS-CONTRACT-NAME>HC Advisors Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCSVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000164403
+<CLASS-CONTRACT-NAME>HC Strategic Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HCSRX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d406766dnpx.txt
+<DESCRIPTION>HC CAPITAL TRUST
+<TEXT>
+<PAGE>
+
+================================================================================
+
+                                 UNITED STATES
+                      SECURITIES AND EXCHANGE COMMISSION
+                            Washington, D.C. 20549
+
+                               -----------------
+
+                                   FORM N-PX
+
+                               -----------------
+
+              ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED
+                        MANAGEMENT INVESTMENT COMPANIES
+
+                 Investment Company Act file number 811-08918
+
+                               -----------------
+
+                               HC CAPITAL TRUST
+              (Exact name of registrant as specified in charter)
+
+                               -----------------
+
+        300 BARR HARBOR DRIVE, 5/th/ Floor, WEST CONSHOHOCKEN, PA 19428
+              (Address of principal executive offices) (Zip code)
+
+                               -----------------
+
+       MICHAEL O'HARE, STRADLEY RONON STEVENS & YOUNG, LLP, 2005 MARKET
+                STREET, SUITE 2600, PHILADELPHIA, PA 19103-7018
+
+                               -----------------
+
+                               (WITH A COPY TO)
+     MARGUERITE C. BATEMAN, SCHIFF HARDIN LLP, 901 K STREET NW, SUITE 700,
+                             WASHINGTON, DC 20001
+                    (Name and address of agent for service)
+
+                               -----------------
+
+       Registrant's telephone number, including area code: 610-828-7200
+
+                     Date of fiscal year end: JUNE 30/TH/
+
+            Date of reporting period: JULY 1, 2016 -- JUNE 30, 2017
+
+================================================================================
+
+<PAGE>
+
+                              PROXY VOTING RECORD
+
+                   FOR PERIOD JULY 1, 2016 TO JUNE 30, 2017
+
+<PAGE>
+
+<TABLE>
+<CAPTION>
+                                                                   Institutional
+                                                                   Account
+Institutional Account ID  Institutional Account Name               Number         Company Name        Ticker  Country
+------------------------  ---------------------------------------- -------------  ------------------- ------  -------
+<S>                       <C>                                      <C>            <C>                 <C>     <C>
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     Office Depot, Inc.   ODP     USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     Office Depot, Inc.   ODP     USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     Office Depot, Inc.   ODP     USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     Office Depot, Inc.   ODP     USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     Office Depot, Inc.   ODP     USA
+
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     Office Depot, Inc.   ODP     USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     Office Depot, Inc.   ODP     USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     Office Depot, Inc.   ODP     USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     Office Depot, Inc.   ODP     USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     Office Depot, Inc.   ODP     USA
+</TABLE>
+<TABLE>
+<CAPTION>
+
+                          Provider     Meeting                                                       Proposal  Proposal Code
+Institutional Account ID  Security ID  Type     Meeting Date  Record Date  Shares Voted  Proponent   Code      Category
+------------------------  -----------  -------  ------------  -----------  ------------  ----------- --------  ------------------
+<S>                       <C>          <C>      <C>           <C>          <C>           <C>         <C>       <C>
+905284                    676220106    Annual    13-Jul-16    09-Jun-16      255,155     Management   M0201    Directors Related
+905284                    676220106    Annual    13-Jul-16    09-Jun-16      255,155     Management   M0201    Directors Related
+905284                    676220106    Annual    13-Jul-16    09-Jun-16      255,155     Management   M0201    Directors Related
+905284                    676220106    Annual    13-Jul-16    09-Jun-16      255,155     Management   M0201    Directors Related
+905284                    676220106    Annual    13-Jul-16    09-Jun-16      255,155     Management   M0201    Directors Related
+
+905284                    676220106    Annual    13-Jul-16    09-Jun-16      255,155     Management   M0201    Directors Related
+905284                    676220106    Annual    13-Jul-16    09-Jun-16      255,155     Management   M0201    Directors Related
+905284                    676220106    Annual    13-Jul-16    09-Jun-16      255,155     Management   M0201    Directors Related
+905284                    676220106    Annual    13-Jul-16    09-Jun-16      255,155     Management   M0201    Directors Related
+905284                    676220106    Annual    13-Jul-16    09-Jun-16      255,155     Management   M0201    Directors Related
+</TABLE>
+<TABLE>
+<CAPTION>
+
+                          Proposal                                        Management      Vote                Vote Against
+Institutional Account ID  Number    Proposal Text                         Recommendation  Instruction  Voted  Management
+------------------------  --------  ------------------------------------- --------------  -----------  -----  ------------
+<S>                       <C>       <C>                                   <C>             <C>          <C>    <C>
+905284                      1a      Elect Director Roland C. Smith             For           For       Yes        No
+905284                      1b      Elect Director Warren F. Bryant            For           For       Yes        No
+905284                      1c      Elect Director Rakesh Gangwal              For           For       Yes        No
+905284                      1d      Elect Director Cynthia T. Jamison          For           For       Yes        No
+905284                      1e      Elect Director V. James Marino             For           For       Yes        No
+                                    Elect Director Francesca Ruiz de
+905284                      1f      Luzuriaga                                  For           For       Yes        No
+905284                      1g      Elect Director Michael J. Massey           For           For       Yes        No
+905284                      1h      Elect Director David M. Szymanski          For           For       Yes        No
+905284                      1i      Elect Director Nigel Travis                For           For       Yes        No
+905284                      1j      Elect Director Joseph S. Vassalluzzo       For           For       Yes        No
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<CAPTION>
+                                                                   Institutional
+                                                                   Account
+Institutional Account ID  Institutional Account Name               Number         Company Name              Ticker  Country
+------------------------  ---------------------------------------- -------------  ------------------------- ------  -------
+<S>                       <C>                                      <C>            <C>                       <C>     <C>
+
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     Office Depot, Inc.        ODP      USA
+
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     Office Depot, Inc.        ODP      USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     The Dow Chemical Company  DOW      USA
+
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     The Dow Chemical Company  DOW      USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     The Dow Chemical Company  DOW      USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     B/E Aerospace, Inc.       BEAV     USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     B/E Aerospace, Inc.       BEAV     USA
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     B/E Aerospace, Inc.       BEAV     USA
+
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     B/E Aerospace, Inc.       BEAV     USA
+
+905284                    Hirtle Callaghan Value Equity Portfolio    03889174     B/E Aerospace, Inc.       BEAV     USA
+</TABLE>
+<TABLE>
+<CAPTION>
+
+                          Provider     Meeting                                                       Proposal
+Institutional Account ID  Security ID  Type     Meeting Date  Record Date  Shares Voted  Proponent   Code
+------------------------  -----------  -------- ------------  -----------  ------------  ----------- --------
+<S>                       <C>          <C>      <C>           <C>          <C>           <C>         <C>
+
+905284                    676220106    Annual    13-Jul-16    09-Jun-16      255,155     Management   M0101
+
+905284                    676220106    Annual    13-Jul-16    09-Jun-16      255,155     Management   M0550
+905284                    260543103    Special   20-Jul-16    02-Jun-16      38,244      Management   M0405
+
+905284                    260543103    Special   20-Jul-16    02-Jun-16      38,244      Management   M0617
+905284                    260543103    Special   20-Jul-16    02-Jun-16      38,244      Management   M0566
+905284                    073302101    Annual    28-Jul-16    31-May-16      44,009      Management   M0201
+905284                    073302101    Annual    28-Jul-16    31-May-16      44,009      Management   M0201
+905284                    073302101    Annual    28-Jul-16    31-May-16      44,009      Management   M0201
+
+905284                    073302101    Annual    28-Jul-16    31-May-16      44,009      Management   M0550
+
+905284                    073302101    Annual    28-Jul-16    31-May-16      44,009      Management   M0101
+</TABLE>
+<TABLE>
+<CAPTION>
+
+                          Proposal Code       Proposal                                      Management      Vote
+Institutional Account ID  Category            Number    Proposal Text                       Recommendation  Instruction  Voted
+------------------------  ------------------- --------  ----------------------------------- --------------  -----------  -----
+<S>                       <C>                 <C>       <C>                                 <C>             <C>          <C>
+                                                        Ratify Deloitte & Touche LLP as
+905284                    Routine/Business      2       Auditors                                 For         For         Yes
+                                                        Advisory Vote to Ratify Named
+905284                    Non-Salary Comp.      3       Executive Officers' Compensation         For         For         Yes
+905284                    Reorg. and Mergers    1       Approve Merger Agreement                 For         For         Yes
+                          Antitakeover
+905284                    Related               2       Adjourn Meeting                          For         For         Yes
+905284                    Non-Salary Comp.      3       Advisory Vote on Golden Parachutes       For         For         Yes
+905284                    Directors Related     1.1     Elect Director Mary M. VanDeWeghe        For         For         Yes
+905284                    Directors Related     1.2     Elect Director James F. Albaugh          For         For         Yes
+905284                    Directors Related     1.3     Elect Director John T. Whates            For         For         Yes
+                                                        Advisory Vote to Ratify Named
+905284                    Non-Salary Comp.      2       Executive Officers' Compensation         For         Against     Yes
+                                                        Ratify Deloitte & Touche LLP as
+905284                    Routine/Business      3       Auditors                                 For         For         Yes
+</TABLE>
+<TABLE>
+<CAPTION>
+
+                          Vote Against
+Institutional Account ID  Management
+------------------------  ------------
+<S>                       <C>
+
+905284                        No
+
+905284                        No
+905284                        No
+
+905284                        No
+905284                        No
+905284                        No
+905284                        No
+905284                        No
+
+905284                        Yes
+
+905284                        No
+</TABLE>

@@ -1,0 +1,136 @@
+		COMPANY CONFORMED NAME:			MASTERS SELECT FUNDS TRUST
+		CENTRAL INDEX KEY:			0001020425
+<TEXT>
+    <div><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Item
+      1.&#160; Proxy Voting Record</font></div>
+    <div>&#160;</div>
+    <div>
+      <table border="0" cellpadding="0" cellspacing="1">
+
+          <tr valign="bottom">
+            <td colspan="3" nowrap width="24%"><strong><i><font style="FONT-FAMILY: serif" size="4">Proxy
+              Voting
+              Record</font></i></strong>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="3%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="28%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="14%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="13%"><strong><i><font style="FONT-FAMILY: serif" size="2">Portfolio
+              Name</font></i></strong>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="3%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="28%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="14%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="13%"><strong><i><font style="FONT-FAMILY: serif" size="2">Issuer</font></i></strong>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td colspan="3" nowrap width="14%"><strong><i><font style="FONT-FAMILY: serif" size="2">Meeting</font></i></strong>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="28%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="14%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><strong><i><font style="FONT-FAMILY: serif" size="2">Management</font></i></strong>&#160;
+</td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="13%"><strong><i><font style="FONT-FAMILY: serif" size="2">Ticker
+              CUSIP</font></i></strong>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><strong><i><font style="FONT-FAMILY: serif" size="2">Date</font></i></strong>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="3%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="28%"><strong><i><font style="FONT-FAMILY: serif" size="2">Matter</font></i></strong>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="14%"><strong><i><font style="FONT-FAMILY: serif" size="2">Proposed
+              By</font></i></strong>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><strong><i><font style="FONT-FAMILY: serif" size="2">Vote
+              Cast</font></i></strong>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="13%"><strong><i><font style="FONT-FAMILY: serif" size="2">Equity</font></i></strong>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="3%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="28%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="14%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td colspan="3" nowrap width="24%"><strong><i><font style="FONT-FAMILY: serif" size="2">Costco
+              Wholesale
+              Corp</font></i></strong>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="3%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="28%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="14%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="13%"><font style="FONT-FAMILY: sans-serif" size="1">COST
+              22160K105</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><font style="FONT-FAMILY: sans-serif" size="1">1/27/2005</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="3%"><font style="FONT-FAMILY: sans-serif" size="1">1.01</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="28%"><font style="FONT-FAMILY: sans-serif" size="1">Elect
+              Richard D. DiCerchio</font>&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="14%"><font style="FONT-FAMILY: sans-serif" size="1">Management</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><font style="FONT-FAMILY: sans-serif" size="1">For</font>&#160;
+</td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%"><font style="FONT-FAMILY: sans-serif" size="1">For</font>&#160;
+</td>
+          </tr>
+          <tr valign="bottom">
+            <td nowrap width="13%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="9%">&#160; </td>
+            <td width="2%">&#160; </td>
+            <td nowrap width="3%"><font style="FONT-FAMILY: sans-serif" size="1">1.02</font>&#160;
+      </table>

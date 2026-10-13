@@ -1,0 +1,25 @@
+		COMPANY CONFORMED NAME:			Goldman Sachs ETF Trust
+		CENTRAL INDEX KEY:			0001479026
+<TEXT>
+******************************* FORM N-Px REPORT *******************************
+========= Goldman Sachs Future Real Estate and Infrastructure Equitiy  =========
+=========                             ETF                              =========
+
+
+CELLNEX TELECOM SA
+
+Ticker:       CLNX           Security ID:  E2R41M104
+Meeting Date: APR 27, 2022   Meeting Type: Annual
+Record Date:  APR 22, 2022
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approve Consolidated and Standalone     For       For          Management
+      Financial Statements
+2     Approve Non-Financial Information       For       For          Management
+      Statement
+3     Approve Treatment of Net Loss           For       For          Management
+4     Approve Discharge of Board              For       For          Management
+5.1   Approve Annual Maximum Remuneration     For       For          Management
+5.2   Approve Remuneration Policy             For       For          Management
+5.3   Approve Grant of Shares to CEO          For       For          Management
+6.1   Fix Number of Directors at 11           For       For          Management

@@ -1,0 +1,25 @@
+  ISSUER:                ACCENTURE LTD
+  TICKER:                ACN             CUSIP:     G1150G111
+  MEETING DATE:          2/2/2005                                                                                     FOR/AGAINST
+  PROPOSAL:                                                              PROPOSED BY      VOTED?      VOTE CAST           MGMT
+
+ELECTION OF DIRECTOR: BLYTHE J. MCGARVIE                                   ISSUER          YES          FOR               FOR
+
+ELECTION OF DIRECTOR: JOE W. FOREHAND                                      ISSUER          YES          FOR               FOR
+
+ELECTION OF DIRECTOR: SIR MARK MOODY-STUART                                ISSUER          YES          FOR               FOR
+
+
+<PAGE>
+PROPOSAL #02: APPROVAL OF BYE-LAW AMENDMENTS TO RELOCATE                   ISSUER          YES          FOR               FOR
+ INTO THE BYE-LAWS EXISTING CONTRACTUAL RESTRICTIONS
+APPLICABLE TO CLASS A COMMON SHARES OF PARTNERS AND
+FORMER PARTNERS BENEFICIALLY OWNED BY THEM PRIOR TO
+ACCENTURE'S INITIAL PUBLIC OFFERING.
+
+PROPOSAL #03: RE-APPOINTMENT OF KPMG LLP AS INDEPENDENT                    ISSUER          YES          FOR               FOR
+AUDITORS FOR THE 2005 FISCAL YEAR AND AUTHORIZATION OF
+THE AUDIT COMMITTEE OF THE BOARD OF DIRECTORS TO
+DETERMINE KPMG LLP'S REMUNERATION.
+
+- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------

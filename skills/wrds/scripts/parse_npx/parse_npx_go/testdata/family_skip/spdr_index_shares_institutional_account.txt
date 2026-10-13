@@ -1,0 +1,46 @@
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SPDR INDEX SHARES FUNDS (Formerly streetTRACKS Index Shares Funds)
+		CENTRAL INDEX KEY:			0001168164
+		IRS NUMBER:				421537593
+		STATE OF INCORPORATION:			MA
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>b82322a1nvpx.txt
+<DESCRIPTION>SPDR INDEX SHARES FUNDS
+<TEXT>
+
+Item 1. Proxy Voting Record.
+
+                               VOTE SUMMARY REPORT
+                          July 01, 2009 - June 30, 2010
+
+SPDR(R) STOXX(R) EUROPE 50 ETF (FORMERLY SPDR(R) DJ STOXX 50(R) ETF)
+
+- --------------------------------------------------------------------------------
+TESCO PLC
+
+Institutional Account Name: SPDR STOXX Europe 50 ETF
+
+Ticker:                                     Security ID on Ballot: G87621101
+Meeting Date: 7/3/2009                      Shares Available to Vote: 147369
+
+<TABLE>
+<CAPTION>
+Item                                                                          Management       Vote
+Number  Proposal                                             Proponet         Recommendation   Instruction
+- ------  ---------------------------------------------------  ---------------  --------------   -----------
+<S>     <C>                                                  <C>              <C>              <C>
+1       Accept Financial Statements and Statutory Reports    Management       For              For
+2       Approve Remuneration Report                          Management       For              For
+3       Approve Final Dividend of 8.39 Pence Per Ordinary    Management       For              For
+        Share
+4       Re-elect Richard Brasher as Director                 Management       For              For
+5       Re-elect Philip Clarke as Director                   Management       For              For
+</TABLE>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

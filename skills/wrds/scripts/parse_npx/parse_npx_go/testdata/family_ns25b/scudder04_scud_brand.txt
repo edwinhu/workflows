@@ -1,0 +1,87 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ ArOLe2GT1HPvgmdEPGwnY90OmotsEx+DdaMo0FRpi2+kG1k94cQ+b6cJ5j7y/G1N
+ wXGuROCTqM18xiI8idFCyQ==
+
+<SEC-DOCUMENT>0000088053-04-000648.txt : 20040826
+<SEC-HEADER>0000088053-04-000648.hdr.sgml : 20040826
+<ACCEPTANCE-DATETIME>20040826155947
+ACCESSION NUMBER:		0000088053-04-000648
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040826
+DATE AS OF CHANGE:		20040826
+EFFECTIVENESS DATE:		20040826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SCUDDER VALUE SERIES INC
+		CENTRAL INDEX KEY:			0000825062
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			1130
+
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-allfunds.txt
+<DESCRIPTION>N-PX
+<TEXT>
+<PAGE>
+
+
+ProxyEdge -  Investment Company Report                   Report Date: 07/20/2004
+Meeting Date Range: 07/01/2003 to 06/30/2004
+Selected Accounts: SCUD DREMAN HIGH RET EQUITY
+
+
+<TABLE>
+<CAPTION>
+- ------------------------------------------------------------------------------------------------------------------------------------
+UNIVERSAL CORPORATION                                                           UVV                  Annual Meeting Date: 10/28/2003
+Issuer: 913456                                 ISIN:
+SEDOL:
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+ Proposal                                                                       Proposal             Vote             Against
+ Number   Proposal                                                              Type                 Cast              Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>     <C>    <C>    <C>    <C>    <C>    <C>
+
+   01     DIRECTOR                                                              Management            For               No
+
+
+
+- ------------------------------------------------------------------------------------------------------------------------------------
+EMERSON ELECTRIC CO.                                                            EMR                  Annual Meeting Date: 02/03/2004
+Issuer: 291011                                 ISIN:
+SEDOL:
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+ Proposal                                                                       Proposal             Vote             Against
+ Number   Proposal                                                              Type                 Cast              Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+   01     DIRECTOR                                                              Management            For               No
+
+   02     RE-APPROVAL OF PERFORMANCE MEASURES UNDER THE                         Management            For               No
+          EMERSON ELECTRIC CO. 1997 INCENTIVE SHARES PLAN
+
+   03     RATIFICATION OF INDEPENDENT AUDITORS                                  Management            For               No
+</TABLE>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

@@ -1,0 +1,56 @@
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Cohen & Steers Closed-End Opportunity Fund, Inc.
+		CENTRAL INDEX KEY:			0001375340
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21948
+		FILM NUMBER:		191058116
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>BRD6J1_0001375340_2019.txt
+<DESCRIPTION>BRD6J1_0001375340_2019
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, D.C. 20549
+
+                                   FORM N-PX
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+
+Cohen & Steers Closed-End Opportunity Fund, Inc.
+--------------------------------------------------------------------------------------------------------------------------
+ ADAMS NATURAL RESOURCES FUND, INC                                                           Agenda Number:  934932167
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  00548F105
+    Meeting Type:  Annual
+    Meeting Date:  16-Apr-2019
+          Ticker:  PEO
+            ISIN:  US00548F1057
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     DIRECTOR
+       Enrique R. Arzac                                          Mgmt          Split 96% For 4% Withheld      Split
+       Kenneth J. Dale                                           Mgmt          Split 96% For 4% Withheld      Split
+       Frederic A. Escherich                                     Mgmt          Split 96% For 4% Withheld      Split
+       Roger W. Gale                                             Mgmt          Split 95% For 5% Withheld      Split
+       Lauriann C. Kloppenburg                                   Mgmt          Split 96% For 4% Withheld      Split
+       Kathleen T. McGahran                                      Mgmt          Split 96% For 4% Withheld      Split
+       Craig R. Smith                                            Mgmt          Split 95% For 5% Withheld      Split
+       Mark E. Stoeckle                                          Mgmt          Split 96% For 4% Withheld      Split
+
+2.     Ratification of the selection of                          Mgmt          Split 98% For 1% Against 1% AbstainSplit
+       PricewaterhouseCoopers LLP as independent
+       public auditors.

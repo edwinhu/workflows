@@ -1,0 +1,40 @@
+ACCESSION NUMBER:		0000950149-04-001415
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			RUSSELL FRANK INVESTMENT CO
+		CENTRAL INDEX KEY:			0000351601
+<PAGE>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-03153
+Reporting Period: 07/01/2003 - 06/30/2004
+Frank Russell Investment Company
+
+
+
+=========================== FRIC INTERNATIONAL FUND ============================
+
+
+3I GROUP PLC (FORMERLY INVESTORS IN INDUSTRY)
+
+Ticker:                      Security ID:  G4708P104
+Meeting Date: JUL 9, 2003    Meeting Type: Annual
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept Financial Statements and Statutory For       For        Management
+      Reports
+2     Approve Remuneration Report               For       For        Management
+3     Approve Final Dividend of 8.6 Pence Per   For       For        Management
+      Share
+4     Elect Christine Morin-Postel as Director  For       For        Management
+5     Reelect Martin Gagen as Director          For       For        Management
+6     Reelect Michael Queen as Director         For       For        Management
+7     Reelect Danny Rosenkranz as Director      For       For        Management
+8     Ratify Ernst and Young LLP as Auditors    For       For        Management
+9     Authorize Board to Fix Remuneration of    For       For        Management
+      Auditors

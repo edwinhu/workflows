@@ -1,0 +1,527 @@
+<SEC-DOCUMENT>0001580642-18-004116.txt : 20180827
+<SEC-HEADER>0001580642-18-004116.hdr.sgml : 20180827
+<ACCEPTANCE-DATETIME>20180827170935
+ACCESSION NUMBER:		0001580642-18-004116
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20180630
+FILED AS OF DATE:		20180827
+DATE AS OF CHANGE:		20180827
+EFFECTIVENESS DATE:		20180827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MUTUAL FUND SERIES TRUST
+		CENTRAL INDEX KEY:			0001355064
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			OH
+		FISCAL YEAR END:			0630
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21872
+		FILM NUMBER:		181039512
+
+	BUSINESS ADDRESS:	
+		STREET 1:		C/O GEMINI FUND SERVICES LLC
+		STREET 2:		4020 SOUTH 147TH STREET  STE 2
+		CITY:			OMAHA
+		STATE:			NE
+		ZIP:			68137
+		BUSINESS PHONE:		631 549 1859
+
+	MAIL ADDRESS:	
+		STREET 1:		C/O GEMINI FUND SERVICES LLC
+		STREET 2:		4020 SOUTH 147TH STREET  STE 2
+		CITY:			OMAHA
+		STATE:			NE
+		ZIP:			68137
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	CATALYST FUNDS
+		DATE OF NAME CHANGE:	20060303
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000012457
+<SERIES-NAME>Catalyst Small-Cap Insider Buying Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033860
+<CLASS-CONTRACT-NAME>Catalyst Small-Cap Insider Buying Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CTVAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033861
+<CLASS-CONTRACT-NAME>Catalyst Small-Cap Insider Buying Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CTVCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000075434
+<CLASS-CONTRACT-NAME>Catalyst Small-Cap Insider Buying Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CTVIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000181977
+<CLASS-CONTRACT-NAME>Catalyst Small-Cap Insider Buying Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000022377
+<SERIES-NAME>Catalyst/SMH High Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064375
+<CLASS-CONTRACT-NAME>Catalyst/SMH High Income Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>HIIFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064376
+<CLASS-CONTRACT-NAME>Catalyst/SMH High Income Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>HIICX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000128969
+<CLASS-CONTRACT-NAME>Catalyst/SMH High Income Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>HIIIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189544
+<CLASS-CONTRACT-NAME>Catalyst/SMH High Income Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000027215
+<SERIES-NAME>Catalyst/Groesbeck Growth of Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082156
+<CLASS-CONTRACT-NAME>Catalyst/Groesbeck Growth of Income Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CGGAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082157
+<CLASS-CONTRACT-NAME>Catalyst/Groesbeck Growth of Income Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CGGCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000092592
+<CLASS-CONTRACT-NAME>Catalyst/Groesbeck Growth of Income Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CGGIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188994
+<CLASS-CONTRACT-NAME>Catalyst/Groesbeck Growth of Income Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000036622
+<SERIES-NAME>Catalyst Insider Long/Short Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111977
+<CLASS-CONTRACT-NAME>Catalyst Insider Long/Short Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CIAAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111978
+<CLASS-CONTRACT-NAME>Catalyst Insider Long/Short Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CIACX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142552
+<CLASS-CONTRACT-NAME>Catalyst Insider Long/Short Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CIAIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189547
+<CLASS-CONTRACT-NAME>Catalyst Insider Long/Short Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000036624
+<SERIES-NAME>Catalyst/Lyons Tactical Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111981
+<CLASS-CONTRACT-NAME>Catalyst/Lyons Tactical Allocation Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CLTAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111982
+<CLASS-CONTRACT-NAME>Catalyst/Lyons Tactical Allocation Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CLTCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142553
+<CLASS-CONTRACT-NAME>Catalyst/Lyons Tactical Allocation Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CLTIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188998
+<CLASS-CONTRACT-NAME>Catalyst/Lyons Tactical Allocation Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000041894
+<SERIES-NAME>Catalyst Hedged Futures Strategy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000130114
+<CLASS-CONTRACT-NAME>Catalyst Hedged Futures Strategy Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>HFXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000130115
+<CLASS-CONTRACT-NAME>Catalyst Hedged Futures Strategy Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>HFXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000130116
+<CLASS-CONTRACT-NAME>Catalyst Hedged Futures Strategy Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>HFXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189550
+<CLASS-CONTRACT-NAME>Catalyst Hedged Futures Strategy Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000043482
+<SERIES-NAME>Catalyst Buyback Strategy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000134860
+<CLASS-CONTRACT-NAME>Catalyst Buyback Strategy Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>BUYAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000134861
+<CLASS-CONTRACT-NAME>Catalyst Buyback Strategy Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>BUYCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000134862
+<CLASS-CONTRACT-NAME>Catalyst Buyback Strategy Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>BUYIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188999
+<CLASS-CONTRACT-NAME>Catalyst Buyback Strategy Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000044450
+<SERIES-NAME>Catalyst Macro Strategy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000138299
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>MCXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000138300
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>MCXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000138301
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>MCXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189551
+<CLASS-CONTRACT-NAME>Catalyst Macro Strategy Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000045921
+<SERIES-NAME>Catalyst Insider Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143109
+<CLASS-CONTRACT-NAME>Catalyst Insider Income Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>IIXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143110
+<CLASS-CONTRACT-NAME>Catalyst Insider Income Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>IIXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143111
+<CLASS-CONTRACT-NAME>Catalyst Insider Income Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>IIXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189552
+<CLASS-CONTRACT-NAME>Catalyst Insider Income Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000048680
+<SERIES-NAME>AlphaCentric Income Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000153405
+<CLASS-CONTRACT-NAME>AlphaCentric Income Opportunities Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>IOFAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000153406
+<CLASS-CONTRACT-NAME>AlphaCentric Income Opportunities Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>IOFCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000153407
+<CLASS-CONTRACT-NAME>AlphaCentric Income Opportunities Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>IOFIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189861
+<CLASS-CONTRACT-NAME>AlphaCentric Income Opportunities Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000050218
+<SERIES-NAME>Catalyst Multi-Strategy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000158513
+<CLASS-CONTRACT-NAME>Catalyst Multi-Strategy Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ACXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000158514
+<CLASS-CONTRACT-NAME>Catalyst Multi-Strategy Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>ACXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000158515
+<CLASS-CONTRACT-NAME>Catalyst Multi-Strategy Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>ACXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189557
+<CLASS-CONTRACT-NAME>Catalyst Multi-Strategy Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000050259
+<SERIES-NAME>Catalyst Hedged Commodity Strategy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000158688
+<CLASS-CONTRACT-NAME>Catalyst Hedged Commodity Strategy Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CFHAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000158689
+<CLASS-CONTRACT-NAME>Catalyst Hedged Commodity Strategy Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CFHCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000158690
+<CLASS-CONTRACT-NAME>Catalyst Hedged Commodity Strategy Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CFHIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189558
+<CLASS-CONTRACT-NAME>Catalyst Hedged Commodity Strategy Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000052043
+<SERIES-NAME>Catalyst/Millburn Hedge Strategy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000163769
+<CLASS-CONTRACT-NAME>Catalyst/Millburn Hedge Strategy Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>MBXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000163770
+<CLASS-CONTRACT-NAME>Catalyst/Millburn Hedge Strategy Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>MBXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000163771
+<CLASS-CONTRACT-NAME>Catalyst/Millburn Hedge Strategy Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>MBXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189559
+<CLASS-CONTRACT-NAME>Catalyst/Millburn Hedge Strategy Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000055006
+<SERIES-NAME>AlphaCentric Hedged Market Opportunity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173003
+<CLASS-CONTRACT-NAME>AlphaCentric Hedged Market Opportunity Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>HMXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173004
+<CLASS-CONTRACT-NAME>AlphaCentric Hedged Market Opportunity Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>HMXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000173005
+<CLASS-CONTRACT-NAME>AlphaCentric Hedged Market Opportunity Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>HMXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189863
+<CLASS-CONTRACT-NAME>AlphaCentric Hedged Market Opportunity Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>mfst-3.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Calibri, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="3" STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font: 10pt Times New Roman, Times, Serif"><B>Registrant: Mutual Fund Series Trust- </B></FONT></TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font: 10pt Times New Roman, Times, Serif"><B>Catalyst Buyback Strategy Fund</B></FONT></TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Item 1</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="4" STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font: 10pt Times New Roman, Times, Serif"><B>Investment Company Act file number: 811-21872</B></FONT></TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="4" STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font: 10pt Times New Roman, Times, Serif"><B>Reporting Period: July 1, 2017 through June 30, 2018</B></FONT></TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="padding: 0.75pt 5.4pt; width: 14%">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt; width: 6%">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt; width: 4%">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt; width: 6%">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt; width: 8%">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt; width: 45%">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt; width: 5%">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt; width: 3%">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt; width: 4%">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt; width: 5%">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="10" STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; border-left: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(d) Shareholder Meeting Date</B></FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: black 1pt solid; border-bottom: black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(i) FOR/Against Management</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; border-left: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Company Name</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Ticker</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>CUSIP</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Meeting Date</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Meeting Type</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Description</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Proposal Type</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Y</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Vote Cast</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>FOR/ Against Mgmt</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; border-left: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>AAR Corp</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>AIR</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>000361 10 5</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>08/16/17</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Annual </B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Approve all directors</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>MGMT</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Y</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>For</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>For</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; border-left: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>AAR Corp</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>AIR</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>000361 10 5</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>08/16/17</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Annual </B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Approve executive compensation</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>MGMT</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Y</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>For</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>For</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; border-left: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>AAR Corp</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>AIR</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>000361 10 5</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>08/16/17</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Annual </B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Frequency of advisory votes on executive comp</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>MGMT</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Y</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>1 YEAR</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>1 YEAR</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; border-left: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>AAR Corp</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>AIR</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>000361 10 5</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>08/16/17</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Annual </B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Ratification of KPMG LLP</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>MGMT</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Y</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>For</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>For</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; border-left: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>AbbVie Inc</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>ABBV</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>00287Y 10 9</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>03/07/18</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Annual </B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Approve all directors</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>MGMT</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Y</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>For</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>For</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; border-left: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>AbbVie Inc</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>ABBV</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>00287Y 10 9</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>03/07/18</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Annual </B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Ratify appointment of Ernst &amp; Young LLP</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>MGMT</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Y</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>For</B></FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>For</B></FONT></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

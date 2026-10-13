@@ -1,0 +1,197 @@
+<tr>
+<td style="WIDTH: 13.85%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Fund Description:</div>
+</td>
+<td style="WIDTH: 36.33%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">Cracker Barrel Old Country Store, Inc.</div>
+</td>
+<td style="WIDTH: 12.2%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 17.39%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 20.24%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 13.85%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Ticker:</div>
+</td>
+<td style="WIDTH: 36.33%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">CBRL</div>
+</td>
+<td style="WIDTH: 12.2%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 17.39%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 20.24%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 13.85%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Security ID:</div>
+</td>
+<td style="WIDTH: 36.33%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">22410J106</div>
+</td>
+<td style="WIDTH: 12.2%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 17.39%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 20.24%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 13.85%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Meeting Type:</div>
+</td>
+<td style="WIDTH: 36.33%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">2013 Contested Annual Meeting of Shareholders</div>
+</td>
+<td style="WIDTH: 12.2%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 17.39%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 20.24%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 13.85%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Meeting Date:</div>
+</td>
+<td style="WIDTH: 36.33%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">Wednesday, November 13, 2013</div>
+</td>
+<td style="WIDTH: 12.2%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 17.39%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 20.24%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="BORDER-BOTTOM: #646464 2px solid; WIDTH: 13.85%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Record Date:</div>
+</td>
+<td style="BORDER-BOTTOM: #646464 2px solid; WIDTH: 36.33%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">Monday, September 23, 2013</div>
+</td>
+<td style="BORDER-BOTTOM: #646464 2px solid; WIDTH: 12.2%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="BORDER-BOTTOM: #646464 2px solid; WIDTH: 17.39%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="BORDER-BOTTOM: #646464 2px solid; WIDTH: 20.24%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 13.85%; VERTICAL-ALIGN: top; BORDER-TOP: #646464 0.75pt solid">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 36.33%; VERTICAL-ALIGN: top; BORDER-TOP: #646464 0.75pt solid">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 12.2%; VERTICAL-ALIGN: top; BORDER-TOP: #646464 0.75pt solid">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 17.39%; VERTICAL-ALIGN: top; BORDER-TOP: #646464 0.75pt solid">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 20.24%; VERTICAL-ALIGN: top; BORDER-TOP: #646464 0.75pt solid">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="BORDER-BOTTOM: #646464 2px solid; WIDTH: 13.85%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Proposal:</div>
+</td>
+<td style="BORDER-BOTTOM: #646464 2px solid; WIDTH: 36.33%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="BORDER-BOTTOM: #646464 2px solid; WIDTH: 12.2%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Mgt. Rec.:</div>
+</td>
+<td style="BORDER-BOTTOM: #646464 2px solid; WIDTH: 17.39%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Vote Cast:</div>
+</td>
+<td style="BORDER-BOTTOM: #646464 2px solid; WIDTH: 20.24%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt; FONT-WEIGHT: bold">Sponsor:</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 13.85%; VERTICAL-ALIGN: top; BORDER-TOP: #646464 0.75pt solid">
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt; FONT-WEIGHT: bold">1</div>
+</td>
+<td style="WIDTH: 36.33%; VERTICAL-ALIGN: top; BORDER-TOP: #646464 0.75pt solid">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">DIRECTOR</div>
+</td>
+<td style="WIDTH: 12.2%; VERTICAL-ALIGN: top; BORDER-TOP: #646464 0.75pt solid">
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">FOR</div>
+</td>
+<td style="WIDTH: 17.39%; VERTICAL-ALIGN: top; BORDER-TOP: #646464 0.75pt solid">
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">FOR</div>
+</td>
+<td style="WIDTH: 20.24%; VERTICAL-ALIGN: top; BORDER-TOP: #646464 0.75pt solid">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">Board</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 13.85%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: right; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">1)&#160;</div>
+</td>
+<td style="WIDTH: 36.33%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">THOMAS H. BARR</div>
+</td>
+<td style="WIDTH: 12.2%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">FOR</div>
+</td>
+<td style="WIDTH: 17.39%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">FOR</div>
+</td>
+<td style="WIDTH: 20.24%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">Board</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 13.85%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: right; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">2)&#160;</div>
+</td>
+<td style="WIDTH: 36.33%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">JAMES W. BRADFORD</div>
+</td>
+<td style="WIDTH: 12.2%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">FOR</div>
+</td>
+<td style="WIDTH: 17.39%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">FOR</div>
+</td>
+<td style="WIDTH: 20.24%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #003366; FONT-SIZE: 10pt">Board</div>
+</td>
+</tr>

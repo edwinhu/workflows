@@ -1,0 +1,430 @@
+<SEC-DOCUMENT>0001133228-17-004977.txt : 20170818
+<SEC-HEADER>0001133228-17-004977.hdr.sgml : 20170818
+<ACCEPTANCE-DATETIME>20170818101638
+ACCESSION NUMBER:		0001133228-17-004977
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170818
+DATE AS OF CHANGE:		20170818
+EFFECTIVENESS DATE:		20170818
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GABELLI EQUITY SERIES FUNDS INC
+		CENTRAL INDEX KEY:			0000877670
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-06367
+		FILM NUMBER:		171040300
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE CORPORATE CENTER
+		CITY:			RYE
+		STATE:			NY
+		ZIP:			10580
+		BUSINESS PHONE:		2123098448
+
+	MAIL ADDRESS:	
+		STREET 1:		ONE CORPORATE CENTER
+		CITY:			RYE
+		STATE:			NY
+		ZIP:			10580
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000877670
+<SERIES-ID>S000001061
+<SERIES-NAME>THE GABELLI EQUITY INCOME FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002850
+<CLASS-CONTRACT-NAME>CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>GCAEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002851
+<CLASS-CONTRACT-NAME>CLASS AAA
+<CLASS-CONTRACT-TICKER-SYMBOL>GABEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002853
+<CLASS-CONTRACT-NAME>CLASS C
+<CLASS-CONTRACT-TICKER-SYMBOL>GCCEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061072
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>GCIEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193539
+<CLASS-CONTRACT-NAME>Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000877670
+<SERIES-ID>S000001062
+<SERIES-NAME>THE GABELLI SMALL CAP GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002854
+<CLASS-CONTRACT-NAME>CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>GCASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002855
+<CLASS-CONTRACT-NAME>CLASS AAA
+<CLASS-CONTRACT-TICKER-SYMBOL>GABSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002857
+<CLASS-CONTRACT-NAME>CLASS C
+<CLASS-CONTRACT-TICKER-SYMBOL>GCCSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061073
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>GACIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193540
+<CLASS-CONTRACT-NAME>Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000877670
+<SERIES-ID>S000001063
+<SERIES-NAME>THE GABELLI FOCUS FIVE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002858
+<CLASS-CONTRACT-NAME>CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>GWSAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002860
+<CLASS-CONTRACT-NAME>CLASS C
+<CLASS-CONTRACT-TICKER-SYMBOL>GWSCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002861
+<CLASS-CONTRACT-NAME>CLASS AAA
+<CLASS-CONTRACT-TICKER-SYMBOL>GWSVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061074
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>GWSIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193541
+<CLASS-CONTRACT-NAME>Class T
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>e473056_npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<P STYLE="margin-top: 0; text-align: center; margin-bottom: 0">&nbsp;</P>
+
+<P STYLE="margin-top: 0; text-align: center; margin-bottom: 0"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">UNITED STATES<BR>
+SECURITIES AND EXCHANGE COMMISSION<BR>
+Washington, DC 20549</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>FORM N-PX</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>ANNUAL REPORT OF PROXY VOTING
+RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Investment Company Act file number
+<U>811-06367&#9;</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><U>Gabelli
+Equity Series Funds, Inc.&#9;</U><BR>
+(Exact name of registrant as specified in charter)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">One Corporate Center</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><U>Rye, New
+York 10580-1422&#9; &#9;</U><BR>
+(Address of principal executive offices) (Zip code)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Bruce N. Alpert</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Gabelli Funds, LLC</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">One Corporate Center</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><U>Rye,
+New York 10580-1422&#9;</U><BR>
+(Name and address of agent for service)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Registrant's telephone number,
+including area code: <U>1-800-422-3554</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Date of fiscal year end: <U>September
+30</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Date of reporting period: <U>July
+1, 2016 &ndash; June 30, 2017</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: justify">Form N-PX is to be used by a
+registered management investment company, other than a small business investment company registered on Form N-5 (&sect;&sect; 239.24
+and 274.5 of this chapter), to file reports with the Commission, not later than August 31 of each year, containing the registrant's
+proxy voting record for the most recent twelve-month period ended June 30, pursuant to section 30 of the Investment Company Act
+of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4). The Commission may use the information provided on Form N-PX in its regulatory,
+disclosure review, inspection, and policymaking roles.</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: justify">A registrant is required to
+disclose the information specified by Form N-PX, and the Commission will make this information public. A registrant is not required
+to respond to the collection of information contained in Form N-PX unless the Form displays a currently valid Office of Management
+and Budget (&quot;OMB&quot;) control number. Please direct comments concerning the accuracy of the information collection burden
+estimate and any suggestions for reducing the burden to the Secretary, Securities and Exchange Commission, 450 Fifth Street, NW,
+Washington, DC 20549-0609. The OMB has reviewed this collection of information under the clearance requirements of 44 U.S.C. &sect;
+3507.</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: justify"></P>
+
+<!-- Field: Page; Sequence: 1 -->
+    <DIV STYLE="margin-top: 12pt; margin-bottom: 6pt; border-bottom: Black 1pt solid"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt; margin-bottom: 12pt"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>PROXY VOTING RECORD</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>FOR PERIOD JULY 1, 2016 TO
+JUNE 30, 2017</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: center"><B></B></P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 54%; padding: 0">
+        <P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">ProxyEdge</P>
+        <P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">Meeting Date Range: 07/01/2016 - 06/30/2017</P>
+        <P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">The Gabelli Equity Income Fund</P></TD>
+    <TD STYLE="width: 46%; padding: 0; text-align: right">
+        <P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; text-align: right; margin-bottom: 0pt">Report Date: 07/01/2017</P>
+        <P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; text-align: right; margin-bottom: 0pt">1</P></TD></TR>
+</TABLE>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"></P>
+
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="13" STYLE="color: #00007F; font-weight: bold; font-style: italic; vertical-align: top; text-align: center">Investment Company Report</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 0.5pt solid; border-bottom: black 0.5pt solid; border-left: black 0.5pt solid; background-color: #004F75">&nbsp;</TD>
+    <TD COLSPAN="11" STYLE="color: white; font-weight: bold; vertical-align: top; border-top: black 0.5pt solid; border-bottom: black 0.5pt solid; text-align: left; background-color: #004F75">BT GROUP PLC, LONDON</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 0.5pt solid; border-bottom: black 0.5pt solid; background-color: #004F75">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="font-weight: bold; vertical-align: top; text-align: left">Security</TD>
+    <TD STYLE="vertical-align: top; text-align: left">G16612106</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="font-weight: bold; vertical-align: top; text-align: left">Meeting Type</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Annual General Meeting</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="font-weight: bold; vertical-align: top; text-align: left">Ticker Symbol</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="font-weight: bold; vertical-align: top; text-align: left">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">13-Jul-2016</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="font-weight: bold; vertical-align: top; text-align: left">ISIN</TD>
+    <TD STYLE="vertical-align: top; text-align: left">GB0030913577</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="font-weight: bold; vertical-align: top; text-align: left">Agenda</TD>
+    <TD STYLE="vertical-align: top; text-align: left">707111186 - Management</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 3%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; border-left: black 0.5pt solid; background-color: #004F75; width: 1%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; background-color: #004F75; width: 4%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; background-color: #004F75; width: 2%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; background-color: #004F75; width: 3%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; background-color: #004F75; width: 2%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; background-color: #004F75; width: 37%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; background-color: #004F75; width: 5%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; background-color: #004F75; width: 6%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; background-color: #004F75; width: 1%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; background-color: #004F75; width: 9%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; background-color: #004F75; width: 1%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; background-color: #004F75; width: 6%">&nbsp;</TD>
+    <TD STYLE="border-top: black 0.5pt solid; background-color: #004F75; width: 20%">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-bottom: black 0.5pt solid; border-left: black 0.5pt solid; background-color: #004F75">&nbsp;</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: left; background-color: #004F75">Item</TD>
+    <TD COLSPAN="4" STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: left; background-color: #004F75">Proposal</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: center; background-color: #004F75">Proposed<BR>
+by</TD>
+    <TD STYLE="vertical-align: bottom; border-bottom: black 0.5pt solid; background-color: #004F75">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: center; background-color: #004F75">Vote</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; vertical-align: top; border-bottom: black 0.5pt solid; text-align: center; background-color: #004F75">For/Against<BR>
+Management</TD>
+    <TD STYLE="vertical-align: bottom; border-bottom: black 0.5pt solid; background-color: #004F75">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">1&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left">REPORT AND ACCOUNTS</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">2&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left">ANNUAL REMUNERATION REPORT</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">3&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left">FINAL DIVIDEND</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">4&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left">RE-ELECT SIR MICHAEL RAKE</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">5&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left">RE-ELECT GAVIN PATTERSON</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">6&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left">RE-ELECT TONY BALL</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">7&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left">RE-ELECT IAIN CONN</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">8&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left">RE-ELECT ISABEL HUDSON</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">9&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left">RE-ELECT KAREN RICHARDSON</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">10&nbsp;&nbsp;&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left">RE-ELECT NICK ROSE</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>

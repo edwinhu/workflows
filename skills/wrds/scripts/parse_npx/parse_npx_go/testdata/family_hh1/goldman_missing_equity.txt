@@ -1,0 +1,23 @@
+		COMPANY CONFORMED NAME:			Goldman Sachs ETF Trust
+		CENTRAL INDEX KEY:			0001479026
+<TEXT>
+******************************* FORM N-Px REPORT *******************************
+================ Goldman Sachs Equal Weight U.S. Large Cap ETF =================
+
+
+10X GENOMICS, INC.
+
+Ticker:       TXG            Security ID:  88025U109
+Meeting Date: JUN 15, 2022   Meeting Type: Annual
+Record Date:  APR 22, 2022
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Sri Kosaraju             For       For          Management
+1b    Elect Director Mathai Mammen            For       Against      Management
+1c    Elect Director Shehnaaz Suliman         For       Against      Management
+2     Ratify Ernst & Young LLP as Auditors    For       For          Management
+3     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+
+
+--------------------------------------------------------------------------------

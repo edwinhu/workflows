@@ -1,0 +1,139 @@
+<tr>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 6.52%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: center">ACCOUNT NUMBER</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 5.84%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: center">MEETING</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 8.94%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: center">TYPE</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 3.86%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: center">TICKER</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 5.53%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: center">CUSIP</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 15.54%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: center">ISSUER</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 2.95%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center">ITEM #</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 22.21%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center">BALLOT ISSUE DESCRIPTON</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 4.1%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: center">STATUS</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 5.69%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: center">FUND VOTE</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 5.69%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: center">MGMT VOTE</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 6.9%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: center">PROPONENT</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #646464 2px solid; WIDTH: 6.22%; BACKGROUND-COLOR: #ffff00">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: center">SHARES</div>
+</td>
+</tr>
+
+<tr>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 6.52%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">Plumb Balanced Fund</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 5.84%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: right">8/14/2015</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 8.94%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">Annual Meeting</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 3.86%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">MCHP</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 5.53%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">595017104</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 15.54%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">MICROCHIP TECHNOLOGY INCORPORATED</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 2.95%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: right">1</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 22.21%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">Election of Director(s)</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 4.1%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center">V</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 5.69%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">For</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 5.69%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center">For</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 6.9%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">Management</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 6.22%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: right">12100.0000</div>
+</td>
+</tr>
+
+<tr>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 6.52%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 5.84%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 8.94%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 3.86%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 5.53%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 15.54%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 2.95%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: right">2</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 22.21%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">Proposal to approve the issuance of shares of our common stock upon conversion of our senior convertible debentures as required by the Nasdaq listing rules so that upon future adjustment of the conversion rate of the debentures as a result of our payment of cash dividends we can maintain our current accounting treatment for the debentures and maintain the flexibility to issue shares upon conversion of such debentures.</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 4.1%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center">V</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 5.69%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">For</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 5.69%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center">For</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 6.9%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">Management</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 6.22%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+</tr>
+
+<tr>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 6.52%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 5.84%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 8.94%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 3.86%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 5.53%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 15.54%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 2.95%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: right">3</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 22.21%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">Proposal to ratify the appointment of Ernst &amp; Young LLP as the independent registered public accounting firm of Microchip for the fiscal year ending March 31, 2016.</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 4.1%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center">V</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 5.69%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">For</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 5.69%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center">For</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 6.9%">
+<div style="FONT-SIZE: 10pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left">Management</div>
+</td>
+<td style="BORDER-TOP: #646464 2px solid; BORDER-RIGHT: #646464 2px solid; VERTICAL-ALIGN: top; BORDER-BOTTOM: #646464 2px solid; BORDER-LEFT: #646464 2px solid; WIDTH: 6.22%; BACKGROUND-COLOR: #c0c0c0">&#160;</td>
+</tr>

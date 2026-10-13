@@ -1,0 +1,55 @@
+AXA SA
+
+Ticker:       CS             Security ID:  F06106102
+Meeting Date: APR 27, 2023   Meeting Type: Annual/Special
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approve Financial Statements and        For       Split Vote   Management
+      Statutory Reports
+2     Approve Consolidated Financial          For       Split Vote   Management
+      Statements and Statutory Reports
+3     Approve Allocation of Income and        For       Split Vote   Management
+      Dividends of EUR 1.70 per Share
+4     Approve Compensation Report of          For       Split Vote   Management
+      Corporate Officers
+5     Approve Compensation of Denis Duverne,  For       Split Vote   Management
+      Chairman of the Board until April 28,
+      2022
+6     Approve Compensation of Antoine         For       Split Vote   Management
+      Gosset-Grainville, Chairman of the
+      Board since April 28, 2022
+7     Approve Compensation of Thomas Buberl,  For       Split Vote   Management
+      CEO
+8     Approve Remuneration Policy of CEO      For       Split Vote   Management
+9     Approve Remuneration Policy of          For       Split Vote   Management
+      Chairman of the Board
+10    Approve Remuneration Policy of          For       Split Vote   Management
+      Directors
+11    Approve Auditors' Special Report on     For       Split Vote   Management
+      Related-Party Transactions Mentioning
+      the Absence of New Transactions
+12    Authorize Repurchase of Up to 10        For       Split Vote   Management
+      Percent of Issued Share Capital
+13    Authorize Capitalization of Reserves    For       Split Vote   Management
+      of Up to EUR 1 Billion for Bonus Issue
+      or Increase in Par Value
+14    Authorize Issuance of Equity or         For       Split Vote   Management
+      Equity-Linked Securities with
+      Preemptive Rights up to Aggregate
+      Nominal Amount of EUR 2 Billion
+15    Authorize Issuance of Equity or         For       Split Vote   Management
+      Equity-Linked Securities without
+      Preemptive Rights up to Aggregate
+      Nominal Amount of EUR 500 Million
+16    Approve Issuance of Equity or           For       Split Vote   Management
+      Equity-Linked Securities for Private
+      Placements, up to Aggregate Nominal
+      Amount of EUR 500 Million
+17    Authorize Board to Set Issue Price for  For       Split Vote   Management
+      10 Percent Per Year of Issued Capital
+      Pursuant to Issue Authority without
+      Preemptive Rights
+18    Authorize Capital Increase of Up to     For       Split Vote   Management
+      EUR 500 Million for Future Exchange
+      Offers

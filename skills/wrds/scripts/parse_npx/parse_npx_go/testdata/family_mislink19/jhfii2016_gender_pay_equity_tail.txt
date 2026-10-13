@@ -1,0 +1,137 @@
+<SEC-DOCUMENT>0001438934-16-000950.txt : 20160829
+<SEC-HEADER>0001438934-16-000950.hdr.sgml : 20160829
+<ACCEPTANCE-DATETIME>20160829135241
+ACCESSION NUMBER:		0001438934-16-000950
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20160630
+FILED AS OF DATE:		20160829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			John Hancock Funds II
+		CENTRAL INDEX KEY:			0001331971
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0831
+
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003305
+<SERIES-NAME>Active Bond Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003311
+<SERIES-NAME>Blue Chip Growth Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003312
+<SERIES-NAME>Capital Appreciation Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003313
+<SERIES-NAME>Core Bond Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003317
+<SERIES-NAME>Equity Income Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003319
+<SERIES-NAME>Global Bond Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003320
+<SERIES-NAME>High Yield Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003322
+<SERIES-NAME>International Small Cap Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003324
+<SERIES-NAME>International Value Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003325
+<SERIES-NAME>Investment Quality Bond Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001331971
+<SERIES-ID>S000003401
+<SERIES-NAME>U.S. Equity Fund (FKA U.S. Multi Sector Fund)
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+2DAF JHFII U.S. Equity Fund
+--------------------------------------------------------------------------------------------------------------------------
+ 3M COMPANY                                                                                  Agenda Number:  934345756
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  88579Y101
+    Meeting Type:  Annual
+    Meeting Date:  10-May-2016
+          Ticker:  MMM
+            ISIN:  US88579Y1010
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1A.    TO ELECT MEMBER TO THE BOARD OF DIRECTORS,                Mgmt          For                            For
+       EACH FOR A TERM OF ONE YEAR: SONDRA L.
+       BARBOUR
+1K.    ELECTION OF DIRECTOR: DEVIN N. WENIG                      Mgmt          For                            For
+
+2.     ADVISORY VOTE TO APPROVE NAMED EXECUTIVE                  Mgmt          For                            For
+       OFFICER COMPENSATION.
+
+3.     APPROVAL OF THE AMENDMENT AND RESTATEMENT                 Mgmt          Against                        Against
+       OF THE 2008 EQUITY INCENTIVE AWARD PLAN.
+
+4.     RATIFICATION OF APPOINTMENT OF INDEPENDENT                Mgmt          For                            For
+       AUDITORS.
+
+5.     STOCKHOLDER PROPOSAL REGARDING GENDER PAY                 Shr           For                            Against
+       EQUITY.
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+ EDWARDS LIFESCIENCES CORPORATION                                                            Agenda Number:  934365392
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  28176E108
+    Meeting Type:  Annual
+    Meeting Date:  12-May-2016
+          Ticker:  EW
+            ISIN:  US28176E1082
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1A.    ELECTION OF DIRECTOR: MICHAEL A. MUSSALLEM                Mgmt          For                            For
+
+1B.    ELECTION OF DIRECTOR: JOHN T. CARDIS                      Mgmt          For                            For
+
+1C.    ELECTION OF DIRECTOR: KIERAN T. GALLAHUE                  Mgmt          For                            For
+
+1D.    ELECTION OF DIRECTOR: WILLIAM J. LINK,                    Mgmt          For                            For
+       PH.D.
+
+1E.    ELECTION OF DIRECTOR: STEVEN R. LORANGER                  Mgmt          For                            For
+
+1F.    ELECTION OF DIRECTOR: MARTHA H. MARSH                     Mgmt          For                            For
+

@@ -1,0 +1,136 @@
+<SEC-DOCUMENT>0000935069-08-001961.txt : 20080827
+<SEC-HEADER>0000935069-08-001961.hdr.sgml : 20080827
+<ACCEPTANCE-DATETIME>20080827164507
+ACCESSION NUMBER:		0000935069-08-001961
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20080630
+FILED AS OF DATE:		20080827
+DATE AS OF CHANGE:		20080827
+EFFECTIVENESS DATE:		20080827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GAMCO GLOBAL SERIES FUNDS, INC
+		CENTRAL INDEX KEY:			0000909504
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001064
+<SERIES-NAME>GABELLI GLOBAL CONVERTIBLE SECURITIES FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001065
+<SERIES-NAME>GABELLI GLOBAL GROWTH FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001066
+<SERIES-NAME>GABELLI GLOBAL OPPORTUNITY FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001067
+<SERIES-NAME>GABELLI GLOBAL TELECOMMUNICATIONS FUND
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx.txt
+<DESCRIPTION>GAMCO GLOBAL SERIES NPX 0608
+<TEXT>
+<PAGE>
+
+ProxyEdge - Investment Company Report
+Meeting Date Range: 07/01/2007 to 06/30/2008             Report Date: 07/14/2008
+Selected Accounts: NPX GABELLI GLB TELECOM FD                      Page 1 of 102
+
+
+<TABLE>
+<S>                                                   <C>                                <C>
+TRUE CORPORATION PUBLIC COMPANY LIMITED               TCPFF.PK                           EGM MEETING DATE: 07/16/2007
+ISSUER: Y3187S100                                     ISIN: TH0375010012
+SEDOL:  B038BZ2, 6877071, 5393761
+</TABLE>
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                         Proposal     Vote    For or Against
+Number   Proposal                                                                Type         Cast    Management
+- -------- ----------------------------------------------------------------------- ------------ ------- ----------------------------
+<S>      <C>                                                                     <C>          <C>     <C>
+*        PLEASE NOTE THAT PARTIAL AND SPLIT VOTING ARE                           Non-Voting           *Management Position Unknown
+         ALLOWED. THANK YOU.
+1.       ADOPT THE MINUTES OF THE AGM OF THE SHAREHOLDERS                        Management   For     *Management Position Unknown
+         FOR THE YEAR 2007
+2.       APPROVE THE ALLOTMENT OF THE WARRANTS UNDER THE                         Management   For     *Management Position Unknown
+         ESOP 2007 PROJECT TO MR. SUPACHAI CHEARAVANONT, PRESIDENT AND
+         CHIEF EXECUTIVE OFFICER, IN AN AMOUNT NOT GREATER THAN 5% OF
+         THE TOTAL WARRANTS TO BE ISSUED AND OFFERED UNDER THE ESOP 2007
+         PROJECT
+3.       ACKNOWLEDGE THE OPINION OF THE COUNCIL OF STATE                         Management   For     *Management Position Unknown
+         SPECIAL COUNCIL REGARDING THE AGREEMENT GRANTING
+         THE RIGHTS TO OPERATE THE TELECOMMUNICATIONS SERVICE OF CELLULAR SYSTEM
+         BETWEEN CAT AND TRUE MOVE, THE CONCESSION AGREEMENT AND THE OPINION OF
+         THE COMPANY S LEGAL ADVISOR THEREOF; AND APPROVE THE ACTS OF THE BOARD
+         OF DIRECTORS AND THE MANAGEMENT OF THE COMPANY AND AUTHORIZE THEM TO
+         CONTINUE AS USUAL THE COMPANY S BUSINESS OPERATION UNDER THE CONCESSION
+         AGREEMENT; WHILE THERE IS NO OFFICIAL PROCEEDING OR CONTACT FROM CAT
+         AND OR RELATED GOVERNMENT AGENCIES CONCERNING SUCH OPINION OF THE
+         COUNCIL OF STATE; AND IN THE CASE THAT CAT AND OR RELATED GOVERNMENT
+         AGENCIES HAVE TAKEN ANY ACTION OR TRUE MOVE HAS BEEN CONTACTED BY CAT
+         AND OR RELATED GOVERNMENT AGENCIES THE PERSONS AUTHORIZED BY THE BOARD
+         OF DIRECTORS OR THE MANAGEMENT OF THE COMPANY SHALL BE ENTITLED TO
+         ATTEND OPINE AND/OR NEGOTIATE WITH CAT, GOVERNMENT AGENCIES, ANY
+         COMMITTEE APPOINTED BY THE GOVERNMENT, JURISTIC PERSONS AND OR ANY
+         OTHER PERSON WHO IS RELATED OR MAY BE RELATED TO THE CONCESSION
+         AGREEMENT, BOTH IN THE MATTERS CONCERNING THE CONSEQUENCES AND THE
+         SOLUTION OF THE CONSEQUENCE ARISING FROM THE OPINION RELATING TO THE
+         CONCESSION AGREEMENT OF THE COUNCIL OF STATE SPECIAL COUNCIL AND/OR
+         GOVERNMENT AND THOSE CONCERNING ACTIONS RELATING TO ANY PART OF THE
+         CONCESSION AGREEMENT INCLUDING THAT SUCH PERSONS SHALL HAVE THE POWER
+         TO TAKE ANY OTHER NECESSARY ACTION IN RELATION TO THE SAID ACTION
+         PROVIDED THAT ANY AMENDMENT, REVISION OR INSERTION AFFECTING THE
+         CONCESSION AGREEMENT MAY BE MADE ONLY AFTER THE APPROVAL THEREOF SHALL
+         HAVE BEEN GRANTED BY THE MEETING OF SHAREHOLDERS OF THE COMPANY AND
+         TRUE MOVE COMPANY LIMITED
+4.       TRANSACT ANY OTHER BUSINESS                                             Other        For     *Management Position Unknown
+*        IMPORTANT NOTE: IN THE SITUATION WHERE THE CHAIRMAN                     Non-Voting           *Management Position Unknown
+         OF THE MEETING SUDDENLY CHANGES THE AGENDA AND/OR
+         ADDS NEW AGENDA DURING THE MEETING, WE WILL VOTE
+         THAT AGENDA AS ABSTAIN
+</TABLE>
+
+<TABLE>
+<S>                                                   <C>                                <C>
+BT GROUP PLC                                          BT                                 ANNUAL MEETING DATE: 07/19/2007
+ISSUER: 05577E101                                     ISIN:
+SEDOL:
+</TABLE>
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                         Proposal     Vote    For or Against
+Number   Proposal                                                                Type         Cast    Management
+- -------- ----------------------------------------------------------------------- ------------ ------- ----------------------------
+<S>      <C>                                                                     <C>          <C>     <C>
+01       REPORTS AND ACCOUNTS                                                    Management   For     For
+02       REMUNERATION REPORT                                                     Management   For     For
+03       FINAL DIVIDEND                                                          Management   For     For
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

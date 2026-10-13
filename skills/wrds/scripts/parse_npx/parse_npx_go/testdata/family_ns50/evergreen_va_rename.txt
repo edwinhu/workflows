@@ -1,0 +1,240 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ Rjz8fvCc5h9ILJUES/11FpMnu+Kexvxs1vzqKp/Yp4SzzaplTYddApSlh9Aowzmc
+ MI8MM9ez2OvQx/nDsFdZYA==
+
+<SEC-DOCUMENT>0000907244-04-000279.txt : 20040831
+<SEC-HEADER>0000907244-04-000279.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831151610
+ACCESSION NUMBER:		0000907244-04-000279
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			EVERGREEN VARIABLE ANNUITY TRUST /DE/
+		CENTRAL INDEX KEY:			0000928754
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX/A
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08716
+		FILM NUMBER:		041008235
+
+	BUSINESS ADDRESS:	
+		STREET 1:		200 BERKELEY STREET
+		STREET 2:		26TH FLOOR
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02116
+		BUSINESS PHONE:		6172103200
+
+	MAIL ADDRESS:	
+		STREET 1:		200 BERKELEY STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02116
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	EVERGREEN VARIABLE ANNUITY TRUST /OH/
+		DATE OF NAME CHANGE:	20010118
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	EVERGREEN VARIABLE TRUST /OH
+		DATE OF NAME CHANGE:	19951201
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FIRST UNION INVESTMENT TRUST
+		DATE OF NAME CHANGE:	19940822
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>evataug31.txt
+<DESCRIPTION>EVERGREEN VARIABLE ANNUITY TRUST
+<TEXT>
+
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              Washington, DC 20549
+
+                                    FORM N-PX
+
+
+          ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+                               INVESTMENT COMPANY
+
+
+                 Investment Company Act file number: 811-08716
+
+
+
+                        EVERGREEN VARIABLE ANNUITY TRUST
+_____________________________________________________________________________
+               Exact name of registrant as specified in charter)
+
+
+                               200 Berkeley Street
+                        Boston, Massachusetts 02116-5034
+ _____________________________________________________________________________
+                    (Address of principal executive offices)
+
+
+                          The Corporation Trust Company
+                              1209 Orange Street
+                           Wilmington, Delaware 19801
+  _____________________________________________________________________________
+                     (Name and address of agent for service)
+
+
+Registrant's telephone number, including area code:    (617) 210-3200
+
+Date of fiscal year end:   12/31
+
+Date of reporting period:  7/1/2003 - 6/30/2004
+
+
+<PAGE>
+
+ITEM 1. PROXY VOTING RECORD
+
+        The following are series of Evergreen Variable Annuity Trust (the
+"Registrant"):
+
+  Evergreen Variable Annuity Funds (FYE 12/31)
+        Evergreen VA Core Bond Fund
+        Evergreen VA Foundation Fund
+        Evergreen VA Fund
+        Evergreen VA Growth Fund
+        Evergreen VA Growth and Income Fund
+        Evergreen VA High Income Fund
+        Evergreen VA International Equity Fund
+        Evergreen VA Omega Fund
+        Evergreen VA Special Equity Fund
+        Evergreen VA Special Values Fund
+                (changed its name from Evergreen VA Small Cap Value Fund on
+                 7/14/2003)
+        Evergreen VA Strategic Income Fund
+
+
+        The following series of the Registrant held no securities during the
+period covered by this report in which there was a securityholder vote, and
+accordingly, have no proxy votes to report:
+
+        Evergreen VA Core Bond Fund
+        Evergreen VA Strategic Income Fund
+
+
+        The following series of the Registrant merged into another series of the
+Registrant, during the reporting period. (Each fund's proxy voting record is
+included below.)
+
+        Evergreen VA Blue Chip Fund (merged into Evergreen VA Fund on
+                12/5/03)
+        Evergreen VA Capital Growth Fund (merged into Evergreen VA Growth
+                and Income Fund on 12/5/03)
+        Evergreen VA Global Leaders Fund (merged into Evergreen VA
+                International Equity Fund on 12/5/03)
+        Evergreen VA Masters Fund (merged into Evergreen VA Fund on
+                12/5/03)
+
+
+        The following series of the Registrant was liquidated during the
+reporting period (date of liquidation indicated below). Its proxy voting record,
+from 7/1/2003 through the date of liquidation, is listed below:
+
+        Evergreen VA Equity Index Fund (liquidated on 12/23/03)
+
+
+        The following series of the Registrant were liquidated during the
+reporting period (date of liquidation indicated) and held no voting securities
+from 7/1/2003 through the date of liquidation:
+
+        Evergreen Offit VA Emerging Markets Bond Fund (liquidated on 7/30/03)
+        Evergreen Offit VA U.S. Government Securities Fund (liquidated on
+                7/30/03)
+
+
+<PAGE>
+
+
+        The following is the proxy voting record for each series of Evergreen
+Variable Annuity Trust which has a proxy voting record during the reporting
+period:
+
+
+
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-08716
+Reporting Period: 07/01/2003 - 06/30/2004
+Evergreen Variable Annuity Trust
+========================= EVERGREEN VA FOUNDATION FUND =========================
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 11, 2004   Meeting Type: Annual
+Record Date:  MAR 12, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Edward A. Brennan         For       Withhold   Management
+1.2   Elect  Director Michael L. Eskew          For       For        Management
+1.3   Elect  Director W. James McNerney, Jr.    For       Withhold   Management
+1.4   Elect  Director Kevin W. Sharer           For       Withhold   Management
+2     Ratify Auditors                           For       For        Management
+3     Increase Authorized Common Stock          For       For        Management
+4     Separate Chairman and CEO Positions       Against   For        Shareholder
+
+
+- --------------------------------------------------------------------------------
+===================== EVERGREEN VA GROWTH AND INCOME FUND ======================
+
+
+ABBOTT LABORATORIES
+
+Ticker:       ABT            Security ID:  002824100
+Meeting Date: APR 23, 2004   Meeting Type: Annual
+Record Date:  FEB 25, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Roxanne S. Austin         For       For        Management
+1.2   Elect  Director H.Laurance Fuller         For       For        Management
+1.3   Elect  Director Richard A. Gonzalez       For       For        Management
+1.4   Elect  Director Jack M. Greenberg         For       For        Management
+1.5   Elect  Director Jeffrey M. Leiden         For       For        Management
+1.6   Elect  Director David A. Lord Owen        For       For        Management
+1.7   Elect  Director Boone Powell Jr.          For       For        Management
+1.8   Elect  Director Addison Barry Rand        For       For        Management
+1.9   Elect  Director W.Ann Reynolds            For       For        Management
+1.10  Elect  Director Roy S. Roberts            For       For        Management
+1.11  Elect  Director William D. Smithburg      For       For        Management
+1.12  Elect  Director John R. Walter            For       For        Management
+1.13  Elect  Director Miles D. White            For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Drug Pricing                              Against   Against    Shareholder
+4     Report on Political                       Against   Against    Shareholder
+      Contributions/Activities
+5     Prohibit Awards to Executives             Against   Against    Shareholder
+6     Report on Operational Imact of HIV/AIDS,  Against   Against    Shareholder
+      TB, and Malaria Pandemic
+
+
+- --------------------------------------------------------------------------------
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

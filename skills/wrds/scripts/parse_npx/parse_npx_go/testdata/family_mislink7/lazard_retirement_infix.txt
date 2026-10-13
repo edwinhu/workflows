@@ -1,0 +1,130 @@
+<SEC-DOCUMENT>0000930413-17-002976.txt : 20170818
+<SEC-HEADER>0000930413-17-002976.hdr.sgml : 20170818
+<ACCEPTANCE-DATETIME>20170818070033
+ACCESSION NUMBER:		0000930413-17-002976
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170818
+DATE AS OF CHANGE:		20170818
+EFFECTIVENESS DATE:		20170818
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			LAZARD RETIREMENT SERIES INC
+		CENTRAL INDEX KEY:			0001033669
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001033669
+<SERIES-ID>S000010297
+<SERIES-NAME>Lazard Retirement US Equity Concentrated Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028472
+<CLASS-CONTRACT-NAME>Service Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028473
+<CLASS-CONTRACT-NAME>Investor Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001033669
+<SERIES-ID>S000047898
+<SERIES-NAME>Lazard Retirement Enhanced Opportunities Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000150423
+<CLASS-CONTRACT-NAME>Investor Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000150424
+<CLASS-CONTRACT-NAME>Service Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001033669
+<SERIES-ID>S000051021
+<SERIES-NAME>Lazard Retirement Emerging Markets Equity Advantage Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000160753
+<CLASS-CONTRACT-NAME>Investor Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000160754
+<CLASS-CONTRACT-NAME>Service Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001033669
+<SERIES-ID>S000051022
+<SERIES-NAME>Lazard Retirement International Equity Advantage Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000160755
+<CLASS-CONTRACT-NAME>Investor Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000160756
+<CLASS-CONTRACT-NAME>Service Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001033669
+<SERIES-ID>S000051023
+<SERIES-NAME>Lazard Retirement Managed Equity Volatility Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000160757
+<CLASS-CONTRACT-NAME>Investor Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000160758
+<CLASS-CONTRACT-NAME>Service Shares
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>c89130_npx.htm
+<TEXT>
+<PRE>
+================= Lazard Global Dynamic Multi-Asset Portfolio ==================
+
+
+3M COMPANY
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 09, 2017   Meeting Type: Annual
+Record Date:  MAR 14, 2017
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Sondra L. Barbour        For       For          Management
+1b    Elect Director Thomas "Tony" K. Brown   For       For          Management
+1c    Elect Director Vance D. Coffman         For       For          Management
+1d    Elect Director David B. Dillon          For       For          Management
+1e    Elect Director Michael L. Eskew         For       For          Management
+1f    Elect Director Herbert L. Henkel        For       For          Management
+1g    Elect Director Muhtar Kent              For       For          Management
+================== Lazard Managed Equity Volatility Portfolio ==================
+
+
+3M COMPANY
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 09, 2017   Meeting Type: Annual
+Record Date:  MAR 14, 2017
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Sondra L. Barbour        For       For          Management
+1b    Elect Director Thomas "Tony" K. Brown   For       For          Management
+1c    Elect Director Vance D. Coffman         For       For          Management
+1d    Elect Director David B. Dillon          For       For          Management
+1e    Elect Director Michael L. Eskew         For       For          Management
+1f    Elect Director Herbert L. Henkel        For       For          Management
+1g    Elect Director Muhtar Kent              For       For          Management
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

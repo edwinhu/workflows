@@ -1,0 +1,455 @@
+<SEC-DOCUMENT>0000891804-11-003797.txt : 20110825
+<SEC-HEADER>0000891804-11-003797.hdr.sgml : 20110825
+<ACCEPTANCE-DATETIME>20110825165129
+ACCESSION NUMBER:		0000891804-11-003797
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110825
+DATE AS OF CHANGE:		20110825
+EFFECTIVENESS DATE:		20110825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Destra Investment Trust II
+		CENTRAL INDEX KEY:			0001511331
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22523
+		FILM NUMBER:		111057033
+
+	BUSINESS ADDRESS:	
+		STREET 1:		901 WARRENVILLE ROAD SUITE 15
+		CITY:			LISLE
+		STATE:			IL
+		ZIP:			60532
+		BUSINESS PHONE:		630.241.4200
+
+	MAIL ADDRESS:	
+		STREET 1:		901 WARRENVILLE ROAD SUITE 15
+		CITY:			LISLE
+		STATE:			IL
+		ZIP:			60532
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001511331
+<SERIES-ID>S000031884
+<SERIES-NAME>Destra Focused Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099295
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099296
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099297
+<CLASS-CONTRACT-NAME>Class P
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099298
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001511331
+<SERIES-ID>S000031885
+<SERIES-NAME>Destra Preferred and Income Securities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099299
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099300
+<CLASS-CONTRACT-NAME>Class P
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099301
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099302
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>destra52337-npx.txt
+<DESCRIPTION>DESTRA INVESTMENT TRUST II
+<TEXT>
+
+
+                                             -----------------------------------
+                                                         OMB APPROVAL
+                                             -----------------------------------
+                                             OMB Number:               3235-0582
+                                             Expires:             March 31, 2012
+                                             Estimated average burden
+                                             hours per response. . . . . . . 9.6
+                                             -----------------------------------
+
+
+                                 UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, DC 20549
+
+
+                                   FORM N-PX
+
+
+ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY
+
+
+                 Investment Company Act file number   811-22523
+                                                      ---------
+
+                           Destra Investment Trust II
+--------------------------------------------------------------------------------
+               (Exact name of registrant as specified in charter)
+
+                901 Warrenville Road, Suite 15, Lisle, IL 60532
+--------------------------------------------------------------------------------
+              (Address of principal executive offices) (Zip code)
+
+   Destra Capital Advisors LLC, 901 Warrenville Rd, Suite 15, Lisle, IL 60532
+--------------------------------------------------------------------------------
+                    (Name and address of agent for service)
+
+Registrant's telephone number, including area code:  630-541-0322
+                                                     ------------
+
+Date of fiscal year end:  9/30
+                          ----
+
+Date of reporting period:  04/10/11 - 06/30/2011
+                           ---------------------
+
+     Form N-PX is to be used by a registered management investment company,
+other than a small business investment company registered on Form N-5 ( 239.24
+and 274.5 of this chapter), to file reports with the Commission, not later than
+August 31 of each year, containing the registrant's proxy voting record for the
+most recent twelve-month period ended June 30, pursuant to section 30 of the
+Investment Company Act of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4).
+The Commission may use the information provided on Form N-PX in its regulatory,
+disclosure review, inspection, and policymaking roles.
+
+     A registrant is required to disclose the information specified by Form
+N-PX, and the Commission will make this information public. A registrant is not
+required to respond to the collection of information contained in Form N-PX
+unless the Form displays a currently valid Office of Management and Budget
+("OMB") control number. Please direct comments concerning the accuracy of the
+information collection burden estimate and any suggestions for reducing the
+burden to the Secretary, Securities and Exchange Commission, 450 Fifth Street,
+NW, Washington, DC 20549-0609. The OMB has reviewed this collection of
+information under the clearance requirements of 44 U.S.C. 3507.
+
+                              GENERAL INSTRUCTIONS
+
+A.   RULE AS TO USE OF FORM N-PX.
+
+     Form N-PX is to be used for reports pursuant to Section 30 of the
+Investment Company Act of 1940 (the "Act") and Rule 30b1-4 under the Act (17 CFR
+270.30b1-4) by all registered management investment companies, other than small
+business investment companies registered on Form N-5 ( 239.24 and 274.5 of this
+chapter), to file their complete proxy voting record not later than August 31 of
+each year for the most recent twelve-month period ended June 30.
+
+B.   APPLICATION OF GENERAL RULES AND REGULATIONS.
+
+     The General Rules and Regulations under the Act contain certain general
+requirements that are applicable to reporting on any form under the Act. These
+general requirements should be carefully read and observed in the preparation
+and filing of reports on this form, except that any provision in the form or in
+these instructions shall be controlling.
+
+SEC 2451 (4-03)     PERSONS WHO ARE TO RESPOND TO THE COLLECTION OF INFORMATION
+                    CONTAINED IN THIS FORM ARE NOT REQUIRED TO RESPOND UNLESS
+                    THE FORM DISPLAYS A CURRENTLY VALID OMB CONTROL NUMBER.
+
+<PAGE>
+
+C.   PREPARATION OF REPORT.
+
+     1.   This Form is not to be used as a blank form to be filled in, but only
+          as a guide in preparing the report in accordance with Rules 8b-11 (17
+          CFR 270.8b-11) and 8b-12 (17 CFR 270.8b-12) under the Act. The
+          Commission does not furnish blank copies of this form to be filled in
+          for filing.
+
+     2.   These general instructions are not to be filed with the report.
+
+D.  INCORPORATION BY REFERENCE.
+
+     No items of this Form shall be answered by incorporating any information by
+reference.
+
+E.   DEFINITIONS.
+
+     Unless the context clearly indicates the contrary, terms used in this Form
+N-PX have meanings as defined in the Act and the rules and regulations
+thereunder. Unless otherwise indicated, all references in the form to statutory
+sections or to rules are sections of the Act and the rules and regulations
+thereunder.
+
+F.   SIGNATURE AND FILING OF REPORT.
+
+     1.   If the report is filed in paper pursuant to a hardship exemption from
+          electronic filing (see Item 201 etseq. of Regulation S-T (17 CFR
+          232.201 etseq.)), eight complete copies of the report shall be filed
+          with the Commission. At least one complete copy of the report filed
+          with the Commission must be manually signed. Copies not manually
+          signed must bear typed or printed signatures.
+
+     2.  (a) The report must be signed by the registrant, and on behalf of the
+             registrant by its principal executive officer or officers.
+
+         (b) The name and title of each person who signs the report shall be
+             typed or printed beneath his or her signature. Attention is
+             directed to Rule 8b-11 under the Act (17 CFR 270.8b-11)
+             concerning manual signatures and signatures pursuant to powers of
+             attorney.
+
+ITEM 1.   PROXY VOTING RECORD.
+
+     Disclose the following information for each matter relating to a portfolio
+security considered at any shareholder meeting held during the period covered by
+the report and with respect to which the registrant was entitled to vote:
+
+     (a)  The name of the issuer of the portfolio security;
+
+     (b)  The exchange ticker symbol of the portfolio security;
+
+     (c)  The Council on Uniform Securities Identification Procedures ("CUSIP")
+          number for the portfolio security;
+
+     (d)  The shareholder meeting date;
+
+     (e)  A brief identification of the matter voted on;
+
+     (f)  Whether the matter was proposed by the issuer or by a security
+          holder;
+
+     (g)  Whether the registrant cast its vote on the matter;
+
+     (h)  How the registrant cast its vote (e.g., for or against proposal, or
+          abstain; for or withhold regarding election of directors); and
+
+     (i)  Whether the registrant cast its vote for or against management.
+
+<PAGE>
+
+Instructions.
+-------------
+
+1.   In the case of a registrant that offers multiple series of shares, provide
+     the information required by this Item separately for each series. The term
+     "series" means shares offered by a registrant that represent undivided
+     interests in a portfolio of investments and that are preferred over all
+     other series of shares for assets specifically allocated to that series in
+     accordance with Rule 18f-2(a) under the Act (17 CFR 270.18f-2(a)).
+
+2.   The exchange ticker symbol or CUSIP number required by paragraph (b) or
+     (c) of this Item may be omitted if it is not available through reasonably
+     practicable means, e.g., in the case of certain securities of foreign
+     issuers.
+
+<PAGE>
+
+Item 1: Proxy Voting Record - Item1 Proxy Voting Record -
+
+Registrant :
+
+Fund Name : Destra Preferred and Income Securities Fund
+
+The registrant held no voting securities during the period covered by this
+report. No records are attached.
+
+<PAGE>
+
+Item 1: Proxy Voting Record - Item1 Proxy Voting Record -
+
+Registrant :
+
+Fund Name : Destra Focused Equity Fund
+
+In all markets, for all statuses, for
+
+Key-
+
+<TABLE>
+<S>              <C>                                   <C>         <C>         <C>         <C>
+Autodesk Inc.
+Ticker           Security ID:                          Meeting Date             Meeting Status
+ADSK             CUSIP  052769106                      06/16/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Carl Bass                       Mgmt        For         For         For
+2                Elect Crawford Beveridge              Mgmt        For         For         For
+3                Elect J. Hallam Dawson                Mgmt        For         For         For
+4                Elect Per-Kristian Halvorsen          Mgmt        For         For         For
+5                Elect Sean Maloney                    Mgmt        For         For         For
+6                Elect Mary McDowell                   Mgmt        For         For         For
+7                Elect Lorrie Norrington               Mgmt        For         For         For
+8                Elect Charles Robel                   Mgmt        For         For         For
+9                Elect Steven West                     Mgmt        For         Against     Against
+10               Ratification of Auditor               Mgmt        For         For         For
+11               Advisory Vote on Executive            Mgmt        For         Against     Against
+                  Compensation
+
+12               Frequency of Advisory Vote on         Mgmt        1 Year      1 Year      For
+                  Executive
+                  Compensation
+
+
+</TABLE>
+
+
+
+
+
+
+
+<TABLE>
+<S>              <C>                                   <C>         <C>         <C>         <C>
+Bed, Bath &
+ Beyond
+ Inc.
+
+Ticker           Security ID:                          Meeting Date             Meeting Status
+BBBY             CUSIP  075896100                      06/23/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Warren Eisenberg                Mgmt        For         For         For
+2                Elect Leonard Feinstein               Mgmt        For         For         For
+3                Elect Steven Temares                  Mgmt        For         For         For
+4                Elect Dean Adler                      Mgmt        For         For         For
+5                Elect Stanley Barshay                 Mgmt        For         For         For
+6                Elect Klaus Eppler                    Mgmt        For         Against     Against
+7                Elect Patrick Gaston                  Mgmt        For         For         For
+8                Elect Jordan Heller                   Mgmt        For         For         For
+9                Elect Victoria Morrison               Mgmt        For         For         For
+10               Ratification of Auditor               Mgmt        For         For         For
+11               Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+12               Frequency of Advisory Vote on         Mgmt        1 Year      1 Year      For
+                  Executive
+                  Compensation
+
+
+</TABLE>
+<TABLE>
+<S>              <C>                                   <C>         <C>         <C>         <C>
+Best Buy Co. Inc.
+Ticker           Security ID:                          Meeting Date             Meeting Status
+BBY              CUSIP  086516101                      06/21/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1.1              Elect Ronald James                    Mgmt        For         For         For
+1.2              Elect Sanjay Khosla                   Mgmt        For         For         For
+1.3              Elect George Mikan III                Mgmt        For         For         For
+1.4              Elect Matthew Paull                   Mgmt        For         For         For
+1.5              Elect Richard Schulze                 Mgmt        For         For         For
+1.6              Elect Hatim Tyabji                    Mgmt        For         For         For
+2                Ratification of Auditor               Mgmt        For         For         For
+3                Authorization of Board to Set Board   Mgmt        For         Against     Against
+                  Size
+
+4                Amendment to the 2004 Omnibus Stock   Mgmt        For         For         For
+                  and Incentive
+                  Plan
+
+5                Executive Short-term Incentive Plan   Mgmt        For         For         For
+6                Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+7                Frequency of Advisory Vote on         Mgmt        3 Years     1 Year      Against
+                  Executive
+                  Compensation
+
+8                Shareholder Proposal Regarding        ShrHoldr    Against     For         Against
+                  Declassification of the
+                  Board
+
+
+</TABLE>
+<TABLE>
+<S>              <C>                                   <C>         <C>         <C>         <C>
+Celgene Corp.
+Ticker           Security ID:                          Meeting Date             Meeting Status
+CELG             CUSIP  151020104                      06/15/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1.1              Elect Robert Hugin                    Mgmt        For         For         For
+1.2              Elect Michael Casey                   Mgmt        For         For         For
+1.3              Elect Carrie Cox                      Mgmt        For         For         For
+1.4              Elect Rodman Drake                    Mgmt        For         For         For
+1.5              Elect Michael Friedman                Mgmt        For         For         For
+1.6              Elect Gilla Kaplan                    Mgmt        For         For         For
+1.7              Elect James Loughlin                  Mgmt        For         For         For
+1.8              Elect Ernest Mario                    Mgmt        For         For         For
+2                Ratification of Auditor               Mgmt        For         For         For
+3                Amendment to the 2008 Stock           Mgmt        For         Against     Against
+                  Incentive
+                  Plan
+
+4                Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+5                Frequency of Advisory Vote on         Mgmt        3 Years     1 Year      Against
+                  Executive
+                  Compensation
+
+
+</TABLE>
+
+<PAGE>
+
+                                   SIGNATURES
+                          [See General Instruction F]
+
+     Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+
+(Registrant) Destra Investment Trust II
+             --------------------------
+
+By (Signature and Title) * Nicholas Dalmaso, CEO
+                         -----------------------
+
+Date August 25, 2011
+     -------------------------
+
+* Print the name and title of each signing officer under his or her signature.
+
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

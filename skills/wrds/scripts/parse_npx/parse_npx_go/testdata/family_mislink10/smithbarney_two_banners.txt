@@ -1,0 +1,112 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ KkbV9b+GdEYlzlw+vnKVaywnyrM+5t1zk+cT7SKqUGi2xpFLTbrh51A/kg5620zP
+ 3SAb/VDXSUE43yeTF71j0A==
+
+<SEC-DOCUMENT>0001193125-04-147190.txt : 20040826
+<SEC-HEADER>0001193125-04-147190.hdr.sgml : 20040826
+<ACCEPTANCE-DATETIME>20040826143618
+ACCESSION NUMBER:		0001193125-04-147190
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040826
+DATE AS OF CHANGE:		20040826
+EFFECTIVENESS DATE:		20040826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SMITH BARNEY INVESTMENT SERIES
+		CENTRAL INDEX KEY:			0000810271
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			1031
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>dnpx.htm
+<DESCRIPTION>SMITH BARNEY INVESTMENT SERIES
+<TEXT>
+<HTML><HEAD>
+<TITLE>Smith Barney Investment Series</TITLE>
+</HEAD>
+ <BODY BGCOLOR="WHITE">
+<HR SIZE="3" NOSHADE COLOR="#000000" ALIGN="left"> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT
+FACE="Times New Roman" SIZE="5"><B>UNITED STATES </B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="5"><B>SECURITIES AND EXCHANGE COMMISSION </B></FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="3"><B>Washington, DC 20549 </B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="5"><B>FORM N-PX </B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"
+ALIGN="center"><FONT FACE="Times New Roman" SIZE="2"><B>ANNUAL REPORT OF PROXY VOTING RECORD OF </B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2"><B>REGISTERED MANAGEMENT INVESTMENT
+COMPANY </B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">Investment Company Act file number: 811-5018
+</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2"><B>SMITH BARNEY INVESTMENT SERIES </B></FONT></P><HR
+WIDTH="66%" SIZE="1" NOSHADE COLOR="#000000"> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>(Exact name of registrant as specified in charter) </B></FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2"><B>125 BROAD STREET, NEW YORK, NEW YORK 10004 </B></FONT></P><HR WIDTH="66%"
+SIZE="1" NOSHADE COLOR="#000000"> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>(Address of principal executive offices) (Zip code) </B></FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2"><B>Robert I. Frenkel, Esq. </B></FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2"><B>300 First Stamford Place, 4<FONT FACE="Times New Roman" SIZE="1" COLOR="#000000"><SUP>th</SUP></FONT><FONT FACE="Times New Roman" SIZE="2"
+COLOR="#000000"> Floor </FONT></B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2"><B>Stamford, Connecticut 06902 </B></FONT></P><HR WIDTH="66%" SIZE="1" NOSHADE COLOR="#000000"> <P
+STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>(Name and address of agent for service) </B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">Registrant&#146;s telephone number, including area code: 203-890-7046 </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT
+SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">Date of fiscal year end: October 31 </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P>
+<P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">Date of reporting period: July 1, 2003&#150;June 30, 2004 </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P><HR
+SIZE="3" NOSHADE COLOR="#000000" ALIGN="left">
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" COLOR="#999999" WIDTH="100%" ALIGN="CENTER">
+ <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2"><B>Item 1. Proxy Voting Record </B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:-6px"><FONT
+SIZE="1">&nbsp;</FONT></P>
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" COLOR="#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+&lt;PRE&gt;
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-05018
+Reporting Period: 07/01/2003 - 06/30/2004
+Smith Barney Investment Series
+
+
+
+
+
+
+
+
+
+=========== SMITH BARNEY INVESTMENT SERIES - SB GOVERNMENT PORTFOLIO ===========
+
+
+
+
+========== SMITH BARNEY INVESTMENT SERIES - SB GROWTH AND INCOME FUND ==========
+
+
+ADC TELECOMMUNICATIONS, INC.
+
+Ticker:       ADCT           Security ID:  000886101
+Meeting Date: MAR 2, 2004    Meeting Type: Annual
+Record Date:  JAN 7, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Robert Annunziata         For       For        Management
+1.2   Elect  Director John J. Boyle III         For       For        Management
+1.3   Elect  Director Larry W. Wangberg         For       For        Management
+1.4   Elect  Director Robert E. Switz           For       For        Management
+2     Amend Omnibus Stock Plan                  For       For        Management
+3     Increase Authorized Common Stock          For       For        Management
+4     Ratify Auditors                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+</BODY></HTML>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

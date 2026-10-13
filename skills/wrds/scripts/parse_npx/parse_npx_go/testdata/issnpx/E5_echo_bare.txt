@@ -1,0 +1,11 @@
+
+GENERAL DYNAMICS CORPORATION
+
+Ticker:       GD             Security ID:  369550108
+Meeting Date: MAY 2, 2007    Meeting Type: Annual
+Record Date:  MAR 9, 2007
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1A    Miscellaneous Corporate Governance        For       Echo       Management
+1B    Miscellaneous Corporate Governance        For       Echo       Management
+1C    Miscellaneous Corporate Governance        For       Echo       Management

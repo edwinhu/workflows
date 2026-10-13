@@ -1,0 +1,78 @@
+
+WPP GROUP PLC
+
+Ticker:       WPPGY          Security ID:  929309409
+Meeting Date: JUN 24, 2008   Meeting Type: Annual
+Record Date:  MAY 20, 2008
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept Financial Statements and Statutory For       For        Management
+      Reports
+2     Approve Final Dividend of 9.13 Pence Per  For       For        Management
+      Ordinary Share
+3     Elect Timothy Shriver as Director         For       For        Management
+4     Re-elect Orit Gadiesh as Director         For       For        Management
+5     Re-elect Stanley Morten as Director       For       Against    Management
+6     Re-elect Koichiro Naganuma as Director    For       For        Management
+7     Re-elect Esther Dyson as Director         For       For        Management
+8     Re-elect John Quelch as Director          For       For        Management
+9     Re-elect Mark Read as Director            For       For        Management
+10    Re-elect Paul Spencer as Director         For       For        Management
+11    Re-elect Sir Martin Sorrell as Director   For       For        Management
+12    Reappoint Deloitte & Touche LLP as        For       For        Management
+      Auditors and Authorise the Board to
+      Determine Their Remuneration
+13    Authorise Issue of Equity or              For       For        Management
+      Equity-Linked Securities with Pre-emptive
+      Rights up to Aggregate Nominal Amount of
+      GBP 43,812,326.40
+14    Authorise 117,155,289 Ordinary Shares for For       For        Management
+      Market Purchase
+15    Authorise Issue of Equity or              For       For        Management
+      Equity-Linked Securities without
+      Pre-emptive Rights up to Aggregate
+      Nominal Amount of GBP 5,867,764.45
+16    Approve Remuneration Report               For       For        Management
+17    Adopt New Articles of Association         For       For        Management
+18    Subject to the Passing of Resolution 17,  For       For        Management
+      Amend Articles of Association Re:
+      Directors' Conflicts of Interest
+19    Amend WPP Group plc Annual Bonus Deferral For       For        Management
+      Programme
+20    Authorise the Company to Defer            For       For        Management
+      Satisfaction of the Awards Due to Sir
+      Martin Sorrell Under the WPP Group plc
+      2004 Leadership Equity Acquisition Plan
+      Granted in 2005
+
+
+
+
+================== ING FIDELITY(R) VIP CONTRAFUND(R) PORTFOLIO =================
+
+
+ING Fidelity(R) VIP Contrafund(R) Portfolio operates as a "feeder fund" and as
+such invests all of its assets in a separate mutual fund, the "master fund."
+The master fund in which this Portfolio invests is the VIP Contrafund Portfolio
+(Service Class 2 shares), a series of Fidelity Variable Insurance Products Fund
+II. The master fund's proxy voting record is filed with the Securities and
+Exchange Commission (http://www.sec.gov) on or before August 31 each year under
+Central Index Key number 831016, Investment Company Act file number 811-05511.
+
+Following is the Portfolio's voting record for proxies of the master fund.
+
+
+VARIABLE INSURANCE PRODUCTS FUND II (VIP Contrafund Portfolio)
+
+Ticker:                         Security ID:   922175849
+Meeting Date: MAY 14, 2008      Meeting Type:  Special
+Record Date:  MAR 17, 2008
+
+                                           Vote Cast
+                                Mgt    ------------------
+#     Proposal                  Rec    For       Withhold            Sponsor
+1.01  Elect Trustee James C.    For    97.581%   2.419%              Management
+      Curvey
+1.02  Elect Trustee Dennis J.   For    97.330%   2.670%              Management
+      Dirks
+1.03  Elect Trustee Edward C.   For    97.581%   2.419%              Management

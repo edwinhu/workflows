@@ -1,0 +1,525 @@
+<SEC-DOCUMENT>0000885709-12-000037.txt : 20120827
+<SEC-HEADER>0000885709-12-000037.hdr.sgml : 20120827
+<ACCEPTANCE-DATETIME>20120827151319
+ACCESSION NUMBER:		0000885709-12-000037
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120827
+DATE AS OF CHANGE:		20120827
+EFFECTIVENESS DATE:		20120827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PAYDEN & RYGEL INVESTMENT GROUP
+		CENTRAL INDEX KEY:			0000885709
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-06625
+		FILM NUMBER:		121056978
+
+	BUSINESS ADDRESS:	
+		STREET 1:		333 S GRAND AVE
+		STREET 2:		32ND FL
+		CITY:			LOS ANGELES
+		STATE:			CA
+		ZIP:			90071
+		BUSINESS PHONE:		2136251900
+
+	MAIL ADDRESS:	
+		STREET 1:		333 S GRAND AVE
+		STREET 2:		32ND FL
+		CITY:			LOS ANGELES
+		STATE:			CA
+		ZIP:			90071
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PAYDENFUNDS
+		DATE OF NAME CHANGE:	20010423
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PAYDEN & RYGEL INVESTMENT GROUP
+		DATE OF NAME CHANGE:	19940104
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	P&R INVESTMENT TRUST
+		DATE OF NAME CHANGE:	19920929
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011750
+<SERIES-NAME>Payden Cash Reserves Money Market Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032175
+<CLASS-CONTRACT-NAME>Payden Cash Reserves Money Market Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PBHXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011751
+<SERIES-NAME>Payden Limited Maturity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032176
+<CLASS-CONTRACT-NAME>Payden Limited Maturity Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYLMX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011755
+<SERIES-NAME>Payden Low Duration Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032180
+<CLASS-CONTRACT-NAME>Payden Low Duration Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYSBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011757
+<SERIES-NAME>Payden Tax Exempt Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032182
+<CLASS-CONTRACT-NAME>Payden Tax Exempt Bond Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYTEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011758
+<SERIES-NAME>Payden U.S. Government Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032183
+<CLASS-CONTRACT-NAME>Payden U.S. Government Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYUSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080934
+<CLASS-CONTRACT-NAME>Payden U.S. Government Fund (Adviser Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYUWX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011759
+<SERIES-NAME>Payden U.S. Growth Leaders Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032184
+<CLASS-CONTRACT-NAME>Payden U.S. Growth Leaders Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PUGLX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080935
+<CLASS-CONTRACT-NAME>Payden U.S. Growth Leaders Fund (Adviser Class)
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011760
+<SERIES-NAME>Payden California Muncipal Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032185
+<CLASS-CONTRACT-NAME>Payden California Muncipal Income Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYCRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011761
+<SERIES-NAME>Payden Core Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032186
+<CLASS-CONTRACT-NAME>Payden Core Bond Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYCBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080936
+<CLASS-CONTRACT-NAME>Payden Core Bond Fund (Adviser Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYCWX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011762
+<SERIES-NAME>Payden Emerging Markets Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032187
+<CLASS-CONTRACT-NAME>Payden Emerging Markets Bond Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYEMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080937
+<CLASS-CONTRACT-NAME>Payden Emerging Markets Bond Fund (Adviser Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYEWX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000115587
+<CLASS-CONTRACT-NAME>Payden Emerging Markets Bond Fund (Institutional Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYEIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011763
+<SERIES-NAME>Payden Global Fixed Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032188
+<CLASS-CONTRACT-NAME>Payden Global Fixed Income Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYGFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011764
+<SERIES-NAME>Payden Global Low Duration Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032189
+<CLASS-CONTRACT-NAME>Payden Global Low Duration Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYGSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011765
+<SERIES-NAME>Payden GNMA Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032190
+<CLASS-CONTRACT-NAME>Payden GNMA Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYGNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080938
+<CLASS-CONTRACT-NAME>Payden GNMA Fund (Adviser Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYGWX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011766
+<SERIES-NAME>Payden Value Leaders Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032191
+<CLASS-CONTRACT-NAME>Payden Value Leaders Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYVLX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000110231
+<CLASS-CONTRACT-NAME>Adviser Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000011767
+<SERIES-NAME>Payden High Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000032192
+<CLASS-CONTRACT-NAME>Payden High Income Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYHRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080939
+<CLASS-CONTRACT-NAME>Payden High Income Fund (Adviser Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYHWX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000018584
+<SERIES-NAME>Payden/Wilshire Longevity Fund 2010+
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000051566
+<CLASS-CONTRACT-NAME>Payden/Wilshire Longevity Fund 2010+
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000018585
+<SERIES-NAME>Payden/Wilshire Longevity Fund 2020+
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000051567
+<CLASS-CONTRACT-NAME>Payden/Wilshire Longevity Fund 2020+
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000018586
+<SERIES-NAME>Payden/Wilshire Longevity Fund 2030+
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000051568
+<CLASS-CONTRACT-NAME>Payden/Wilshire Longevity Fund 2030+
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000018587
+<SERIES-NAME>Payden/Wilshire Longevity Fund 2040+
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000051569
+<CLASS-CONTRACT-NAME>Payden/Wilshire Longevity Fund 2040+
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000021592
+<SERIES-NAME>Payden Global Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000061863
+<CLASS-CONTRACT-NAME>Payden Global Equity Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYGEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000022678
+<SERIES-NAME>Payden/Kravitz Cash Balance Plan Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065580
+<CLASS-CONTRACT-NAME>Payden/Kravitz Cash Balance Plan Fund (Institutional Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PKBIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000069457
+<CLASS-CONTRACT-NAME>Payden/Kravitz Cash Balance Plan Fund (Adviser Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PKCBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000077412
+<CLASS-CONTRACT-NAME>Payden/Kravitz Cash Balance Plan Fund (Retirement Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PKCRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000025162
+<SERIES-NAME>Payden Corporate Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000075033
+<CLASS-CONTRACT-NAME>Payden Corporate Bond Fund (Investor Class)
+<CLASS-CONTRACT-TICKER-SYMBOL>PYACX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000031104
+<SERIES-NAME>Metzler/Payden European Emerging Markets Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000096473
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>MPYMX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000885709
+<SERIES-ID>S000033934
+<SERIES-NAME>Payden Emerging Markets Local Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000104641
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PYELX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106974
+<CLASS-CONTRACT-NAME>Adviser Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PYEAX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>n-px0612prallfunds.txt
+<DESCRIPTION>PAYDEN & RYGEL INVESTMENT GROUP ALL FUND PROXY
+<TEXT>
+******************************* FORM N-Px REPORT *******************************
+
+                       SECURITIES AND EXCHANGE COMMISSION
+                             Washington, D.C. 20549
+
+                                FORM N-PX REPORT
+
+                    ANNUAL REPORT OF PROXY VOTING RECORD OF
+                    REGISTERED MANAGEMENT INVESTMENT COMPANY
+
+                       Investment Company Act file number
+                                   811-06625
+
+                          PAYDEN & RYGEL INVESTMENT GROUP
+               (Exact name of registrant as specified in charter)
+
+                             333 South Grand Avenue
+                             Los Angeles, CA 90071
+                    (Address of principal executive offices)
+
+              Registrant's Telephone Number, Including Area Code:
+                                   213-830-4255
+
+                               Edward S. Garlock
+                                 Payden & Rygel
+                             333 South Grand Avenue
+                             Los Angeles, CA 90071
+                    (Name and address of agent for service)
+
+                   Date of fiscal year end: October 31, 2011
+
+             Date of reporting period: July 1, 2011 - June 30, 2012
+
+
+===================== Payden US Growth Leaders Fund ============================
+
+Item 1: Proxy Voting Record
+
+Registrant: Payden & Rygel
+
+Fund: 5445
+
+07/01/2011 - 06/30/2012
+
+
+________________________________________________________________________________
+3M Company
+Ticker     Security ID:             Meeting Date          Meeting Status
+MMM        CUSIP 88579Y101          05/08/2012            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Elect Linda Alvarado     Mgmt       For        For        For
+2          Elect Vance Coffman      Mgmt       For        For        For
+3          Elect Michael  Eskew     Mgmt       For        For        For
+4          Elect W. James Farrell   Mgmt       For        For        For
+5          Elect Herbert Henkel     Mgmt       For        For        For
+6          Elect Edward Liddy       Mgmt       For        For        For
+7          Elect Robert Morrison    Mgmt       For        For        For
+8          Elect Aulana Peters      Mgmt       For        For        For
+9          Elect Inge Thulin        Mgmt       For        For        For
+10         Elect Robert Ulrich      Mgmt       For        For        For
+11         Ratification of Auditor  Mgmt       For        For        For
+12         Advisory Vote on         Mgmt       For        For        For
+            Executive
+            Compensation
+
+13         Amendment to the         Mgmt       For        Against    Against
+            General Employees
+            Stock Purchase
+            Plan
+
+14         Amendment to the 2008    Mgmt       For        For        For
+            Long-Term Incentive
+            Plan
+
+15         Shareholder Proposal     ShrHoldr   Against    For        Against
+            Regarding Lobbying
+            Report
+
+16         Shareholder Proposal     ShrHoldr   Against    Against    For
+            Regarding Prohibition
+            on Political
+            Spending
+
+17         Shareholder Proposal     ShrHoldr   Against    For        Against
+            Regarding Independent
+            Board
+            Chair
+
+
+________________________________________________________________________________
+Amazon.com, Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+AMZN       CUSIP 023135106          05/24/2012            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Elect Jeffrey Bezos      Mgmt       For        For        For
+2          Elect Tom Alberg         Mgmt       For        For        For
+3          Elect John Seely Brown   Mgmt       For        For        For
+4          Elect William Gordon     Mgmt       For        For        For
+5          Elect Jamie Gorelick     Mgmt       For        For        For
+6          Elect Blake Krikorian    Mgmt       For        For        For
+7          Elect Alain Monie        Mgmt       For        For        For
+8          Elect Jonathan           Mgmt       For        For        For
+            Rubinstein
+
+9          Elect Thomas Ryder       Mgmt       For        For        For
+10         Elect Patricia           Mgmt       For        For        For
+            Stonesifer
+
+11         Ratification of Auditor  Mgmt       For        For        For
+12         Amendment to the 1997    Mgmt       For        For        For
+            Stock Incentive
+            Plan
+
+13         Shareholder Proposal     ShrHoldr   Against    Against    For
+            Regarding Report on
+            Climate
+            Change
+
+14         Shareholder Proposal     ShrHoldr   Against    For        Against
+            Regarding Political
+            Contributions and
+            Expenditures
+            Report
+
+
+________________________________________________________________________________
+Apache Corporation
+Ticker     Security ID:             Meeting Date          Meeting Status
+APA        CUSIP 037411105          05/24/2012            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Elect Scott Josey        Mgmt       For        For        For
+
+2          Elect George Lawrence    Mgmt       For        For        For
+3          Elect Rodman Patton      Mgmt       For        For        For
+4          Elect Charles Pitman     Mgmt       For        For        For
+5          Ratification of Auditor  Mgmt       For        For        For
+6          Advisory Vote on         Mgmt       For        For        For
+            Executive
+            Compensation
+
+7          Shareholder Proposal     ShrHoldr   Against    For        Against
+            Regarding
+            Declassification of
+            the
+            Board
+
+
+================== END NPX REPORT
+
+
+
+
+================== SIGNATURES
+
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+PAYDEN & RYGEL
+(Registrant)
+
+By:        /s/ Joan A. Payden
+               Joan A. Payden
+               President
+
+Date:          August 27, 2012
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

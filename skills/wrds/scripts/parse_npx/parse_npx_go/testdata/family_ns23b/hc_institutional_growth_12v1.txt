@@ -1,0 +1,97 @@
+<SEC-DOCUMENT>0001193125-15-299145.txt : 20150821
+<SEC-HEADER>0001193125-15-299145.hdr.sgml : 20150821
+<ACCEPTANCE-DATETIME>20150821171421
+ACCESSION NUMBER:		0001193125-15-299145
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20150630
+FILED AS OF DATE:		20150821
+DATE AS OF CHANGE:		20150821
+EFFECTIVENESS DATE:		20150821
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			HC CAPITAL TRUST
+		CENTRAL INDEX KEY:			0000934563
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0630
+
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009378
+<SERIES-NAME>The Value Equity Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009379
+<SERIES-NAME>The Growth Equity Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009380
+<SERIES-NAME>The Small Capitalization - Mid Capitalization Equity Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000009381
+<SERIES-NAME>The International Equity Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000021772
+<SERIES-NAME>The Institutional Value Equity Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000021773
+<SERIES-NAME>The Institutional Growth Equity Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000934563
+<SERIES-ID>S000022549
+<SERIES-NAME>The Institutional Small Capitalization - Mid Capitalization Equity Portfolio
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d44991dnpx.txt
+<DESCRIPTION>HC CAPITAL TRUST
+<TEXT>
+
+
+
+
+
+Registrant :
+
+Fund Name : Hirtle Callaghan Institutional Growth Equity Portfolio #12V1
+
+Date of fiscal year end: 06/30/2015
+
+
+________________________________________________________________________________
+Abbott Laboratories
+Ticker     Security ID:             Meeting Date          Meeting Status
+ABT        CUSIP 002824100          04/24/2015            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1.1        Elect Robert J. Alpern   Mgmt       For        For        For
+1.2        Elect Roxanne S. Austin  Mgmt       For        For        For
+1.3        Elect Sally E. Blount    Mgmt       For        For        For
+1.4        Elect W. James Farrell   Mgmt       For        For        For
+1.5        Elect Edward M. Liddy    Mgmt       For        For        For
+1.6        Elect Nancy McKinstry    Mgmt       For        For        For
+1.7        Elect Phebe N. Novakovic Mgmt       For        For        For
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

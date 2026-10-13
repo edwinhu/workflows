@@ -1,0 +1,193 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ Cm0K2nXFT1rK23fhu5HwQ6I9DDVskuNh98rGMtTpCbIF5xJDBwADQn+vVPPhqYcM
+ SXsw9+X8OIEQ/4dWeC3xiA==
+
+<SEC-DOCUMENT>0000702340-04-000010.txt : 20040826
+<SEC-HEADER>0000702340-04-000010.hdr.sgml : 20040826
+<ACCEPTANCE-DATETIME>20040826140812
+ACCESSION NUMBER:		0000702340-04-000010
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040826
+DATE AS OF CHANGE:		20040826
+EFFECTIVENESS DATE:		20040826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PENN SERIES FUNDS INC
+		CENTRAL INDEX KEY:			0000702340
+		IRS NUMBER:				232209178
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-03459
+		FILM NUMBER:		04998474
+
+	BUSINESS ADDRESS:	
+		STREET 1:		600 DRESHER RD
+		STREET 2:		C3D
+		CITY:			HORSHAM
+		STATE:			PA
+		ZIP:			19044
+		BUSINESS PHONE:		2159568208
+
+	MAIL ADDRESS:	
+		STREET 1:		600 DRESHER ROAD
+		STREET 2:		C3D
+		CITY:			HORSHAM
+		STATE:			PA
+		ZIP:			19044
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx_811-03459.txt
+<DESCRIPTION>PENN SERIES FUNDS, INC - N-PX
+<TEXT>
+                           UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                             Washington, D.C. 20549
+
+                                   FORM N-PX
+
+          ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+                               INVESTMENT COMPANY
+
+
+Investment Company Act file number   811-03459
+                                   ------------
+
+
+                           PENN SERIES FUND, INC.
+- --------------------------------------------------------------------------------
+               (Exact name of registrant as specified in charter)
+
+
+         600 DRESHER ROAD, HORSHAM, PENNSYLVANIA                     19044
+- --------------------------------------------------------------------------------
+         (Address of principal executive offices)                 (Zip code)
+
+
+     CLAY LUBY - 600 DRESHER ROAD, HORSHAM, PENNSYLVANIA, 19044
+- --------------------------------------------------------------------------------
+                     (Name and address of agent for service)
+
+
+Registrant's telephone number, including area code:  (215) 956-8208
+                                                    ----------------
+
+Date of fiscal year end:  12/31
+                          --------------
+Date of reporting period: 07/01/2003-06/30/2004
+                          ----------------
+<PAGE>
+
+
+
+
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-03459
+Reporting Period: 07/01/2003 - 06/30/2004
+Penn Series Fund Inc
+
+
+
+
+
+
+
+
+
+============================== GROWTH EQUITY FUND ==============================
+
+
+ACE LTD.
+
+Ticker:       ACE            Security ID:  G0070K103
+Meeting Date: MAY 27, 2004   Meeting Type: Annual
+Record Date:  APR 8, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Brian Duperreault         For       For        Management
+1.2   Elect  Director Robert M. Hernandez       For       For        Management
+1.3   Elect  Director Peter Menikoff            For       For        Management
+1.4   Elect  Director Robert Ripp               For       For        Management
+1.5   Elect  Director Dermot F. Smurfit         For       For        Management
+2     PROPOSAL TO APPROVE THE ACE LIMITED 2004  For       For        Management
+      LONG-TERM INCENTIVE PLAN.
+3     PROPOSAL TO RATIFY THE APPOINTMENT OF     For       For        Management
+      PRICEWATERHOUSECOOPERS LLP AS THE
+      INDEPENDENT ACCOUNTANTS OF ACE LIMITED
+      FOR THE FISCAL YEAR ENDING DECEMBER 31,
+      2004.
+
+
+- --------------------------------------------------------------------------------
+
+ADVANCED MICRO DEVICES, INC.
+
+Ticker:       AMD            Security ID:  007903107
+Meeting Date: APR 29, 2004   Meeting Type: Annual
+Record Date:  MAR 1, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director W. J. Sanders III         For       For        Management
+1.2   Elect  Director Hector de J. Ruiz         For       For        Management
+1.3   Elect  Director W. Michael Barnes         For       For        Management
+1.4   Elect  Director Charles M. Blalack        For       For        Management
+1.5   Elect  Director R. Gene Brown             For       For        Management
+1.6   Elect  Director Bruce Claflin             For       For        Management
+1.7   Elect  Director H. Paulett Eberhart       For       For        Management
+1.8   Elect  Director Robert B. Palmer          For       For        Management
+1.9   Elect  Director Leonard M. Silverman      For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Approve Omnibus Stock Plan                For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+AETNA INC.
+
+Ticker:       AET            Security ID:  00817Y108
+Meeting Date: APR 30, 2004   Meeting Type: Annual
+Record Date:  FEB 27, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Betsy Z. Cohen            For       For        Management
+1.2   Elect  Director Barbara Hackman Franklin  For       For        Management
+1.3   Elect  Director Jeffrey E. Garten         For       For        Management
+1.4   Elect  Director Earl G. Graves            For       For        Management
+1.5   Elect  Director Gerald Greenwald          For       For        Management
+1.6   Elect  Director Ellen M. Hancock          For       For        Management
+1.7   Elect  Director Michael H. Jordan         For       For        Management
+1.8   Elect  Director Jack D. Kuehler           For       For        Management
+1.9   Elect  Director Edward J. Ludwig          For       For        Management
+1.10  Elect  Director Joseph P. Newhouse        For       For        Management
+1.11  Elect  Director Judith Rodin              For       For        Management
+1.12  Elect  Director John W. Rowe, M.D.        For       For        Management
+1.13  Elect  Director Ronald A. Williams        For       For        Management
+1.14  Elect  Director R. David Yost             For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Provide for Cumulative Voting             Against   For        Shareholder
+4     Limit Executive Compensation              Against   Against    Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+========== END NPX REPORT
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

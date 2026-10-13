@@ -1,0 +1,52 @@
+		COMPANY CONFORMED NAME:			PowerShares Exchange-Traded Fund Trust
+		CENTRAL INDEX KEY:			0001209466
+<TEXT>
+
+
+
+
+- --------------------------------------------------------------------------------------------------------------------------
+ PLAINS EXPLORATION & PRODUCTION CO.                                                         Agenda Number:  932847796
+- --------------------------------------------------------------------------------------------------------------------------
+    Security:  726505100                                                             Meeting Type:  Annual
+      Ticker:  PXP                                                                   Meeting Date:  08-May-2008
+        ISIN:  US7265051000
+- --------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+01     DIRECTOR
+       JAMES C. FLORES                                           Mgmt          For                            For
+       ISAAC ARNOLD, JR.                                         Mgmt          For                            For
+       ALAN R. BUCKWALTER, III                                   Mgmt          For                            For
+       JERRY L. DEES                                             Mgmt          For                            For
+       TOM H. DELIMITROS                                         Mgmt          For                            For
+       THOMAS A. FRY, III                                        Mgmt          For                            For
+       ROBERT L. GERRY, III                                      Mgmt          For                            For
+       CHARLES G. GROAT                                          Mgmt          For                            For
+       JOHN H. LOLLAR                                            Mgmt          For                            For
+
+02     PROPOSAL TO RATIFY THE SELECTION OF PRICEWATERHOUSECOOPERSMgmt          For                            For
+       LLP AS THE COMPANY'S INDEPENDENT AUDITORS FOR
+       THE FISCAL YEAR ENDING DECEMBER 31, 2008.
+
+
+
+
+- --------------------------------------------------------------------------------------------------------------------------
+ PLUM CREEK TIMBER COMPANY, INC.                                                             Agenda Number:  932834864
+- --------------------------------------------------------------------------------------------------------------------------
+    Security:  729251108                                                             Meeting Type:  Annual
+      Ticker:  PCL                                                                   Meeting Date:  07-May-2008
+        ISIN:  US7292511083
+- --------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1A     ELECTION OF DIRECTOR: RICK R. HOLLEY                      Mgmt          For                            For
+
+1B     ELECTION OF DIRECTOR: IAN B. DAVIDSON                     Mgmt          For                            For
+
+1C     ELECTION OF DIRECTOR: ROBIN JOSEPHS                       Mgmt          For                            For

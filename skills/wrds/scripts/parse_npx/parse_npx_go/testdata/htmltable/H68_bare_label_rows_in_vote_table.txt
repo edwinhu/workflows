@@ -1,0 +1,1846 @@
+<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; width: 6%">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left; width: 17%">Cintas Corporation</TD>
+    <TD STYLE="vertical-align: top; width: 4%">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; width: 45%">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; width: 5%">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; width: 12%">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; width: 11%">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">CTAS</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">172908105</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;29-Oct-19</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Elect Director Gerald S. Adolph</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Elect Director John F. Barrett</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Elect Director Melanie W. Barstad</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Elect Director Karen L. Carnahan</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Elect Director Robert E. Coletti</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">6</TD>
+    <TD>Elect Director Scott D. Farmer</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">7</TD>
+    <TD>Elect Director James J. Johnson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">8</TD>
+    <TD>Elect Director Joseph Scaminace</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">9</TD>
+    <TD>Elect Director Ronald W. Tysoe</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">10</TD>
+    <TD>Advisory Vote to Ratify Named Executive Officers' Compensation</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">11</TD>
+    <TD>Ratify Ernst &amp; Young LLP as Auditors</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">12</TD>
+    <TD>Report on Political Contributions</TD>
+    <TD>Share Holder</TD>
+    <TD>Against</TD>
+    <TD>For</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Microsoft Corporation</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">MSFT</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">594918104</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;04-Dec-19</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Elect Director William H. Gates, III</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Elect Director Reid G. Hoffman</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Elect Director Hugh F. Johnston</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Elect Director Teri L. List-Stoll</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Elect Director Satya Nadella</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">6</TD>
+    <TD>Elect Director Sandra E. Peterson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">7</TD>
+    <TD>Elect Director Penny S. Pritzker</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">8</TD>
+    <TD>Elect Director Charles W. Scharf</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">9</TD>
+    <TD>Elect Director Arne M. Sorenson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">10</TD>
+    <TD>Elect Director John W. Stanton</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">11</TD>
+    <TD>Elect Director John W. Thompson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">12</TD>
+    <TD>Elect Director Emma N. Walmsley</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">13</TD>
+    <TD>Elect Director Padmasree Warrior</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">14</TD>
+    <TD>Advisory Vote to Ratify Named Executive Officers' Compensation</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">15</TD>
+    <TD>Ratify Deloitte &amp; Touche LLP as Auditors</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">16</TD>
+    <TD>Report on Employee Representation on the Board of Directors</TD>
+    <TD>Share Holder</TD>
+    <TD>Against</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">17</TD>
+    <TD>Report on Gender Pay Gap</TD>
+    <TD>Share Holder</TD>
+    <TD>Against</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Costco Wholesale Corporation</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">COST</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">22160K105</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;22-Jan-20</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Elect Director Susan L. Decker</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Elect Director Richard A. Galanti</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Elect Director Sally Jewell</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Elect Director Charles T. Munger</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Ratify KPMG LLP as Auditors</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">6</TD>
+    <TD>Advisory Vote to Ratify Named Executive Officers' Compensation</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">7</TD>
+    <TD>Amend Articles of Incorporation to Provide Directors May Be Removed With or Without Cause</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">8</TD>
+    <TD>Disclose Board Diversity and Qualifications Matrix</TD>
+    <TD>Share Holder</TD>
+    <TD>Against</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Intuit Inc.</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">INTU</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">461202103</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;23-Jan-20</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Elect Director Eve Burton</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Elect Director Scott D. Cook</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Elect Director Richard L. Dalzell</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Elect Director Sasan K. Goodarzi</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Elect Director Deborah Liu</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">6</TD>
+    <TD>Elect Director Suzanne Nora Johnson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">7</TD>
+    <TD>Elect Director Dennis D. Powell</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">8</TD>
+    <TD>Elect Director Brad D. Smith</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">9</TD>
+    <TD>Elect Director Thomas Szkutak</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">10</TD>
+    <TD>Elect Director Raul Vazquez</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">11</TD>
+    <TD>Elect Director Jeff Weiner</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">12</TD>
+    <TD>Advisory Vote to Ratify Named Executive Officers' Compensation</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">13</TD>
+    <TD>Ratify Ernst &amp; Young LLP as Auditors</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">14</TD>
+    <TD>Adopt a Mandatory Arbitration Bylaw</TD>
+    <TD>Share Holder</TD>
+    <TD>Against</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Visa Inc.</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">V</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">92826C839</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;28-Jan-20</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Elect Director Lloyd A. Carney</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Elect Director Mary B. Cranston</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Elect Director Francisco Javier Fernandez-Carbajal</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Elect Director Alfred F. Kelly, Jr.</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Elect Director Ramon L. Laguarta</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">6</TD>
+    <TD>Elect Director John F. Lundgren</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">7</TD>
+    <TD>Elect Director Robert W. Matschullat</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">8</TD>
+    <TD>Elect Director Denise M. Morrison</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">9</TD>
+    <TD>Elect Director Suzanne Nora Johnson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">10</TD>
+    <TD>Elect Director John A. C. Swainson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">11</TD>
+    <TD>Elect Director Maynard G. Webb, Jr.</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">12</TD>
+    <TD>Advisory Vote to Ratify Named Executive Officers' Compensation</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">13</TD>
+    <TD>Ratify KPMG LLP as Auditors</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Deere &amp; Company</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">DE</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">244199105</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;26-Feb-20</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Elect Director Samuel R. Allen</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Elect Director Alan C. Heuberger</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Elect Director Charles O. Holliday, Jr.</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Elect Director Dipak C. Jain</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Elect Director Michael O. Johanns</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">6</TD>
+    <TD>Elect Director Clayton M. Jones</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">7</TD>
+    <TD>Elect Director John C. May</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">8</TD>
+    <TD>Elect Director Gregory R. Page</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">9</TD>
+    <TD>Elect Director Sherry M. Smith</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">10</TD>
+    <TD>Elect Director Dmitri L. Stockton</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">11</TD>
+    <TD>Elect Director Sheila G. Talton</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">12</TD>
+    <TD>Adopt the Jurisdiction of Incorporation as the Exclusive Forum for Certain Disputes</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">13</TD>
+    <TD>Advisory Vote to Ratify Named Executive Officers' Compensation</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">14</TD>
+    <TD>Approve Omnibus Stock Plan</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">15</TD>
+    <TD>Ratify Deloitte &amp; Touche LLP as Auditors</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">16</TD>
+    <TD>Disclose Board Qualifications Matrix</TD>
+    <TD>Share Holder</TD>
+    <TD>Against</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left">The Walt Disney Company</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">DIS</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">254687106</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;11-Mar-20</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Elect Director Susan E. Arnold</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Elect Director Mary T. Barra</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Elect Director Safra A. Catz</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Elect Director Francis A. deSouza</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Elect Director Michael B.G. Froman</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">6</TD>
+    <TD>Elect Director Robert A. Iger</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">7</TD>
+    <TD>Elect Director Maria Elena Lagomasino</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">8</TD>
+    <TD>Elect Director Mark G. Parker</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">9</TD>
+    <TD>Elect Director Derica W. Rice</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">10</TD>
+    <TD>Ratify PricewaterhouseCoopers LLP as Auditors</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">11</TD>
+    <TD>Advisory Vote to Ratify Named Executive Officers' Compensation</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">12</TD>
+    <TD>Amend Omnibus Stock Plan</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">13</TD>
+    <TD>Report on Lobbying Payments and Policy</TD>
+    <TD>Share Holder</TD>
+    <TD>Against</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left">The Toro Company</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">TTC</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">891092108</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;17-Mar-20</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Elect Director Jeffrey M. Ettinger</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Elect Director Katherine J. Harless</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Elect Director D. Christian Koch</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Ratify KPMG LLP as Auditors</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Advisory Vote to Ratify Named Executive Officers' Compensation</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left">HEICO Corporation</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">HEI</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">422806109</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;20-Mar-20</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Elect Director Thomas M. Culligan</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Elect Director Adolfo Henriques</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Elect Director Mark H. Hildebrandt</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Elect Director Eric A. Mendelson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Elect Director Laurans A. Mendelson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">6</TD>
+    <TD>Elect Director Victor H. Mendelson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">7</TD>
+    <TD>Elect Director Julie Neitzel</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">8</TD>
+    <TD>Elect Director Alan Schriesheim</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">9</TD>
+    <TD>Elect Director Frank J. Schwitter</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">10</TD>
+    <TD>Advisory Vote to Ratify Named Executive Officers' Compensation</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">11</TD>
+    <TD>Ratify Deloitte &amp; Touche LLP as Auditors</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Davide Campari-Milano SpA</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">CPR</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">T3490M150</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;27-Mar-20</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Appoint Lisa Vascellari Dal Fiol as Alternate Internal Statutory Auditor</TD>
+    <TD>Share Holder</TD>
+    <TD>None</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Approve Financial Statements, Statutory Reports, and Allocation of Income</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Approve Remuneration Policy</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Approve Second Section of the Remuneration Report</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Approve Stock Option Plan</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">6</TD>
+    <TD>Authorize Share Repurchase Program and Reissuance of Repurchased Shares</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">7</TD>
+    <TD>Approve Change in the Location of the Company's Registered Headquarters to Amsterdam (Netherlands); Adopt New Bylaws</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">8</TD>
+    <TD>Deliberations on Possible Legal Action Against Directors if Presented by Shareholders</TD>
+    <TD>Management</TD>
+    <TD>None</TD>
+    <TD>Against</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Domino's Pizza, Inc.</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">DPZ</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">25754A201</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;21-Apr-20</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Elect Director David A. Brandon</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Elect Director Richard E. Allison, Jr.</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Elect Director C. Andrew Ballard</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Elect Director Andrew B. Balson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Elect Director Corie S. Barry</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">6</TD>
+    <TD>Elect Director Diana F. Cantor</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">7</TD>
+    <TD>Elect Director Richard L. Federico</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">8</TD>
+    <TD>Elect Director James A. Goldman</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">9</TD>
+    <TD>Elect Director Patricia E. Lopez</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">10</TD>
+    <TD>Ratify PricewaterhouseCoopers LLP as Auditor</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">11</TD>
+    <TD>Advisory Vote to Ratify Named Executive Officers' Compensation</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Moody's Corporation</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">MCO</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">615369105</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;21-Apr-20</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Elect Director Basil L. Anderson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Elect Director Jorge A. Bermudez</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Elect Director Therese Esperdy</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Elect Director Vincent A. Forlenza</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Elect Director Kathryn M. Hill</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">6</TD>
+    <TD>Elect Director Raymond W. McDaniel, Jr.</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">7</TD>
+    <TD>Elect Director Henry A. McKinnell, Jr.</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">8</TD>
+    <TD>Elect Director Leslie F. Seidman</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">9</TD>
+    <TD>Elect Director Bruce Van Saun</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">10</TD>
+    <TD>Eliminate Supermajority Vote Requirements to Amend Charter and Bylaws</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">11</TD>
+    <TD>Eliminate Supermajority Vote Requirement to Remove Directors</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">12</TD>
+    <TD>Eliminate Supermajority Vote Requirement for Filling Open Board Seats</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">13</TD>
+    <TD>Ratify KPMG LLP as Auditors</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">14</TD>
+    <TD>Advisory Vote to Ratify Named Executive Officers' Compensation</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Issuer</TD>
+    <TD STYLE="vertical-align: top; text-align: left">Bank of America Corporation</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Ticker</TD>
+    <TD STYLE="vertical-align: top; text-align: left">BAC</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">CUSIP</TD>
+    <TD STYLE="vertical-align: top; text-align: left">060505104</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="font-weight: bold; vertical-align: bottom">Meeting Date</TD>
+    <TD STYLE="vertical-align: top; text-align: left">&nbsp;22-Apr-20</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="vertical-align: top">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Item No.</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposal</TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center">Proposed By</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Management Recommendation</TD>
+    <TD STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Instruction</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">1</TD>
+    <TD>Elect Director Sharon L. Allen</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">2</TD>
+    <TD>Elect Director Susan S. Bies</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">3</TD>
+    <TD>Elect Director Jack O. Bovender, Jr.</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">4</TD>
+    <TD>Elect Director Frank P. Bramble, Sr.</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">5</TD>
+    <TD>Elect Director Pierre J.P. de Weck</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">6</TD>
+    <TD>Elect Director Arnold W. Donald</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">7</TD>
+    <TD>Elect Director Linda P. Hudson</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">8</TD>
+    <TD>Elect Director Monica C. Lozano</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">9</TD>
+    <TD>Elect Director Thomas J. May</TD>
+    <TD>Management</TD>
+    <TD>For</TD>
+    <TD>For</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">10</TD>
+    <TD>Elect Director Brian T. Moynihan</TD>

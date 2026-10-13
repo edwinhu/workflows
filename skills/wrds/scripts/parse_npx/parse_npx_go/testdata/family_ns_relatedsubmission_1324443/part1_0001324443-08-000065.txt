@@ -1,0 +1,1207 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ DoUGb+FhOz4/XzEA0pAa1WOt0RB2giYtY1/3v6L5uLXpwQt/WzBHGrvd1nHbi1cW
+ mt/HGmBwvwPvmn2pCJUZyQ==
+
+<SEC-DOCUMENT>0001324443-08-000065.txt : 20080826
+<SEC-HEADER>0001324443-08-000065.hdr.sgml : 20080826
+<ACCEPTANCE-DATETIME>20080826130941
+ACCESSION NUMBER:		0001324443-08-000065
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20080630
+FILED AS OF DATE:		20080826
+DATE AS OF CHANGE:		20080826
+EFFECTIVENESS DATE:		20080826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			American Independence Funds Trust
+		CENTRAL INDEX KEY:			0001324443
+		IRS NUMBER:				113728400
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21757
+		FILM NUMBER:		081038649
+
+	BUSINESS ADDRESS:	
+		STREET 1:		335 MADISON AVENUE
+		STREET 2:		MEZZANINE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10017
+		BUSINESS PHONE:		212-488-1331
+
+	MAIL ADDRESS:	
+		STREET 1:		335 MADISON AVENUE
+		STREET 2:		MEZZANINE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10017
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	American Independence Financial Services, LLC
+		DATE OF NAME CHANGE:	20060317
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Arrivato Funds Trust
+		DATE OF NAME CHANGE:	20050728
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Adventus Funds Trust
+		DATE OF NAME CHANGE:	20050420
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011449
+<SERIES-NAME>NestEgg Dow Jones U.S. Target Date Funds
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031663
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031664
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031665
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011451
+<SERIES-NAME>NestEgg Dow Jones U.S. 2010 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031668
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031669
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031670
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011454
+<SERIES-NAME>NestEgg Dow Jones U.S. 2015 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031674
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031675
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031676
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011455
+<SERIES-NAME>NestEgg Dow Jones U.S. 2020 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031677
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031678
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031679
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011456
+<SERIES-NAME>NestEgg Dow Jones U.S. 2030 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031680
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031681
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031682
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011457
+<SERIES-NAME>NestEgg Dow Jones U.S. 2040 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031683
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031684
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031685
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011458
+<SERIES-NAME>American Independence Funds Stock Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031686
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031722
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031723
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011459
+<SERIES-NAME>American Independence Funds International Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031687
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031724
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031725
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011460
+<SERIES-NAME>American Independence Funds Short-Term Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031688
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031726
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031727
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011461
+<SERIES-NAME>American Independence Funds Intermediate Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031689
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031728
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031729
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011462
+<SERIES-NAME>American Independence Funds Kansas Tax-Exempt Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031690
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031691
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000031721
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000015175
+<SERIES-NAME>American Independence Funds Financial Services Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000041690
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000041691
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000041692
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx0630081.htm
+<DESCRIPTION>NPX063008_PART_1
+<TEXT>
+
+<HTML>
+<HEAD>
+   <TITLE>npx0630081.htm -- Converted by SEC Publisher, created by BCL Technologies Inc., for SEC Filing</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+
+
+<!--$$/page=-->
+<A name="page_1641"></A>
+
+<P align="left">
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">========================= NESTEGG DOW JONES U.S. 2020 ==========================</FONT></P>
+<TABLE border=0 cellspacing=0 cellpadding=0>
+<TR valign="bottom">
+	<TD align=left width=32% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">77 BANK LTD.</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=12% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Ticker:</FONT>&nbsp;
+	</TD>
+	<TD align=center width=20% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">8341</FONT>&nbsp;
+	</TD>
+	<TD align=left width=37% nowrap colspan=2>
+ &nbsp; &nbsp; &nbsp;<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Security ID: J71348106</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=32% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Meeting Date: JUN 27, 2008</FONT>&nbsp;
+	</TD>
+	<TD align=left width=37% nowrap colspan=2>
+ &nbsp; &nbsp; &nbsp;<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Meeting Type: Annual</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=32% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Record Date: MAR 31, 2008</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">#</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Proposal</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Mgt Rec</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Vote Cast</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Sponsor</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">1</FONT>&nbsp;
+	</TD>
+	<TD align=left width=51% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Approve Allocation of Income, with a</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Final Dividend of JY</FONT>&nbsp;
+	</TD>
+	<TD align=right width=25% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">3.5</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.1</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.2</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.3</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.4</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.5</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.6</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.7</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.8</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.9</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.10</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.11</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.12</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.13</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.14</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.15</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2.16</FONT>&nbsp;
+	</TD>
+	<TD align=left width=26% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=25% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">3.1</FONT>&nbsp;
+	</TD>
+	<TD align=left width=51% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Appoint Internal Statutory Auditor</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">3.2</FONT>&nbsp;
+	</TD>
+	<TD align=left width=51% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Appoint Internal Statutory Auditor</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">3.3</FONT>&nbsp;
+	</TD>
+	<TD align=left width=51% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Appoint Internal Statutory Auditor</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">4</FONT>&nbsp;
+	</TD>
+	<TD align=left width=51% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Approve Retirement Bonuses for Directors</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Against</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=6% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=51% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">and Statutory Auditors</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+</TABLE><BR>
+<P align="left">
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">--------------------------------------------------------------------------------</FONT></P>
+<TABLE border=0 cellspacing=0 cellpadding=0>
+<TR valign="bottom">
+	<TD align=left width=35% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">A.B.C. LEARNING CENTRES LTD</FONT>&nbsp;
+	</TD>
+	<TD align=left width=22% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=12% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Ticker:</FONT>&nbsp;
+	</TD>
+	<TD align=center width=23% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">ABS</FONT>&nbsp;
+	</TD>
+	<TD align=left width=34% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Security ID: Q0011M100</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=35% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Meeting Date: NOV 28, 2007</FONT>&nbsp;
+	</TD>
+	<TD align=left width=34% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Meeting Type: Annual</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=35% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Record Date: NOV 26, 2007</FONT>&nbsp;
+	</TD>
+	<TD align=left width=22% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">#</FONT>&nbsp;
+	</TD>
+	<TD align=left width=30% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Proposal</FONT>&nbsp;
+	</TD>
+	<TD align=left width=22% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Mgt Rec</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Vote Cast</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Sponsor</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">1</FONT>&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Receive Financial Statements and</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">None</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">None</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Statutory Reports for the Financial Year</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=30% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Ended June 30, 2007</FONT>&nbsp;
+	</TD>
+	<TD align=left width=22% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">2</FONT>&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Approve Remuneration Report for the</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Financial Year Ended June 30, 2007</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">3.1</FONT>&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect Le Neve Groves as Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">3.2</FONT>&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Elect William Bessemer as Director</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">4</FONT>&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Approve Ernst &amp; Young as Auditors</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">5.1</FONT>&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Approve Past Issuance of 204,386 Shares</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">on Sept. 11, 2007 to Non-Director Senior</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Executives Under Cash Bonus Plan,</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Performance Share Plan and Other</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=30% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Contractual Obligations</FONT>&nbsp;
+	</TD>
+	<TD align=left width=22% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">5.2</FONT>&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Approve Past Issuance of 394,659 Shares</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">on Sept. 24, 2007 to Eligible Carers</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=52% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Under the ABC Carers Share Plan</FONT>&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=14% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+</TABLE><BR>
+
+<HR noshade align="center" width="100%" size=2>
+<P align=left><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>--------------------------------------------------------------------------------</FONT></P>
+<P align=left><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>HYSAN DEVELOPMENT CO. LTD.</FONT></P>
+<P align=left><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Ticker:</FONT></P>
+<P align=left><FONT face="CourierNewPSMT,Courier New,Courier,monospace" size=2>Security ID: Y38203124</FONT></P>
+<P align=left><FONT face="Courier New" size=2></FONT>&nbsp;</P>
+<P align=center><FONT face="Courier New" size=2>DUE TO SIZE CONSTRAINTS, THIS FILING IS BEING MADE IN 2 RELATED SUBMISSIONS.&nbsp; </FONT></P>
+<P align=center><FONT face="Courier New" size=2>THIS SUBMISSION IS THE FIRST OF THE 2 RELATED SUBMISSIONS.</FONT></P>
+<HR align=center width="100%" noShade SIZE=2>
+
+</BODY>
+
+</HTML>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

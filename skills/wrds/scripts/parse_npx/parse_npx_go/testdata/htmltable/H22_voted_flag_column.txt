@@ -1,0 +1,369 @@
+<SEC-DOCUMENT>0001144204-18-046418.txt : 20180827
+<SEC-HEADER>0001144204-18-046418.hdr.sgml : 20180827
+<ACCEPTANCE-DATETIME>20180827141608
+ACCESSION NUMBER:		0001144204-18-046418
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20180630
+FILED AS OF DATE:		20180827
+DATE AS OF CHANGE:		20180827
+EFFECTIVENESS DATE:		20180827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FQF Trust
+		CENTRAL INDEX KEY:			0001479599
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0630
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22540
+		FILM NUMBER:		181038702
+
+	BUSINESS ADDRESS:	
+		STREET 1:		53 STATE STREET
+		STREET 2:		SUITE 1308
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+		BUSINESS PHONE:		617-292-9805
+
+	MAIL ADDRESS:	
+		STREET 1:		53 STATE STREET
+		STREET 2:		SUITE 1308
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001479599
+<SERIES-ID>S000033007
+<SERIES-NAME>AGFiQ U.S. Market Neutral Momentum Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000101796
+<CLASS-CONTRACT-NAME>AGFiQ U.S. Market Neutral Momentum Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>MOM
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001479599
+<SERIES-ID>S000033008
+<SERIES-NAME>AGFiQ U.S. Market Neutral Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000101797
+<CLASS-CONTRACT-NAME>AGFiQ U.S. Market Neutral Value Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>CHEP
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001479599
+<SERIES-ID>S000033010
+<SERIES-NAME>AGFiQ U.S. Market Neutral Size Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000101799
+<CLASS-CONTRACT-NAME>AGFiQ U.S. Market Neutral Size Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>SIZ
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001479599
+<SERIES-ID>S000033013
+<SERIES-NAME>AGFiQ U.S. Market Neutral Anti-Beta Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000101802
+<CLASS-CONTRACT-NAME>AGFiQ U.S. Market Neutral Anti-Beta Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>BTAL
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001479599
+<SERIES-ID>S000039240
+<SERIES-NAME>AGFiQ Hedged Dividend Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000120788
+<CLASS-CONTRACT-NAME>AGFiQ Hedged Dividend Income Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>DIVA
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001479599
+<SERIES-ID>S000049644
+<SERIES-NAME>O'Shares FTSE Asia Pacific Quality Dividend ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000156970
+<CLASS-CONTRACT-NAME>O'Shares FTSE Asia Pacific Quality Dividend ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>OASI
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001479599
+<SERIES-ID>S000049646
+<SERIES-NAME>O'Shares FTSE U.S. Quality Dividend ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000156972
+<CLASS-CONTRACT-NAME>O'Shares FTSE U.S. Quality Dividend ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>OUSA
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001479599
+<SERIES-ID>S000049647
+<SERIES-NAME>O'Shares FTSE Europe Quality Dividend ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000156973
+<CLASS-CONTRACT-NAME>O'Shares FTSE Europe Quality Dividend ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>OEUR
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001479599
+<SERIES-ID>S000058640
+<SERIES-NAME>AGF Global Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000192606
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>AGXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000192607
+<CLASS-CONTRACT-NAME>Class R6
+<CLASS-CONTRACT-TICKER-SYMBOL>AGXRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001479599
+<SERIES-ID>S000058641
+<SERIES-NAME>AGF Global Sustainable Growth Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000192608
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>AGPIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000192609
+<CLASS-CONTRACT-NAME>Class R6
+<CLASS-CONTRACT-TICKER-SYMBOL>AGPRX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>tv501521_n-px.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<P STYLE="margin: 0">&nbsp;</P>
+
+<P STYLE="margin: 0"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><FONT STYLE="text-transform: uppercase">united
+states</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><FONT STYLE="text-transform: uppercase">securities
+and exchange commission</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Washington, D.C. 20549</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><FONT STYLE="text-transform: uppercase"><B>&nbsp;</B></FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><FONT STYLE="text-transform: uppercase"><B>Form</B></FONT><B>
+N-PX</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>ANNUAL REPORT OF PROXY VOTING RECORD
+OF REGISTERED MANAGEMENT INVESTMENT COMPANY</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Investment Company Act file number: <U>811-22540</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B><U>FQF Trust</U></B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">(Exact name of registrant as specified in
+charter)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">53 State Street</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Suite 1308</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><U>Boston, MA 02109</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">(Address of principal executive offices)
+(Zip code)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">William Carey, Vice President</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">53 State Street</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Suite 1308</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><U>Boston, MA 02109</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">(Name and Address of Agent for Service)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">Registrant&rsquo;s telephone number, including area code: <U>(617)
+292-9801</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">Date of fiscal year end: <U>June 30</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">Date of reporting period: <U>July 1, 2017 to June 30, 2018</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: justify; text-indent: 0.5in; color: #221E1F">Form
+N-PX is to be used by a registered management investment company, other than a small business investment company registered on
+Form N-5 (&sect;&sect; 239.24 and 274.5 of this chapter), to file reports with the Commission, not later than August 31 of each
+year, containing the registrant&rsquo;s proxy voting record for the most recent twelve-month period ended June 30, pursuant to
+section 30 of the Investment Company Act of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4). The Commission may use the information
+provided on Form N-PX in its regulatory, disclosure review, inspection, and policymaking roles.</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: justify; text-indent: 0.5in; color: #221E1F">A registrant
+is required to disclose the information specified by Form N-PX, and the Commission will make this information public. A registrant
+is not required to respond to the collection of information contained in Form N-PX unless the Form displays a currently valid Office
+of Management and Budget (&ldquo;OMB&rdquo;) control number. Please direct comments concerning the accuracy of the information
+collection burden estimate and any suggestions for reducing the burden to the Secretary, Securities and Exchange Commission, 450
+Fifth Street, NW, Washington, D.C. 20549-0609. The OMB has reviewed this collection of information under the clearance requirements
+of 44 U.S.C. &sect; 3507.</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: left; color: #221E1F">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: left; color: #221E1F"></P>
+
+<!-- Field: Page; Sequence: 1 -->
+    <DIV STYLE="margin-top: 12pt; margin-bottom: 6pt; border-bottom: Black 1pt solid"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt; margin-bottom: 12pt"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: left; color: #221E1F"><BR STYLE="clear: both"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: justify">Item 1. Proxy Voting Record</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: justify"></P>
+
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 8pt Times New Roman, Times, Serif">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font-weight: bold; text-align: left; width: 25%; padding-right: 5pt">Fund Name</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 10%; padding-right: 5pt">Company Name</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 7%; padding-right: 5pt">Ticker</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 3%; padding-right: 5pt">Primary CUSIP</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 2%; padding-right: 5pt">Meeting Date</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 2%; padding-right: 5pt">Proponent</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 35%; padding-right: 5pt">Proposal Text</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 3%; padding-right: 5pt">Vote Instruction</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 1%; padding-right: 5pt">Voted</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 5%; padding-right: 5pt">Vote Against Management</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 3%; padding-right: 5pt">Vote Against ISS</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 4%; padding-right: 5pt">Vote Against Policy</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left; padding-right: 5pt">O'Shares FTSE Asia Pacific Quality Dividend ETF Fund</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Johnson Electric Holdings Ltd.</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">179</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">G5150J140</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">&nbsp;12-Jul-17</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Management</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Accept Financial Statements and Statutory Reports</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">For</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Yes</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left; padding-right: 5pt">O'Shares FTSE Asia Pacific Quality Dividend ETF Fund</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Johnson Electric Holdings Ltd.</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">179</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">G5150J140</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">&nbsp;12-Jul-17</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Management</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Approve Final Dividend</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">For</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Yes</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left; padding-right: 5pt">O'Shares FTSE Asia Pacific Quality Dividend ETF Fund</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Johnson Electric Holdings Ltd.</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">179</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">G5150J140</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">&nbsp;12-Jul-17</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Management</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Authorize Repurchase of Issued Share Capital</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">For</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Yes</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left; padding-right: 5pt">O'Shares FTSE Asia Pacific Quality Dividend ETF Fund</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Johnson Electric Holdings Ltd.</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">179</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">G5150J140</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">&nbsp;12-Jul-17</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Management</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Elect Winnie Wing-Yee Wang as Director</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">For</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Yes</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left; padding-right: 5pt">O'Shares FTSE Asia Pacific Quality Dividend ETF Fund</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Johnson Electric Holdings Ltd.</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">179</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">G5150J140</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">&nbsp;12-Jul-17</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Management</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Elect Patrick Blackwell Paul as Director</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">For</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Yes</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left; padding-right: 5pt">O'Shares FTSE Asia Pacific Quality Dividend ETF Fund</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Johnson Electric Holdings Ltd.</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">179</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">G5150J140</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">&nbsp;12-Jul-17</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Management</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Elect Christopher Dale Pratt as Director</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">For</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">Yes</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD>
+    <TD STYLE="text-align: left; padding-right: 5pt">No</TD></TR>
+</TABLE>
+</TEXT>
+</DOCUMENT>

@@ -1,0 +1,47 @@
+<SEC-DOCUMENT>0000708950-04-000021.txt : 20040824
+<SEC-HEADER>0000708950-04-000021.hdr.sgml : 20040824
+<ACCEPTANCE-DATETIME>20040824131639
+ACCESSION NUMBER:		0000708950-04-000021
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040824
+DATE AS OF CHANGE:		20040824
+EFFECTIVENESS DATE:		20040824
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CALVERT VARIABLE SERIES INC
+		CENTRAL INDEX KEY:			0000708950
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx811-03591.txt
+<TEXT>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-03591
+Reporting Period: 07/01/2003 - 06/30/2004
+=========================== AMERITAS SMALL CAP FUND ============================
+
+
+ADVANCED NEUROMODULATION SYSTEMS, INC.
+
+Ticker:       ANSI           Security ID:  00757T101
+Meeting Date: MAY 26, 2004   Meeting Type: Annual
+Record Date:  APR 9, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Hugh M. Morrison          For       For        Management
+1.2   Elect  Director Robert C. Eberhart, Ph.D. For       For        Management
+1.3   Elect  Director Michael J. Torma, M.D.    For       For        Management
+1.4   Elect  Director Richard D. Nikolaev       For       For        Management
+1.5   Elect  Director Christopher G. Chavez     For       For        Management
+1.6   Elect  Director Joseph E. Laptewicz       For       For        Management
+1.7   Elect  Director J. Philip McCormick       For       For        Management
+2     Increase Authorized Common Stock          For       Against    Management
+3     Approve Omnibus Stock Plan                For       For        Management
+
+

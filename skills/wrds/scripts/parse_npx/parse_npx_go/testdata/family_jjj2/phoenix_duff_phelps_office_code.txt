@@ -1,0 +1,47 @@
+<SEC-DOCUMENT>0000950123-04-010142.txt : 20040825
+<SEC-HEADER>0000950123-04-010142.hdr.sgml : 20040825
+<ACCEPTANCE-DATETIME>20040825112141
+ACCESSION NUMBER:		0000950123-04-010142
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040825
+DATE AS OF CHANGE:		20040825
+EFFECTIVENESS DATE:		20040825
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PHOENIX MULTI PORTFOLIO FUND
+		CENTRAL INDEX KEY:			0000826737
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>y00960nvpx.txt
+<DESCRIPTION>PHOENIX MULTI-PORTFOLIO FUND
+<TEXT>
+<PAGE>
+<PAGE>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-05436
+Reporting Period: 07/01/2003 - 06/30/2004
+Phoenix Multi-Portfolio Fund
+
+=========== PHOENIX-DUFF & PHELPS REAL ESTATE SECURITIES FUND (CHI) ============
+
+
+ARDEN REALTY, INC.
+
+Ticker:       ARI            Security ID:  039793104
+Meeting Date: MAY 11, 2004   Meeting Type: Annual
+Record Date:  MAR 31, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Leslie E. Bider           For       Did Not    Management
+                                                          Vote
+1.2   Elect  Director Steven C. Good            For       Did Not    Management
+                                                          Vote
+1.3   Elect  Director Alan I. Rothenberg        For       Did Not    Management
+                                                          Vote
+2     Submit Severance Agreement                Against   Did Not    Shareholder

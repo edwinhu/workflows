@@ -1,0 +1,57 @@
+CONFORMED PERIOD OF REPORT:	20080630
+		COMPANY CONFORMED NAME:			POWERSHARES EXCHANGE TRADED FUND TRUST
+		CENTRAL INDEX KEY:			0001209466
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001209466
+<SERIES-ID>S000003050
+<SERIES-NAME>PowerShares Dynamic Hardware & Consumer Electronics Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001209466
+<SERIES-ID>S000003051
+<SERIES-NAME>PowerShares Dynamic Telecommunications & Wireless Portfolio
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+<SEQUENCE>1
+<FILENAME>brdu91_0001209466.txt
+<DESCRIPTION>BRDU91_0001209466.TXT
+<TEXT>
+
+
+
+PowerShares Dynamic Telecom & Wireless Portfolio
+- --------------------------------------------------------------------------------------------------------------------------
+ ADC TELECOMMUNICATIONS, INC.                                                                Agenda Number:  932806334
+- --------------------------------------------------------------------------------------------------------------------------
+    Security:  000886309                                                             Meeting Type:  Annual
+      Ticker:  ADCT                                                                  Meeting Date:  06-Mar-2008
+        ISIN:  US0008863096
+- --------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+01     DIRECTOR
+       MICKEY P. FORET                                           Mgmt          For                            For
+       J. KEVIN GILLIGAN                                         Mgmt          For                            For
+       JOHN D. WUNSCH                                            Mgmt          For                            For
+
+02     PROPOSAL TO APPROVE THE 2008 GLOBAL STOCK INCENTIVE       Mgmt          For                            For
+       PLAN.
+
+03     PROPOSAL TO RATIFY THE APPOINTMENT OF ERNST               Mgmt          For                            For
+       & YOUNG LLP AS ADC'S INDEPENDENT REGISTERED
+       PUBLIC ACCOUNTING FIRM FOR ADC'S FISCAL YEAR
+       ENDING OCTOBER 31, 2008.
+
+
+
+
+- --------------------------------------------------------------------------------------------------------------------------
+ ALASKA COMMUNICATIONS SYSTEMS GROUP, INC                                                    Agenda Number:  932881572
+- --------------------------------------------------------------------------------------------------------------------------
+    Security:  01167P101                                                             Meeting Type:  Annual
+      Ticker:  ALSK                                                                  Meeting Date:  09-Jun-2008

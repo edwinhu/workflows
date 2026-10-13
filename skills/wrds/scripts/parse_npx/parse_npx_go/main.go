@@ -305,6 +305,12 @@ func (s *rowSink) flush() {
 //
 // headBuf is the worker's reusable head buffer, sized headBytes; it is owned by
 // the caller so the allocation is once per worker rather than once per filing.
+// seriesMap is the optional -series-map overlay; nil means none loaded.
+var seriesMap *seriesOverlay
+
+// cikDict is the optional -cik-series dictionary; nil means none loaded.
+var cikDict *cikSeries
+
 func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta FilingMeta) {
 	meta = FilingMeta{FilePath: relPath, ParseMode: "none", ParseStatus: "error"}
 	sink.meta = &meta
@@ -325,6 +331,8 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 	head := headBuf[:n]
 
 	h := parseHeader(head)
+	headerHasSeries := len(h.SeriesDecls) > 0
+	cikDict.back(&h)
 	h.FilePath = relPath
 	h.ParseMode = "none"
 	h.ParseStatus = "error"
@@ -339,6 +347,89 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		seriesRow = ids[0]
 		classRow = strings.Join(classIDsFor(sc, seriesRow), MultiValueSep)
 	}
+	if !headerHasSeries {
+		// Dictionary aliases can repeat an id; only distinct series count.
+		ids := map[string]bool{}
+		for _, d := range h.SeriesDecls {
+			if d.SeriesID != "" {
+				ids[d.SeriesID] = true
+			}
+		}
+		if len(ids) == 1 {
+			for id := range ids {
+				seriesRow = id
+			}
+		}
+	}
+
+	// The registrant's own conformed name IS a dictionary fund name: a
+	// single-fund registrant whose 2005 filing prints no fund heading at all
+	// (`MIDAS SPECIAL EQUITIES FUND INC /MD`, S000011690). It answers only rows
+	// the parser left unnamed, and only when the header declared nothing and
+	// exactly one dictionary series of the CIK is spelled that way -- two
+	// series answering to it refuse, the way seriesByName refuses a collision.
+	registrantSeries := ""
+	if !headerHasSeries && seriesRow == "" {
+		want := normalizeSeriesName(h.CompanyName)
+		if want != "" {
+			for _, d := range h.SeriesDecls {
+				if d.SeriesID == "" || normalizeSeriesName(d.Name) != want {
+					continue
+				}
+				if registrantSeries != "" && registrantSeries != d.SeriesID {
+					registrantSeries = ""
+					break
+				}
+				registrantSeries = d.SeriesID
+			}
+		}
+	}
+
+	// The same shape, one rename away: a single-fund registrant that renamed
+	// itself before it ever declared a series id, so the equality above can
+	// never answer. Taiwan Greater China Fund (CIK 836267) prints no fund
+	// heading in its 20050630 report and declares S000034279 six years later as
+	// `SHELTON GREATER CHINA FUND`, under the same SEC file number -- 757 rows
+	// with no series. The registrant's own conformed name reaches the SAME
+	// resolver a heading reaches, and then the lead-brand swap the chain
+	// already accepts for headings (`MGIT International Select Equity Fund` for
+	// a declared `DWS International Select Equity Fund`), which is spelled for
+	// the registrant's own name in issRegistrantBrandSwapDecl: the distinctive
+	// phrase survives whole and only the lead brand token differs.
+	//
+	// Computed lazily, and read ONLY when the filing prints no fund heading at
+	// all -- a filing that names any fund has a parser that knows which fund a
+	// row belongs to, and the registrant's name is not that answer.
+	registrantNoHeadingSeries := func() string {
+		key := normalizeSeriesName(h.CompanyName)
+		if key == "" {
+			return ""
+		}
+		ix := issFilingIndex(h.SeriesDecls, key, h.CIK, metaPeriod(h))
+		issFormerKeys(ix, h.FormerNames)
+		if id := icrResolveFundShared(ix, h.CompanyName); id != "" {
+			return id
+		}
+		if d := issRegistrantBrandSwapDecl(ix, key); d != nil {
+			return d.SeriesID
+		}
+		return ""
+	}
+
+	// The banners a body prints belong to the registrant the DOCUMENT names,
+	// which is the filer in every filing but the handful where a preparer
+	// attached a sibling's document: see swappedDocumentOwner. Only the
+	// registrant-scoped resolution pool moves -- the manifest row below keeps
+	// the filer's own identity, because who filed this is not in doubt.
+	parseMeta := h
+	if cik, registrant, ok := swappedDocumentOwner(head, h.CIK, h.CompanyName); ok {
+		if pool := cikDict.poolFor(cik, metaPeriod(h)); len(pool) > 0 {
+			parseMeta.CIK = cik
+			parseMeta.CompanyName = registrant
+			parseMeta.FormerNames = nil
+			parseMeta.SeriesDecls = pool
+		}
+	}
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -351,14 +442,90 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 	mode := detectMode(head)
 	meta.ParseMode = mode
 
-	stamp := func(r VoteRow) error {
-		if r.SeriesID == "" {
-			r.SeriesID = seriesRow
+	// A row's class contracts are the ones the header declares under the series
+	// THAT ROW names, never the chassis series'. series_id and class_ids are both
+	// link keys, so handing a row another series' classes makes two columns
+	// contradict each other on one row. A series declaring no class contract
+	// legitimately yields the empty string, and that is the answer — not a reason
+	// to fall back to some other series' classes.
+	//
+	// Cached per series id so the scan over the header triples happens once per
+	// distinct series rather than once per row; a filing reaches millions of rows.
+	classBySeries := map[string]string{}
+	if seriesRow != "" {
+		classBySeries[seriesRow] = classRow
+	}
+	classesOf := func(seriesID string) string {
+		if joined, ok := classBySeries[seriesID]; ok {
+			return joined
 		}
-		if r.ClassIDs == "" {
-			r.ClassIDs = classRow
+		joined := strings.Join(classIDsFor(sc, seriesID), MultiValueSep)
+		classBySeries[seriesID] = joined
+		return joined
+	}
+
+	var declared map[string]bool
+	var overlayHdr *overlayHeaderIndex
+	if seriesMap != nil {
+		declared = overlayDeclaredIDs(h)
+		seriesMap.licenseHandMapped(relPath, h, declared)
+		// Built once per filing: the overlay's cross-check asks the filing's own
+		// header whether it names a series for the heading the map claims.
+		overlayHdr = newOverlayHeaderIndex(h.SeriesDecls)
+	}
+	// The names THIS filing's own header prints -- series names and class-contract
+	// names alike, before cikDict.back backfills the dictionary into h.SeriesDecls.
+	// A banner spelled by the registrant itself in this document is stronger
+	// evidence than any CIK-wide dictionary row, so it is the one shape the
+	// dictionary is not allowed to answer ahead of the chassis stamp below.
+	headerNames := map[string]bool{}
+	_, ownDecls := parseSeriesDecls(head)
+	if seriesRow != "" {
+		for _, d := range ownDecls {
+			if k := normalizeSeriesName(d.Name); k != "" {
+				headerNames[k] = true
+			}
+			for _, cn := range d.ClassNames {
+				if k := normalizeSeriesName(cn); k != "" {
+					headerNames[k] = true
+				}
+			}
 		}
-		return sink.emit(r)
+	}
+
+	dictFB := cikDict.exactFallback(parseMeta)
+	stamp := func(r VoteRow) VoteRow {
+		if r.SeriesID == "" && seriesRow != "" {
+			// The chassis stamp answers a row the parser left unnamed with the one
+			// series this filing's header declares -- but the header of an AMENDMENT
+			// declares only the sleeve being amended while the body reprints the whole
+			// complex (CIK 1081400, 0001193125-06-183294.txt, a ruled
+			// `WELLS FARGO ADVANTAGE C&B MID CAP VALUE FUND` banner under a header
+			// declaring S000007347 alone). dictFallback.apply bails on any non-empty
+			// SeriesID, so stamping first STARVES it on every such filing. Give it the
+			// row first: a banner whose own name is an exact, unambiguous dictionary
+			// name of THIS CIK at THIS vintage takes that id, and only a banner the
+			// dictionary cannot answer falls back to the header's lone declaration.
+			// Scoped to rows the chassis would have claimed, so nothing else moves,
+			// and refused for a banner the registrant itself spells in THIS header --
+			// a declared class-contract name outranks any CIK-wide dictionary row
+			// (MISLINK21, Pacific Select `EMERGING MARKETS PORTFOLIO`).
+			if !headerNames[normalizeSeriesName(r.FundName)] {
+				dictFB.apply(&r)
+			}
+			if r.SeriesID == "" {
+				r.SeriesID = seriesRow
+			}
+		}
+		if r.SeriesID == "" && r.FundName == "" {
+			r.SeriesID = registrantSeries
+		}
+		seriesMap.applyWithHeader(relPath, declared, overlayHdr, &r)
+		dictFB.apply(&r)
+		if r.ClassIDs == "" && r.SeriesID != "" {
+			r.ClassIDs = classesOf(r.SeriesID)
+		}
+		return r
 	}
 
 	switch mode {
@@ -370,7 +537,9 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		// Streaming: the decoder pulls off a buffered reader and rows leave
 		// through the sink as they are produced, so peak memory is independent
 		// of filing size.
-		if _, err := parseNPXXML(bufio.NewReaderSize(f, 1<<20), &meta, stamp); err != nil {
+		if _, err := parseNPXXML(bufio.NewReaderSize(f, 1<<20), &meta, func(r VoteRow) error {
+			return sink.emit(stamp(r))
+		}); err != nil {
 			meta.ParseStatus = "error"
 			meta.ErrorMsg = err.Error()
 			meta.NRows = sink.n
@@ -387,19 +556,83 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 			meta.ErrorMsg = err.Error()
 			return meta
 		}
-		res := parseText(buf, meta)
+		// A filing that declares itself a later submission of one split report
+		// names its predecessor in a paragraph of its own; that bare accession
+		// number is not an issuer name.
+		priorAcc := priorRelatedAccession(head, h.Accession)
+		if priorAcc != "" {
+			buf = blankRelatedAccession(buf, priorAcc)
+		}
+		parseMeta.ParseMode = mode
+		res := parseText(buf, parseMeta)
 		if res == nil {
 			meta.ErrorMsg = "text parser returned no result"
 			return meta
 		}
 		meta = res.Meta
+		// The manifest row is the FILING's identity, never the attached
+		// document's: parseMeta only ever moved the resolution pool.
+		meta.CIK, meta.CompanyName, meta.FormerNames, meta.SeriesDecls = h.CIK, h.CompanyName, h.FormerNames, h.SeriesDecls
 		meta.FilePath = relPath
 		meta.ParseMode = mode
-		for _, r := range res.Rows {
+		consolidated := consolidatedSeries(sc, res.Rows)
+		// ... unless the body PRINTED this registrant's funds in section
+		// banners and no rung could spell them back to a declared id. Such a
+		// filing reported per fund; its rows are blank because the names did
+		// not resolve, not because the trust voted as one record, and widening
+		// them to every declared id files each fund's votes under all of them.
+		// The rows cannot tell the two apart, so the banner is read off the
+		// body (TDX Independence Funds 2009, five printed banners, 8,242 rows).
+		if consolidated != "" && meta.Layout == "htmltable" && htmlPrintsDeclaredFundBanner(buf, h.SeriesDecls) {
+			consolidated = ""
+		}
+		// The no-heading shape, decided on the parsed rows rather than guessed:
+		// every row's fund_name is empty, so the filing printed no fund heading
+		// anywhere and the registrant's own name is the only name it carries.
+		if !headerHasSeries && seriesRow == "" && registrantSeries == "" && consolidated == "" {
+			noHeading := true
+			for _, r := range res.Rows {
+				if r.FundName != "" {
+					noHeading = false
+					break
+				}
+			}
+			if noHeading && len(res.Rows) > 0 {
+				registrantSeries = registrantNoHeadingSeries()
+			}
+		}
+		// The split falls wherever the byte budget ran out, so this document's
+		// body can open inside a fund section whose banner the DECLARED earlier
+		// submission printed and never repeated. Read only when the first row
+		// carries no fund of its own, and spent only on rows before the first
+		// banner this document prints for itself.
+		inheritFund, inheritSeries := "", ""
+		if priorAcc != "" && len(res.Rows) > 0 && res.Rows[0].FundName == "" {
+			inheritFund, inheritSeries = relatedPredecessorFund(fullPath, priorAcc)
+		}
+		for i, r := range res.Rows {
 			if r.Layout == "" {
 				r.Layout = meta.Layout
 			}
-			if err := stamp(r); err != nil {
+			if inheritFund != "" {
+				if r.FundName != "" {
+					inheritFund = ""
+				} else {
+					r.FundName = inheritFund
+					if r.SeriesID == "" {
+						r.SeriesID = inheritSeries
+					}
+				}
+			}
+			if consolidated != "" && r.SeriesID == "" {
+				r.SeriesID = consolidated
+			}
+			res.Rows[i] = stamp(r)
+		}
+		// Refusals must follow every fallback, including the optional overlay.
+		cikDict.blankInexactSiblingBanners(res.Rows, h.CIK, metaPeriod(meta), ownDecls)
+		for _, r := range res.Rows {
+			if err := sink.emit(r); err != nil {
 				meta.ParseStatus = "error"
 				meta.ErrorMsg = err.Error()
 				break
@@ -420,12 +653,14 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 
 func main() {
 	var (
-		filesFrom    string
-		archiveRoot  string
-		outFile      string
-		manifestFile string
-		concurrency  int
-		showVersion  bool
+		filesFrom     string
+		archiveRoot   string
+		outFile       string
+		manifestFile  string
+		concurrency   int
+		showVersion   bool
+		seriesMapPath string
+		cikSeriesPath string
 	)
 
 	flag.StringVar(&filesFrom, "files-from", "", "filelist, one path per line (required)")
@@ -433,8 +668,34 @@ func main() {
 	flag.StringVar(&outFile, "out", "", "votes output TSV, gzipped iff the path ends in .gz (required)")
 	flag.StringVar(&manifestFile, "manifest", "", "manifest output TSV, gzipped iff the path ends in .gz (required)")
 	flag.IntVar(&concurrency, "concurrency", runtime.NumCPU()*4, "worker goroutines")
+	flag.BoolVar(&issStripRegistrantPrefix, "issnpx-registrant-prefix-strip", true,
+		"issnpx: when a fund banner begins with the filing's own COMPANY CONFORMED NAME,"+
+			" retry the lookup with that prefix removed; -issnpx-registrant-prefix-strip=false"+
+			" disables it, which is the first step of the audit this rule requires")
+	flag.StringVar(&seriesMapPath, "series-map", "",
+		"TSV (filing, heading, series_id) filling a blank series_id for the exact fund heading"+
+			" printed, only with a series the filing's header declares")
+	flag.StringVar(&cikSeriesPath, "cik-series", "",
+		"TSV (cik, series_id, series_name) backing a filing whose header declares no series"+
+			" with the ids the same registrant declared in other filings")
 	flag.BoolVar(&showVersion, "version", false, "print version and exit")
 	flag.Parse()
+	if cikSeriesPath != "" {
+		d, err := loadCIKSeries(cikSeriesPath)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(2)
+		}
+		cikDict = d
+	}
+	if seriesMapPath != "" {
+		ov, err := loadSeriesOverlay(seriesMapPath)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(2)
+		}
+		seriesMap = ov
+	}
 
 	if showVersion {
 		fmt.Println(version)
@@ -554,4 +815,25 @@ func main() {
 	wg.Wait()
 	close(results)
 	writerWG.Wait()
+}
+
+// consolidatedSeries returns the MultiValueSep-joined ids of every series the
+// header declares when the filing reports the trust's votes as ONE record: two or
+// more declared series, and not a single row carrying a fund heading or a
+// resolved series. Such a filing (JHVIT 2011: 111 series, 6,267 meetings, no fund
+// name anywhere; 645 filings and 2.45M rows on run68) attributes each vote to all
+// of its funds; the linker expands the list and the ISS agreement gate is what
+// says whether the funds did vote alike. Anything less than fully unlabelled
+// keeps the ordinary rules, so a partially headed filing is never widened.
+func consolidatedSeries(sc []SeriesClass, rows []VoteRow) string {
+	ids := seriesIDs(sc)
+	if len(ids) < 2 || len(rows) == 0 {
+		return ""
+	}
+	for _, r := range rows {
+		if r.FundName != "" || r.SeriesID != "" {
+			return ""
+		}
+	}
+	return strings.Join(ids, MultiValueSep)
 }

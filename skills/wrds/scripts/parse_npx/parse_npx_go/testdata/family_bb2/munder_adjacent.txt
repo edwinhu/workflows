@@ -1,0 +1,53 @@
+<SEC-DOCUMENT>0001193125-04-149507.txt : 20040831
+<SEC-HEADER>0001193125-04-149507.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831130637
+ACCESSION NUMBER:		0001193125-04-149507
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MUNDER SERIES TRUST
+		CENTRAL INDEX KEY:			0001214511
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>dnpx.txt
+<DESCRIPTION>MUNDER SERIES TRUST
+<TEXT>
+<PAGE>
+Reporting Period: 07/01/2003 - 06/30/2004
+Munder Series Trust
+=================MUNDER INSTITUTIONAL GOVERNMENT MONEY MARKET FUND=============
+========================MUNDER INSTITUTIONAL MONEY MARKET FUND=================
+=============================MUNDER INTERMEDIATE BOND FUND=====================
+=============================MUNDER INTERNATIONAL EQUITY FUND ==================
+A.F.P. PROVIDA S.A.
+Ticker:       PVD            Security ID:  00709P108
+Meeting Date: APR 30, 2004   Meeting Type: Special
+Record Date:  APR 8, 2004
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     REDUCE THE NUMBER OF MEMBERS OF THE BOARD For       For        Management
+      FROM 8 TO 7 AND AMEND ARTICLE 7 OF A.F.P.
+      PROVIDA S BY-LAWS.
+2     ADOPT OTHER RESOLUTIONS AND GRANT THE     For       For        Management
+      POWER OF ATTORNEYS THAT ARE NECESSARY
+      AND/OR CONVENIENT TO IMPLEMENT SAID
+      PROPOSALS.
+========================== LIQUIDITY MONEY MARKET FUND==========================
+============================ MUNDER MICHIGAN TAX-FREE BOND FUND================
+===============================MUNDER MICRO-CAP EQUITY FUND ====================
+A.C. MOORE ARTS & CRAFTS, INC.
+Ticker:       ACMR           Security ID:  00086T103
+Meeting Date: JUN 18, 2004   Meeting Type: Annual
+Record Date:  APR 20, 2004
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Richard J. Bauer          For       For        Management
+1.2   Elect  Director Richard J. Drake          For       Withhold   Management
+2     Ratify Auditors                           For       For        Management

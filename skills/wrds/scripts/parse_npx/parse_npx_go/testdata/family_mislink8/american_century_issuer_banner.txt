@@ -1,0 +1,174 @@
+<SEC-DOCUMENT>0001710607-23-000209.txt : 20230828
+<SEC-HEADER>0001710607-23-000209.hdr.sgml : 20230828
+<ACCEPTANCE-DATETIME>20230828093821
+ACCESSION NUMBER:		0001710607-23-000209
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20230828
+DATE AS OF CHANGE:		20230828
+EFFECTIVENESS DATE:		20230828
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AMERICAN CENTURY ETF TRUST
+		CENTRAL INDEX KEY:			0001710607
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001710607
+<SERIES-ID>S000060785
+<SERIES-NAME>American Century Diversified Corporate Bond ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000197601
+<CLASS-CONTRACT-NAME>American Century Diversified Corporate Bond ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>KORP
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001710607
+<SERIES-ID>S000060786
+<SERIES-NAME>American Century U.S. Quality Value ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000197602
+<CLASS-CONTRACT-NAME>American Century U.S. Quality Value ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>VALQ
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001710607
+<SERIES-ID>S000062301
+<SERIES-NAME>American Century Quality Diversified International ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000202058
+<CLASS-CONTRACT-NAME>American Century Quality Diversified International ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>QINT
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001710607
+<SERIES-ID>S000062302
+<SERIES-NAME>American Century U.S. Quality Growth ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000202059
+<CLASS-CONTRACT-NAME>American Century U.S. Quality Growth ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>QGRO
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001710607
+<SERIES-ID>S000066454
+<SERIES-NAME>Avantis Emerging Markets Equity ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214349
+<CLASS-CONTRACT-NAME>Avantis Emerging Markets Equity ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>AVEM
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001710607
+<SERIES-ID>S000072999
+<SERIES-NAME>Avantis Real Estate ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000229748
+<CLASS-CONTRACT-NAME>Avantis Real Estate ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>AVRE
+</CLASS-CONTRACT>
+</SERIES>
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>acetftn-px2023.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<html><head>
+<!-- Document created using Wdesk -->
+<!-- Copyright 2023 Workiva -->
+<title>ACETFT N-PX 2023</title></head>
+<body style="font-family:Times New Roman;font-size:10pt;">
+<p align='center' style='font-weight:bold'>FORM N-PX</p>
+<br><br>
+<p >ICA File Number:&nbsp;&nbsp;811-23305</p><p >Registrant Name:&nbsp;&nbsp;American Century ETF Trust</p><p >Reporting Period:&nbsp;&nbsp;07/01/2022 - 06/30/2023</p>
+<br style='page-break-after:always;'><p align='center'>Avantis Emerging Markets Equity</p>
+
+<table cellPadding='2' cellSpacing='0' width='100%' border='1'>
+<tr style='font-size:10pt;border:none;'><th style='font-size:10pt;border:none;' colspan='5'>&nbsp;</th></tr>
+<tr>
+<td style='font-size:10pt;font-weight:bold;' colSpan='5'>360 DIGITECH, INC.
+<br>Meeting Date:&nbsp;&nbsp;MAR 31, 2023
+<br>Record Date:&nbsp;&nbsp;FEB 28, 2023
+<br>Meeting Type:&nbsp;&nbsp;EXTRAORDINARY SHAREHOLDERS
+</td>
+</tr>
+<tr>
+<td style='font-size:10pt;' colSpan='5'>
+Ticker:&nbsp;&nbsp;3660
+<br>Security ID:&nbsp;&nbsp;88557W101
+<br>
+</td>
+</tr>
+<tr>
+<th style='font-size:10pt' width='10%'>Proposal No</th>
+<th style='font-size:10pt' width='55%'>Proposal</th>
+<th style='font-size:10pt' width='15%'>Proposed By</th>
+<th style='font-size:10pt' width='15%'>Management Recommendation</th>
+<th style='font-size:10pt' width='10%'>Vote Cast</th>
+</tr>
+<tr>
+<td style='font-size=10pt'>1</td>
+<td style='font-size=10pt'>Approve Change of English Name and Adopt Chinese Name as Dual Foreign Name of the Company</td>
+<td style='font-size=10pt'>Management</td>
+<td style='font-size=10pt'>For</td>
+<td style='font-size=10pt'>For</td>
+</tr>
+
+
+<table cellPadding='2' cellSpacing='0' width='100%' border='1'>
+<tr style='font-size:10pt;border:none;'><th style='font-size:10pt;border:none;' colspan='5'>&nbsp;</th></tr>
+<tr>
+<td style='font-size:10pt;font-weight:bold;' colSpan='5'>GEK TERNA HOLDING REAL ESTATE CONSTRUCTION SA
+<br>Meeting Date:&nbsp;&nbsp;OCT 20, 2022
+<br>Record Date:&nbsp;&nbsp;OCT 14, 2022
+<br>Meeting Type:&nbsp;&nbsp;EXTRAORDINARY SHAREHOLDERS
+</td>
+</tr>
+<tr>
+<td style='font-size:10pt;' colSpan='5'>
+Ticker:&nbsp;&nbsp;GEKTERNA
+<br>Security ID:&nbsp;&nbsp;X3125P102
+<br>
+</td>
+</tr>
+<tr>
+<th style='font-size:10pt' width='10%'>Proposal No</th>
+<th style='font-size:10pt' width='55%'>Proposal</th>
+<th style='font-size:10pt' width='15%'>Proposed By</th>
+<th style='font-size:10pt' width='15%'>Management Recommendation</th>
+<th style='font-size:10pt' width='10%'>Vote Cast</th>
+</tr>
+<tr>
+<td style='font-size=10pt'>1</td>
+<td style='font-size=10pt'>Amend Article 4 Re: Duration of the Company</td>
+<td style='font-size=10pt'>Management</td>
+<td style='font-size=10pt'>For</td>
+<td style='font-size=10pt'>For</td>
+</tr>
+<tr>
+<td style='font-size=10pt'>2</td>
+<td style='font-size=10pt'>Authorize Share Repurchase Program</td>
+<td style='font-size=10pt'>Management</td>
+<td style='font-size=10pt'>For</td>
+<td style='font-size=10pt'>For</td>
+</tr>
+</table>
+
+</body></html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

@@ -1,0 +1,25 @@
+
+
+Ticker:                      Security ID: 37045V100
+Meeting Date: JUN 10, 2014   Meeting Type: Annual
+Record Date: APR 11, 2014
+
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1a    Elect Director Joseph J. Ashton         For       For          Management
+1b    Elect Director Mary T. Barra            For       For          Management
+1c    Elect Director Erroll B. Davis, Jr.     For       For          Management
+1d    Elect Director Stephen J. Girsky        For       For          Management
+1e    Elect Director E. Neville Isdell        For       For          Management
+1f    Elect Director Kathryn V. Marinello     For       For          Management
+1g    Elect Director Michael G. Mullen        For       For          Management
+1h    Elect Director James J. Mulva           For       For          Management
+1i    Elect Director Patricia F. Russo        For       For          Management
+1j    Elect Director Thomas M. Schoewe        For       For          Management
+1k    Elect Director Theodore M. Solso        For       For          Management
+1l    Elect Director Carol M. Stephenson      For       For          Management
+2     Ratify Auditors                         For       For          Management
+3     Advisory Vote to Ratify Named Executive For       For          Management
+       Officers' Compensation
+4     Advisory Vote on Say on Pay Frequency   1Year     1Year        Management
+5     Approve Executive Incentive Bonus Plan  For       For          Management

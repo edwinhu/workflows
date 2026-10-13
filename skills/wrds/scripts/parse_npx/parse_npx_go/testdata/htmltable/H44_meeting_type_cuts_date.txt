@@ -1,0 +1,330 @@
+<SEC-DOCUMENT>0001144204-19-036120.txt : 20190726
+<SEC-HEADER>0001144204-19-036120.hdr.sgml : 20190726
+<ACCEPTANCE-DATETIME>20190726101308
+ACCESSION NUMBER:		0001144204-19-036120
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20190630
+FILED AS OF DATE:		20190726
+DATE AS OF CHANGE:		20190726
+EFFECTIVENESS DATE:		20190726
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Keeley Funds, Inc.
+		CENTRAL INDEX KEY:			0001324203
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21761
+		FILM NUMBER:		19976254
+
+	BUSINESS ADDRESS:	
+		STREET 1:		141 WEST JACKSON BOULEVARD
+		STREET 2:		SUITE 2150
+		CITY:			CHICAGO
+		STATE:			IL
+		ZIP:			60604
+		BUSINESS PHONE:		800-422-3554
+
+	MAIL ADDRESS:	
+		STREET 1:		ONE CORPORATE CENTER
+		CITY:			RYE
+		STATE:			NY
+		ZIP:			10580-1434
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001324203
+<SERIES-ID>S000012526
+<SERIES-NAME>Keeley All Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000034057
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>KACVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000057119
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>KACIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324203
+<SERIES-ID>S000018569
+<SERIES-NAME>Keeley Small-Mid Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000051528
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>KSMVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000053918
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>KSMIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324203
+<SERIES-ID>S000020339
+<SERIES-NAME>Keeley Small Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000057116
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>KSCVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000057117
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>KSCIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324203
+<SERIES-ID>S000026907
+<SERIES-NAME>Keeley Small Cap Dividend Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080997
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>KSDVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080998
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>KSDIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001324203
+<SERIES-ID>S000034099
+<SERIES-NAME>Keeley Mid Cap Dividend Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000105122
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>KMDVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000105123
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>KMDIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>e525725_npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<P STYLE="margin: 0">&nbsp;</P>
+
+<P STYLE="margin: 0"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">UNITED STATES<BR>
+SECURITIES AND EXCHANGE COMMISSION<BR>
+Washington, DC 20549</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>FORM N-PX</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>ANNUAL REPORT OF PROXY VOTING
+RECORD OF REGISTERED <BR>
+MANAGEMENT INVESTMENT COMPANY</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Investment Company Act file number
+<U>811-21761&#9;</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Keeley Funds, Inc.&#9;</P>
+
+<!-- Field: Rule-Page --><DIV STYLE="margin: 3pt auto; width: 50%"><DIV STYLE="font-size: 1pt; border-top: Black 1pt solid">&nbsp;</DIV></DIV><!-- Field: /Rule-Page -->
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">(Exact name of registrant as specified in charter)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">141 West Jackson Boulevard</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Suite 2150</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Chicago, IL 60604</P>
+
+<!-- Field: Rule-Page --><DIV STYLE="margin: 3pt auto; width: 50%"><DIV STYLE="font-size: 1pt; border-top: Black 1pt solid">&nbsp;</DIV></DIV><!-- Field: /Rule-Page -->
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">(Address of principal executive offices) (Zip code)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Kevin Keeley</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">141 West Jackson Boulevard</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Suite 2150</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Chicago, IL 60604&#9;</P>
+
+<!-- Field: Rule-Page --><DIV STYLE="margin: 3pt auto; width: 50%"><DIV STYLE="font-size: 1pt; border-top: Black 1pt solid">&nbsp;</DIV></DIV><!-- Field: /Rule-Page -->
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">(Name and address of agent for service)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Registrant's telephone number,
+including area code: <U>302-786-5000</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Date of fiscal year end: <U>September
+30 </U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Date of reporting period: <U>July
+1, 2018 &ndash; June 30, 2019</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: justify">Form N-PX is to be used by a
+registered management investment company, other than a small business investment company registered on Form N-5 (&sect;&sect; 239.24
+and 274.5 of this chapter), to file reports with the Commission, not later than August 31 of each year, containing the registrant's
+proxy voting record for the most recent twelve-month period ended June 30, pursuant to section 30 of the Investment Company Act
+of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4). The Commission may use the information provided on Form N-PX in its regulatory,
+disclosure review, inspection, and policymaking roles.</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: justify">A registrant is required to
+disclose the information specified by Form N-PX, and the Commission will make this information public. A registrant is not required
+to respond to the collection of information contained in Form N-PX unless the Form displays a currently valid Office of Management
+and Budget (&quot;OMB&quot;) control number. Please direct comments concerning the accuracy of the information collection burden
+estimate and any suggestions for reducing the burden to the Secretary, Securities and Exchange Commission, 450 Fifth Street, NW,
+Washington, DC 20549-0609. The OMB has reviewed this collection of information under the clearance requirements of 44 U.S.C. &sect;
+3507.</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: justify"></P>
+
+<!-- Field: Page; Sequence: 1 -->
+    <DIV STYLE="margin-top: 12pt; margin-bottom: 6pt; border-bottom: Black 1pt solid"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt; margin-bottom: 12pt"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>PROXY VOTING RECORD</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>FOR PERIOD JULY 1, 2018 TO
+JUNE 30, 2019</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: left"></P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 65%"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>&nbsp;Keeley All Cap Value Fund</B></FONT></TD>
+    <TD STYLE="width: 10%">&nbsp;</TD>
+    <TD STYLE="width: 12%">&nbsp;</TD>
+    <TD STYLE="width: 13%">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Reporting period July 1, 2018 through the Fund's liquidation on July 27, 2018.</B></FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">HILLTOP HOLDINGS INC.</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Ticker:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HTH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Security ID:&nbsp;&nbsp;432748101</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Meeting Date: JUL 25, 2018&nbsp;&nbsp;&nbsp;Meeting Type: Annual</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Record Date:&nbsp;&nbsp;MAY 10, 2018</FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Proposal</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Mgt Rec</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Vote Cast</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Sponsor</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">1.1&nbsp;&nbsp;&nbsp;Elect Director Charlotte Jones Anderson</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Withhold</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Management</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">1.2&nbsp;&nbsp;&nbsp;Elect Director Rhodes R. Bobbitt</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Withhold</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Management</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">1.3&nbsp;&nbsp;&nbsp;Elect Director Tracy A. Bolt</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Management</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">1.4&nbsp;&nbsp;&nbsp;Elect Director W. Joris Brinkerhoff</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Withhold</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Management</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">1.5&nbsp;&nbsp;&nbsp;Elect Director J. Taylor Crandall</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Withhold</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Management</FONT></TD></TR>

@@ -1,0 +1,42 @@
+		COMPANY CONFORMED NAME:			VANTAGEPOINT FUNDS
+		CENTRAL INDEX KEY:			0001066980
+Vantagepoint 500 Stock Index Fund
+
+Subadviser: Mellon Capital Management Corp.
+
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 10, 2005   Meeting Type: Annual
+Record Date:  MAR 11, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Vance D. Coffman           For       For        Management
+1.2   Elect Director Rozanne L. Ridgway         For       For        Management
+1.3   Elect Director Louis W. Sullivan          For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Approve Omnibus Stock Plan                For       For        Management
+4     Eliminate Animal Testing                  Against   Against    Shareholder
+5     Implement China Principles                Against   Against    Shareholder
+Vantagepoint Asset Allocation Fund
+
+Subadviser: Mellon Capital Management Corp.
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 10, 2005   Meeting Type: Annual
+Record Date:  MAR 11, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Vance D. Coffman           For       For        Management
+1.2   Elect Director Rozanne L. Ridgway         For       For        Management
+1.3   Elect Director Louis W. Sullivan          For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Approve Omnibus Stock Plan                For       For        Management
+4     Eliminate Animal Testing                  Against   Against    Shareholder
+5     Implement China Principles                Against   Against    Shareholder
+

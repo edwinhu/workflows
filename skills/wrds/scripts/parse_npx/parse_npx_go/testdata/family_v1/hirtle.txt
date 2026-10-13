@@ -1,0 +1,94 @@
+		COMPANY CONFORMED NAME:			HIRTLE CALLAGHAN TRUST
+		CENTRAL INDEX KEY:			0000934563
+<DIV align="left" style="font-size: 10pt; margin-top: 12pt"><B>Hirtle Callaghan Trust Growth Equity &#151; 11VB</B>
+</DIV>
+<TABLE style="font-size: 10pt" cellspacing="0" border="0" cellpadding="0" width="100%">
+<TR style="font-size: 8pt" valign="bottom">
+    <TD nowrap align="left">Mtg</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left" colspan="3">Company/</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left">Mgmt</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left">Vote</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left">Record</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="right">Shares</TD>
+</TR>
+<TR style="font-size: 8pt" valign="bottom">
+    <TD nowrap align="left">Date/Type</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left" colspan="3">Ballot Issues</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left">Security</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left">Rec</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left">Cast</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left">Date</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left">Prpnent</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="right">Voted</TD>
+</TR>
+<TR valign="bottom">
+    <TD align="left" valign="top">05/09/06 - A</TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="3" valign="top" align="left"><B>3M CO *MMM*</B></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">88579Y101</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">03/10/06</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">66,612</TD>
+</TR>
+<TR valign="bottom">
+    <TD align="left" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">1</TD>
+    <TD>&nbsp;</TD>
+    <TD><DIV style="margin-left:15px; text-indent:-15px">Elect Directors</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Mgmt</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+    <TD align="left" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">2</TD>
+    <TD>&nbsp;</TD>
+    <TD><DIV style="margin-left:15px; text-indent:-15px">Ratify Auditors</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">For</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">Mgmt</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">&nbsp;</TD>
+</TR>

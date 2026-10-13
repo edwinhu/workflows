@@ -1,0 +1,232 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ BLyjXYbtHDIHw1eHH6XkPRVQtgf2s9ypevm55qug0u0+rJOuAwAzQa/j29urkz6x
+ Z3Aw/oEa0Ql6rueh8zMeNg==
+
+<SEC-DOCUMENT>0000088053-04-000649.txt : 20040826
+<SEC-HEADER>0000088053-04-000649.hdr.sgml : 20040826
+<ACCEPTANCE-DATETIME>20040826160117
+ACCESSION NUMBER:		0000088053-04-000649
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040826
+DATE AS OF CHANGE:		20040826
+EFFECTIVENESS DATE:		20040826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SCUDDER VARIABLE SERIES II
+		CENTRAL INDEX KEY:			0000810573
+		IRS NUMBER:				810105002
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05002
+		FILM NUMBER:		04999080
+
+	BUSINESS ADDRESS:	
+		STREET 1:		222 SOUTH RIVERSIDE PLAZA
+		CITY:			CHICAGO
+		STATE:			IL
+		ZIP:			60606
+		BUSINESS PHONE:		3125371569
+
+	MAIL ADDRESS:	
+		STREET 1:		222 SOUTH RIVERSIDE PLAZA
+		CITY:			CHICAGO
+		STATE:			IL
+		ZIP:			60606
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	KEMPER VARIABLE SERIES /MA/
+		DATE OF NAME CHANGE:	20000225
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	INVESTORS FUND SERIES
+		DATE OF NAME CHANGE:	19970708
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	KEMPER INVESTORS FUND
+		DATE OF NAME CHANGE:	19920703
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-allfunds.txt
+<DESCRIPTION>N-PX FILING
+<TEXT>
+                                  UNITED STATES
+
+                       SECURITIES AND EXCHANGE COMMISSION
+
+                              Washington, DC 20549
+
+                                    FORM N-PX
+                     ANNUAL REPORT OF PROXY VOTING RECORD OF
+                         Scudder Aggressive Growth Fund
+                           Scudder Blue Chip Portfolio
+                 Scudder Conservative Income Strategy Portfolio
+                         Scudder Fixed Income Portfolio
+                       Scudder Global Blue Chip Portfolio
+                Scudder Government & Agency Securities Portfolio
+                            Scudder Growth Portfolio
+                        Scudder Growth Strategy Portfolio
+                  Scudder Growth and Income Strategy Portfolio
+                          Scudder High Income Portfolio
+                  Scudder Income and Growth Strategy Portfolio
+                  Scudder International Select Equity Portfolio
+                        Scudder Large Cap Value Portfolio
+                         Scudder Money Market Portfolio
+                       Scudder Small Cap Growth Portfolio
+                       Scudder Strategic Income Portfolio
+                       Scudder Technology Growth Portfolio
+                         Scudder Total Return Portfolio
+                        SVS Davis Venture Value Portfolio
+                     SVS Dreman Financial Services Portfolio
+                     SVS Dreman High Return Equity Portfolio
+                      SVS Dreman Small Cap Value Portfolio
+                  SVS Eagle Focused Large Cap Growth Portfolio
+                        SVS Focus Value+Growth Portfolio
+                             SVS Index 500 Portfolio
+                      SVS Invesco Dynamic Growth Portfolio
+                      SVS Janus Growth and Income Portfolio
+                    SVS Janus Growth Opportunities Portfolio
+                        SVS MFS Strategic Value Portfolio
+                       SVS Oak Strategic Equity Portfolio
+                       SVS Turner Mid Cap Growth Portfolio
+
+                   Each a Series of Scudder Variable Series II
+
+Investment Company Act file number  811-5002
+
+                           Scudder Variable Series II
+               (Exact name of registrant as specified in charter)
+
+
+                            222 South Riverside Plaza
+                                Chicago, IL 60606
+               (Address of principal executive offices) (Zip code)
+
+                                  John Millette
+                                    Secretary
+                             Two International Place
+                                Boston, MA 02110
+                     (Name and address of agent for service)
+
+Registrant's telephone number, including area code: 617-295-1000
+
+Date of fiscal year end:  12/31
+                          -------
+
+Date of reporting period:  7/1/03-6/30/04
+                         ----------------
+
+Form N-PX is to be used by a registered management investment company, other
+than a small business investment company registered on Form N-5 (ss.ss. 239.24
+and 274.5 of this chapter), to file reports with the Commission, not later than
+August 31 of each year, containing the registrant's proxy voting record for the
+most recent twelve-month period ended June 30, pursuant to section 30 of the
+Investment Company Act of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4).
+The Commission may use the information provided on Form N-PX in its regulatory,
+disclosure review, inspection, and policymaking roles.
+
+A registrant is required to disclose the information specified by Form N-PX, and
+the Commission will make this information public. A registrant is not required
+to respond to the collection of information contained in Form N-PX unless the
+Form displays a currently valid Office of Management and Budget ("OMB") control
+number. Please direct comments concerning the accuracy of the information
+collection burden estimate and any suggestions for reducing the burden to the
+Secretary, Securities and Exchange Commission, 450 Fifth Street, NW, Washington,
+DC 20549-0609. The OMB has reviewed this collection of information under the
+clearance requirements of 44 U.S.C. ss. 3507.
+
+
+ProxyEdge -  Investment Company Report                   Report Date: 07/21/2004
+Meeting Date Range: 07/01/2003 to 06/30/2004
+Selected Accounts: SVS II SCUD GLOB BLUE CHIP
+
+<TABLE>
+<CAPTION>
+- ------------------------------------------------------------------------------------------------------------------------------------
+GOLD FIELDS LTD                                                                                         AGM Meeting Date: 11/18/2003
+Issuer: S31755101                                      ISIN: ZAE000018123
+SEDOL:  0298377, 4281221, 5734177, 6280215, 7514861
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+ Proposal                                                                           Proposal           Vote             Against
+  Number    Proposal                                                                Type               Cast              Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>     <C>    <C>    <C>    <C>    <C>    <C>
+
+    1.      RECEIVE AND ADOPT THE FINANCIAL STATEMENTS FOR Management For THE YE
+            30 JUN 2003
+
+    2.1     RE-ELECT MR. J.M. MCMOHAN AS A DIRECTOR                                 Management          For
+
+    2.2     RE-ELECT MR. B.R. VAN ROOYEN AS A DIRECTOR                              Management          For
+
+    2.3     RE-ELECT MR. J.M. C.I. VON AS A DIRECTOR                                Management          For
+
+    2.4     RE-ELECT MR. A.J. WRIGHT AS A DIRECTOR                                  Management          For
+
+   3.S1     AUTHORIZE THE DIRECTORS TO APPROVE THE PURCHASE                         Management          For
+            OF ITS OWN SHARES BY THE COMPA NY OR ANY OF THE
+            COMPANY S SUBSIDIARIES ACQUIRING SHARES IN THE COMPANY OR ANY
+            HOLDING COMPANY OF THE COMPANY S AND THE PURCHASE OF SHARES BY THE
+            COMPANY IN ANY HOLDING COMPANY OF THE COMPANY, NOT EXCEEDING IN
+            AGGREGATE 20% OF THE REL EVANT COMPANY
+                S ISSUED SHARE CAPITAL OF THAT CLASS AT THE TIME THE AUTH ORITY
+            IS GRANTED, AT A PRICE OF NO MORE THAN 10% ABOVE THE WEIGHTED
+            AVERAGE MA RKET VALUE OF THE SECURITIES OVER THE PREVIOUS 5 BUSINESS
+            DAYS; AUTHORITY EXP IRES AT THE END OF 15 MONTHS ; A PAID PRESS
+            ANNOUNCEMENT WILL BE PUBLISHED WHE N THE COMPANY HAS ACQUIRED, ON A
+            CUMULATIVE BASIS, 3% OF THE INITIAL NUMBER OF THE RELEVANT CLASS OF
+            SECURITIES AND FOR EACH 3% IN AGGREGATE OF THE INITIAL NUMBER OF
+            THAT CLASS ACQUIRED THEREAFTER
+
+   4.O1     APPROVE TO PLACE THE ENTIRE AUTHORIZED BUT UNISSUED                     Management          For
+            SHARE CAPITAL OF THE COMPA NY UNDER THE CONTROL
+            OF THE DIRECTORS OF THE COMPANY, AFTER SETTING ASIDE SO M ANY SHARES
+            AS MAY BE REQUIRED TO BE ALLOTTED AND ISSUED BY THE COMPANY IN TERM
+            S OF GF MANAGEMENT INCENTIVE SCHEME AND THE GF NON-EXECUTIVE
+            DIRECTOR SHARE PL AN, AND AUTHORIZE THE DIRECTORS, SUBJECT TO
+            SECTION 221 AND 222 OF THE COMPANI ES ACT, 61 OF 1973, AS AMENDED
+            AND THE LISTING REQUIREMENTS OF THE JSE SECURIT IES EXCHANGE OF
+            SOUTH AFRICA, TO ALLOT AND ISSUE ALL OR PART THEREOF IN THEIR
+            DISCRETION; AUTHORITY EXPIRES AT THE NEXT AGM OF THE COMPANY
+
+   5.O2     AUTHORIZE THE DIRECTORS OF THE COMPANY, PURSUANT                        Management          For
+            TO THE ARTICLES OF ASSOCIATIO N OF THE COMPANY
+            AND SUBJECT TO THE LISTING REQUIREMENTS OF THE JSE SECURITIES
+            EXCHANGE SOUTH AFRICA AND SUBJECT TO THE COMPANIES ACT, 61 OF 1973,
+            AS AMENDE D, TO ALLOT AND ISSUE ORDINARY SHARES TO PUBLIC
+            SHAREHOLDERS AND NOT TO RELATE D PARTIES ORDINARY SHARES FOR CASH,
+            NOT EXCEEDING IN AGGREGATE IN ANY ONE FY, 15% OF THE COMPANY S
+            ISSUED ORDINARY SHARE CAPITAL AT THE MAXIMUM PERMITTED DI SCOUNT OF
+            10% OF THE AVERAGE CLOSING PRICE OF SUCH SHARES OVER THE 30 DAYS PRI
+            OR TO THE DATE THAT THE PRICE OF THE ISSUE IS DETERMINED OR AGREED
+            BY THE DIRE CTORS OF THE COMPANY; AUTHORITY EXPIRES THE EARLIER OF
+            THE NEXT AGM OR 15 MON THS ; A PRESS ANNOUNCEMENT GIVING FULL
+            DETAILS, INCLUDING THE IMPACT ON NET AS SET VALUE AND EARNINGS PER
+            SHARE, WILL BE PUBLISHED AT THE TIME OF ANY ISSUE R EPRESENTING, ON
+            A CUMULATIVE BASIS WITHIN ONE FY, 5% OR MORE OF THE NUMBER OF SHARES
+            IN ISSUE PRIOR TO THE ISSUE
+
+
+
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

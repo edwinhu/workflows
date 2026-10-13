@@ -1,0 +1,109 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ GxiTSHqkiZRfnVaS57zDb215i/Ixx6Js5wx6msRlL9no48ab0LpXRMzxjnMaaKC9
+ bxMnzU1ZRelySeOUxpi2Fg==
+
+<SEC-DOCUMENT>0000088053-05-000967.txt : 20050825
+<SEC-HEADER>0000088053-05-000967.hdr.sgml : 20050825
+<ACCEPTANCE-DATETIME>20050825162626
+ACCESSION NUMBER:		0000088053-05-000967
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050825
+DATE AS OF CHANGE:		20050825
+EFFECTIVENESS DATE:		20050825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SCUDDER VALUE SERIES INC
+		CENTRAL INDEX KEY:			0000825062
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			1130
+
+		DATE OF NAME CHANGE:	19920703
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-allfunds.txt
+<DESCRIPTION>N-PX
+<TEXT>
+
+ProxyEdge -  Investment Company Report                   Report Date: 08/06/2005
+Meeting Date Range: 07/01/2004 to 06/30/2005
+Selected Accounts: Scudder Large Cap Value Fund
+
+
+<TABLE>
+<CAPTION>
+
+- ----------------------------------------------------------------------------------------------------------------------------------
+SUNTRUST BANKS, INC.                                                           STI                Special Meeting Date: 09/15/2004
+Issuer: 867914                          ISIN:
+SEDOL:
+- ----------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+Proposal                                                                    Proposal         Vote         Against
+Number   Proposal                                                             Type           Cast          Mgmt.
+- ----------------------------------------------------------------------------------------------------------------------------------
+<S>     <C>    <C>    <C>    <C>    <C>    <C>
+
+01       TO APPROVE THE ISSUANCE OF SUNTRUST COMMON STOCK                  Management        For             No
+         TO NATIONAL COMMERCE FINANCIAL CORPORATION SHAREHOLDERS IN THE MERGER
+         PURSUANT TO THE AGREEMENT AND PLAN OF MERGER, DATED AS OF MAY 7, 2004,
+         BY AND BETWEEN SUNTRUST BANKS, INC. AND NATIONAL COMMERCE FINANCIAL
+         CORPORATION (THE MERGER AGREEMENT ), AS DESCRIBED IN THE JOINT PROXY
+<PAGE>
+
+ProxyEdge -  Investment Company Report                   Report Date: 08/03/2005
+Meeting Date Range: 07/01/2004 to 06/30/2005
+Selected Accounts: SVS - Scudder-Dreman Concentrated Value Fund
+
+NO PROXIES RECEIVED OR VOTED FOR THIS FUND
+
+
+<PAGE>
+
+ProxyEdge -  Investment Company Report                   Report Date: 08/06/2005
+Meeting Date Range: 07/01/2004 to 06/30/2005
+Selected Accounts: Scudder Dreman High Return Equity Fund
+
+
+
+- -----------------------------------------------------------------------------------------------------------------------------------
+R.J. REYNOLDS TOBACCO HOLDINGS, INC.                                            RJR                Special Meeting Date: 07/28/2004
+Issuer: 76182K                          ISIN:
+SEDOL:
+- -----------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+Proposal                                                                      Proposal        Vote          Against
+Number   Proposal                                                               Type          Cast           Mgmt.
+- -----------------------------------------------------------------------------------------------------------------------------------
+
+01       A PROPOSAL TO ADOPT THE BUSINESS COMBINATION                        Management       For             No
+         AGREEMENT, BETWEEN BROWN & WILLIAMSON TOBACCO
+         CORPORATION AND R.J. REYNOLDS TOBACCO HOLDINGS,
+         INC., AS SUCH AGREEMENT MAY BE FURTHER AMENDED
+         FROM TIME TO TIME, AND TO APPROVE THE RELATED
+         COMBINATION TRANSACTIONS.
+
+02       A PROPOSAL TO APPROVE THE ADJOURNMENT OF THE                        Management     Against           Yes
+         SPECIAL MEETING, IF NECESSARY, TO SOLICIT ADDITIONAL
+         PROXIES.
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

@@ -1,0 +1,41 @@
+LEGG MASON, INC.
+
+SECURITY          524901105        MEETING TYPE      Annual
+TICKER SYMBOL     LM               MEETING DATE     27-Jul-2010
+ISIN              US5249011058     AGENDA           933305535 - Management
+
+<TABLE>
+<CAPTION>
+                                                   FOR/AGAINST
+ITEM  PROPOSAL                   TYPE        VOTE  MANAGEMENT
+----  -------------------------  ----------  ----  ------------
+<S>   <C>                        <C>         <C>   <C>
+  01  DIRECTOR                   Management
+      1 JOHN T. CAHILL**                     For   For
+      2 DENNIS R. BERESFORD*                 For   For
+      3 NELSON PELTZ*                        For   For
+      4 W. ALLEN REED*                       For   For
+      5 NICHOLAS J. ST. GEORGE*              For   For
+</TABLE>
+<PAGE>
+ProxyEdge                                               Report Date:  07/01/2011
+Meeting Date Range: 07/01/2010 to 06/30/2011                                   5
+The Gabelli Asset Fund
+
+<TABLE>
+<CAPTION>
+                                                                          FOR/AGAINST
+ITEM  PROPOSAL                                      TYPE         VOTE     MANAGEMENT
+----  --------------------------------------------  ----------   ----     -----------
+<S>   <C>                                           <C>          <C>      <C>
+  02  AMENDMENT TO THE LEGG MASON, INC. EXECUTIVE   Management   For      For
+      INCENTIVE COMPENSATION PLAN.
+  03  RATIFICATION OF THE APPOINTMENT OF            Management   For      For
+      PRICEWATERHOUSECOOPERS LLP AS INDEPENDENT
+      REGISTERED PUBLIC ACCOUNTING FIRM.
+  04  STOCKHOLDER PROPOSAL REGARDING THE EXECUTIVE  Shareholder  Against  For
+      INCENTIVE COMPENSATION PLAN.
+  05  STOCKHOLDER PROPOSAL REGARDING INDEPENDENT    Shareholder  Against  For
+      CHAIRMAN.
+</TABLE>
+

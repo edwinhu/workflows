@@ -1,0 +1,228 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ IGURKbT0+Uaiu8nBsYz9qT+l8GEi4mBBzmwIj9bDcNaBw1+smPtHrzCK3OxUr90m
+ OrTwi/gYbmGhorIWwAAZtQ==
+
+<SEC-DOCUMENT>0000088053-04-000666.txt : 20040827
+<SEC-HEADER>0000088053-04-000666.hdr.sgml : 20040827
+<ACCEPTANCE-DATETIME>20040827084853
+ACCESSION NUMBER:		0000088053-04-000666
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040827
+DATE AS OF CHANGE:		20040827
+EFFECTIVENESS DATE:		20040827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SCUDDER INVESTMENT PORTFOLIOS
+		CENTRAL INDEX KEY:			0000906619
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07774
+		FILM NUMBER:		041000461
+
+	BUSINESS ADDRESS:	
+		STREET 1:		FEDERATED INVESTORS TOWER
+		STREET 2:		C/O SIGNATURE FINANCIAL GROUP
+		CITY:			PITTSBURGH
+		STATE:			PA
+		ZIP:			15222-3779
+		BUSINESS PHONE:		6174230800
+
+	MAIL ADDRESS:	
+		STREET 1:		ONE SOUTH STREET
+		STREET 2:		XX
+		CITY:			BALTIMORE
+		STATE:			MD
+		ZIP:			21202
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	BT INVESTMENT PORTFOLIOS
+		DATE OF NAME CHANGE:	19930917
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-allfunds.txt
+<DESCRIPTION>N-PX FILINGS
+<TEXT>
+
+
+
+                                  UNITED STATES
+
+                       SECURITIES AND EXCHANGE COMMISSION
+
+                              Washington, DC 20549
+
+                                    FORM N-PX
+                     ANNUAL REPORT OF PROXY VOTING RECORD OF
+                          Asset Management Portfolio II
+                         Asset Management Portfolio III
+                            U.S. Bond Index Portfolio
+                           EAFE Equity Index Portfolio
+                        PreservationPlus Income Portfolio
+                           PreservationPlus Portfolio
+                 Each a Series of Scudder Investment Portfolios
+
+Investment Company Act file number  811-07774
+
+                          Scudder Investment Portfolios
+               (Exact name of registrant as specified in charter)
+
+
+                                One South Street
+                               Baltimore, MD 21202
+               (Address of principal executive offices) (Zip code)
+
+                                  John Millette
+                                    Secretary
+                             Two International Place
+                                Boston, MA 02110
+                     (Name and address of agent for service)
+
+Registrant's telephone number, including area code: 617-295-1000
+
+Date of fiscal year end:  03/31
+                          -----
+        Asset Management Portfolio II
+        Asset Management Portfolio III
+
+Date of fiscal year end:  09/30
+                          -----
+        PreservationPlus Income Portfolio
+        PreservationPlus Portfolio
+
+
+Date of fiscal year end:  12/31
+                          -----
+        U.S. Bond Index Portfolio
+        EAFE Equity Index Portfolio
+
+Date of reporting period:  7/1/03-6/30/04
+                         ----------------
+
+Form N-PX is to be used by a registered management investment company, other
+than a small business investment company registered on Form N-5 (ss.ss. 239.24
+and 274.5 of this chapter), to file reports with the Commission, not later than
+August 31 of each year, containing the registrant's proxy voting record for the
+most recent twelve-month period ended June 30, pursuant to section 30 of the
+Investment Company Act of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4).
+The Commission may use the information provided on Form N-PX in its regulatory,
+disclosure review, inspection, and policymaking roles.
+
+A registrant is required to disclose the information specified by Form N-PX, and
+the Commission will make this information public. A registrant is not required
+to respond to the collection of information contained in Form N-PX unless the
+Form displays a currently valid Office of Management and Budget ("OMB") control
+number. Please direct comments concerning the accuracy of the information
+collection burden estimate and any suggestions for reducing the burden to the
+Secretary, Securities and Exchange Commission, 450 Fifth Street, NW, Washington,
+DC 20549-0609. The OMB has reviewed this collection of information under the
+clearance requirements of 44 U.S.C. ss. 3507.
+
+<PAGE>
+
+ProxyEdge -  Investment Company Report                   Report Date: 07/22/2004
+Meeting Date Range: 07/01/2003 to 06/30/2004
+Selected Accounts: Asset Mgmt Port II
+
+<TABLE>
+<CAPTION>
+- ------------------------------------------------------------------------------------------------------------------------------------
+NVIDIA CORPORATION                                                              NVDA                 Annual Meeting Date: 07/10/2003
+Issuer: 67066G                                 ISIN:
+SEDOL:
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+ Proposal                                                                       Proposal             Vote             Against
+ Number   Proposal                                                              Type                 Cast              Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>     <C>    <C>    <C>    <C>    <C>    <C>
+
+   01     DIRECTOR                                                              Management            For               No
+
+   02     TO RATIFY THE SELECTION OF KPMG LLP AS NVIDIA                         Management            For               No
+          S INDEPENDENT AUDITORS FOR THE FISCAL YEAR ENDING
+          JANUARY 25, 2004.
+
+
+
+- ------------------------------------------------------------------------------------------------------------------------------------
+ANDREW CORPORATION                                                              ANDW                Special Meeting Date: 07/15/2003
+Issuer: 034425                                 ISIN:
+SEDOL:
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+ Proposal                                                                       Proposal             Vote             Against
+ Number   Proposal                                                              Type                 Cast              Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+   01     TO APPROVE THE ISSUANCE OF SHARES OF ANDREW COMMON                    Management            For               No
+          STOCK AND ANDREW SERIES A 7.75% CONVERTIBLE PREFERRED STOCK IN
+          CONNECTION WITH THE MERGER OF ALLEN TELECOM, INC. WITH AND INTO
+          ADIRONDACKS, LLC., A WHOLLY OWNED SUBSIDIARY OF ANDREW, AS
+          CONTEMPLATED BY THE AGREEMENT AND PLAN OF MERGER AMONG ANDREW,
+          ADIRONDACKS AND ALLEN.
+
+   02     TO AMEND THE CERTIFICATE OF INCORPORATION OF                          Shareholder           For               No
+          ANDREW CORPORATION TO AUTHORIZE THE CREATION OF A SERIES A 7.75%
+          CONVERTIBLE PREFERRED STOCK.
+
+   03     TO AMEND THE CERTIFICATE OF INCORPORATION OF                          Management            For               No
+          ANDREW CORPORATION TO INCREASE THE MAXIMUM SIZE OF THE ANDREW BOARD OF
+          DIRECTORS FROM 11 TO 13.
+
+   04     TO APPROVE ADJOURNMENTS OR POSTPONEMENTS OF THE                       Management          Against             Yes
+          SPECIAL MEETING, IF NECESSARY, TO PERMIT FURTHER SOLICITATION OF
+          PROXIES IF THERE ARE NOT SUFFICIENT VOTES AT THE TIME OF THE SPECIAL
+          MEETING TO APPROVE THE ABOVE PROPOSALS.
+
+
+
+- ------------------------------------------------------------------------------------------------------------------------------------
+CENTEX CORP./3333 HOLDING CORP.                                                 CTX                  Annual Meeting Date: 07/17/2003
+Issuer: 152312                                 ISIN:
+SEDOL:
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+ Proposal                                                                       Proposal             Vote             Against
+ Number   Proposal                                                              Type                 Cast              Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+   01     DIRECTOR                                                              Management            For               No
+
+   C3     APPROVAL OF THE CENTEX CORPORATION 2003 EQUITY                        Management          Against             Yes
+          INCENTIVE PLAN.*
+
+   C4     RATIFICATION OF THE APPOINTMENT OF INDEPENDENT                        Management            For               No
+          AUDITOR FOR 2004.*
+
+   3H2    RATIFICATION OF THE APPOINTMENT OF INDEPENDENT                        Management            For               No
+          AUDITOR FOR 2004.**
+
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

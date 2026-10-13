@@ -1,0 +1,33 @@
+		COMPANY CONFORMED NAME:			ALLIANCEBERNSTEIN VARIABLE PRODUCTS SERIES FUND INC
+		CENTRAL INDEX KEY:			0000825316
+<TEXT>
+=============== ALLIANCEBERNSTEIN VARIABLE PRODUCTS SERIES FUND ================
+============= INC.-ALLIANCEBERNSTEIN BALANCED WEALTH STRATEGY PORT =============
+
+
+A & J MUCKLOW GROUP PLC
+
+Ticker:                      Security ID:  G63252103
+Meeting Date: NOV 2, 2004    Meeting Type: Annual
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept Financial Statements and Statutory For       For        Management
+      Reports
+2     Approve Remuneration Report               For       For        Management
+3     Approve Final Dividend of 6.48 Pence Per  For       For        Management
+      Share
+4     Elect Justin Parker as Director           For       For        Management
+5     Re-elect Peter Petherbridge as Director   For       For        Management
+6     Re-elect David Austin as Director         For       For        Management
+7     Reappoint Deloitte & Touche LLP as        For       For        Management
+      Auditors and Authorise Board to Fix
+      Remuneration of Auditors
+8     Other Business (Non-Voting)               None      None       Management
+
+
+- --------------------------------------------------------------------------------
+
+ADVANCED MICRO DEVICES, INC.
+
+Ticker:       AMD            Security ID:  007903107

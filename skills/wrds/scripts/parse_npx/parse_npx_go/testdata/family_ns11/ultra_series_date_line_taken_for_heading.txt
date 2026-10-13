@@ -1,0 +1,93 @@
+<SEC-DOCUMENT>0001209286-04-000022.txt : 20040831
+<SEC-HEADER>0001209286-04-000022.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831104204
+ACCESSION NUMBER:		0001209286-04-000022
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ULTRA SERIES FUND
+		CENTRAL INDEX KEY:			0000732697
+		STATE OF INCORPORATION:			MA
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-04815
+		FILM NUMBER:		041007020
+
+	BUSINESS ADDRESS:	
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>e36176b.txt
+<TEXT>
+
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                             WASHINGTON, D.C. 20549
+Mgmt Rec - Company Management Recommended Vote                     Page 60 of 60
+<PAGE>
+
+                       ULTRA SERIES GLOBAL SECURITIES FUND
+                           Proxy Voting Summary Report
+                          July 01, 2003 - June 30, 2004
+
+<TABLE>
+<CAPTION>
+Meeting        Company/                                                        Mgmt       Vote       Record                  Shares
+Date/Type      Ballot Issues                                    Security       Rec        Cast       Date        Prpnent      Voted
+- -----------------------------------------------------------------------------------------------------------------------------------
+<S>            <C>                                              <C>            <C>        <C>        <C>         <C>         <C>
+04/29/04 - A   ABN AMRO HOLDING NV                              N0030P459                            04/22/04                 9,200
+               1       Receive Report of Management Board                      None       None                   Mgmt
+               2       Discussion about Company's Corporate Governance         None       None                   Mgmt
+                       Report
+               3.1     Approve Financial Statements and Statutory Reports      For        For                    Mgmt
+               3.2     Approve Dividends                                       For        For                    Mgmt
+               3.3     Approve Discharge of Management Board                   For        For                    Mgmt
+               3.4     Approve Discharge of Supervisory Board                  For        For                    Mgmt
+               4       Approve Remuneration Policy                             For        For                    Mgmt
+               5       Reappoint Ernst & Young as Auditors                     For        For                    Mgmt
+               6       Elect Supervisory Board Member                          For        For                    Mgmt
+               7.1     Abolish Antitakeover Preference Shares through          For        For                    Mgmt
+                       Repurchase and Cancellation of Shares
+               7.2     Amend Articles to Reflect Cancellation of Preference    For        For                    Mgmt
+                       Shares (Item 7.1)
+               8       Authorize Repurchase of Up to Ten Percent of Issued     For        For                    Mgmt
+                       Share Capital
+               9.1     Grant Board Authority to Issue Ordinary Shares and      For        For                    Mgmt
+                       Convertible Preference Shares Up to 20 Percent of
+                       Issued Share Capital
+               9.2     Grant Board Authority to Exclude Preemptive Rights      For        For                    Mgmt
+                       from Issuance Under Item 9.1
+               10      Other Business                                          None       None                   Mgmt
+
+05/27/04 - A   ACE LTD. *ACE*                                   G0070K103                            04/08/04                 3,737
+                       Meeting for Holders of ADRs
+               1       Elect Directors                                         For        For                    Mgmt
+               2       PROPOSAL TO APPROVE THE ACE LIMITED 2004                For        For                    Mgmt
+                       LONG-TERM INCENTIVE PLAN.
+               3       PROPOSAL TO RATIFY THE APPOINTMENT OF                   For        For                    Mgmt
+                       PRICEWATERHOUSECOOPERS LLP AS THE
+                       INDEPENDENT ACCOUNTANTS OF ACE LIMITED
+                       FOR THE FISCAL YEAR ENDING DECEMBER 31,
+                       2004.
+
+04/29/04 - A   ADVANCED MICRO DEVICES, INC. *AMD*               007903107                            03/01/04                 9,300
+               1       Elect Directors                                         For        For                    Mgmt
+               2       Ratify Auditors                                         For        For                    Mgmt
+               3       Approve Omnibus Stock Plan                              For        For                    Mgmt
+
+04/22/04 - A   AEGON NV                                         N0089J123                            04/15/04                25,469
+               1       Open Meeting                                            None       None                   Mgmt
+               2.1     Discussion of the Annual Report 2003                    None       None                   Mgmt
+               2.2     Approve Financial Statements and Statutory Reports      For        For                    Mgmt
+               2.3     Discussion of the Reserves and Dividend Policy          None       None                   Mgmt

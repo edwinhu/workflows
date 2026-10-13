@@ -1,0 +1,467 @@
+		COMPANY CONFORMED NAME:			MCMORGAN FUNDS
+		CENTRAL INDEX KEY:			0000919556
+<TEXT>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td colspan="11" align="left"><font size="2" face="sans-serif"><b>Account
+      &#150; McM Balanced Fund</b></font><font size="2" face="sans-serif">&nbsp;</font><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top">
+    <td colspan="25" align="left"><font size="2" face="sans-serif">
+      <hr size="1" noshade>
+      </font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td colspan="4" align="left"><font size="2" face="sans-serif"><b>DELL COMPUTER
+      CORPORATION</b></font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td colspan="4" align="left"><font size="2" face="sans-serif"><b>Ticker: DELL</b></font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td colspan="7" align="right"><font size="2" face="sans-serif"><b>Annual Meeting
+      Date: 07/18/2003</b></font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td colspan="2" align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td colspan="2" align="left"><font size="2" face="sans-serif"><b>Issuer: 247025</b></font></td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif"><b>City: </b></font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td colspan="10" align="right"><font size="2" face="sans-serif"><b>Holdings
+      Reconciliation Date: 05/23/2003</b></font> </td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td colspan="10" align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td align="left"><font size="2" face="sans-serif"><b>ISIN: </b></font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td colspan="10" align="left"><font size="2" face="sans-serif"><b>Country:
+      UNITED STATES</b></font><font size="2" face="sans-serif">&nbsp;</font><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td colspan="10" align="right"><font size="2" face="sans-serif"><b>Vote Deadline
+      Date: 07/18/2003</b></font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td colspan="2" align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td colspan="2" align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td colspan="2" align="left"><font size="2" face="sans-serif"><b>Currency
+      Code: </b></font></td>
+    <td align="right">&nbsp;</td>
+    <td colspan="6" align="left"><font size="2" face="sans-serif"><b>Par Value:
+      </b></font></td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td align="left"><font size="2" face="sans-serif"><b>SEDOL: </b></font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top">
+    <td colspan="25" align="left"><font size="2" face="sans-serif">
+      <hr size="1" noshade>
+      </font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top">
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td colspan="4" align="left"><font size="2" face="sans-serif"><b>Vote Group:
+      GLOBAL</b></font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td colspan="9" align="left"><font size="2" face="sans-serif"><b>Agenda: 932010123&nbsp;-&nbsp;MANAGEMENT</b></font><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="bottom" bgcolor="#FFFFFF">
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="center">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="bottom" bgcolor="#FFFFFF">
+    <td align="left" nowrap><font size="2" face="sans-serif">Proposal Number</font></td>
+    <td align="left"><div align="center"></div></td>
+    <td align="right"><div align="center"></div></td>
+    <td align="center"><div align="center"><font size="2" face="sans-serif">Vote
+        Cast</font></div></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="center"><font size="2" face="sans-serif">RV*</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">Proposal</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top">
+    <td colspan="25" align="left"><font size="2" face="sans-serif">
+      <hr size="1" noshade>
+      </font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#ffffff">
+    <td align="left"><div align="center"><font size="2" face="sans-serif">01</font></div></td>
+    <td align="left"><div align="center"></div></td>
+    <td align="right"><div align="center"></div></td>
+    <td align="center"><div align="center"><font size="2" face="sans-serif">For</font></div></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="center"><font size="2" face="sans-serif">For</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td colspan="4" align="left" nowrap><font size="2" face="sans-serif">ELECTION
+      OF DIRECTORS</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td align="left"><div align="center"><font size="2" face="sans-serif">02</font></div></td>
+    <td align="left"><div align="center"></div></td>
+    <td align="right"><div align="center"></div></td>
+    <td align="center"><div align="center"><font size="2" face="sans-serif">For</font></div></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="center"><font size="2" face="sans-serif">For</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td colspan="4" align="left"><font size="2" face="sans-serif">DECLASSIFY BOARD</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#ffffff">
+    <td align="left"><div align="center"><font size="2" face="sans-serif">03</font></div></td>
+    <td align="left"><div align="center"></div></td>
+    <td align="right"><div align="center"></div></td>
+    <td align="center"><div align="center"><font size="2" face="sans-serif">For</font></div></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="center"><font size="2" face="sans-serif">For</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td colspan="7" align="left" nowrap><font size="2" face="sans-serif">APPROVE
+      COMPANY NAME CHANGE</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top" bgcolor="#FFFFFF">
+    <td align="left"><div align="center"><font size="2" face="sans-serif">04</font></div></td>
+    <td align="left"><div align="center"></div></td>
+    <td align="right"><div align="center"></div></td>
+    <td align="center"><div align="center"><font size="2" face="sans-serif">For</font></div></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="center"><font size="2" face="sans-serif">For</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td colspan="7" align="left"><font size="2" face="sans-serif">ADOPT OMNIBUS
+      STOCK OPTION PLAN</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>
+    <td align="left">&nbsp;</td>
+    <td align="right">&nbsp;</td>
+    <td align="left"><font size="2" face="sans-serif">&nbsp;</font></td>

@@ -1,0 +1,45 @@
+<SEC-DOCUMENT>0000950129-05-008752.txt : 20050829
+<SEC-HEADER>0000950129-05-008752.hdr.sgml : 20050829
+<ACCEPTANCE-DATETIME>20050829085218
+ACCESSION NUMBER:		0000950129-05-008752
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050829
+		COMPANY CONFORMED NAME:			VALIC CO I
+		CENTRAL INDEX KEY:			0000719423
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>h28231nvpx.txt
+<DESCRIPTION>VALIC COMPANY I - JUNE 30, 2005
+<TEXT>
+   Item 1. Proxy Voting Record
+   Account Number: F423 Small Cap
+
+   ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+   3D Systems Corp TDSC  88554D205  5/17/05  Annual
+   1.01   Elect Miriam V. Gold MGMT YES FOR FOR
+   1.02   Elect Jim D. Kever MGMT YES FOR FOR
+   1.03   Elect Kevin S. Moore MGMT YES FOR FOR
+   Item 1. Proxy Voting Record
+   Account Number: F438 part of F423
+
+   ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+   Abaxis Inc ABAX  002567105  10/19/04  Annual
+   1.01   Elect Clinton H. Severson MGMT YES FOR FOR
+   1.02   Elect Richard J. Bastiani MGMT YES FOR FOR
+   1.03   Elect Ernest S. Tucker III MGMT YES FOR FOR
+   Item 1. Proxy Voting Record
+   Account Number: F424 part of f423
+
+   ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+   7-Eleven Inc SE  817826209  4/27/05  Annual
+   1.01   Elect Toshifumi Suzuki MGMT YES FOR FOR
+   1.02   Elect Yoshitami Arai MGMT YES FOR FOR
+   1.03   Elect Masaaki Asakura MGMT YES FOR FOR
+   1.04   Elect Jay W. Chai MGMT YES FOR FOR

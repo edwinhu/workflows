@@ -1,0 +1,1057 @@
+            <table cellpadding="2" cellspacing="0" width="100%">
+                <tr>
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Company</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="6%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Ticker</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Security
+      ID</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Meeting
+      Date</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Record
+      Date</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Meeting
+      Type</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Meeting
+      Status</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Agenda
+      Item</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Proponent</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt
+      Rec</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Vote
+      Cast</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">With/Against
+      Management</font></div>
+                  </td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Annual
+      Meeting</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Open
+      Meeting</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Receive
+      Report of Management Board</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Approve
+      Financial Statements</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Approve
+      Allocation of Income</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Receive
+      Explanation on Company's Reserves and Dividend Policy</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Approve
+      Dividends of EUR 1.80 Per Share</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Approve
+      Discharge of Management Board</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Approve
+      Discharge of Supervisory Board</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Approve
+      Increase in Size of Executive Board</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Elect
+      L.W. Gunning to Executive Board</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Approve
+      Decrease in Size of Supervisory Board from Nine to Eight
+      Members</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Amend
+      Executive Short Term Incentive Bonus</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Amend
+      Restricted Stock Plan</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Grant
+      Board Authority to Issue Shares</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Authorize
+      Board to Exclude Preemptive Rights from Issuance under Item
+    8a</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Authorize
+      Repurchase of Shares</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Did
+      Not Vote</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Akzo
+      Nobel N.V.</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N01803100</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39930</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39902</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">EGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Submitted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Other
+      Business</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Allianz
+      SE&#160;&#160;(formerly Allianz AG)</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">D03080112</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39932</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N/A</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">AGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Voted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Receive
+      Financial Statements and Statutory Reports for Fiscal 2008
+      (Non-Voting)</font></div>
+                  </td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td valign="bottom" width="7%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Allianz
+      SE&#160;&#160;(formerly Allianz AG)</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">D03080112</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39932</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N/A</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">AGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Voted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Approve
+      Allocation of Income and Dividends of EUR 3.50 per Share</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">With</font></div>
+                  </td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Allianz
+      SE&#160;&#160;(formerly Allianz AG)</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">D03080112</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39932</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N/A</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">AGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Voted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Approve
+      Discharge of Management Board for Fiscal 2008</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">With</font></div>
+                  </td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Allianz
+      SE&#160;&#160;(formerly Allianz AG)</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">D03080112</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39932</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N/A</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">AGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Voted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Approve
+      Discharge of Supervisory Board for Fiscal 2008</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">With</font></div>
+                  </td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Allianz
+      SE&#160;&#160;(formerly Allianz AG)</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">D03080112</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39932</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N/A</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">AGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Voted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Elect
+      Karl Grimm to the Supervisory Board</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">With</font></div>
+                  </td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Allianz
+      SE&#160;&#160;(formerly Allianz AG)</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">D03080112</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39932</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N/A</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">AGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Voted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Authorize
+      Repurchase of up to 5 Percent of Issued Share Capital for Trading
+      Purposes</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">With</font></div>
+                  </td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Allianz
+      SE&#160;&#160;(formerly Allianz AG)</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">D03080112</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39932</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N/A</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">AGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Voted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Authorize
+      Share Repurchase Program and Reissuance or Cancellation of Repurchased
+      Shares</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">With</font></div>
+                  </td>
+                </tr>
+                <tr bgcolor="white">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Allianz
+      SE&#160;&#160;(formerly Allianz AG)</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">D03080112</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39932</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">N/A</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">AGM</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Voted</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="15%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Authorize
+      Use of Financial Derivatives of up to 5 Percent of Issued Share Capital
+      When Repurchasing Shares&lt;p&gt;</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Mgmt</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">For</font></div>
+                  </td>
+                  <td align="left" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">With</font></div>
+                  </td>
+                </tr>
+                <tr bgcolor="#ccffcc">
+                  <td align="left" valign="bottom" width="13%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">Allianz
+      SE&#160;&#160;(formerly Allianz AG)</font></div>
+                  </td>
+                  <td valign="bottom" width="6%"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">&#160;
+      </font></td>
+                  <td align="left" valign="bottom" width="10%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">D03080112</font></div>
+                  </td>
+                  <td align="right" valign="bottom" width="7%">
+                    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 8pt; FONT-FAMILY: Times New Roman">39932</font></div>
+                  </td>

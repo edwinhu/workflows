@@ -1,0 +1,83 @@
+<SEC-DOCUMENT>0000088053-05-000977.txt : 20050826
+<SEC-HEADER>0000088053-05-000977.hdr.sgml : 20050826
+<ACCEPTANCE-DATETIME>20050826092327
+ACCESSION NUMBER:		0000088053-05-000977
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050826
+DATE AS OF CHANGE:		20050826
+EFFECTIVENESS DATE:		20050826
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SCUDDER ADVISOR FUNDS II
+		CENTRAL INDEX KEY:			0000948630
+		IRS NUMBER:				043288230
+		STATE OF INCORPORATION:			MA
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-allfunds.txt
+<DESCRIPTION>N-PX FILING
+<TEXT>
+                                    FORM N-PX
+                     ANNUAL REPORT OF PROXY VOTING RECORD OF
+                         Scudder EAFE Equity Index Fund
+<PAGE>
+
+ProxyEdge -  Investment Company Report                   Report Date: 08/03/2005
+Meeting Date Range: 07/01/2004 to 06/30/2005
+Selected Accounts: Scudder Adv Funds II - EAFE Equity Index Fund
+
+Scudder EAFE Equity Index, a series of Scudder  Advisor Funds II, is a feeder in
+a  master/feeder  structure.  Accordingly,  Scudder EAFE Equity Index holds only
+securities of its master fund, EAFE Equity Index Portfolio,  a series of Scudder
+Investment  Portfolios.  Included in this filing is the proxy voting  record for
+the EAFE Equity Index Portfolio.
+
+ProxyEdge -  Investment Company Report                   Report Date: 08/10/2005
+Meeting Date Range: 07/01/2004 to 06/30/2005
+Selected Accounts: Scudder Inv Portfolio EAFE Equity Index Portfolio
+<TABLE>
+<CAPTION>
+- ------------------------------------------------------------------------------------------------------------------------------------
+3I GROUP PLC (FORMERLY INVESTORS IN INDUSTRY PLC)                                  AGM Meeting Date: 07/07/2004
+Issuer: G4708P104                                     ISIN: GB0008886938
+SEDOL:  0888693, 5922949
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+Proposal                                                                               Proposal           Vote              Against
+Number      Proposal                                                                     Type             Cast               Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+1.          RECEIVE AND CONSIDER THE COMPANY S ACCOUNTS FOR                           Management           For
+            THE YE 31 MAR 2004 AND THE DIR ECTORS  REPORT
+            AND THE AUDITORS  REPORT THEREON
+
+2.          APPROVE THE DIRECTORS  REMUNERATION REPORT FOR                            Management           For
+            THE YE 31 MAR 2004
+
+3.          DECLARE A FINAL DIVIDEND OF 8.9P PER SHARE NET,                           Management           For
+            PAYABLE TO SHAREHOLDERS ON THE REGISTER OF MEMBERS
+            ON 18 JUN 2004
+
+4.          RE-APPOINT MR. BARONESS HOGG AS A DIRECTOR OF                             Management           For
+            THE COMPANY
+
+5.          RE-APPOINT MR. P.E YEA AS A DIRECTOR OF THE COMPANY                       Management           For
+
+6.          RE-APPOINT ERNST & YOUNG LLP AS THE AUDITORS                              Management           For
+            OF THE COMPANY UNTIL THE CONCLUSI ON OF THE NEXT
+            GENERAL MEETING AT WHICH ACCOUNTS ARE LAID BEFORE
+            THE MEMBERS
+
+7.          AUTHORIZE THE BOARD TO FIX THE AUDITORS  REMUNERATION                     Management           For
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

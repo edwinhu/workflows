@@ -1,0 +1,119 @@
+		COMPANY CONFORMED NAME:			MORGAN STANLEY INSTITUTIONAL FUND INC
+		CENTRAL INDEX KEY:			0000836487
+<p align="center" style="margin:0in 0in .0001pt -.4pt;text-align:center;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">MORGAN STANLEY
+INSTITUTIONAL FUND INC. - ACTIVE</font></p>
+
+<p align="center" style="margin:0in 0in .0001pt -.4pt;text-align:center;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">INTERNATIONAL
+ALLOCATION PORTFOLIO</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">3I GROUP PLC (FORMERLY
+INVESTORS IN INDUSTRY)</font></p>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman">&nbsp;</font></p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse;width:100.0%;">
+ <tr>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Ticker:</font></p>
+  </td>
+  <td width="15%" valign="top" style="padding:0in 0in 0in 0in;width:15.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Security ID:</font></p>
+  </td>
+  <td width="59%" valign="top" style="padding:0in 0in 0in 0in;width:59.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">GB0008886938</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Meeting
+  Date:</font></p>
+  </td>
+  <td width="15%" valign="top" style="padding:0in 0in 0in 0in;width:15.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">JUL 7, 2004</font></p>
+  </td>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Meeting
+  Type:</font></p>
+  </td>
+  <td width="59%" valign="top" style="padding:0in 0in 0in 0in;width:59.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Annual</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.0%;">
+</table>
+<table border="0" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse;width:100.0%;">
+ <tr>
+  <td width="5%" valign="bottom" style="border:none;border-bottom:solid windowtext 1.0pt;padding:0in 0in 0in 0in;width:5.6%;">
+  <p style="margin:0in 0in .0001pt;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">#</font></b></p>
+  </td>
+  <td width="55%" valign="bottom" style="border:none;border-bottom:solid windowtext 1.0pt;padding:0in 0in 0in 0in;width:55.98%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Proposal</font></b></p>
+  </td>
+  <td width="13%" valign="bottom" style="border:none;border-bottom:solid windowtext 1.0pt;padding:0in 0in 0in 0in;width:13.42%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Mgt Rec</font></b></p>
+  </td>
+  <td width="13%" valign="bottom" style="border:none;border-bottom:solid windowtext 1.0pt;padding:0in 0in 0in 0in;width:13.42%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Vote Cast</font></b></p>
+  </td>
+  <td width="11%" valign="bottom" style="border:none;border-bottom:solid windowtext 1.0pt;padding:0in 0in 0in 0in;width:11.54%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="1" face="Times New Roman" style="font-size:8.0pt;font-weight:bold;">Sponsor</font></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="5%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;border:none;padding:0in 0in 0in 0in;width:5.6%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">1</font></p>
+  </td>
+  <td width="55%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;border:none;padding:0in 0in 0in 0in;width:55.98%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Accept
+  Financial Statements and Statutory Reports</font></p>
+  </td>
+  <td width="13%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;border:none;padding:0in 0in 0in 0in;width:13.42%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="13%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;border:none;padding:0in 0in 0in 0in;width:13.42%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="11%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;border:none;padding:0in 0in 0in 0in;width:11.54%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Management</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="5%" valign="top" style="padding:0in 0in 0in 0in;width:5.6%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">2</font></p>
+  </td>
+  <td width="55%" valign="top" style="padding:0in 0in 0in 0in;width:55.98%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Approve
+  Remuneration Report</font></p>
+  </td>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.42%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="13%" valign="top" style="padding:0in 0in 0in 0in;width:13.42%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="11%" valign="top" style="padding:0in 0in 0in 0in;width:11.54%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Management</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="5%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:5.6%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">3</font></p>
+  </td>
+  <td width="55%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:55.98%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Approve
+  Final Dividend of 8.9 Pence Per Ordinary Share</font></p>
+  </td>
+  <td width="13%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:13.42%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="13%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:13.42%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">For</font></p>
+  </td>
+  <td width="11%" valign="top" bgcolor="#CCEEFF" style="background:#CCEEFF;padding:0in 0in 0in 0in;width:11.54%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Management</font></p>
+  </td>
+ </tr>
+</table>

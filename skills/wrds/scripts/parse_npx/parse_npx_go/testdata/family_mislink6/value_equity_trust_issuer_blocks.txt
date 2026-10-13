@@ -1,0 +1,88 @@
+<SEC-DOCUMENT>0000088053-05-000935.txt : 20050825
+<SEC-HEADER>0000088053-05-000935.hdr.sgml : 20050825
+<ACCEPTANCE-DATETIME>20050825160533
+ACCESSION NUMBER:		0000088053-05-000935
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050825
+DATE AS OF CHANGE:		20050825
+EFFECTIVENESS DATE:		20050825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			VALUE EQUITY TRUST
+		CENTRAL INDEX KEY:			0000088051
+		IRS NUMBER:				132578688
+		FISCAL YEAR END:			0930
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-allfunds.txt
+<DESCRIPTION>N-PX FILING
+<TEXT>
+<PAGE>
+
+ProxyEdge -  Investment Company Report                   Report Date: 08/04/2005
+Meeting Date Range: 07/01/2004 to 06/30/2005
+Selected Accounts: Scudder Large Co Value Fund
+
+
+<TABLE>
+<CAPTION>
+
+- -----------------------------------------------------------------------------------------------------------------------------------
+SUNTRUST BANKS, INC.                                                            STI                Special Meeting Date: 09/15/2004
+Issuer: 867914                          ISIN:
+SEDOL:
+- -----------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+Proposal                                                                      Proposal        Vote          Against
+Number   Proposal                                                               Type          Cast           Mgmt.
+- -----------------------------------------------------------------------------------------------------------------------------------
+<S>     <C>    <C>    <C>    <C>    <C>    <C>
+
+01       TO APPROVE THE ISSUANCE OF SUNTRUST COMMON STOCK                    Management       For             No
+         TO NATIONAL COMMERCE FINANCIAL CORPORATION SHAREHOLDERS IN THE MERGER
+         PURSUANT TO THE AGREEMENT AND PLAN OF MERGER, DATED AS OF MAY 7, 2004,
+         BY AND BETWEEN SUNTRUST BANKS, INC. AND NATIONAL COMMERCE FINANCIAL
+         CORPORATION (THE MERGER AGREEMENT ), AS DESCRIBED IN THE JOINT PROXY
+         STATEMENT-PROSPECTUS AND THE MERGER AGREEMENT.
+
+02       TO ADJOURN OR POSTPONE THE SUNTRUST SPECIAL MEETING,                Management     Against           Yes
+         IF NECESSARY, FOR THE PURPOSE OF SOLICITING ADDITIONAL
+         PROXIES.
+
+
+
+- -----------------------------------------------------------------------------------------------------------------------------------
+CONAGRA FOODS, INC.                                                             CAG                 Annual Meeting Date: 09/23/2004
+Issuer: 205887                          ISIN:
+SEDOL:
+- -----------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+Proposal                                                                      Proposal        Vote          Against
+Number   Proposal                                                               Type          Cast           Mgmt.
+- -----------------------------------------------------------------------------------------------------------------------------------
+
+01       DIRECTOR                                                            Management       For             No
+
+02       RATIFY THE APPOINTMENT OF INDEPENDENT AUDITORS                      Management       For             No
+
+03       APPROVE THE CONAGRA FOODS EXECUTIVE INCENTIVE                       Management       For             No
+         PLAN
+
+04       STOCKHOLDER PROPOSAL - SUSPENSION OF ALL STOCK                     Shareholder     Against           No
+         GRANTS FOR DIRECTORS AND SENIOR EXECUTIVE OFFICERS
+
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

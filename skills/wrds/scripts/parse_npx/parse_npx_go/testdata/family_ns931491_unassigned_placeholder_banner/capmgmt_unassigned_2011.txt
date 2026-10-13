@@ -1,0 +1,255 @@
+<SEC-DOCUMENT>0001398344-11-001891.txt : 20110819
+<SEC-HEADER>0001398344-11-001891.hdr.sgml : 20110819
+<ACCEPTANCE-DATETIME>20110819122708
+ACCESSION NUMBER:		0001398344-11-001891
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110819
+DATE AS OF CHANGE:		20110819
+EFFECTIVENESS DATE:		20110819
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CAPITAL MANAGEMENT INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000931491
+		IRS NUMBER:				566459396
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1130
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08822
+		FILM NUMBER:		111046696
+
+	BUSINESS ADDRESS:	
+		STREET 1:		630 FITZWATERTOWN ROAD
+		STREET 2:		BUILDING "A", 2ND FLOOR
+		CITY:			WILLOW GROVE
+		STATE:			PA
+		ZIP:			19090-1904
+		BUSINESS PHONE:		888-626-3863
+
+	MAIL ADDRESS:	
+		STREET 1:		630 FITZWATERTOWN ROAD
+		STREET 2:		BUILDING "A", 2ND FLOOR
+		CITY:			WILLOW GROVE
+		STATE:			PA
+		ZIP:			19090-1904
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000931491
+<SERIES-ID>S000010455
+<SERIES-NAME>Capital Management Small-Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028880
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CMSSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028881
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CMSVX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000931491
+<SERIES-ID>S000010456
+<SERIES-NAME>Capital Management Mid-Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028882
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CMEIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028883
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CMCIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0003342_npx.txt
+<TEXT>
+
+                                 UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                             Washington, D.C. 20549
+
+                                   FORM N-PX
+
+         ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+
+                               INVESTMENT COMPANY
+
+                  Investment Company Act File Number 811-08822
+                                                     ---------
+                      CAPITAL MANAGEMENT INVESTMENT TRUST
+--------------------------------------------------------------------------------
+               (Exact name of registrant as specified in charter)
+
+ 140 Broadway           New York,          NY                    10005
+--------------------------------------------------------------------------------
+   (Address of principal executive offices)                     (Zip code)
+
+                         Matrix 360 Administration, LLC
+                             630 Fitzwatertown Road
+                             Building A, 2nd floor
+                          Willow Grove, PA 19090-1904
+--------------------------------------------------------------------------------
+                    (Name and address of agent for service)
+
+Registrant's telephone number, including area code: 888.626.3863
+                                                    ------------
+
+Date of fiscal year end:  11/30/2011
+                          ----------
+
+Date of reporting period: 7/1/2010 TO 6/30/2011
+                          ----------------------
+
+
+<PAGE>
+
+
+ITEM 1.     PROXY VOTING RECORD:
+
+            Exhibit A is attached for the Capital Management Mid-Cap Fund and
+            the Capital Management Small-Cap Fund, both series of the Capital
+            Management Investment Trust.
+
+                                   SIGNATURES
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+Capital Management Investment Trust
+
+By Ralph J. Scarpa      /s/ Ralph J. Scarpa
+                        ----------------------------
+President,
+Date: August 18, 2011
+
+
+<PAGE>
+
+
+EXHIBIT A
+---------
+Capital Management Small-Cap Fund
+
+<TABLE>
+<CAPTION>
+UNASSIGNED
+-----------------------------------------------------------------------------------------------------------------
+    ASHFORD HOSPITALITY TRUST, INC.
+-----------------------------------------------------------------------------------------------------------------
+            SECURITY: 044103109                                                  AGENDA NUMBER: 933431114
+            TICKER:   AHT                                                        MEETING TYPE: Annual
+            ISIN:     US0441031095                                               MEETING DATE: 5/17/2011
+-----------------------------------------------------------------------------------------------------------------
+                                                                                                FOR/AGAINST
+                                                                                                MANAGEMENT'S
+PROP. #     PROPOSAL                                      PROPOSED BY       PROPOSAL VOTE      RECOMMENDATION
+-----------------------------------------------------------------------------------------------------------------
+<S>         <C>                                           <C>               <C>                      <C>
+    01      DIRECTOR
+            1    ARCHIE BENNETT, JR.                      Mgmt                   For                 For
+
+            2    MONTY J. BENNETT                         Mgmt                   For                 For
+
+            3    BENJAMIN J. ANSELL, MD                   Mgmt                   For                 For
+
+            4    THOMAS E. CALLAHAN                       Mgmt                   For                 For
+
+            5    MARTIN L. EDELMAN                        Mgmt                   For                 For
+
+            6    W. MICHAEL MURPHY                        Mgmt                   For                 For
+
+            7    PHILLIP S. PAYNE                         Mgmt                   For                 For
+
+    02      TO RATIFY THE APPOINTMENT OF ERNST            Mgmt                   For                 For
+            & YOUNG LLP AS OUR INDEPENDENT
+            REGISTERED PUBLIC ACCOUNTING FIRM
+            FOR THE FISCAL YEAR ENDING
+            DECEMBER 31, 2011.
+
+    03      TO APPROVE THE ADOPTION OF A NEW              Mgmt                   For                 For
+            2011 STOCK INCENTIVE PLAN THAT WILL
+            ALLOW FOR ISSUANCE OF UP TO
+            5,750,000 SHARES OF OUR COMMON
+            STOCK.
+
+    04      TO APPROVE, ON AN ADVISORY BASIS,             Mgmt                   For                 For
+            THE COMPENSATION OF THE COMPANY'S
+            NAMED EXECUTIVE OFFICERS.
+
+    05      TO RECOMMEND, ON AN ADVISORY                  Mgmt                 1 Year                For
+            BASIS, THE FREQUENCY OF FUTURE
+            ADVISORY VOTES ON THE
+            COMPENSATION OF THE COMPANY'S
+            NAMED EXECUTIVE OFFICERS.
+
+</TABLE>
+
+
+<PAGE>
+
+
+Capital Management Mid-Cap Fund
+
+<TABLE>
+<CAPTION>
+UNASSIGNED
+-----------------------------------------------------------------------------------------------------------------
+    B&G FOODS, INC.
+-----------------------------------------------------------------------------------------------------------------
+          SECURITY:   05508R106                                                AGENDA NUMBER: 933406870
+          TICKER:     BGS                                                      MEETING TYPE: Annual
+          ISIN:       US05508R1068                                             MEETING DATE: 5/17/2011
+-----------------------------------------------------------------------------------------------------------------
+                                                                                                  FOR/AGAINST
+                                                                                                  MANAGEMENT'S
+PROP. #     PROPOSAL                                        PROPOSED BY    PROPOSAL VOTE         RECOMMENDATION
+-----------------------------------------------------------------------------------------------------------------
+     1      DIRECTOR
+             1      ROBERT C. CANTWELL                       Mgmt                 For                  For
+
+             2      CYNTHIA T. JAMISON                       Mgmt                 For                  For
+
+             3      CHARLES F. MARCY                         Mgmt                 For                  For
+
+             4      DENNIS M. MULLEN                         Mgmt                 For                  For
+
+             5      CHERYL M. PALMER                         Mgmt                 For                  For
+
+             6      ALFRED POE                               Mgmt                 For                  For
+
+             7      STEPHEN C. SHERRILL                      Mgmt                 For                  For
+
+             8      DAVID L. WENNER                          Mgmt                 For                  For
+
+     2      APPROVAL, BY NON-BINDING ADVISORY                Mgmt                 For                  For
+            VOTE, OF EXECUTIVE COMPENSATION.
+
+     3      RECOMMENDATION, BY NON-BINDING                   Mgmt                1 Year                For
+            ADVISORY VOTE, FOR THE FREQUENCY
+            OF EXECUTIVE COMPENSATION VOTES.
+
+     4      RATIFICATION OF APPOINTMENT OF                   Mgmt                 For                  For
+            KPMG LLP AS INDEPENDENT
+            REGISTERED PUBLIC ACCOUNTING FIRM.
+
+</TABLE>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

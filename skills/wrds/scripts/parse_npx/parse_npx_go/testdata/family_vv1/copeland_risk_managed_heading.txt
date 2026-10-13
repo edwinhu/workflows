@@ -1,0 +1,76 @@
+CONFORMED PERIOD OF REPORT:	20230630
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Copeland Trust
+		CENTRAL INDEX KEY:			0001502745
+<SERIES>
+<OWNER-CIK>0001502745
+<SERIES-ID>S000030695
+<SERIES-NAME>Copeland Dividend Growth Fund
+<SERIES>
+<OWNER-CIK>0001502745
+<SERIES-ID>S000039172
+<SERIES-NAME>Copeland International Risk Managed Dividend Growth Fund
+<SERIES>
+<OWNER-CIK>0001502745
+<SERIES-ID>S000056507
+<SERIES-NAME>Copeland SMID Cap Dividend Growth Fund
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 8pt Arial, Helvetica, Sans-Serif">
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="font: bold 10pt Times New Roman, Times, Serif">Registrant:<FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt; font-style: normal; font-weight: 700"><U>&nbsp;&nbsp;&nbsp;Copeland Trust - Copeland Risk Managed Dividend Growth Fund</U></FONT></TD>
+  <TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="11" STYLE="font: bold 10pt Times New Roman, Times, Serif; text-decoration: underline; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</TD></TR>
+  <TR STYLE="vertical-align: middle">
+    <TD STYLE="border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; border-top-color: Black; border-top-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; border-right: Black 0.5pt solid; text-align: center; border-top-color: Black; border-top-width: 0.5pt; border-left-color: Black; border-left-width: 0.5pt">(a) Issuer's Name</TD>
+    <TD STYLE="font-weight: bold; border-right: Black 0.5pt solid; text-align: center; border-top-color: Black; border-top-width: 0.5pt">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-weight: bold; border-right: Black 0.5pt solid; text-align: center; border-top-color: Black; border-top-width: 0.5pt; border-left-color: Black; border-left-width: 0.5pt">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="font-weight: bold; border-right: Black 0.5pt solid; text-align: center; border-top-color: Black; border-top-width: 0.5pt; border-left-color: Black; border-left-width: 0.5pt">(d) Shareholder Meeting Date</TD>
+    <TD COLSPAN="2" STYLE="font-weight: bold; border-top: Black 0.5pt solid; border-right: black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">(e) Matter Identification</TD>
+    <TD STYLE="font-weight: bold; border-right: Black 0.5pt solid; text-align: center; border-top-color: Black; border-top-width: 0.5pt; border-left-color: Black; border-left-width: 0.5pt">(f) Proposal Type</TD>
+    <TD STYLE="font-weight: bold; text-align: center; border-top-color: Black; border-top-width: 0.5pt; border-left-color: Black; border-left-width: 0.5pt">(g) Voted</TD>
+    <TD STYLE="font-weight: bold; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; border-top-color: Black; border-top-width: 0.5pt">(h) Vote Cast</TD>
+    <TD STYLE="font-weight: bold; border-right: Black 0.5pt solid; text-align: center; border-top-color: Black; border-top-width: 0.5pt">(i) For/Against Management</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; border-top: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: right">1</TD>
+    <TD STYLE="vertical-align: bottom; border-top: Black 0.5pt solid; border-left: Black 0.5pt solid">CONSTELLATION BRANDS, INC.</TD>
+    <TD STYLE="vertical-align: bottom; border-top: Black 0.5pt solid; border-left: Black 0.5pt solid">STZ</TD>
+    <TD STYLE="vertical-align: bottom; border-top: Black 0.5pt solid; border-left: Black 0.5pt solid">21036P108</TD>
+    <TD STYLE="vertical-align: bottom; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">Annual; 07/19/2022</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">DIRECTOR&nbsp;&nbsp;Jennifer M. Daniels</TD>
+    <TD STYLE="vertical-align: bottom; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid">Management</TD>
+    <TD STYLE="vertical-align: bottom; border-top: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Yes</TD>
+    <TD STYLE="vertical-align: bottom; border-top: Black 0.5pt solid; border-left: Black 0.5pt solid">For</TD>
+    <TD STYLE="vertical-align: bottom; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">For</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; border-left: Black 0.5pt solid; text-align: right">2</TD>
+    <TD STYLE="vertical-align: bottom; border-left: Black 0.5pt solid">CONSTELLATION BRANDS, INC.</TD>
+    <TD STYLE="vertical-align: bottom; border-left: Black 0.5pt solid">STZ</TD>
+    <TD STYLE="vertical-align: bottom; border-left: Black 0.5pt solid">21036P108</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">Annual; 07/19/2022</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">DIRECTOR&nbsp;&nbsp;Jeremy S.G. Fowden</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid">Management</TD>
+    <TD STYLE="vertical-align: bottom; border-left-color: Black; border-left-width: 0.5pt">Yes</TD>
+    <TD STYLE="vertical-align: bottom; border-left: Black 0.5pt solid">Withhold</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">Against</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; border-left: Black 0.5pt solid; text-align: right">3</TD>
+    <TD STYLE="vertical-align: bottom; border-left: Black 0.5pt solid">CONSTELLATION BRANDS, INC.</TD>
+    <TD STYLE="vertical-align: bottom; border-left: Black 0.5pt solid">STZ</TD>
+    <TD STYLE="vertical-align: bottom; border-left: Black 0.5pt solid">21036P108</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">Annual; 07/19/2022</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">DIRECTOR&nbsp;&nbsp;Jose M. Madero Garza</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid">Management</TD>
+    <TD STYLE="vertical-align: bottom; border-left-color: Black; border-left-width: 0.5pt">Yes</TD>
+    <TD STYLE="vertical-align: bottom; border-left: Black 0.5pt solid">For</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">For</TD></TR>
+  <TR>
+    <TD STYLE="vertical-align: top; border-left: Black 0.5pt solid; text-align: right">4</TD>
+    <TD STYLE="vertical-align: bottom; border-left: Black 0.5pt solid">CONSTELLATION BRANDS, INC.</TD>
+    <TD STYLE="vertical-align: bottom; border-left: Black 0.5pt solid">STZ</TD>
+    <TD STYLE="vertical-align: bottom; border-left: Black 0.5pt solid">21036P108</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">Annual; 07/19/2022</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">DIRECTOR&nbsp;&nbsp;Daniel J. McCarthy</TD>

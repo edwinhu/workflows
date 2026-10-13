@@ -1,0 +1,34 @@
+		COMPANY CONFORMED NAME:			SELIGMAN PORTFOLIOS INC/NY
+		CENTRAL INDEX KEY:			0000817841
+<TEXT>
+
+Item 1. Proxy Voting Record
+
+Account Name: Seligman International Growth Portfolio
+Account Number: 9485
+
+ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+    Proposal Type Voted? Vote For/Agnst Mgmt
+
+Club Mediterranee CMIP.PA F18690101 03/11/2004 A
+1.00 Approve Financial Statements MGMT YES NOT VOTED AGAINST
+1.00 Ratify Board Acts-Symbolic MGMT YES NOT VOTED AGAINST
+2.00 Approve Financial Statements MGMT YES NOT VOTED AGAINST
+3.00 Set Dividend/Allocate Profits MGMT YES NOT VOTED AGAINST
+4.00 Approve Related Party Transactions MGMT YES NOT VOTED AGAINST
+5.00 Approve Directors' Fees MGMT YES NOT VOTED AGAINST
+6.00 Elect Supervisory Board/Corporate Assembly MGMT YES NOT VOTED AGAINST
+7.00 Elect Supervisory Board/Corporate Assembly MGMT YES NOT VOTED AGAINST
+8.00 Elect Supervisory Board/Corporate Assembly MGMT YES NOT VOTED AGAINST
+9.00 Authorize Trade in Company Stock MGMT YES NOT VOTED AGAINST
+10.00 Set Price of Debt Instruments MGMT YES NOT VOTED AGAINST
+11.00 Amend Articles--Technical MGMT YES NOT VOTED AGAINST
+12.00 Amend Articles--Technical MGMT YES NOT VOTED AGAINST
+13.00 Authorize Legal Formalities MGMT YES NOT VOTED AGAINST
+
+Rodriguez Group RDGP.PA F78984105 03/17/2004 A
+1.00 Approve Financial Statements MGMT YES NOT VOTED AGAINST
+2.00 Approve Financial Statements MGMT YES NOT VOTED AGAINST
+3.00 Authorize Legal Formalities MGMT YES NOT VOTED AGAINST
+4.00 Set Dividend/Allocate Profits MGMT YES NOT VOTED AGAINST
+5.00 Approve Related Party Transactions MGMT YES NOT VOTED AGAINST

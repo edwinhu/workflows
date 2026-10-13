@@ -1,0 +1,55 @@
+<SEC-DOCUMENT>0000950144-04-008544.txt : 20040823
+<SEC-HEADER>0000950144-04-008544.hdr.sgml : 20040823
+<ACCEPTANCE-DATETIME>20040823133506
+ACCESSION NUMBER:		0000950144-04-008544
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040823
+		COMPANY CONFORMED NAME:			ENTERPRISE GROUP OF FUNDS INC
+		CENTRAL INDEX KEY:			0000004123
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>g90511nvpx.txt
+<DESCRIPTION>THE ENTERPRISE GROUP OF FUNDS, INC.
+<TEXT>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-01582
+Reporting Period: 07/01/2003 - 06/30/2004
+The Enterprise Group of Funds, Inc.
+================================== EGF GROWTH ==================================
+
+
+3M COMPANY
+
+Ticker:       MMM            Security ID:  88579Y
+Meeting Date: MAY 11, 2004   Meeting Type: Annual
+Record Date:  MAR 12, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+01    ELECTION OF DIRECTORS                     For       For        Management
+02    RATIFY APPOINTMENT OF INDEPENDENT         For       For        Management
+      AUDITORS
+03    APPROVE AUTHORIZED COMMON STOCK INCREASE  For       For        Management
+04    S/H PROPOSAL - CORPORATE GOVERNANCE       Against   Against    Shareholder
+
+
+- --------------------------------------------------------------------------------
+========================== EGF MERGERS & ACQUISITIONS ==========================
+
+
+ABINGTON BANCORP, INC.
+
+Ticker:       ABBK           Security ID:  00350P
+Meeting Date: MAR 25, 2004   Meeting Type: Special
+Record Date:  FEB 5, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+01    APPROVE MERGER AGREEMENT                  For       For        Management
+02    APPROVE MOTION TO ADJOURN MEETING         For       For        Management
+
+
+- --------------------------------------------------------------------------------

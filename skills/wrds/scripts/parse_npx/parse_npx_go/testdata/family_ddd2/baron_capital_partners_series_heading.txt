@@ -1,0 +1,53 @@
+<SEC-DOCUMENT>0001017918-05-000120.txt : 20050901
+<SEC-HEADER>0001017918-05-000120.hdr.sgml : 20050901
+<ACCEPTANCE-DATETIME>20050831175724
+ACCESSION NUMBER:		0001017918-05-000120
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050901
+DATE AS OF CHANGE:		20050831
+EFFECTIVENESS DATE:		20050901
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			BARON SELECT FUNDS
+		CENTRAL INDEX KEY:			0001217673
+		IRS NUMBER:				161651307
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>bsfproxies.txt
+<DESCRIPTION>AMENDMENT #2 TO FORM N-PX - 06/05
+<TEXT>
+SEC 2451 (4-03)
+
+<PAGE>
+
+
+                              VOTE SUMMARY REPORT
+                       JULY 1, 2004 THROUGH JUNE 30, 2005
+
+                                BARON SELECT FUND
+                       BARON CAPITAL PARTNERS FUND SERIES
+<TABLE>
+<CAPTION>
+<S>    <C>                                       <C>               <C>           <C>      <C>                      <C>
+- -----------------------------------------------------------------------------------------------------------------------------------
+AMERIGROUP CORPORATION                           CUSIP:03073T102   TICKER: AGP            MEETING DATE: 05/11/05   TYPE: ANNUAL
+- -----------------------------------------------------------------------------------------------------------------------------------
+ITEM  PROPOSAL                                   TYPE              VOTED?        VOTE CAST  FOR/AGAINST MANAGEMENT'S RECOMMENDATION
+- -----------------------------------------------------------------------------------------------------------------------------------
+01    ELECTION OF DIRECTORS                      MGMT              YES
+      1. RICHARD D. SHIRK                                                        FOR        FOR
+      2. JEFFREY B. CHILD                                                        FOR        FOR
+
+02    RESOLVED, THAT THE APPOINTMENT OF KPMG     MGMT              YES           FOR        FOR
+      LLP AS THE INDEPENDENT PUBLIC ACCOUNTING
+      FIRM FOR AMERIGROUP CORPORATION FOR THE
+      YEAR ENDING DECEMBER 31, 2004 IS HEREBY
+      RATIFIED
+

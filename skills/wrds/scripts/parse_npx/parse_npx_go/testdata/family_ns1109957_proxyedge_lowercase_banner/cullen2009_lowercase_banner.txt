@@ -1,0 +1,627 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ WJjK4Z2AT2Kdq6A1vBMzovjpVUuN5XIcPFGUrQllF1Uk+4zG+VQuvi0tcPgL2iVf
+ 3T2MJov+W2jDIKG8WgQtJA==
+
+<SEC-DOCUMENT>0000891092-09-003149.txt : 20090806
+<SEC-HEADER>0000891092-09-003149.hdr.sgml : 20090806
+<ACCEPTANCE-DATETIME>20090806154921
+ACCESSION NUMBER:		0000891092-09-003149
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20090630
+FILED AS OF DATE:		20090806
+DATE AS OF CHANGE:		20090806
+EFFECTIVENESS DATE:		20090806
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CULLEN FUNDS TRUST
+		CENTRAL INDEX KEY:			0001109957
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0630
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-09871
+		FILM NUMBER:		09991574
+
+	BUSINESS ADDRESS:	
+		STREET 1:		645 FIFTH AVE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10022
+		BUSINESS PHONE:		212-644-1800
+
+	MAIL ADDRESS:	
+		STREET 1:		645 FIFTH AVE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10022
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001109957
+<SERIES-ID>S000006835
+<SERIES-NAME>Cullen High Dividend Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018478
+<CLASS-CONTRACT-NAME>Retail Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CHDEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018479
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CHVCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018480
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CHDVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000076265
+<CLASS-CONTRACT-NAME>Class R1
+<CLASS-CONTRACT-TICKER-SYMBOL>CHDRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000076266
+<CLASS-CONTRACT-NAME>Class R2
+<CLASS-CONTRACT-TICKER-SYMBOL>CHDPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001109957
+<SERIES-ID>S000006836
+<SERIES-NAME>Cullen International High Dividend Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018481
+<CLASS-CONTRACT-NAME>Retail Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CIHDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018482
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CIHCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018483
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CIHIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000076267
+<CLASS-CONTRACT-NAME>Class R1
+<CLASS-CONTRACT-TICKER-SYMBOL>CIHRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000076268
+<CLASS-CONTRACT-NAME>Class R2
+<CLASS-CONTRACT-TICKER-SYMBOL>CIHPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001109957
+<SERIES-ID>S000026472
+<SERIES-NAME>Cullen Small Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079419
+<CLASS-CONTRACT-NAME>Retail Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079420
+<CLASS-CONTRACT-NAME>Class I
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079421
+<CLASS-CONTRACT-NAME>Class C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079422
+<CLASS-CONTRACT-NAME>Class R1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079423
+<CLASS-CONTRACT-NAME>Class R2
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>e36038npx.htm
+<DESCRIPTION>FORM N-PX
+<TEXT>
+
+<HTML>
+<HEAD>
+   <TITLE></TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff" style="font-family: 'Times New Roman';font-size: 10pt;">
+<HR noshade align="center" width="100%" size="5"><!-- *************************************************************************** --><div title="EE+ Page Break" style="FONT-SIZE: 1pt; PAGE-BREAK-AFTER: always; WIDTH: 100%; HEIGHT: 1px"></div>
+<!-- -->
+
+
+<P align=left><font face="Arial"><B>Cullen High Dividend Equity Fund: 01-Jul-2008 To 30-Jun-2009</B><br>
+  <BR>
+  <B>Selected Accounts</B></font></P>
+<TABLE style="FONT-SIZE: 10pt; FONT-FAMILY: 'Arial'" cellSpacing=0 cellPadding=4 width="100%" border=0>
+
+  <TR>
+
+    <TD width="100%"></TD>
+  </TR>
+
+  <TR vAlign=bottom bgcolor="#666666">
+
+    <TD align=left><B><font face="Arial" color="#FFFFFF">VODAFONE GROUP PLC</font></B> </TD>
+  </TR>
+</TABLE>
+
+<font face="Arial">
+
+</font>
+<TABLE style="FONT-SIZE: 10pt; FONT-FAMILY: 'Arial'" cellSpacing=0 cellPadding=4 border=0 width="100%">
+
+  <TR>
+
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+  </TR>
+
+  <TR vAlign=bottom>
+
+    <TD align=left><font face="Arial"><B>Security:</B> </font></TD>
+    <TD align=left><font face="Arial">92857W209 </font></TD>
+    <TD align=left>&nbsp; </TD>
+    <TD align=left><font face="Arial"><B>Meeting Type:</B> </font></TD>
+    <TD align=left><font face="Arial">Annual </font></TD>
+  </TR>
+
+  <TR vAlign=bottom>
+
+    <TD align=left><font face="Arial"><B>Ticker:</B> </font></TD>
+    <TD align=left><font face="Arial">VOD </font></TD>
+    <TD align=left>&nbsp; </TD>
+    <TD align=left><font face="Arial"><B>Meeting Date:</B> </font></TD>
+    <TD align=left><font face="Arial">29-Jul-2008 </font></TD>
+  </TR>
+
+  <TR vAlign=bottom>
+
+    <TD align=left><font face="Arial"><B>ISIN</B> </font></TD>
+    <TD align=left><font face="Arial">US92857W2098 </font></TD>
+    <TD align=left>&nbsp; </TD>
+    <TD align=left><font face="Arial"><B>Vote Deadline Date:</B> </font></TD>
+    <TD align=left><font face="Arial">18-Jul-2008 </font></TD>
+  </TR>
+
+  <TR vAlign=bottom>
+
+    <TD align=left><font face="Arial"><B>Agenda</B> </font></TD>
+    <TD align=left><font face="Arial">932928990 </font></TD>
+    <TD align=left><font face="Arial">Management </font></TD>
+    <TD align=left><font face="Arial"><B>Total Ballot Shares:</B> </font></TD>
+    <TD align=left><font face="Arial">6294654 </font></TD>
+  </TR>
+
+  <TR vAlign=bottom>
+
+    <TD align=left><font face="Arial"><B>Last Vote Date:</B> </font></TD>
+    <TD align=left><font face="Arial">20-Jun-2008 </font></TD>
+    <TD align=left>&nbsp; </TD>
+    <TD align=left>&nbsp; </TD>
+    <TD align=left>&nbsp; </TD>
+  </TR>
+</TABLE>
+<font face="Arial"><BR>
+
+</font>
+<TABLE style="FONT-SIZE: 10pt; FONT-FAMILY: 'Arial'" cellSpacing=0 cellPadding=0 border=0 width="100%">
+
+  <TR>
+
+    <TD align=center></TD>
+    <TD align=center></TD>
+    <TD align=center></TD>
+    <TD align=center></TD>
+    <TD align=center></TD>
+    <TD align=center></TD>
+    <TD align=center></TD>
+    <TD align=center></TD>
+    <TD align=center></TD>
+    <TD align=center></TD>
+    <TD align=center></TD>
+  </TR>
+
+  <TR vAlign=bottom>
+
+    <TD align=center>
+      <div align="left"><font face="Arial" size="2"><B>Item&nbsp;&nbsp;&nbsp;</B></font></div>
+    </TD>
+    <TD align=center>
+      <div align="left"><font face="Arial" size="2"><B>Proposal</B></font></div>
+    </TD>
+    <TD align=center><font face="Arial" size="2"><B>Recommendation</B></font></TD>
+    <TD align=center>&nbsp;&nbsp;</TD>
+    <TD align=center><font face="Arial" size="2"><B>For</B></font></TD>
+    <TD align=center>&nbsp;&nbsp;</TD>
+    <TD align=center><font face="Arial" size="2"><B>Against</B></font></TD>
+    <TD align=center>&nbsp;&nbsp;</TD>
+    <TD align=center><font face="Arial" size="2"><B>Abstain</B></font></TD>
+    <TD align=center>&nbsp;&nbsp;</TD>
+    <TD align=center><font face="Arial" size="2"><B>Take <br>
+      No<br>
+      Action</B></font></TD>
+  </TR>
+
+
+
+  <TR vAlign=bottom>
+
+    <TD align=left><font face="Arial">1 </font></TD>
+    <TD align=left><font face="Arial">TO RECEIVE THE COMPANY'S ACCOUNTS AND </font></TD>
+    <TD align=right>
+      <div align="center"><font face="Arial">For </font></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"><font face="Arial">503400 </font></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"><font face="Arial">0 </font></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"><font face="Arial">0 </font></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"><font face="Arial">0 </font></div>
+    </TD>
+  </TR>
+
+  <TR vAlign=bottom>
+
+    <TD align=left>&nbsp; </TD>
+    <TD align=left><font face="Arial">REPORTS OF THE DIRECTORS AND AUDITORS FOR </font></TD>
+    <TD align=left>
+      <div align="center"></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"></div>
+    </TD>
+  </TR>
+
+  <TR vAlign=bottom>
+
+    <TD align=left>&nbsp; </TD>
+    <TD align=left><font face="Arial">THE YEAR ENDED 31 MARCH 2008. </font></TD>
+    <TD align=left>
+      <div align="center"></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"></div>
+    </TD>
+  </TR>
+  <TR vAlign=bottom>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=right>&nbsp;</TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>&nbsp;</TD>
+  </TR>
+
+
+
+
+
+  <TR vAlign=bottom>
+
+    <TD align=left><font face="Arial">2 </font></TD>
+    <TD align=left><font face="Arial">TO RE-ELECT SIR JOHN BOND AS A DIRECTOR </font></TD>
+    <TD align=right>
+      <div align="center"><font face="Arial">For </font></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"><font face="Arial">503400 </font></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"><font face="Arial">0 </font></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"><font face="Arial">0 </font></div>
+    </TD>
+    <TD align=left>&nbsp;</TD>
+    <TD align=left>
+      <div align="center"><font face="Arial">0 </font></div>
+    </TD>
+  </TR>
+</table>
+<font face="Arial"><BR>
+
+</font>
+
+
+
+<HR noshade align="center" width="100%" size="5"><!-- *************************************************************************** --><div title="EE+ Page Break" style="FONT-SIZE: 1pt; PAGE-BREAK-AFTER: always; WIDTH: 100%; HEIGHT: 1px"></div><!-- -->
+
+
+
+
+
+<p><b>Cullen International High Dividend Fund: 01-Jul-2008 To 30-Jun-2009</b>
+</p>
+<p><b>Selected Accounts</b>
+</p>
+<table border=0 cellspacing=0 cellpadding=4 style="font-family: 'Arial';font-size: 10pt;" width=100%>
+  <tr>
+
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+
+
+
+  <tr valign="bottom" bgcolor="#666666">
+
+    <td align=left colspan=5>
+<b><font color="#FFFFFF">VODAFONE GROUP PLC</font></b>
+
+
+
+
+
+
+        </td>
+  </tr>
+
+  <tr valign="bottom">
+
+    <td align=left>
+<b>Security:</b>
+        </td>
+    <td align=left>
+           &nbsp;92857W209
+        </td>
+    <td align=center>&nbsp;
+
+        </td>
+    <td align=left>
+<b>Meeting Type:</b>
+        </td>
+    <td align=left>
+    Annual
+        </td>
+  </tr>
+
+  <tr valign="bottom">
+
+    <td align=left>
+<b>Ticker:</b>
+        </td>
+    <td align=left>
+           &nbsp;VOD
+        </td>
+    <td align=center>&nbsp;
+
+        </td>
+    <td align=left>
+<b>Meeting Date:</b>
+        </td>
+    <td align=left>
+    29-Jul-2008
+        </td>
+  </tr>
+
+  <tr valign="bottom">
+
+    <td align=left>
+<b>ISIN</b>
+        </td>
+    <td align=left>
+           &nbsp;US92857W2098
+        </td>
+    <td align=center>&nbsp;
+
+        </td>
+    <td align=left>
+<b>Vote Deadline Date:</b>
+        </td>
+    <td align=left>
+    18-Jul-2008
+        </td>
+  </tr>
+
+  <tr valign="bottom">
+
+    <td align=left>
+<b>Agenda</b>
+        </td>
+    <td align=left>
+           &nbsp;932928990
+        </td>
+    <td align=left>
+Management
+        </td>
+    <td align=left>
+<b>Total Ballot Shares:</b>
+        </td>
+    <td align=left>
+    6294654
+        </td>
+  </tr>
+
+  <tr valign="bottom">
+
+    <td align=left>
+<b>Last Vote Date:</b>
+        </td>
+    <td align=left>
+           &nbsp;20-Jun-2008
+        </td>
+    <td align=center>&nbsp;
+
+        </td>
+    <td align=left>&nbsp;
+
+        </td>
+    <td align=left>&nbsp;
+
+        </td>
+  </tr>
+</table>
+<br>
+<table border=0 cellspacing=0 cellpadding=0 style="font-family: 'Arial';font-size: 10pt;" width=100%>
+  <tr>
+
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <tr valign="bottom">
+
+    <td align=left>
+<b>Item</b>
+        </td>
+    <td align=left>&nbsp;&nbsp;</td>
+    <td align=left>
+<b>Proposal</b>
+        </td>
+    <td align=center>
+<b>Recommendation</b>
+        </td>
+    <td align=center>&nbsp;&nbsp;</td>
+    <td align=center>
+<b>For</b>
+        </td>
+    <td align=center>&nbsp;&nbsp;</td>
+    <td align=center>
+    <b>Against</b>
+        </td>
+    <td align=center>&nbsp;&nbsp;</td>
+    <td align=center>
+<b>Abstain</b>
+        </td>
+    <td align=center>&nbsp;&nbsp;</td>
+    <td align=center>
+<b>Take <br>
+      No  <br>
+      Action</b>
+        </td>
+  </tr>
+
+  <tr valign="bottom">
+
+    <td align=left>
+1
+        </td>
+    <td align=left>&nbsp;</td>
+    <td align=left>
+TO RECEIVE THE COMPANY'S ACCOUNTS AND
+        </td>
+    <td align=center>
+For
+        </td>
+    <td align=center>&nbsp;</td>
+    <td align=center>
+35150
+        </td>
+    <td align=center>&nbsp;</td>
+    <td align=center>
+0
+        </td>
+    <td align=center>&nbsp;</td>
+    <td align=center>
+0
+        </td>
+    <td align=center>&nbsp;</td>
+    <td align=center>
+0
+        </td>
+  </tr>
+</BODY>
+
+</HTML>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

@@ -1,0 +1,9 @@
+
+<TABLE>
+<CAPTION>
+#     Proposal                                  Mgt Rec   Vote Cast        Proponent
+<S>   <C>                                       <C>       <C>              <C>
+1     Approve Individual and Consolidated       For       Did Note Vote    Management
+      Financial Statements, Supervisory and
+      Audit Reports for Fiscal Year Ended
+      12-31-04;  Allocation of Income

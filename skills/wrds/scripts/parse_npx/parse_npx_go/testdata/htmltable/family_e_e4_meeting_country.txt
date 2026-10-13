@@ -1,0 +1,138 @@
+<TR vAlign=bottom>
+     <TD align=left bgColor=#c0c0c0 colSpan=2>&nbsp;<B><FONT face=sans-serif size=1>Cirrus Logic, Inc.</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0 colSpan=2>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<B><FONT face=sans-serif size=1>Meeting Country</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0 colSpan=2><B><FONT face=sans-serif size=1>Primary</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0><B><FONT face=sans-serif size=1>Meeting</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0><B><FONT face=sans-serif size=1>Record</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;<B><FONT face=sans-serif size=1>Shares</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=right bgColor=#c0c0c0><B><FONT face=sans-serif size=1>Shares</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp; &nbsp; &nbsp; &nbsp;<B><FONT face=sans-serif size=1>Shares</FONT></B>&nbsp;</TD>
+     <TD align=right bgColor=#c0c0c0><B><FONT face=sans-serif size=1>Shares</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0 colSpan=2><B><FONT face=sans-serif size=1>Security ID</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0><B><FONT face=sans-serif size=1>Type</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;<B><FONT face=sans-serif size=1>Voted</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=right bgColor=#c0c0c0><B><FONT face=sans-serif size=1>Instructed</FONT></B>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp; &nbsp;<B><FONT face=sans-serif size=1>Available</FONT></B>&nbsp;</TD>
+     <TD align=right bgColor=#c0c0c0><B><FONT face=sans-serif size=1>on Loan *</FONT></B>&nbsp;</TD></TR>
+<TR>
+     <TD bgColor=#c0c0c0 colSpan=13>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0 colSpan=2>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>24-Jul-09 USA</FONT>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0 colSpan=2><FONT face=sans-serif size=1>172755100</FONT>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0><FONT face=sans-serif size=1>27-May-09</FONT>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;<FONT face=sans-serif size=1>65,572</FONT>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=right bgColor=#c0c0c0><FONT face=sans-serif size=1>65,572</FONT>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>65,572</FONT>&nbsp;</TD>
+     <TD align=right bgColor=#c0c0c0><FONT face=sans-serif size=1>0</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left bgColor=#c0c0c0 colSpan=2>&nbsp;<B><FONT face=sans-serif size=1>Ticker: </FONT></B><FONT face=sans-serif size=1>CRUS</FONT>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD>
+     <TD align=left bgColor=#c0c0c0>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=13>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=1>CUSIP: </FONT></B><FONT face=sans-serif size=1>172755100</FONT>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>ISIN: </FONT></B><FONT face=sans-serif size=1>US1727551004</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><B><FONT face=sans-serif size=1>SEDOL: </FONT></B><FONT face=sans-serif size=1>2197308</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<B><FONT face=sans-serif size=1>Proxy Level: </FONT></B><FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left colSpan=3><B><FONT face=sans-serif size=1>Meeting ID: </FONT></B><FONT face=sans-serif size=1>522512</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=13>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=13>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=13>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Votable</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Vote</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=1>Voting Policy: </FONT></B><FONT face=sans-serif size=1>ISS</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<B><FONT face=sans-serif size=1>Ballot Count: </FONT></B><FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Proponent</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Proposal</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt Rec</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;<FONT face=sans-serif size=1>ISS Rec</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Policy Rec</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Instruction</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=13>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>1.1</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Elect Director Michael L. Hackworth</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Yes</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;<FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=13>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>1.2</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Elect Director John C. Carter</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Yes</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;<FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=13>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>1.3</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Elect Director Timothy R. Dehne</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Yes</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;<FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>

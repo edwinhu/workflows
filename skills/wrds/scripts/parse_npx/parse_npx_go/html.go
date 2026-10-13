@@ -45,21 +45,108 @@ var namedEntities = map[string]string{
 // decodes named and numeric character references. Runs of spaces collapse; runs
 // of newlines never collapse away, because the legacy layouts are line-oriented.
 func stripHTML(src []byte) []byte {
-	stripped := removeMarkup(src)
+	stripped := removeMarkup(src, true, false)
 	decoded := decodeEntities(stripped)
 	return []byte(collapseSpaces(decoded))
 }
 
+// cellMark is the byte stripHTMLCells puts on a line of its own wherever a
+// container element opens or closes. It is a control character no filing
+// prints, so a line carrying it is never a line of the grammar.
+const cellMark = "\x00"
+
+// tableMark is what stripHTMLCells puts where a <table> opens or closes. It is
+// a cell boundary like cellMark and is told apart from one only so a layout can
+// scope a guard to the table it is reading: the cells of the previous table are
+// a different ballot, and a test that reads across the boundary answers about
+// markup the heading it is judging has nothing to do with.
+const tableMark = "\x01"
+
+// stripHTMLCells is stripHTML with the container boundaries kept. stripHTML
+// turns EVERY block tag into a newline, which leaves a <br> hard-wrap inside one
+// <td> indistinguishable from the gap between two <td>s: the source newline
+// following each <BR> emits a second break, so a wrap line stands alone between
+// blank lines exactly as a whole cell does. A layout that reads one cell per
+// line needs the difference, so this marks every block boundary EXCEPT <br> --
+// a <br> is a line break INSIDE a cell, never the end of one.
+// stripHTMLIndent is stripHTML with each line's leading indentation kept as a
+// single space. Its line structure is identical to stripHTML's -- the two differ
+// only in that leading space -- so a layout may read either.
+func stripHTMLIndent(src []byte) []byte {
+	return []byte(collapseSpacesIndent(decodeEntities(removeMarkup(src, true, false)), true))
+}
+
+func stripHTMLCells(src []byte) []byte {
+	return []byte(collapseSpaces(decodeEntities(removeMarkup(src, true, true))))
+}
+
+// EDGAR hard-wraps a dissemination file at a fixed width, blind to what it cuts:
+// a single "&#160;" or "<font ...>" routinely straddles the cut, and so does a
+// row's own text. A break at exactly that column is the wrapper's artefact rather
+// than the document's line structure, so removeMarkup drops it and leaves every
+// other break intact — the legacy layouts are line-oriented grammars.
+const edgarWrapWidth = 1023
+
+// maxTagNameLen caps the element name tagName will read, rejoin included. A real
+// SGML or HTML name is a handful of bytes, so the wrap can cut one at most once
+// and no genuine name can span more than the two lines that cut produces. Past
+// that the byte run is not a name, and tagName rejects instead of accumulating —
+// otherwise a filing whose every line is name bytes ending on the wrap column
+// grows the rejoin buffer to the length of the filing, and these are untrusted
+// third-party bytes read at up to 200 MB a file.
+const maxTagNameLen = 2 * edgarWrapWidth
+
+// stripHTMLCell is stripHTML for one table cell's inner markup: the lines
+// inside the cell are kept as printed.
+func stripHTMLCell(src []byte) []byte {
+	stripped := removeMarkup(src, false, false)
+	return []byte(collapseSpaces(decodeEntities(stripped)))
+}
+
 // removeMarkup walks the byte stream once, emitting text and turning tags into
 // either a newline (block), nothing (inline), or a skip past the closing tag
-// (script/style).
-func removeMarkup(src []byte) string {
+// (script/style). Line breaks at the EDGAR wrap column are dropped as it goes.
+//
+// joinPara treats a raw newline inside a <p> element as a space: an HTML
+// generator wraps a paragraph's text over source newlines at word boundaries
+// (Dreyfus Opportunity Funds 2015: `Ticker:` / `ARI   Security ID:
+// S01680107`), and inside a paragraph a newline is whitespace, not a line of
+// the grammar. Any block tag ends the paragraph; <pre> is never one. The table
+// layout strips each cell on its own with joinPara off, because it reads the
+// lines inside a cell as stacked labels and values (Clearwater 2011).
+//
+// markCells additionally emits cellMark on its own line at every block boundary
+// but <br>, which is what tells one container's text from the next once the
+// newlines have been collapsed. See stripHTMLCells.
+func removeMarkup(src []byte, joinPara, markCells bool) string {
 	var b strings.Builder
 	b.Grow(len(src))
+	col := 0
+	inPara := false
 	for i := 0; i < len(src); {
 		c := src[i]
+		if n := breakLen(src, i); n > 0 {
+			if col == edgarWrapWidth {
+				// dropped: the EDGAR wrap
+			} else if inPara && joinPara {
+				b.WriteByte(' ')
+			} else {
+				b.Write(src[i : i+n])
+			}
+			i += n
+			col = 0
+			// EDGAR prefixes `- ` to a line that begins with a dash AFTER it
+			// has wrapped the file, so such a line runs 1025 bytes and its
+			// break sits two columns past the width. The prefix is not part
+			// of the wrapped text and is not counted.
+			if i+2 < len(src) && src[i] == '-' && src[i+1] == ' ' && src[i+2] == '-' {
+				col = -2
+			}
+			continue
+		}
 		if c != '<' {
 			b.WriteByte(c)
+			col += columnWidth(c)
 			i++
 			continue
 		}
@@ -68,6 +155,7 @@ func removeMarkup(src []byte) string {
 			if end < 0 {
 				return b.String()
 			}
+			col = advanceColumn(src, i, end+3, col)
 			i = end + 3
 			continue
 		}
@@ -76,13 +164,15 @@ func removeMarkup(src []byte) string {
 			if end < 0 {
 				return b.String()
 			}
+			col = advanceColumn(src, i, end+1, col)
 			i = end + 1
 			continue
 		}
-		name, after, ok := tagName(src, i)
+		name, after, ok := tagName(src, i, col)
 		if !ok {
 			// A bare '<' that opens no tag is literal text.
 			b.WriteByte(c)
+			col += columnWidth(c)
 			i++
 			continue
 		}
@@ -96,43 +186,160 @@ func removeMarkup(src []byte) string {
 				return b.String()
 			}
 			b.WriteByte('\n')
+			if markCells {
+				b.WriteString(cellMark)
+				b.WriteByte('\n')
+			}
+			col = advanceColumn(src, i, end+1, col)
 			i = end + 1
 			continue
 		}
 		if blockTags[name] {
 			b.WriteByte('\n')
+			if markCells && name != "br" {
+				if name == "table" {
+					b.WriteString(tableMark)
+				} else {
+					b.WriteString(cellMark)
+				}
+				b.WriteByte('\n')
+			}
+			inPara = name == "p" && !(after > i+1 && src[i+1] == '/')
 		}
 		end := indexByteFrom(src, after, '>')
 		if end < 0 {
 			return b.String()
 		}
+		col = advanceColumn(src, i, end+1, col)
 		i = end + 1
 	}
 	return b.String()
 }
 
+// breakLen reports the byte length of the line break at src[i] — 2 for "\r\n",
+// 1 for a lone "\r" or "\n", 0 when src[i] is not a break.
+func breakLen(src []byte, i int) int {
+	switch src[i] {
+	case '\n':
+		return 1
+	case '\r':
+		if i+1 < len(src) && src[i+1] == '\n' {
+			return 2
+		}
+		return 1
+	}
+	return 0
+}
+
+// columnWidth is 1 for the first byte of a character and 0 for a UTF-8
+// continuation byte, so the column count is in characters. normalizeCharset
+// transcodes cp1252/latin-1 bodies to UTF-8 before stripHTML sees them, which
+// lengthens a wrapped line in bytes but never in characters.
+func columnWidth(c byte) int {
+	if c&0xc0 == 0x80 {
+		return 0
+	}
+	return 1
+}
+
+// advanceColumn returns the column after consuming src[from:to], which markup
+// removal skips over in one jump but which may still carry the wrap.
+func advanceColumn(src []byte, from, to, col int) int {
+	for j := from; j < to; j++ {
+		c := src[j]
+		if c == '\n' || c == '\r' {
+			col = 0
+			// The same `- ` prefix EDGAR adds to a dash-led line (see
+			// removeMarkup) can follow a break that fell INSIDE a tag -- the
+			// wrap cut `font-size` into `font` and `-size`, and the prefix
+			// went on the second half. Uncounted here too, or that line's
+			// own break is kept and splits the entity it falls in.
+			if j+3 < len(src) && src[j+1] == '-' && src[j+2] == ' ' && src[j+3] == '-' {
+				col = -2
+			}
+			continue
+		}
+		col += columnWidth(c)
+	}
+	return col
+}
+
 // tagName reads the element name of the tag starting at src[i] ('<'), lowercased
-// and with any leading '/' consumed. ok is false when this is not a tag start.
-func tagName(src []byte, i int) (name string, after int, ok bool) {
+// and with any leading '/' consumed. col is the column of that '<'. ok is false
+// when this is not a tag start.
+//
+// A break at the EDGAR wrap column can fall inside the name itself ("<t\nr>"),
+// which would otherwise read as an unknown element and cost the row its line
+// break; such a name is rejoined. Any other break still ends the name, so a
+// legitimate "<tr\nclass=x>" can never merge into "trclass".
+//
+// The rejoin is bounded by maxTagNameLen and REJECTS past it rather than
+// accumulating: the input is untrusted filing bytes, and a run of name bytes
+// that keeps going across wrap after wrap is not an element name.
+func tagName(src []byte, i, col int) (name string, after int, ok bool) {
 	j := i + 1
+	col++
 	if j < len(src) && src[j] == '/' {
 		j++
+		col++
 	}
 	start := j
+	var joined []byte // allocated only when the wrap cut this name in half
 	for j < len(src) {
 		c := src[j]
-		if c == '>' || c == '/' || c == ' ' || c == '\t' || c == '\r' || c == '\n' {
+		if n := breakLen(src, j); n > 0 {
+			if col != edgarWrapWidth {
+				break
+			}
+			if len(joined)+(j-start) > maxTagNameLen {
+				return "", i, false
+			}
+			joined = append(joined, src[start:j]...)
+			j += n
+			col = 0
+			start = j
+			// THE WRAP CAN FALL BETWEEN '<' AND '/'. The close-slash is consumed
+			// above, before this loop, so a break there leaves it to arrive here
+			// where '/' is a name TERMINATOR -- the tag is not recognised and its
+			// characters survive into the text:
+			//
+			//	line N   (1023 cols) ... Management </font><
+			//	line N+1             /p><p style="margin:0pt ...
+			//
+			// which put a literal `</p>` or `</font>` in the vote cell of 2,173
+			// issnpx rows measured 2026-09-01. Nothing has been read yet when
+			// this fires, so consuming the slash here is the same act as
+			// consuming it above.
+			if len(joined) == 0 && j < len(src) && src[j] == '/' {
+				j++
+				col++
+				start = j
+			}
+			continue
+		}
+		if c == '>' || c == '/' || c == ' ' || c == '\t' {
 			break
 		}
 		if !isNameByte(c) {
 			return "", i, false
 		}
+		if len(joined)+(j-start) >= maxTagNameLen {
+			return "", i, false
+		}
 		j++
+		col += columnWidth(c)
 	}
-	if j == start {
+	if joined == nil {
+		if j == start {
+			return "", i, false
+		}
+		return strings.ToLower(string(src[start:j])), j, true
+	}
+	joined = append(joined, src[start:j]...)
+	if len(joined) == 0 {
 		return "", i, false
 	}
-	return strings.ToLower(string(src[start:j])), j, true
+	return strings.ToLower(string(joined)), j, true
 }
 
 func isNameByte(c byte) bool {
@@ -280,34 +487,61 @@ func resolveEntity(body string) (string, bool) {
 	return "", false
 }
 
-// collapseSpaces squeezes runs of horizontal whitespace to a single space and
-// drops spaces adjacent to a newline, while keeping the line structure itself.
-// Runs of more than two newlines shrink to two so that page furniture does not
-// bury the grammar; newlines are never collapsed away entirely.
+// collapseSpaces squeezes runs of horizontal whitespace and drops spaces
+// adjacent to a newline, while keeping the line structure itself. Runs of more
+// than two newlines shrink to two so that page furniture does not bury the
+// grammar; newlines are never collapsed away entirely.
+//
+// A run is squeezed to at most columnGapWidth spaces rather than to one. The
+// legacy layouts are fixed-width column grammars whose only remaining record of
+// where one cell ends and the next begins is the width of the run between them,
+// and squeezing every run to a single space erases that boundary rather than
+// merely blurring it: "VOTE CAST" and "MGMT" cells that are both multi-word and
+// off-vocabulary become one indistinguishable token run. Two is the minimum that
+// keeps column padding tellable from word spacing, and a run that was ONE space
+// still emits one, so prose never acquires a gap it did not have.
 func collapseSpaces(s string) string {
+	return collapseSpacesIndent(s, false)
+}
+
+// collapseSpacesIndent is collapseSpaces with the leading run of a line kept,
+// squeezed to indentMarkWidth. Leading whitespace is dropped by default because
+// every line-oriented reader trims it anyway, but in a fixed-width grammar the
+// column a line STARTS at is part of the record -- an issuer heading begins at
+// column 0 where a wrapped description is indented under it, and once the
+// leading run is gone the two are the same bare line. Only a layout that reads
+// that difference asks for it; keeping it everywhere moves prose and banner
+// lines other layouts already classify.
+func collapseSpacesIndent(s string, keepIndent bool) string {
 	s = strings.ReplaceAll(s, "\r\n", "\n")
 	var b strings.Builder
 	b.Grow(len(s))
-	pendingSpace := false
+	pendingSpaces := 0
 	newlines := 0
 	atLineStart := true
 	for _, r := range s {
 		switch {
 		case isLineBreak(r):
-			pendingSpace = false
+			pendingSpaces = 0
 			if newlines < 2 {
 				b.WriteByte('\n')
 				newlines++
 			}
 			atLineStart = true
 		case isHorizontalSpace(r):
-			if !atLineStart {
-				pendingSpace = true
+			limit := columnGapWidth
+			if atLineStart {
+				limit = 0
+				if keepIndent {
+					limit = indentMarkWidth
+				}
+			}
+			if pendingSpaces < limit {
+				pendingSpaces++
 			}
 		default:
-			if pendingSpace {
+			for ; pendingSpaces > 0; pendingSpaces-- {
 				b.WriteByte(' ')
-				pendingSpace = false
 			}
 			b.WriteRune(r)
 			newlines = 0
@@ -315,6 +549,23 @@ func collapseSpaces(s string) string {
 		}
 	}
 	return b.String()
+}
+
+// columnGapWidth is the width a horizontal run is squeezed to when it was wider
+// than one character: the narrowest run the layouts can still recognise as a
+// column separator.
+const columnGapWidth = 2
+
+// indentMarkWidth is how much of a line's leading whitespace run survives
+// collapseSpaces. It is one space: enough for lineIndented to answer whether a
+// line starts at column 0, and narrow enough that it can never be read as a
+// column gap.
+const indentMarkWidth = 1
+
+// lineIndented reports a line that starts right of column 0, reading the line
+// as collapseSpaces left it -- before any trim, which erases the whole signal.
+func lineIndented(line string) bool {
+	return line != strings.TrimLeft(line, " \t")
 }
 
 func isLineBreak(r rune) bool {

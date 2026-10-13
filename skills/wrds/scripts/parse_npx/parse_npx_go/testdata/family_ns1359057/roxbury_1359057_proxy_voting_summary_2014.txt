@@ -1,0 +1,943 @@
+<SEC-DOCUMENT>0001398344-14-003643.txt : 20140716
+<SEC-HEADER>0001398344-14-003643.hdr.sgml : 20140716
+<ACCEPTANCE-DATETIME>20140716162842
+ACCESSION NUMBER:		0001398344-14-003643
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20140630
+FILED AS OF DATE:		20140716
+DATE AS OF CHANGE:		20140716
+EFFECTIVENESS DATE:		20140716
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Roxbury Funds
+		CENTRAL INDEX KEY:			0001359057
+		IRS NUMBER:				571138125
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0630
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21897
+		FILM NUMBER:		14978298
+
+	BUSINESS ADDRESS:	
+		STREET 1:		6001 SHADY OAK ROAD
+		STREET 2:		SUITE 200
+		CITY:			MINNETONKA
+		STATE:			MN
+		ZIP:			55343
+		BUSINESS PHONE:		9522306140
+
+	MAIL ADDRESS:	
+		STREET 1:		6001 SHADY OAK ROAD
+		STREET 2:		SUITE 200
+		CITY:			MINNETONKA
+		STATE:			MN
+		ZIP:			55343
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001359057
+<SERIES-ID>S000012813
+<SERIES-NAME>Roxbury/Hood River Small-Cap Growth Fund - Institutional Shares
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000034642
+<CLASS-CONTRACT-NAME>Roxbury/Hood River Small-Cap Growth Fund - Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RSCIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001359057
+<SERIES-ID>S000034445
+<SERIES-NAME>Roxbury/Mar Vista Strategic Growth Fund - Institutional Shares
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000105920
+<CLASS-CONTRACT-NAME>Roxbury/Mar Vista Strategic Growth Fund - Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RMSIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0010936_npx.htm
+<TEXT>
+<html>
+<head>
+<title></title>
+<!--Licensed to: FilePoint
+    Document created using Disclosure Solutions PROFILE 2.6.0.0
+    Copyright 1995 - 2014 Thomson Reuters Accelus.  All rights reserved.-->
+</head>
+<body style="FONT-FAMILY: 'Times New Roman', Times, serif; FONT-SIZE: 11pt" bgcolor="#ffffff" text="#000000">
+<div>
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">&#160;</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">UNITED STATES<font style="FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt"><br>
+</font>SECURITIES AND EXCHANGE COMMISSION<font style="FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt"><br>
+</font> Washington, D.C. 20549</div>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt; FONT-WEIGHT: bold">FORM N-PX</div>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt; FONT-WEIGHT: bold">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED </div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt; FONT-WEIGHT: bold">MANAGEMENT INVESTMENT COMPANY</div>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Investment Company Act file number&#160;&#160; <font style="FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt"><u>811-21897</u></font></div>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt"><font style="FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">The Roxbury Funds</font>
+
+<hr style="WIDTH: 50%; HEIGHT: 2px; COLOR: #000000" noshade="noshade">
+(Exact name of registrant as specified in charter)</div>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">6001 Shady Oak Road Suite 200</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt"><font style="FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Minnetonka, MN 55343 </font>
+
+<hr style="WIDTH: 50%; HEIGHT: 2px; COLOR: #000000" noshade="noshade">
+(Address of principal executive offices) (Zip code)</div>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Brian C. Beh</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Roxbury Capital Management, LLC</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">6001 Shady Oak Road Suite 200</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt"><font style="FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Minnetonka, MN 55343 </font>
+
+<hr style="WIDTH: 50%; HEIGHT: 2px; COLOR: #000000" noshade="noshade">
+(Name and address of agent for service)</div>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Copy to:</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Michael P. Malloy, Esquire</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Drinker Biddle &amp; Reath LLP</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">One Logan Square, Ste. 2000</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Philadelphia, PA 19103-6996</div>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Registrant's telephone number, including area code: <font style="FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt"><u>(952)-230-6140</u></font></div>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Date of fiscal year end: <font style="FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt"><u>June 30</u></font></div>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Date of reporting period:&#160;<font style="FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt"><u>July 1, 2013 &#8211; June 30, 2014</u></font></div>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: justify; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Form N-PX is to be used by a registered management investment company, other than a small business investment company registered on Form N-5 (&#167;&#167; 239.24 and 274.5 of this chapter), to file reports with the Commission, not later than August 31 of each year, containing the registrant's proxy voting record for the most recent twelve-month period ended June 30, pursuant to section 30 of the Investment Company Act of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4). The Commission may use the information provided on Form N-PX in its regulatory, disclosure review, inspection, and policymaking roles.</div>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: justify; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">A registrant is required to disclose the information specified by Form N-PX, and the Commission will make this information public. A registrant is not required to respond to the collection of information contained in Form N-PX unless the Form displays a currently valid Office of Management and Budget ("OMB") control number. Please direct comments concerning the accuracy of the information collection burden estimate and any suggestions for reducing the burden to the Secretary, Securities and Exchange Commission, 100 F Street, NE, Washington, DC 20549. The OMB has reviewed this collection of information under the clearance requirements of 44 U.S.C. &#167; 3507.</div>
+
+<div style="MARGIN-TOP: 11pt; MARGIN-BOTTOM: 11pt; CLEAR: both" id="DSPFPageBreakArea">
+<hr style="PAGE-BREAK-AFTER: always; BORDER-RIGHT-WIDTH: 0px; BACKGROUND-COLOR: #555555; MARGIN: 4px 0px; WIDTH: 100%; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; HEIGHT: 1px; COLOR: #555555; CLEAR: both; BORDER-LEFT-WIDTH: 0px" id="DSPFPageBreak" noshade="noshade">
+</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt; FONT-WEIGHT: bold">PROXY VOTING RECORD</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt; FONT-WEIGHT: bold">FOR PERIOD JULY 1, 2013 TO JUNE 30, 2014</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt; FONT-WEIGHT: bold">&#160;</div>
+
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt; FONT-WEIGHT: bold">
+<table style="WIDTH: 100%; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-SIZE: 11pt" border="0" cellspacing="0" cellpadding="4">
+<tr>
+<td style="BORDER-BOTTOM: #000000 2px solid; VERTICAL-ALIGN: middle" colspan="9">
+<div style="TEXT-ALIGN: center; FONT-STYLE: italic; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #002060; FONT-SIZE: 18pt">Roxbury/Hood River Small-Cap Growth Proxy Voting Summary</div>
+</td>
+</tr>
+
+<tr style="BACKGROUND-COLOR: #004f75">
+<td style="BORDER-BOTTOM: #000000 2px solid; VERTICAL-ALIGN: top" colspan="9">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">GULFPORT ENERGY CORPORATION</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top" colspan="3">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Security</div>
+</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">402635304</div>
+</td>
+<td style="WIDTH: 8.06%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Meeting Type</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Annual</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top" colspan="3">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Ticker Symbol</div>
+</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">GPOR</div>
+</td>
+<td style="WIDTH: 8.06%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Meeting Date</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">01-Jul-2013</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top" colspan="3">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">ISIN</div>
+</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">US4026353049</div>
+</td>
+<td style="WIDTH: 8.06%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Agenda</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">933825436 - Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top" colspan="3">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">City</div>
+</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 8.06%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Holding Recon Date</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">23-Apr-2013</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top" colspan="3">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Country</div>
+</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">United States</div>
+</td>
+<td style="WIDTH: 8.06%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Vote Deadline Date</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">28-Jun-2013</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top" colspan="3">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">SEDOL(s)</div>
+</td>
+<td style="VERTICAL-ALIGN: bottom" colspan="2">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Quick Code</div>
+</td>
+<td style="VERTICAL-ALIGN: bottom" colspan="2">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr style="BACKGROUND-COLOR: #004f75">
+<td style="BORDER-BOTTOM: #000000 2px solid; WIDTH: 12%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Item</div>
+</td>
+<td style="BORDER-BOTTOM: #000000 2px solid; VERTICAL-ALIGN: top" colspan="4">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Proposal</div>
+</td>
+<td style="BORDER-BOTTOM: #000000 2px solid; WIDTH: 17%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Sponsor</div>
+</td>
+<td style="BORDER-BOTTOM: #000000 2px solid; VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Vote</div>
+</td>
+<td style="BORDER-BOTTOM: #000000 2px solid; WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">For/Against Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">1.</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="4">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">DIRECTOR</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Management</div>
+</td>
+<td style="WIDTH: 2%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 2%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 4%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">1</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">DONALD L. DILLINGHAM</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 2%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 4%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">2</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">CRAIG GROESCHEL</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 2%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 4%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">3</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">DAVID L. HOUSTON</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 2%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 4%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">4</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">JAMES D. PALM</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 2%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 4%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">5</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">SCOTT E. STRELLER</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">2.</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="4">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">PROPOSAL TO APPROVE AN AMENDMENT TO THE COMPANY'S RESTATED CERTIFICATE OF INCORPORATION TO INCREASE THE TOTAL NUMBER OF AUTHORIZED SHARES OF COMMON STOCK FROM 100,000,000 SHARES TO 250,000,000 SHARES</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Management</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Against</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Against</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">3.</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="4">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">PROPOSAL TO APPROVE OUR 2013 RESTATED STOCK INCENTIVE PLAN</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Management</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">4.</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="4">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">PROPOSAL TO APPROVE, ON AN ADVISORY BASIS, THE COMPANY'S EXECUTIVE COMPENSATION</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Management</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">5.</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="4">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">PROPOSAL TO RATIFY THE APPOINTMENT OF GRANT THORNTON LLP AS THE COMPANY'S INDEPENDENT AUDITORS FOR THE FISCAL YEAR ENDING DECEMBER 31, 2013</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Management</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+</table>
+
+<div style="MARGIN-BOTTOM: 10pt; FONT-WEIGHT: normal"><br>
+</div>
+
+<div style="MARGIN-TOP: 11pt; MARGIN-BOTTOM: 11pt; CLEAR: both" id="DSPFPageBreakArea">
+<hr style="PAGE-BREAK-AFTER: always; BORDER-RIGHT-WIDTH: 0px; BACKGROUND-COLOR: #555555; MARGIN: 4px 0px; WIDTH: 100%; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; HEIGHT: 1px; COLOR: #555555; CLEAR: both; BORDER-LEFT-WIDTH: 0px" id="DSPFPageBreak" noshade="noshade">
+</div>
+</div>
+
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt; FONT-WEIGHT: bold">
+<table style="WIDTH: 100%; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-SIZE: 11pt" border="0" cellspacing="0" cellpadding="4">
+<tr>
+<td style="BORDER-BOTTOM: #000000 2px solid; VERTICAL-ALIGN: top" colspan="9">
+<div style="TEXT-ALIGN: center; FONT-STYLE: italic; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #0000ff; FONT-SIZE: 18pt">Roxbury/Mar Vista Strategic Growth Fund Proxy Voting Summary</div>
+</td>
+</tr>
+
+<tr style="BACKGROUND-COLOR: #004f75">
+<td style="BORDER-BOTTOM: #000000 2px solid; VERTICAL-ALIGN: top" colspan="9">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">NIKE, INC.</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top" colspan="3">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Security</div>
+</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">654106103</div>
+</td>
+<td style="WIDTH: 8%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Meeting Type</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Annual</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top" colspan="3">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Ticker Symbol</div>
+</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">NKE</div>
+</td>
+<td style="WIDTH: 8%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Meeting Date</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">19-Sep-2013</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top" colspan="3">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">ISIN</div>
+</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">US6541061031</div>
+</td>
+<td style="WIDTH: 8%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Agenda</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">933862078 - Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top" colspan="3">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">City</div>
+</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 8%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Holding Recon Date</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">19-Jul-2013</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top" colspan="3">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Country</div>
+</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">United States</div>
+</td>
+<td style="WIDTH: 8%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Vote Deadline Date</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">18-Sep-2013</div>
+</td>
+</tr>
+
+<tr>
+<td style="VERTICAL-ALIGN: top" colspan="3">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">SEDOL(s)</div>
+</td>
+<td style="VERTICAL-ALIGN: bottom" colspan="2">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Quick Code</div>
+</td>
+<td style="VERTICAL-ALIGN: bottom" colspan="2">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr style="BACKGROUND-COLOR: #004f75">
+<td style="BORDER-BOTTOM: #000000 2px solid; WIDTH: 12%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Item</div>
+</td>
+<td style="BORDER-BOTTOM: #000000 2px solid; VERTICAL-ALIGN: top" colspan="4">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Proposal</div>
+</td>
+<td style="BORDER-BOTTOM: #000000 2px solid; WIDTH: 17%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Sponsor</div>
+</td>
+<td style="BORDER-BOTTOM: #000000 2px solid; VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Vote</div>
+</td>
+<td style="BORDER-BOTTOM: #000000 2px solid; WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #ffffff; FONT-SIZE: 11pt; FONT-WEIGHT: bold">For/Against Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">1</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="4">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">DIRECTOR</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Management</div>
+</td>
+<td style="WIDTH: 2%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 2%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 4.02%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">1</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">ALAN B. GRAF, JR.</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 2%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 4.02%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">2</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">JOHN C. LECHLEITER</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 2%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 4.02%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">3</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">PHYLLIS M. WISE</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: bottom">
+<div>&#160;</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">2.</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="4">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">TO HOLD AN ADVISORY VOTE TO APPROVE EXECUTIVE COMPENSATION.</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Management</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">3.</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="4">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">TO RATIFY THE APPOINTMENT OF PRICEWATERHOUSECOOPERS LLP AS INDEPENDENT REGISTERED PUBLIC ACCOUNTING FIRM.</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Management</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 12%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">4.</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="4">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">TO CONSIDER A SHAREHOLDER PROPOSAL REGARDING POLITICAL CONTRIBUTIONS DISCLOSURE.</div>
+</td>
+<td style="WIDTH: 17%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Shareholder</div>
+</td>
+<td style="VERTICAL-ALIGN: top" colspan="2">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">Against</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; COLOR: #000000; FONT-SIZE: 11pt">For</div>
+</td>
+</tr>
+
+</table>
+</div>
+
+<div style="MARGIN-TOP: 11pt; MARGIN-BOTTOM: 11pt; CLEAR: both" id="DSPFPageBreakArea">
+<hr style="PAGE-BREAK-AFTER: always; BORDER-RIGHT-WIDTH: 0px; BACKGROUND-COLOR: #555555; MARGIN: 4px 0px; WIDTH: 100%; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; HEIGHT: 1px; COLOR: #555555; CLEAR: both; BORDER-LEFT-WIDTH: 0px" id="DSPFPageBreak" noshade="noshade">
+</div>
+
+<div style="TEXT-ALIGN: center; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt; FONT-WEIGHT: bold">SIGNATURES<br>
+</div>
+
+<div style="TEXT-ALIGN: justify; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">&#160;</div>
+
+<div style="TEXT-ALIGN: justify; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Pursuant to the requirements of the Investment Company Act of 1940, the registrant has duly caused this report to be signed on its behalf by the undersigned, thereunto duly authorized.</div>
+
+<div><br>
+</div>
+
+<table style="WIDTH: 100%; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-SIZE: 11pt" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td style="WIDTH: 20%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: justify; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Registrant</div>
+</td>
+<td style="BORDER-BOTTOM: black 2px solid; WIDTH: 35%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: justify; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">The Roxbury Funds</div>
+</td>
+<td style="WIDTH: 45%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 20%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 35%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 45%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 20%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: justify; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">By (Signature and Title)*</div>
+</td>
+<td style="BORDER-BOTTOM: black 2px solid; WIDTH: 35%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: justify; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">/s/ Brian C. Beh</div>
+</td>
+<td style="WIDTH: 45%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr style="HEIGHT: 15px">
+<td style="WIDTH: 20%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 35%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Brian C. Beh, President</div>
+</td>
+<td style="WIDTH: 45%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 20%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 35%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">(principal executive officer)</div>
+</td>
+<td style="WIDTH: 45%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 20%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 35%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+<td style="WIDTH: 45%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 20%; VERTICAL-ALIGN: top">
+<div style="TEXT-ALIGN: justify; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">Date</div>
+</td>
+<td style="BORDER-BOTTOM: #000000 2px solid; WIDTH: 35%; VERTICAL-ALIGN: top">
+<div>July 16, 2014</div>
+</td>
+<td style="WIDTH: 45%; VERTICAL-ALIGN: top">
+<div>&#160;</div>
+</td>
+</tr>
+</table>
+
+<div><br>
+</div>
+
+<div style="TEXT-ALIGN: left; FONT-FAMILY: ''Times New Roman'', Times, serif; FONT-SIZE: 11pt">*Print the name and title of each signing officer under his or her signature.</div>
+
+<div><br>
+</div>
+</div>
+</body>
+</html>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

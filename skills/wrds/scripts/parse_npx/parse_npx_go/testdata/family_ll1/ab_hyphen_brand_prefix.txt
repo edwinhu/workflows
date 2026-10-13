@@ -1,0 +1,32 @@
+		COMPANY CONFORMED NAME:			ALLIANCEBERNSTEIN VARIABLE PRODUCTS SERIES FUND INC
+		CENTRAL INDEX KEY:			0000825316
+<TEXT>
+============ ALLIANCEBERNSTEIN VARIABLE SERIES FUND-VALUE PORTFOLIO ============
+
+
+ACE LTD.
+
+Ticker:       ACE            Security ID:  G0070K103
+Meeting Date: MAY 26, 2005   Meeting Type: Annual
+Record Date:  APR 8, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Evan G. Greenberg         For       For        Management
+1.2   Elect  Director John A. Krol              For       For        Management
+2     Ratify Auditors                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ADC TELECOMMUNICATIONS, INC.
+
+Ticker:       ADCT           Security ID:  000886101
+Meeting Date: MAR 1, 2005    Meeting Type: Annual
+Record Date:  JAN 12, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director James C. Castle, Ph.D.    For       For        Management
+1.2   Elect  Director Mickey P. Foret           For       For        Management
+1.3   Elect  Director J. Kevin Gilligan         For       For        Management
+1.4   Elect  Director John D. Wunsch            For       For        Management
+1.5   Elect  Director Lois M. Martin            For       For        Management

@@ -1,0 +1,85 @@
+<SEC-DOCUMENT>0000935069-04-001343.txt : 20040831
+<SEC-HEADER>0000935069-04-001343.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831170719
+ACCESSION NUMBER:		0000935069-04-001343
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PACIFIC FUNDS
+		CENTRAL INDEX KEY:			0001137761
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0331
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>pacnpx.txt
+<DESCRIPTION>PACIFIC FUNDS FORM N-PX
+<TEXT>
+ICA File Number:  811-10385
+Reporting Period: 07/01/2003 - 06/30/2004
+Pacific Funds
+<PAGE>
+
+
+<TABLE>
+<CAPTION>
+
+                               VOTE SUMMARY REPORT
+                          July 01, 2003 - June 30, 2004
+
+PF AIM AGGRESSIVE GROWTH FUND
+
+Mtg                 Company/Ticker                                        Mgmt         Vote            Record                 Shares
+Date/Type           Ballot Issues                           Security      Rec          Cast            Date        Prpnent     Voted
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>                 <C>                                     <C>           <C>          <C>             <C>         <C>        <C>
+06/24/04 - A        A.G. EDWARDS, INC. *AGE*                281760108                                  05/03/04                 500
+                    1       Elect Directors                               For          For                         Mgmt
+                    2       Approve Executive Incentive Bonus Plan        For          For                         Mgmt
+                    3       Ratify Auditors                               For          For                         Mgmt
+
+
+04/28/04 - A        ADOBE SYSTEMS INC. *ADBE*               00724F101                                  03/03/04               1,050
+</TABLE>
+- --------------------------------------------------------------------------------
+Mgmt Rec - Company Management Recommended Vote                           Page 24
+** - Exception Vote
+A - Annual
+S - Special
+
+<PAGE>
+
+
+<TABLE>
+<CAPTION>
+
+
+                               VOTE SUMMARY REPORT
+                          July 01, 2003 - June 30, 2004
+
+PF JANUS GROWTH LT FUND
+
+Mtg                 Company/Ticker                                        Mgmt          Vote           Record                 Shares
+Date/Type           Ballot Issues                            Security     Rec           Cast           Date        Prpnent     Voted
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>                 <C>                                      <C>          <C>           <C>            <C>         <C>        <C>
+12/18/03 - S        ALLIED WASTE INDUSTRIES, INC. *AW*       019589308                                 11/03/03                4,830
+                    1       Approve Conversion of Securities              For           For                        Mgmt
+
+
+05/25/04 - A        AMAZON.COM, INC. *AMZN*                  023135106                                 03/29/04                5,010
+                    1       Elect Directors                               For           For                        Mgmt
+                    2       Ratify Auditors                               For           For                        Mgmt
+                    3       Limit Executive Compensation                  Against       Against                    ShrHoldr
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

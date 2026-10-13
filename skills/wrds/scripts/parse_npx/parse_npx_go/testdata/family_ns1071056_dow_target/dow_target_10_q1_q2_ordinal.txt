@@ -1,0 +1,674 @@
+<SEC-DOCUMENT>0001144204-11-041734.txt : 20110722
+<SEC-HEADER>0001144204-11-041734.hdr.sgml : 20110722
+<ACCEPTANCE-DATETIME>20110722135412
+ACCESSION NUMBER:		0001144204-11-041734
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110722
+DATE AS OF CHANGE:		20110722
+EFFECTIVENESS DATE:		20110722
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			DOW TARGET VARIABLE FUND LLC
+		CENTRAL INDEX KEY:			0001071056
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			OH
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-09019
+		FILM NUMBER:		11982221
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE FINANCIAL WAY
+		CITY:			CINCINNATI
+		STATE:			OH
+		ZIP:			45242
+		BUSINESS PHONE:		513-794-6230
+
+	MAIL ADDRESS:	
+		STREET 1:		ONE FINANCIAL WAY
+		CITY:			CINCINNATI
+		STATE:			OH
+		ZIP:			45242
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001071056
+<SERIES-ID>S000007939
+<SERIES-NAME>Dow Target 10 - First Quarter Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000021537
+<CLASS-CONTRACT-NAME>Dow Target 10 - First Quarter Portfolio
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001071056
+<SERIES-ID>S000007940
+<SERIES-NAME>Dow Target 10 - Second Quarter Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000021538
+<CLASS-CONTRACT-NAME>Dow Target 10 - Second Quarter Portfolio
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001071056
+<SERIES-ID>S000007941
+<SERIES-NAME>Dow Target 10 - Third Quarter Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000021539
+<CLASS-CONTRACT-NAME>Dow Target 10 - Third Quarter Portfolio
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001071056
+<SERIES-ID>S000007942
+<SERIES-NAME>Dow Target 10 - Fourth Quarter Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000021540
+<CLASS-CONTRACT-NAME>Dow Target 10 - Fourth Quarter Portfolio
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001071056
+<SERIES-ID>S000007943
+<SERIES-NAME>Dow Target 5 - First Quarter Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000021541
+<CLASS-CONTRACT-NAME>Dow Target 5 - First Quarter Portfolio
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001071056
+<SERIES-ID>S000007944
+<SERIES-NAME>Dow Target 5 - Second Quarter Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000021542
+<CLASS-CONTRACT-NAME>Dow Target 5 - Second Quarter Portfolio
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001071056
+<SERIES-ID>S000007945
+<SERIES-NAME>Dow Target 5 - Third Quarter Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000021543
+<CLASS-CONTRACT-NAME>Dow Target 5 - Third Quarter Portfolio
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001071056
+<SERIES-ID>S000007946
+<SERIES-NAME>Dow Target 5 - Fourth Quarter Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000021544
+<CLASS-CONTRACT-NAME>Dow Target 5 - Fourth Quarter Portfolio
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>v229383_n-px.txt
+<TEXT>
+UNITED STATES
+SECURITIES AND EXCHANGE COMMISSION
+Washington, DC 20549
+
+FORM N-PX
+
+ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED
+MANAGEMENT INVESTMENT COMPANY
+
+Investment Company Act File Number : 811-09019
+
+Name of Registrant: Dow Target Variable Fund LLC
+
+Address of Principal Executive Offices:
+One Financial Way, Cincinnati, Ohio 45242
+
+Registrant's telephone number including area code:
+513-794-6971
+
+Date of fiscal year end:
+December 31
+
+Date of reporting period:
+07/01/2010 - 06/30/2011
+
+<PAGE>
+
+Item 1: Proxy Voting Record
+
+Fund Name : Dow Target 10 - 1st Quarter Portfolio
+
+<TABLE>
+<CAPTION>
+<S>              <C>                                  <C>          <C>         <C>        <C>
+=========================================================================================================
+
+AT&T Inc.
+Ticker           Security ID:                          Meeting Date             Meeting Status
+T                CUSIP 00206R102                      04/29/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Randall Stephenson              Mgmt        For         For         For
+2                Elect Gilbert Amelio                  Mgmt        For         For         For
+3                Elect Reuben Anderson                 Mgmt        For         For         For
+4                Elect James Blanchard                 Mgmt        For         For         For
+5                Elect Jaime Chico Pardo               Mgmt        For         For         For
+6                Elect James Kelly                     Mgmt        For         For         For
+7                Elect Jon Madonna                     Mgmt        For         For         For
+8                Elect Lynn Martin                     Mgmt        For         For         For
+9                Elect John McCoy                      Mgmt        For         For         For
+10               Elect Joyce Roche                     Mgmt        For         For         For
+11               Elect Matthew Rose                    Mgmt        For         For         For
+12               Elect Laura Tyson                     Mgmt        For         For         For
+13               Ratification of Auditor               Mgmt        For         For         For
+14               2011 Incentive Plan                   Mgmt        For         For         For
+15               Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+16               Frequency of Advisory Vote on         Mgmt        3 Years     3 Years     For
+                  Executive
+                  Compensation
+
+17               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Political Contributions and
+                  Expenditure
+                  Report
+
+18               Shareholder Proposal Regarding Right  ShrHldr    Against     For         Against
+                  to Call a Special
+                  Meeting
+
+19               Shareholder Proposal Regarding Right  ShrHldr    Against     For         Against
+                  to Act by Written
+                  Consent
+
+
+
+=========================================================================================================
+
+Chevron
+ Corporation
+
+Ticker           Security ID:                          Meeting Date             Meeting Status
+CVX              CUSIP 166764100                      05/25/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Linnet Deily                    Mgmt        For         For         For
+2                Elect Robert Denham                   Mgmt        For         For         For
+3                Elect Robert Eaton                    Mgmt        For         For         For
+4                Elect Chuck Hagel                     Mgmt        For         For         For
+5                Elect Enrique Hernandez, Jr.          Mgmt        For         For         For
+6                Elect George Kirkland                 Mgmt        For         For         For
+7                Elect Donald Rice                     Mgmt        For         For         For
+8                Elect Kevin Sharer                    Mgmt        For         For         For
+9                Elect Charles Shoemate                Mgmt        For         For         For
+10               Elect John Stumpf                     Mgmt        For         For         For
+11               Elect Ronald Sugar                    Mgmt        For         For         For
+12               Elect Carl Ware                       Mgmt        For         For         For
+13               Elect John Watson                     Mgmt        For         For         For
+14               Ratification of Auditor               Mgmt        For         For         For
+15               Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+16               Frequency of Advisory Vote on         Mgmt        1 Year      1 Year      For
+                  Executive
+                  Compensation
+
+17               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Environmental Expertise on
+                  Board
+
+18               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Establishment of Human Rights
+                  Committee
+
+19               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Linking Executive Pay to
+                  Sustainability
+
+20               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Country Selection
+                  Guidelines
+
+21               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Financial Risks of Climate
+                  Change
+
+22               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Report on Hydraulic
+                  Fracturing
+
+23               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Offshore Drilling
+                  Report
+
+
+
+=========================================================================================================
+
+E. I. du Pont de
+ Nemours and
+ Company
+
+Ticker           Security ID:                          Meeting Date             Meeting Status
+DD               CUSIP 263534109                      04/27/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Richard Brown                   Mgmt        For         For         For
+2                Elect Robert Brown                    Mgmt        For         For         For
+3                Elect Bertrand Collomb                Mgmt        For         For         For
+4                Elect Curtis Crawford                 Mgmt        For         For         For
+5                Elect Alexander Cutler                Mgmt        For         For         For
+6                Elect Eleuthere Du Pont               Mgmt        For         For         For
+7                Elect Marillyn Hewson                 Mgmt        For         For         For
+8                Elect Lois Juliber                    Mgmt        For         For         For
+9                Elect Ellen Kullman                   Mgmt        For         For         For
+10               Elect William Reilly                  Mgmt        For         For         For
+11               Ratification of Auditor               Mgmt        For         For         For
+12               Amendment to the Equity and           Mgmt        For         For         For
+                  Incentive
+                  Plan
+
+13               Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+14               Frequency of Advisory Vote on         Mgmt        1 Year      1 Year      For
+                  Executive
+                  Compensation
+
+15               Shareholder Proposal Regarding Right  ShrHldr    Against     For         Against
+                  to Call a Special
+                  Meeting
+
+16               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Genetically Engineered
+                  Organisms
+
+17               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Comparison Between Executive and
+                  Employee
+                  Pay
+
+
+=========================================================================================================
+
+Intel Corporation
+Ticker           Security ID:                          Meeting Date             Meeting Status
+INTC             CUSIP 458140100                      05/19/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Charlene Barshefsky             Mgmt        For         For         For
+2                Elect Susan Decker                    Mgmt        For         For         For
+3                Elect John Donahoe                    Mgmt        For         For         For
+4                Elect Reed Hundt                      Mgmt        For         For         For
+5                Elect Paul Otellini                   Mgmt        For         For         For
+6                Elect James Plummer                   Mgmt        For         For         For
+7                Elect David Pottruck                  Mgmt        For         For         For
+8                Elect Jane Shaw                       Mgmt        For         For         For
+9                Elect Frank Yeary                     Mgmt        For         For         For
+10               Elect David Yoffie                    Mgmt        For         For         For
+11               Ratification of Auditor               Mgmt        For         For         For
+12               Amendment to the 2006 Equity          Mgmt        For         For         For
+                  Incentive
+                  Plan
+
+13               Amendment to the 2006 Stock Purchase  Mgmt        For         For         For
+                  Plan
+
+14               ADVISORY VOTE ON EXECUTIVE            Mgmt        For         For         For
+                  COMPENSATION
+
+15               Frequency of Advisory Vote on         Mgmt        1 Year      1 Year      For
+                  Executive
+                  Compensation
+
+=========================================================================================================
+
+Johnson & Johnson
+Ticker           Security ID:                          Meeting Date             Meeting Status
+JNJ              CUSIP 478160104                      04/28/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Mary Coleman                    Mgmt        For         For         For
+2                Elect James Cullen                    Mgmt        For         For         For
+3                Elect Ian Davis                       Mgmt        For         For         For
+4                Elect Michael Johns                   Mgmt        For         For         For
+
+5                Elect Susan Lindquist                 Mgmt        For         For         For
+6                Elect Anne Mulcahy                    Mgmt        For         For         For
+7                Elect Leo Mullin                      Mgmt        For         For         For
+8                Elect William Perez                   Mgmt        For         For         For
+9                Elect Charles Prince                  Mgmt        For         For         For
+10               Elect David Satcher                   Mgmt        For         For         For
+11               Elect William Weldon                  Mgmt        For         For         For
+12               Ratification of Auditor               Mgmt        For         For         For
+13               Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+14               Frequency of Advisory Vote on         Mgmt        1 Year      1 Year      For
+                  Executive
+                  Compensation
+
+15               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Pharmaceutical Price
+                  Restraints
+
+16               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Policy on Health Status
+                  Discrimination
+
+17               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Animal
+                  Welfare
+
+=========================================================================================================
+
+Kraft Foods Inc.
+Ticker           Security ID:                          Meeting Date             Meeting Status
+KFT              CUSIP 50075N104                      05/24/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Ajay Banga                      Mgmt        For         For         For
+2                Elect Myra Hart                       Mgmt        For         For         For
+3                Elect Peter Henry                     Mgmt        For         For         For
+4                Elect Lois Juliber                    Mgmt        For         For         For
+5                Elect Mark Ketchum                    Mgmt        For         For         For
+6                Elect Richard Lerner                  Mgmt        For         For         For
+7                Elect Mackey McDonald                 Mgmt        For         For         For
+8                Elect John Pope                       Mgmt        For         For         For
+9                Elect Fedric Reynolds                 Mgmt        For         For         For
+10               Elect Irene Rosenfeld                 Mgmt        For         For         For
+11               Elect Jean-Francois van Boxmeer       Mgmt        For         For         For
+12               Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+13               Frequency of Advisory Vote on         Mgmt        1 Year      1 Year      For
+                  Executive
+                  Compensation
+
+14               Amendment to the 2006 Stock           Mgmt        For         For         For
+                  Compensation Plan for Non-Employee
+                  Directors
+
+15               Ratification of Auditor               Mgmt        For         For         For
+
+
+=========================================================================================================
+
+McDonald's
+ Corporation
+
+Ticker           Security ID:                          Meeting Date             Meeting Status
+MCD              CUSIP 580135101                      05/19/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Susan Arnold                    Mgmt        For         For         For
+2                Elect Richard Lenny                   Mgmt        For         For         For
+3                Elect Cary McMillan                   Mgmt        For         For         For
+4                Elect Sheila Penrose                  Mgmt        For         For         For
+5                Elect James Skinner                   Mgmt        For         For         For
+6                Ratification of Auditor               Mgmt        For         For         For
+7                Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+8                Frequency of Advisory Vote on         Mgmt        1 Year      1 Year      For
+                  Executive
+                  Compensation
+
+9                Elimination of Super-majority         Mgmt        For         For         For
+                  Requirement in Article Regarding
+                  Transactions with Interested
+                  Shareholders
+
+10               Elimination of Supermajority          Mgmt        For         For         For
+                  Requirement in Article Regarding
+                  the Removal of
+                  Directors
+
+11               Elimination of Supermajority          Mgmt        For         For         For
+                  Requirement in Article Regarding
+                  Shareholder
+                  Action
+
+12               Shareholder Proposal Regarding        ShrHldr    Against     For         Against
+                  Declassification of the
+                  Board
+
+13               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Controlled Atmosphere
+                  Killing
+
+14               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Report on Childhood
+                  Obesity
+
+15               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Beverage
+                  Containers
+
+=========================================================================================================
+
+Merck & Co., Inc.
+Ticker           Security ID:                          Meeting Date             Meeting Status
+MRK              CUSIP 58933Y105                      05/24/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Leslie Brun                     Mgmt        For         For         For
+2                Elect Thomas Cech                     Mgmt        For         For         For
+3                Elect Richard Clark                   Mgmt        For         For         For
+4                Elect Kenneth Frazier                 Mgmt        For         For         For
+5                Elect Thomas Glocer                   Mgmt        For         For         For
+6                Elect Steven Goldstone                Mgmt        For         For         For
+7                Elect William Harrison, Jr.           Mgmt        For         For         For
+8                Elect Harry Jacobson                  Mgmt        For         For         For
+9                Elect William Kelley                  Mgmt        For         For         For
+10               Elect C. Robert Kidder                Mgmt        For         For         For
+11               Elect Rochelle Lazarus                Mgmt        For         For         For
+12               Elect Carlos Represas                 Mgmt        For         For         For
+13               Elect Patricia Russo                  Mgmt        For         For         For
+14               Elect Thomas Shenk                    Mgmt        For         For         For
+15               Elect Anne Tatlock                    Mgmt        For         For         For
+16               Elect Craig Thompson                  Mgmt        For         For         For
+17               Elect Wendell Weeks                   Mgmt        For         For         For
+18               Elect Peter Wendell                   Mgmt        For         For         For
+19               Ratification of Auditor               Mgmt        For         For         For
+20               Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+21               Frequency of Advisory Vote on         Mgmt        3 Years     3 Years     For
+                  Executive
+                  Compensation
+
+=========================================================================================================
+
+Pfizer Inc.
+Ticker           Security ID:                          Meeting Date             Meeting Status
+PFE              CUSIP 717081103                      04/28/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Dennis Ausiello                 Mgmt        For         For         For
+2                Elect Michael Brown                   Mgmt        For         For         For
+3                Elect M. Anthony Burns                Mgmt        For         For         For
+4                Elect W. Don Cornwell                 Mgmt        For         For         For
+5                Elect Frances Fergusson               Mgmt        For         For         For
+6                Elect William Gray, III               Mgmt        For         For         For
+7                Elect Constance Horner                Mgmt        For         For         For
+8                Elect James Kilts                     Mgmt        For         For         For
+9                Elect George Lorch                    Mgmt        For         For         For
+10               Elect John Mascotte                   Mgmt        For         For         For
+11               Elect Suzanne Nora Johnson            Mgmt        For         For         For
+12               Elect Ian Read                        Mgmt        For         For         For
+13               Elect Stephen Sanger                  Mgmt        For         For         For
+14               Ratification of Auditor               Mgmt        For         For         For
+15               ADVISORY VOTE ON EXECUTIVE            Mgmt        For         For         For
+                  COMPENSATION
+
+16               Frequency of Advisory Vote on         Mgmt        2 Years     2 Years     For
+                  Executive
+                  Compensation
+
+17               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Publishing Political Contributions
+                  and Expenditure in
+                  Newspapers
+
+18               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Lobbying Priorities
+                  Report
+
+19               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Pharmaceutical Price
+                  Restraints
+
+20               Shareholder Proposal Regarding the    ShrHldr    Against     For         Against
+                  Right to Act by Written
+                  Consent
+
+21               Shareholder Proposal Regarding Right  ShrHldr    Against     For         Against
+                  to Call a Special
+                  Meeting
+
+22               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Transparency in Animal
+                  Research
+
+=========================================================================================================
+
+Verizon
+ Communications
+ Inc.
+
+Ticker           Security ID:                          Meeting Date             Meeting Status
+VZ               CUSIP 92343V104                      05/05/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Richard Carrion                 Mgmt        For         For         For
+2                Elect M. Frances Keeth                Mgmt        For         For         For
+3                Elect Robert Lane                     Mgmt        For         For         For
+4                Elect Lowell McAdam                   Mgmt        For         For         For
+5                Elect Sandra Moose                    Mgmt        For         For         For
+6                Elect Joseph Neubauer                 Mgmt        For         For         For
+7                Elect Donald Nicolaisen               Mgmt        For         For         For
+8                Elect Clarence Otis, Jr.              Mgmt        For         For         For
+9                Elect Hugh Price                      Mgmt        For         For         For
+10               Elect Ivan Seidenberg                 Mgmt        For         For         For
+11               Elect Rodney Slater                   Mgmt        For         For         For
+12               Elect John Snow                       Mgmt        For         For         For
+13               Ratification of Auditor               Mgmt        For         For         For
+14               Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+15               Frequency of Advisory Vote on         Mgmt        1 Year      1 Year      For
+                  Executive
+                  Compensation
+
+16               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Disclosure of Prior Government
+                  Service
+
+17               Shareholder Proposal Regarding        ShrHldr    Against     For         Against
+                  Performance-Based Equity
+                  Compensation
+
+18               Shareholder Proposal Regarding        ShrHldr    Against     For         Against
+                  Cumulative
+                  Voting
+
+19               Shareholder Proposal Regarding Right  ShrHldr    Against     For         Against
+                  to Call a Special
+                  Meeting
+
+
+
+Fund Name : Dow Target 10 - 2nd Quarter Portfolio
+
+
+=========================================================================================================
+
+AT&T Inc.
+Ticker           Security ID:                          Meeting Date             Meeting Status
+T                CUSIP 00206R102                      04/29/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Randall Stephenson              Mgmt        For         For         For
+2                Elect Gilbert Amelio                  Mgmt        For         For         For
+3                Elect Reuben Anderson                 Mgmt        For         For         For
+4                Elect James Blanchard                 Mgmt        For         For         For
+5                Elect Jaime Chico Pardo               Mgmt        For         For         For
+6                Elect James Kelly                     Mgmt        For         For         For
+7                Elect Jon Madonna                     Mgmt        For         For         For
+8                Elect Lynn Martin                     Mgmt        For         For         For
+9                Elect John McCoy                      Mgmt        For         For         For
+10               Elect Joyce Roche                     Mgmt        For         For         For
+11               Elect Matthew Rose                    Mgmt        For         For         For
+12               Elect Laura Tyson                     Mgmt        For         For         For
+13               Ratification of Auditor               Mgmt        For         For         For
+14               2011 Incentive Plan                   Mgmt        For         For         For
+15               Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+16               Frequency of Advisory Vote on         Mgmt        3 Years     3 Years     For
+                  Executive
+                  Compensation
+
+17               Shareholder Proposal Regarding        ShrHldr    Against     Against     For
+                  Political Contributions and
+                  Expenditure
+                  Report
+
+18               Shareholder Proposal Regarding Right  ShrHldr    Against     For         Against
+                  to Call a Special
+                  Meeting
+
+19               Shareholder Proposal Regarding Right  ShrHldr    Against     For         Against
+                  to Act by Written
+                  Consent
+
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

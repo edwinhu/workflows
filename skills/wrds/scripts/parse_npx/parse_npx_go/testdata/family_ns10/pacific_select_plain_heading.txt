@@ -1,0 +1,73 @@
+<SEC-DOCUMENT>0000892569-05-000726.txt : 20050829
+<SEC-HEADER>0000892569-05-000726.hdr.sgml : 20050829
+<ACCEPTANCE-DATETIME>20050829141000
+ACCESSION NUMBER:		0000892569-05-000726
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050829
+DATE AS OF CHANGE:		20050829
+EFFECTIVENESS DATE:		20050829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PACIFIC SELECT FUND
+		CENTRAL INDEX KEY:			0000813900
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a11065nvpx.txt
+<DESCRIPTION>FORM N-PX FOR THE PERIOD ENDED 6-30-2005
+<TEXT>
+<PAGE>
+                                    FORM N-PX
+
+<PAGE>
+                               VOTE SUMMARY REPORT
+                          July 1, 2004 - June 30, 2005
+
+PACIFIC SELECT FUND - HEALTH SCIENCES PORTFOLIO
+
+<TABLE>
+<CAPTION>
+Mtg              Company/                                                          Mgmt      Vote         Record              Shares
+Date/Type        Ballot Issues                                         Security    Rec       Cast         Date      Prpnent    Voted
+- ---------        -------------                                         --------    ---       ----         ----      -------    -----
+<S>              <C>                                                   <C>         <C>       <C>          <C>       <C>      <C>
+07/28/04 - A     MCKESSON CORP. *MCK*                                  58155Q103                          06/01/04            71,200
+                 1     Elect Directors                                             For       For                    Mgmt
+                 2     Ratify Auditors                                             For       For                    Mgmt
+
+
+</TABLE>
+<PAGE>
+PACIFIC SELECT FUND - EQUITY INDEX PORTFOLIO
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 10, 2005   Meeting Type: Annual
+Record Date:  MAR 11, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Vance D. Coffman           For       For        Management
+1.2   Elect Director Rozanne L. Ridgway         For       For        Management
+1.3   Elect Director Louis W. Sullivan          For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Approve Omnibus Stock Plan                For       For        Management
+4     Eliminate Animal Testing                  Against   Against    Shareholder
+5     Implement China Principles                Against   Against    Shareholder
+
+
+- --------------------------------------------------------------------------------
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

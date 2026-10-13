@@ -1,0 +1,51 @@
+CONFORMED PERIOD OF REPORT:	20080630
+		COMPANY CONFORMED NAME:			POWERSHARES EXCHANGE TRADED FUND TRUST
+		CENTRAL INDEX KEY:			0001209466
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001209466
+<SERIES-ID>S000003050
+<SERIES-NAME>PowerShares Dynamic Hardware & Consumer Electronics Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001209466
+<SERIES-ID>S000003051
+<SERIES-NAME>PowerShares Dynamic Telecommunications & Wireless Portfolio
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+<SEQUENCE>1
+<FILENAME>brdu91_0001209466.txt
+<DESCRIPTION>BRDU91_0001209466.TXT
+<TEXT>
+
+
+
+PowerShares Dynamic Hardware Portfolio
+- --------------------------------------------------------------------------------------------------------------------------
+ AGILENT TECHNOLOGIES, INC.                                                                  Agenda Number:  932805433
+- --------------------------------------------------------------------------------------------------------------------------
+    Security:  00846U101                                                             Meeting Type:  Annual
+      Ticker:  A                                                                     Meeting Date:  27-Feb-2008
+        ISIN:  US00846U1016
+- --------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+01     DIRECTOR
+       HEIDI KUNZ                                                Mgmt          For                            For
+       DAVID M. LAWRENCE, M.D.                                   Mgmt          For                            For
+       A. BARRY RAND                                             Mgmt          For                            For
+
+02     THE RATIFICATION OF THE AUDIT AND FINANCE COMMITTEE'S     Mgmt          For                            For
+       APPOINTMENT OF PRICEWATERHOUSECOOPERS LLP AS
+       AGILENT'S INDEPENDENT REGISTERED PUBLIC ACCOUNTING
+       FIRM.
+
+03     THE APPROVAL OF THE AGILENT TECHNOLOGIES, INC.            Mgmt          For                            For
+       LONG-TERM PERFORMANCE PROGRAM.
+
+
+

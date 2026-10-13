@@ -1,0 +1,79 @@
+<SEC-DOCUMENT>0000225930-04-000028.txt : 20040902
+<SEC-HEADER>0000225930-04-000028.hdr.sgml : 20040902
+<ACCEPTANCE-DATETIME>20040902101004
+ACCESSION NUMBER:		0000225930-04-000028
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040902
+DATE AS OF CHANGE:		20040902
+EFFECTIVENESS DATE:		20040902
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			TEMPLETON FUNDS INC
+		CENTRAL INDEX KEY:			0000225930
+		IRS NUMBER:				222169185
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			0831
+
+	FILING VALUES:
+		FORM TYPE:		N-PX/A
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>formnpx-a_tfi.txt
+<DESCRIPTION>TFI AMD N-PX -VICTORY INT'L FUND VOTES 6/30/04
+<TEXT>
+
+ITEM 1. PROXY VOTING RECORD
+
+
+============================ TEMPLETON FOREIGN FUND ============================
+
+
+ABBEY NATIONAL PLC
+
+Ticker:       ABYNY          Security ID:  GB0000044551
+Meeting Date: APR 22, 2004   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept Financial Statements and Statutory For       For        Management
+      Reports
+2     Approve Remuneration Report               For       For        Management
+===============================================================================
+
+
+
+VOTES BY VICTORY INTERNATIONAL FUND PRIOR TO THE REORGANIZATION WITH TEMPLETON
+FOREIGN FUND EFFECTIVE OCTOBER 24, 2003.
+
+=========================== VICTORY INTERNATIONAL FUND ========================
+
+
+BHP BILLITON LTD
+
+Ticker:                      Security ID:  Q1498M100   ISIN: AU00000BHP4
+Meeting Date: 13-NOV-03      Meeting Type: AGM
+                                                                        For/
+Prop.                                            Proposal   Proposal   Against
+#     Proposal                                    Type        Vote   Management
+
+1.    Receivethe  financial statements for BHP     Mgmt        For        *
+      Billiton Limited for the YE 30 JUN 2003,
+      together with the Directors report and
+      the Auditors report
+
+2.    Receive the financial statements for BHP     Mgmt        For        *
+      Billiton PLC for the YE 30 JUN 2003,
+      together with the Directors report and
+      the Auditors report
+
+3.    Re-elect Dr. D C Brink as Director of        Mgmt        For        *
+      BHP Billiton Limited
+
+4.    Re-elect Dr. D C Brink as Director of        Mgmt        For        *
+      BHP Billiton PLC

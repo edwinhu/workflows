@@ -1,0 +1,334 @@
+<SEC-DOCUMENT>0001435109-21-000183.txt : 20210824
+<SEC-HEADER>0001435109-21-000183.hdr.sgml : 20210824
+<ACCEPTANCE-DATETIME>20210824081224
+ACCESSION NUMBER:		0001435109-21-000183
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20210630
+FILED AS OF DATE:		20210824
+DATE AS OF CHANGE:		20210824
+EFFECTIVENESS DATE:		20210824
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Tributary Funds, Inc.
+		CENTRAL INDEX KEY:			0000932381
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			NE
+		FISCAL YEAR END:			0331
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08846
+		FILM NUMBER:		211198508
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1620 DODGE STREET
+		STREET 2:		STOP 1075
+		CITY:			OMAHA
+		STATE:			NE
+		ZIP:			68197
+		BUSINESS PHONE:		1-800-662-4203
+
+	MAIL ADDRESS:	
+		STREET 1:		1620 DODGE STREET
+		STREET 2:		STOP 1075
+		CITY:			OMAHA
+		STATE:			NE
+		ZIP:			68197
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FIRST FOCUS FUNDS INC
+		DATE OF NAME CHANGE:	20010731
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FIRST OMAHA FUNDS INC
+		DATE OF NAME CHANGE:	19941103
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000932381
+<SERIES-ID>S000022134
+<SERIES-NAME>Short-Intermediate Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063508
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>FOSIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091254
+<CLASS-CONTRACT-NAME>Institutional Plus
+<CLASS-CONTRACT-TICKER-SYMBOL>FOSPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000932381
+<SERIES-ID>S000022135
+<SERIES-NAME>Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063509
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>FOINX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091255
+<CLASS-CONTRACT-NAME>Institutional Plus
+<CLASS-CONTRACT-TICKER-SYMBOL>FOIPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000932381
+<SERIES-ID>S000022136
+<SERIES-NAME>Balanced Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063510
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>FOBAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091256
+<CLASS-CONTRACT-NAME>Institutional Plus
+<CLASS-CONTRACT-TICKER-SYMBOL>FOBPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000932381
+<SERIES-ID>S000022138
+<SERIES-NAME>Growth Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063512
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>FOGRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091258
+<CLASS-CONTRACT-NAME>Institutional Plus
+<CLASS-CONTRACT-TICKER-SYMBOL>FOGPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000932381
+<SERIES-ID>S000022139
+<SERIES-NAME>Small Company Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063513
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>FOSCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000091259
+<CLASS-CONTRACT-NAME>Institutional Plus
+<CLASS-CONTRACT-TICKER-SYMBOL>FOSBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000932381
+<SERIES-ID>S000052300
+<SERIES-NAME>Tributary Nebraska Tax-Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000164428
+<CLASS-CONTRACT-NAME>Institutional Plus Class
+<CLASS-CONTRACT-TICKER-SYMBOL>FONPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000932381
+<SERIES-ID>S000059580
+<SERIES-NAME>Tributary Small/Mid Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000195178
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>FSMCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000195179
+<CLASS-CONTRACT-NAME>Institutional Plus Class
+<CLASS-CONTRACT-TICKER-SYMBOL>FSMBX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+    <div style="font-family: 'Times New Roman', serif; font-size: 11pt; font-weight: bold;">ITEM 1. PROXY VOTING RECORD</div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div style="font-family: 'Times New Roman', serif; font-weight: bold;"><u>Tributary Short-Intermediate Bond Fund</u></div>
+    <div><br>
+    </div>
+    <div style="font-family: 'Times New Roman', serif;">No proxies were received or voted for the Tributary Short-Intermediate Bond Fund from July 1, 2020 through June 30, 2021.</div>
+    <div><br>
+    </div>
+    <div style="font-family: 'Times New Roman', serif; font-weight: bold;"><u>Tributary Income Fund</u></div>
+    <div><br>
+    </div>
+    <div style="font-family: 'Times New Roman', serif;">No proxies were received or voted for the Tributary Income Fund from July 1, 2020 through June 30, 2021.</div>
+    <div><br>
+    </div>
+    <div style="font-family: 'Times New Roman', serif; font-weight: bold;"><u>Tributary Nebraska Tax-Free Fund</u></div>
+    <div><br>
+    </div>
+    <div style="font-family: 'Times New Roman', serif;">No proxies were received or voted for the Tributary Nebraska Tax-Free Fund from July 1, 2020 through June 30, 2021.</div>
+    <div><br>
+    </div>
+    <div style="font-weight: bold;"><u>Tributary Balanced Fund</u></div>
+    <div style="font-weight: bold;"><u> <br>
+      </u></div>
+    <div style="font-weight: bold;"><br>
+      <table cellspacing="0" cellpadding="0" style="font-family: 'Times New Roman'; font-size: 12pt; width: 100%; border-collapse: collapse; text-align: left; color: #000000;" id="z60a5ffac8d55461382a016b2639c695e">
+
+          <tr>
+            <td style="width: 14.42%; vertical-align: top; background-color: rgb(204, 238, 255); border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="color: #000000; font-family: Arial; font-size: 10pt; font-weight: bold;">Issuer Name</div>
+            </td>
+            <td style="width: 5.22%; vertical-align: top; background-color: rgb(204, 238, 255); border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Arial; font-size: 10pt; font-weight: bold;">Exchange Ticker Symbol</div>
+            </td>
+            <td style="width: 5.81%; vertical-align: top; background-color: rgb(204, 238, 255); border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Arial; font-size: 10pt; font-weight: bold;">CUSIP #</div>
+            </td>
+            <td colspan="2" style="width: 8.13%; vertical-align: top; background-color: rgb(204, 238, 255); border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Arial; font-size: 10pt; font-weight: bold;">Shareholder Meeting Date</div>
+            </td>
+            <td style="width: 34.99%; vertical-align: top; background-color: rgb(204, 238, 255); border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="color: #000000; font-family: Arial; font-size: 10pt; font-weight: bold;">Proposal/Description of the Matter Voted</div>
+            </td>
+            <td style="width: 2.19%; vertical-align: top; background-color: rgb(204, 238, 255); border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">&#160;</td>
+            <td style="width: 7.47%; vertical-align: top; background-color: rgb(204, 238, 255); border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Arial; font-size: 10pt; font-weight: bold;">Proposed by Issuer/Shareholder</div>
+            </td>
+            <td style="width: 7.54%; vertical-align: top; background-color: rgb(204, 238, 255); border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Arial; font-size: 10pt; font-weight: bold;">Did Fund Cast Vote on Matter (Y/N)</div>
+            </td>
+            <td style="width: 7.36%; vertical-align: top; background-color: rgb(204, 238, 255); border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Arial; font-size: 10pt; font-weight: bold;">For/Against Recommended Vote</div>
+            </td>
+            <td style="width: 6.88%; vertical-align: top; background-color: rgb(204, 238, 255); border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Arial; font-size: 10pt; font-weight: bold;">How Vote was Cast (F=For, N=Against, A=Abstain, W=Withhold, 1=1yr)</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="width: 14.42%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="color: #000000; font-family: Calibri; font-size: 11pt;">CONSTELLATION BRANDS, INC.</div>
+            </td>
+            <td style="width: 5.22%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">STZ</div>
+            </td>
+            <td style="width: 5.81%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">21036P108</div>
+            </td>
+            <td style="width: 6.23%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">21-Jul-2020</div>
+            </td>
+            <td style="width: 1.9%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">&#160;</td>
+            <td style="width: 34.99%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="color: #000000; font-family: Calibri; font-size: 11pt;">DIRECTOR</div>
+            </td>
+            <td style="width: 2.19%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">&#160;</td>
+            <td style="width: 7.47%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">Management</div>
+            </td>
+            <td style="width: 7.54%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">Y</div>
+            </td>
+            <td style="width: 7.36%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">F</div>
+            </td>
+            <td style="width: 6.88%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">F</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="width: 14.42%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="color: #000000; font-family: Calibri; font-size: 11pt;">CONSTELLATION BRANDS, INC.</div>
+            </td>
+            <td style="width: 5.22%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">STZ</div>
+            </td>
+            <td style="width: 5.81%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">21036P108</div>
+            </td>
+            <td style="width: 6.23%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">21-Jul-2020</div>
+            </td>
+            <td style="width: 1.9%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">&#160;</td>
+            <td style="width: 34.99%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="color: #000000; font-family: Calibri; font-size: 11pt;">DIRECTOR</div>
+            </td>
+            <td style="width: 2.19%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">&#160;</td>
+            <td style="width: 7.47%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">Management</div>
+            </td>
+            <td style="width: 7.54%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">Y</div>
+            </td>
+            <td style="width: 7.36%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">F</div>
+            </td>
+            <td style="width: 6.88%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">F</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="width: 14.42%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="color: #000000; font-family: Calibri; font-size: 11pt;">CONSTELLATION BRANDS, INC.</div>
+            </td>
+            <td style="width: 5.22%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">STZ</div>
+            </td>
+            <td style="width: 5.81%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">21036P108</div>
+            </td>
+            <td style="width: 6.23%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">21-Jul-2020</div>
+            </td>
+            <td style="width: 1.9%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">&#160;</td>
+            <td style="width: 34.99%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="color: #000000; font-family: Calibri; font-size: 11pt;">DIRECTOR</div>
+            </td>
+            <td style="width: 2.19%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">&#160;</td>
+            <td style="width: 7.47%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">Management</div>
+            </td>
+            <td style="width: 7.54%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">Y</div>
+            </td>
+            <td style="width: 7.36%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">F</div>
+            </td>
+            <td style="width: 6.88%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">F</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="width: 14.42%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="color: #000000; font-family: Calibri; font-size: 11pt;">CONSTELLATION BRANDS, INC.</div>
+            </td>
+            <td style="width: 5.22%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">STZ</div>
+            </td>
+            <td style="width: 5.81%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">21036P108</div>
+            </td>
+            <td style="width: 6.23%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">21-Jul-2020</div>
+            </td>
+            <td style="width: 1.9%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">&#160;</td>
+            <td style="width: 34.99%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="color: #000000; font-family: Calibri; font-size: 11pt;">DIRECTOR</div>
+            </td>
+            <td style="width: 2.19%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">&#160;</td>
+            <td style="width: 7.47%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">Management</div>
+            </td>
+            <td style="width: 7.54%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">Y</div>
+            </td>
+            <td style="width: 7.36%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">F</div>
+            </td>
+            <td style="width: 6.88%; vertical-align: top; border-top: 2px solid rgb(0, 0, 0); border-bottom: 2px solid rgb(0, 0, 0); background-color: rgb(204, 238, 255);">
+              <div style="text-align: center; color: #000000; font-family: Calibri; font-size: 11pt;">F</div>

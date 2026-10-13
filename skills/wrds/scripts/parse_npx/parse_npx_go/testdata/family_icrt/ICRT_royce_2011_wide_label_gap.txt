@@ -1,0 +1,50 @@
+<SEC-DOCUMENT>0000709364-11-000021.txt : 20110822
+<SEC-HEADER>0000709364-11-000021.hdr.sgml : 20110822
+<ACCEPTANCE-DATETIME>20110822161719
+ACCESSION NUMBER:		0000709364-11-000021
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110822
+DATE AS OF CHANGE:		20110822
+EFFECTIVENESS DATE:		20110822
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ROYCE FUND
+		CENTRAL INDEX KEY:			0000709364
+		IRS NUMBER:				133139046
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>trf-npx2011c.txt
+<TEXT>
+===============================================================================================================
+ADTRAN, Inc.
+Ticker           Security ID:                          Meeting Date             Meeting Status
+ADTN             CUSIP  00738A106                      05/04/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1.1              Elect Thomas Stanton                  Mgmt        For         For         For
+1.2              Elect H. Fenwick Huss                 Mgmt        For         For         For
+===============================================================================================================
+Fresnillo Plc
+Ticker           Security ID:                          Meeting Date             Meeting Status
+FRES             CINS G371E2108                        05/17/2011               Voted
+Meeting Type     Country of Trade
+Annual           United Kingdom
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Accounts and Reports                  Mgmt        For         For         For
+
+2                Allocation of Profits/Dividends       Mgmt        For         For         For
+</TEXT>
+</DOCUMENT>

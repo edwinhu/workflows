@@ -1,0 +1,81 @@
+<SEC-DOCUMENT>0000950123-04-010137.txt : 20040825
+<SEC-HEADER>0000950123-04-010137.hdr.sgml : 20040825
+<ACCEPTANCE-DATETIME>20040825103121
+ACCESSION NUMBER:		0000950123-04-010137
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040825
+DATE AS OF CHANGE:		20040825
+EFFECTIVENESS DATE:		20040825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PHOENIX OAKHURST INCOME & GROWTH FUND
+		CENTRAL INDEX KEY:			0000796298
+		IRS NUMBER:				136022076
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PHOENIX INCOME & GROWTH FUND
+		DATE OF NAME CHANGE:	19940621
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	NATIONAL INCOME & GROWTH FUND
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	NATIONAL TOTAL INCOME FUND
+		DATE OF NAME CHANGE:	19920402
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>y00952nvpx.txt
+<DESCRIPTION>N-PX
+<TEXT>
+<PAGE>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-04728
+Reporting Period: 07/01/2003 - 06/30/2004
+Phoenix-Oakhurst Income & Growth Fund
+
+
+
+
+
+
+
+
+
+==================== PHOENIX-OAKHURST INCOME & GROWTH FUND =====================
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 11, 2004   Meeting Type: Annual
+Record Date:  MAR 12, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Edward A. Brennan         For       Withhold   Management
+1.2   Elect  Director Michael L. Eskew          For       For        Management
+1.3   Elect  Director W. James McNerney, Jr.    For       Withhold   Management
+1.4   Elect  Director Kevin W. Sharer           For       Withhold   Management
+2     Ratify Auditors                           For       For        Management
+3     Increase Authorized Common Stock          For       For        Management
+4     Separate Chairman and CEO Positions       Against   For        Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+A.G. EDWARDS, INC.
+
+Ticker:       AGE            Security ID:  281760108
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

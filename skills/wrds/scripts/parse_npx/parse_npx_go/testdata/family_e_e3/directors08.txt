@@ -1,0 +1,116 @@
+<table border="0" cellspacing=0 cellpadding=0 width="639" style='margin-left:4.65pt;border-collapse:collapse'>
+    <tr style='height:12.75pt'>
+        <td  nowrap colspan="2" valign=bottom style=' padding:0in 5.4pt 0in 5.4pt;height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>Issuer:   Costco Wholesale Corporation</font></p> </td>
+        <td width="145" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font SIZE=2>CUSIP:  22160K105</font></p> </td>
+        <td width="97" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="115" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td> </tr>
+    <tr style='height:12.75pt'>
+        <td  nowrap colspan="2" valign=bottom style=' padding:0in 5.4pt 0in 5.4pt;height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>Ticker symbol: COST</font></p> </td>
+        <td  nowrap colspan="2" valign=bottom style=' padding:0in 5.4pt 0in 5.4pt;height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>Meeting Date: 01/29/08</font></p> </td>
+        <td width="115" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td> </tr>
+    <tr style='height:12.75pt'>
+        <td width="40" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="242" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="145" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="97" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="115" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td> </tr>
+    <tr style='height:12.75pt'>
+        <td width="40" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="242" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:2.25pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="145" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><b><font size=2>Issuer (I) or Shareholder (S)</font></b></p> </td>
+        <td width="97" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="115" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><b><font size=2>For or Against</font></b></p> </td> </tr>
+    <tr style='height:12.75pt'>
+        <td width="40" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="242" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><u><b><font size=2>Agenda Item</font></b></u><u></u></p> </td>
+        <td width="145" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><u><b><font size=2>Proposal</font></b></u><u></u></p> </td>
+        <td width="97" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><u><b><font size=2>Fund Vote</font></b></u><u></u></p> </td>
+        <td width="115" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><u><b><font size=2>Management</font></b></u><u></u></p> </td> </tr>
+    <tr style='height:12.75pt'>
+        <td width="40" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="242" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="145" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="97" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="115" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td> </tr>
+    <tr style='height:12.75pt'>
+        <td width="40" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:right;margin-top:0pt;margin-bottom:0pt'><font size=2>1</font></p> </td>
+        <td width="242" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>Director</font></p> </td>
+        <td width="145" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font SIZE=2>I</font></p> </td>
+        <td width="97" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="115" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td> </tr>
+    <tr style='height:12.75pt'>
+        <td width="40" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:right;margin-top:0pt;margin-bottom:0pt'><font size=2>1.1</font></p> </td>
+        <td width="242" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>Susan L. Decker</font></p> </td>
+        <td width="145" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="97" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=2>For</font></p> </td>
+        <td width="115" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=2>For</font></p> </td> </tr>
+    <tr style='height:12.75pt'>
+        <td width="40" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:right;margin-top:0pt;margin-bottom:0pt'><font size=2>1.2</font></p> </td>
+        <td width="242" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>Richard D. Dicerchio</font></p> </td>
+        <td width="145" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="97" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=2>For</font></p> </td>
+        <td width="115" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=2>For</font></p> </td> </tr>
+    <tr style='height:12.75pt'>
+        <td width="40" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:right;margin-top:0pt;margin-bottom:0pt'><font size=2>1.3</font></p> </td>
+        <td width="242" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>Richard M. Libenson</font></p> </td>
+        <td width="145" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="97" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=2>For</font></p> </td>
+        <td width="115" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=2>For</font></p> </td> </tr>
+    <tr style='height:12.75pt'>
+        <td width="40" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:right;margin-top:0pt;margin-bottom:0pt'><font size=2>1.4</font></p> </td>
+        <td width="242" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>John W. Meisenbach</font></p> </td>
+        <td width="145" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></p> </td>
+        <td width="97" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=2>For</font></p> </td>
+        <td width="115" nowrap valign=bottom style='padding:0in 5.4pt 0in 5.4pt; height:12.75pt'>
+            <p style='margin-left:0pt;text-indent:0pt;text-align:center;margin-top:0pt;margin-bottom:0pt'><font size=2>For</font></p> </td> </tr>

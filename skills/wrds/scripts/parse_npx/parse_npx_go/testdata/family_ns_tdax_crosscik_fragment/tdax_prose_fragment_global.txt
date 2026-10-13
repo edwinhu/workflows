@@ -1,0 +1,1471 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ VZzQPTXIYPWaHOuub/5+AHLnlCQWO3nAONHZif+gLCDdKyNevj/XxX+UvrZ+mkJj
+ PlHLY2Sp0ZnjcCpUfxbf7A==
+
+<SEC-DOCUMENT>0000891092-09-003339.txt : 20090825
+<SEC-HEADER>0000891092-09-003339.hdr.sgml : 20090825
+<ACCEPTANCE-DATETIME>20090825115322
+ACCESSION NUMBER:		0000891092-09-003339
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20090630
+FILED AS OF DATE:		20090825
+DATE AS OF CHANGE:		20090825
+EFFECTIVENESS DATE:		20090825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			TDX Independence Funds, Inc.
+		CENTRAL INDEX KEY:			0001385533
+		IRS NUMBER:				000000000
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22001
+		FILM NUMBER:		091033176
+
+	BUSINESS ADDRESS:	
+		STREET 1:		420 LEXINGTON AVENUE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10170
+		BUSINESS PHONE:		212-667-7400
+
+	MAIL ADDRESS:	
+		STREET 1:		420 LEXINGTON AVENUE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10170
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	TDAX Funds, Inc.
+		DATE OF NAME CHANGE:	20070108
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001385533
+<SERIES-ID>S000016521
+<SERIES-NAME>TDX Independence 2010 Exchange-Traded Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000045993
+<CLASS-CONTRACT-NAME>Independence Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001385533
+<SERIES-ID>S000016522
+<SERIES-NAME>TDX Independence 2020 Exchange-Traded Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000045994
+<CLASS-CONTRACT-NAME>Independence Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001385533
+<SERIES-ID>S000016523
+<SERIES-NAME>TDX Independence 2030 Exchange-Traded Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000045995
+<CLASS-CONTRACT-NAME>Independence Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001385533
+<SERIES-ID>S000016524
+<SERIES-NAME>TDX Independence 2040 Exchange-Traded Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000045996
+<CLASS-CONTRACT-NAME>Independence Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001385533
+<SERIES-ID>S000016525
+<SERIES-NAME>TDX Independence In-Target Exchange-Traded Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000045997
+<CLASS-CONTRACT-NAME>Independence Shares
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>e36174_npx.htm
+<DESCRIPTION>PROXY VOTING RECORDS
+<TEXT>
+
+<HTML>
+<HEAD>
+   <TITLE></TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff" style="font-family: 'Arial';font-size: 10pt;">
+
+
+
+
+
+<P align="center">
+<B>UNITED STATES</B><BR>
+<B>SECURITIES AND EXCHANGE COMMISSION</B><BR>
+<B>Washington, DC 20549</B></P>
+<P align="center">
+FORM N-PX</P>
+<P align="center">
+<B>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT</B><BR>
+  <B>INVESTMENT COMPANY</B> </P>
+
+Investment Company Act file number: 811- 22001
+<hr size="1" noshade>
+
+<div align="center"><br>
+  TDX Independence Funds, Inc.<BR>
+(Exact name of registrant as specified in charter)
+</div>
+<hr size="1" noshade>
+<P align="center">
+420 Lexington Ave.<BR>
+New York, NY 10170<BR>
+(Address of principal executive offices)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Zip code)</P>
+<P align="center">
+TDX Independence Funds, Inc.<BR>
+420 Lexington Ave.<BR>
+New York, NY 10170<BR>
+  <BR>
+</P>
+<hr size="1" noshade>
+<div align="center">(Name and address of agent for service)
+</div>
+<P align="left">
+Registrant&#146;s telephone number, including area code: (800) 925-2870 </P>
+<P align="left">Date of fiscal year end: May 31 </P>
+<P align="left">Date of reporting period: <U>June 30, 2009</U></P>
+<hr size="1" noshade>
+<P align="left">
+Form N-PX is to be used by a registered management investment company, other than a small business investment company registered on Form N-5 (&#167;&#167; 239.24 and 274.5 of this chapter), to file reports with the Commission, not later than August
+31 of each year, containing the registrant&#146;s proxy voting record for the most recent twelve-month period ended June 30, pursuant to section 30 of the Investment Company Act of 1940 and Rule 30b1-4 thereunder (17 CFR 270.30b1 -4). The Commission
+may use the information provided on Form N-PX in its regulatory, disclosure review, inspection, and policymaking roles.</P>
+<P align="left">
+A registrant is required to disclose the information specified by Form N-PX, and the Commission will make this information public. A registrant is not required to respond to the collection of information contained in Form N-PX unless the Form
+displays a currently valid Office of Management and Budget (&#147;OMB&#148;) control number. Please direct comments concerning the accuracy of the information collection burden estimate and any suggestions for reducing the burden to the Secretary,
+Securities and Exchange Commission, 450 Fifth Street, NW, Washington, DC 20549-0609. The OMB has reviewed this collection of information under the clearance requirements of 44 U.S.C. &#167; 3507.</P>
+
+<HR noshade align="center" width="100%" size="5">
+
+
+<!-- MARKER FORMAT-SHEET="EE Page Break" FSL="Workstation" -->
+<DIV TITLE="EE+ Page Break" STYLE="FONT-SIZE: 1pt; PAGE-BREAK-AFTER: always; WIDTH: 100%; HEIGHT: 1px"></DIV><!-- -->
+
+
+
+
+<TABLE border=0 cellspacing=0 cellpadding=0 style="font-family: 'Arial';font-size: 10pt;" width=100%>
+<TR>
+
+    <TD width="13%"></TD>
+
+    <TD width="5%"></TD>
+
+    <TD width="29%"></TD>
+
+    <TD width="12%"></TD>
+
+    <TD width="6%"></TD>
+
+    <TD width="8%"></TD>
+
+    <TD width="9%"></TD>
+
+    <TD width="9%"></TD>
+
+    <TD width="9%"></TD>
+  </TR>
+<TR valign="bottom">
+
+    <TD align=center colspan=9>
+<B><FONT size=2>Vote Summary Report</FONT></B>
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=center colspan=9>
+<FONT size=2>Jul 01, 2008 - Sep 30, 2008</FONT>
+        </TD>
+</TR>
+<TR>
+
+    <TD colspan=9>&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left colspan=3>
+<B><FONT size=2>TDAX Independence 2010 ETF Composite</FONT></B>
+        </TD>
+
+    <TD align=left width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR>
+
+    <TD colspan=9>&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">
+<FONT size=2>Mtg</FONT>
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>Company/</FONT>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">
+<FONT size=2>Mgmt</FONT>
+        </TD>
+
+    <TD align=left width="8%">
+<FONT size=2>Vote</FONT>
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>Record</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=right width="9%">
+<FONT size=2>Shares</FONT>
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">
+<FONT size=2>Date/Type</FONT>
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>Ballot Issues</FONT>
+        </TD>
+
+    <TD width="12%">
+<FONT size=2>Security</FONT>
+        </TD>
+
+    <TD align=left width="6%">
+<FONT size=2>Rec</FONT>
+        </TD>
+
+    <TD align=left width="8%">
+<FONT size=2>Cast</FONT>
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>Date</FONT>
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>Prpnent</FONT>
+        </TD>
+
+    <TD align=right width="9%">
+<FONT size=2>Voted</FONT>
+        </TD>
+</TR>
+<TR>
+
+    <TD colspan=9>
+<HR noshade size=1>
+        </TD>
+</TR>
+<TR>
+
+    <TD colspan=9>&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">
+<FONT size=2>07/10/08 - A</FONT>
+        </TD>
+
+    <TD align=left colspan=2>
+<B><FONT size=2>Greenlight Capital Re, Ltd.</FONT></B>
+        </TD>
+
+    <TD width="12%">
+<FONT size=2>G4095J109</FONT>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>06/02/08</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=right width="9%">
+<FONT size=2>230</FONT>
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<B><FONT size=2>*GLRE*</FONT></B>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<B><FONT size=2>This is a duplicate meeting for ballots</FONT></B>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<B><FONT size=2>received via the Broadridge North</FONT></B>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<B><FONT size=2>American Ballot distribution system.</FONT></B>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">
+<FONT size=2>1</FONT>
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>TO ELECT SEVEN DIRECTORS OF</FONT>
+        </TD>
+
+    <TD align=left width="6%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="8%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>Mgmt</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>THE COMPANY TO SERVE ON THE</FONT>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>BOARD OF DIRECTORS UNTIL THE</FONT>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>ANNUAL GENERAL MEETING OF</FONT>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="29%">
+<FONT size=2>SHAREHOLDERS IN 2009.</FONT>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">
+<FONT size=2>2</FONT>
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>TO ELECT SEVEN DIRECTORS OF</FONT>
+        </TD>
+
+    <TD align=left width="6%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="8%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>Mgmt</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>GREENLIGHT REINSURANCE, LTD.,</FONT>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>OR GREENLIGHT RE. TO SERVE ON</FONT>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>THE BOARD UNTIL THE ANNUAL</FONT>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="29%">
+<FONT size=2>GENERAL MEETING OF</FONT>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>SHAREHOLDERS IN 2009 OF</FONT>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="29%">
+<FONT size=2>GREENLIGHT RE.</FONT>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">
+<FONT size=2>3</FONT>
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>TO AMEND ARTICLE 11 OF THE</FONT>
+        </TD>
+
+    <TD align=left width="6%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="8%">
+<FONT size=2>Against</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>Mgmt</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>COMPANY S THIRD AMENDED AND</FONT>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="29%">
+<FONT size=2>RESTATED ARTICLES OF</FONT>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>ASSOCIATION AS SET FORTH IN</FONT>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="29%">
+<FONT size=2>EXHIBIT A TO THE PROXY</FONT>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="29%">
+<FONT size=2>STATEMENT.</FONT>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">
+<FONT size=2>4</FONT>
+        </TD>
+
+    <TD align=left width="29%">
+<FONT size=2>RATIFY AUDITORS</FONT>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="8%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>Mgmt</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">
+<FONT size=2>5</FONT>
+        </TD>
+
+    <TD align=left width="29%">
+<FONT size=2>RATIFY AUDITORS</FONT>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="8%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>Mgmt</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR>
+
+    <TD colspan=9>&nbsp;
+
+        </TD>
+</TR>
+  <tr valign="bottom">
+
+    <td align=left>&nbsp;
+
+        </td>
+    <td align=left>&nbsp;
+
+        </td>
+    <td align=left colspan="10">
+ &nbsp; &nbsp; &nbsp;<i><font size=2>the</font></i>
+
+<i><font size=2>context of</font></i>
+
+<i><font size=2>the</font></i>
+
+<i><font size=2>global</font></i>
+
+<i><font size=2>economic</font></i>
+        </td>
+    <td align=left>&nbsp;
+
+        </td>
+    <td align=left>&nbsp;
+
+        </td>
+    <td align=left>&nbsp;
+
+        </td>
+  </tr>
+<TR>
+
+    <TD colspan=9>&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">
+<FONT size=2>07/16/08 - A</FONT>
+        </TD>
+
+    <TD align=left colspan=2>
+<B><FONT size=2>BT Group plc</FONT></B>
+        </TD>
+
+    <TD width="12%">
+<FONT size=2>G16612106</FONT>
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>None</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=right width="9%">
+<FONT size=2>2,416</FONT>
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">
+<FONT size=2>1</FONT>
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>Accept Financial Statements and</FONT>
+        </TD>
+
+    <TD align=left width="6%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="8%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>Mgmt</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="29%">
+<FONT size=2>Statutory Reports</FONT>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">
+<FONT size=2>2</FONT>
+        </TD>
+
+    <TD align=left width="29%">
+<FONT size=2>Approve Remuneration Report</FONT>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="8%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>Mgmt</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">
+<FONT size=2>3</FONT>
+        </TD>
+
+    <TD align=left colspan=2>
+<FONT size=2>Approve Final Dividend of 10.4 Pence</FONT>
+        </TD>
+
+    <TD align=left width="6%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="8%">
+<FONT size=2>For</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">
+<FONT size=2>Mgmt</FONT>
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+<TR valign="bottom">
+
+    <TD align=left width="13%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="5%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="29%">
+<FONT size=2>Per Ordinary Share</FONT>
+        </TD>
+
+    <TD width="12%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="6%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="8%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+
+    <TD align=left width="9%">&nbsp;
+
+        </TD>
+</TR>
+</TABLE><BR>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

@@ -1,0 +1,53 @@
+<SEC-DOCUMENT>0000088053-05-000968.txt : 20050825
+<SEC-HEADER>0000088053-05-000968.hdr.sgml : 20050825
+<ACCEPTANCE-DATETIME>20050825162728
+ACCESSION NUMBER:		0000088053-05-000968
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050825
+DATE AS OF CHANGE:		20050825
+EFFECTIVENESS DATE:		20050825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SCUDDER VARIABLE SERIES II
+		CENTRAL INDEX KEY:			0000810573
+		IRS NUMBER:				810105002
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-allfunds.txt
+<DESCRIPTION>N-PX FILING
+<TEXT>
+                                  UNITED STATES
+
+
+ProxyEdge -  Investment Company Report                   Report Date: 08/07/2005
+Meeting Date Range: 07/01/2004 to 06/30/2005
+Selected Accounts: SVS II Scudder Large Cap Value Portfolio
+
+
+
+<TABLE>
+<CAPTION>
+
+- ----------------------------------------------------------------------------------------------------------------------------
+SUNTRUST BANKS, INC.                                                    STI           Special Meeting Date: 09/15/2004
+Issuer: 867914                          ISIN:
+SEDOL:
+- ----------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+Proposal                                                              Proposal        Vote          Against
+Number   Proposal                                                       Type          Cast           Mgmt.
+- ----------------------------------------------------------------------------------------------------------------------------
+<S>     <C>    <C>    <C>    <C>    <C>    <C>
+
+01       APPROVE MERGER AGREEMENT                                    Management        For             No
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

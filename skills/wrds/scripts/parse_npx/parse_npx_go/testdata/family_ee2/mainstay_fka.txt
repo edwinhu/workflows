@@ -1,0 +1,22 @@
+		COMPANY CONFORMED NAME:			ECLIPSE FUNDS INC
+		CENTRAL INDEX KEY:			0000868307
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-06175
+Reporting Period: 07/01/2004 - 06/30/2005
+Eclipse Funds Inc.
+
+
+
+
+=============== MAINSTAY ALL CAP VALUE FKA ECLIPSE VALUE EQUITY ================
+
+
+ABBOTT LABORATORIES
+
+Ticker:       ABT            Security ID:  002824PPH
+Meeting Date: APR 22, 2005   Meeting Type: Annual
+Record Date:  FEB 23, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director R.S. Austin                For       For        Management

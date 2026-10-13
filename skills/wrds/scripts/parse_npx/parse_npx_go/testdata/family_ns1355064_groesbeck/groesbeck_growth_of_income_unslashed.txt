@@ -1,0 +1,487 @@
+<SEC-DOCUMENT>0001580642-17-004483.txt : 20170817
+<SEC-HEADER>0001580642-17-004483.hdr.sgml : 20170817
+<ACCEPTANCE-DATETIME>20170817170206
+ACCESSION NUMBER:		0001580642-17-004483
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		7
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170817
+DATE AS OF CHANGE:		20170817
+EFFECTIVENESS DATE:		20170817
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MUTUAL FUND SERIES TRUST
+		CENTRAL INDEX KEY:			0001355064
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			OH
+		FISCAL YEAR END:			0630
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21872
+		FILM NUMBER:		171039252
+
+	BUSINESS ADDRESS:	
+		STREET 1:		C/O GEMINI FUND SERVICES LLC
+		STREET 2:		4020 SOUTH 147TH STREET  STE 2
+		CITY:			OMAHA
+		STATE:			NE
+		ZIP:			68137
+		BUSINESS PHONE:		631 549 1859
+
+	MAIL ADDRESS:	
+		STREET 1:		C/O GEMINI FUND SERVICES LLC
+		STREET 2:		4020 SOUTH 147TH STREET  STE 2
+		CITY:			OMAHA
+		STATE:			NE
+		ZIP:			68137
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	CATALYST FUNDS
+		DATE OF NAME CHANGE:	20060303
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000012457
+<SERIES-NAME>Catalyst Small-Cap Insider Buying Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033860
+<CLASS-CONTRACT-NAME>Catalyst Small-Cap Insider Buying Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CTVAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033861
+<CLASS-CONTRACT-NAME>Catalyst Small-Cap Insider Buying Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CTVCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000075434
+<CLASS-CONTRACT-NAME>Catalyst Small-Cap Insider Buying Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CTVIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000181977
+<CLASS-CONTRACT-NAME>Catalyst Small-Cap Insider Buying Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000027215
+<SERIES-NAME>Catalyst/Groesbeck Growth of Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082156
+<CLASS-CONTRACT-NAME>Catalyst/Groesbeck Growth of Income Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CGGAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082157
+<CLASS-CONTRACT-NAME>Catalyst/Groesbeck Growth of Income Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CGGCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000092592
+<CLASS-CONTRACT-NAME>Catalyst/Groesbeck Growth of Income Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CGGIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188994
+<CLASS-CONTRACT-NAME>Catalyst/Groesbeck Growth of Income Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000033417
+<SERIES-NAME>Catalyst Insider Buying Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102754
+<CLASS-CONTRACT-NAME>Catalyst Insider Buying Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>INSAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102755
+<CLASS-CONTRACT-NAME>Catalyst Insider Buying Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>INSCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142548
+<CLASS-CONTRACT-NAME>Catalyst Insider Buying Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>INSIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188995
+<CLASS-CONTRACT-NAME>Catalyst Insider Buying Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000033420
+<SERIES-NAME>Catalyst/MAP Global Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102760
+<CLASS-CONTRACT-NAME>Catalyst/MAP Global Equity Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CAXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102761
+<CLASS-CONTRACT-NAME>Catalyst/MAP Global Equity Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CAXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142550
+<CLASS-CONTRACT-NAME>Catalyst/MAP Global Equity Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CAXIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188996
+<CLASS-CONTRACT-NAME>Catalyst/MAP Global Equity Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000035242
+<SERIES-NAME>Catalyst Dynamic Alpha Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108407
+<CLASS-CONTRACT-NAME>Catalyst Dynamic Alpha Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CPEAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000108408
+<CLASS-CONTRACT-NAME>Catalyst Dynamic Alpha Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CPECX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142551
+<CLASS-CONTRACT-NAME>Catalyst Dynamic Alpha Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CPEIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188997
+<CLASS-CONTRACT-NAME>Catalyst Dynamic Alpha Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000036624
+<SERIES-NAME>Catalyst/Lyons Tactical Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111981
+<CLASS-CONTRACT-NAME>Catalyst/Lyons Tactical Allocation Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>CLTAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111982
+<CLASS-CONTRACT-NAME>Catalyst/Lyons Tactical Allocation Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>CLTCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142553
+<CLASS-CONTRACT-NAME>Catalyst/Lyons Tactical Allocation Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>CLTIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188998
+<CLASS-CONTRACT-NAME>Catalyst/Lyons Tactical Allocation Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000043482
+<SERIES-NAME>Catalyst Buyback Strategy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000134860
+<CLASS-CONTRACT-NAME>Catalyst Buyback Strategy Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>BUYAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000134861
+<CLASS-CONTRACT-NAME>Catalyst Buyback Strategy Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>BUYCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000134862
+<CLASS-CONTRACT-NAME>Catalyst Buyback Strategy Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>BUYIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188999
+<CLASS-CONTRACT-NAME>Catalyst Buyback Strategy Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000045924
+<SERIES-NAME>Catalyst/Groesbeck Aggressive Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143118
+<CLASS-CONTRACT-NAME>Catalyst/Groesbeck Aggressive Growth Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>GROAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143119
+<CLASS-CONTRACT-NAME>Catalyst/Groesbeck Aggressive Growth Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>GROCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143120
+<CLASS-CONTRACT-NAME>Catalyst/Groesbeck Aggressive Growth Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>GROIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000050258
+<SERIES-NAME>Catalyst IPOx Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000158685
+<CLASS-CONTRACT-NAME>Catalyst IPOx Allocation Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>OIPAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000158686
+<CLASS-CONTRACT-NAME>Catalyst IPOx Allocation Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>OIPCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000158687
+<CLASS-CONTRACT-NAME>Catalyst IPOx Allocation Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>OIPIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189001
+<CLASS-CONTRACT-NAME>Catalyst IPOx Allocation Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>mfstnpxc.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE>Blu Giant, LLC</TITLE>
+</HEAD>
+<BODY>
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR>
+    <TD NOWRAP STYLE="vertical-align: top; width: 18%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Registrant:&nbsp;&nbsp;Mutual Fund Series Trust</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; width: 6%">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; width: 7%">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; width: 15%; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Fund Name - </B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; width: 36%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Catalyst Groesbeck Growth of Income Fund</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; width: 5%">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; width: 2%">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; width: 5%; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Exhibit 1</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; width: 6%">&nbsp;</TD></TR>
+<TR>
+    <TD NOWRAP COLSPAN="2" STYLE="vertical-align: top"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Investment Company 1940 Act File # 811-21872</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="2"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Reporting Period:&nbsp;&nbsp;July 1, 2016 - June 30, 2017</B></FONT></TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; text-align: center">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; text-align: center">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 14pt"><B>N-PX Form Requirements</B></FONT></TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; text-align: center">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; text-align: center">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="border: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(d) Shareholder Meeting&nbsp;&nbsp;Date</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 9pt"><B>(i) For or Against Management</B></FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBOTT LABS</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABT</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">002824100</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">4/28/2017</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">DIRECTOR: R.J. ALPERN, R.S. AUSTIN, S.E. BLOUNT, E.M. LIDDY, N. MCKINSTRY, P.N. NOVAKOVIC, W.A.OSBORN, S.C. SCOTT III, D.J. STARKS, G.F. TILTON, M.D. WHITE</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FOR</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBOTT LABS</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABT</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">002824100</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">4/28/2017</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">02&nbsp;&nbsp;RATIFICATION OF EARNST &amp; YOUNG LLP AS AUDITORS</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FOR</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBOTT LABS</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABT</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">002824100</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">4/28/2017</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">03&nbsp;&nbsp;SAY ON PAY - AN ADIVSORY VOTE TO APPROVE EXECUTIVE COMPENSATION</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FOR</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBOTT LABS</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABT</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">002824100</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">4/28/2017</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">SAY WHEN ON PAY - AN ADVISORY VOTE TO APPROVE THE FREQUENCY OF SHAREHOLDER VOTES ON EXECUTIVE COMPENSATION.</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">1 YEAR</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">1 YEAR</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBOTT LABS</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABT</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">002824100</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">4/28/2017</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">APPROVAL OF THE ABBOTT LABORATORIES 2017 INCENTIVE STOCK PROGRAM</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FOR</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBOTT LABS</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABT</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">002824100</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">4/28/2017</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">SHAREHOLDER PROPOSAL - INDEPENDENT BOARD CHAIRMAN.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">shareholder</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">AGAINST</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">AGAINST</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBVIE INC.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBV</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">00287Y109</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">5/5/2017</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">01&nbsp;&nbsp;Director</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FOR</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBVIE INC.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBV</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">00287Y109</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">5/5/2017</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ROBERT J. ALPERN</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FOR</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBVIE INC.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBV</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">00287Y109</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">5/5/2017</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">EDWARD M. LIDDY</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FOR</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBVIE INC.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBV</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">00287Y109</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">5/5/2017</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MELODY B. MEYER</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FOR</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBVIE INC.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBV</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">00287Y109</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">5/5/2017</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FREDERICK H. WADDELL</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FOR</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBVIE INC.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBV</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">00287Y109</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">5/5/2017</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">02 RATIFICATION OF EARNST &amp; YOUNG LLP AS ABBVIE'S INDEPENDENT REGISTERED PUBLIC ACCOUNTING FIRM FOR 2017.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FOR</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBVIE INC.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBV</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">00287Y109</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">5/5/2017</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">03 SAY ON PAY - AN ADIVSORY VOTE ON THE APROVAL OF EXECUTIVE COMPENSATION.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FOR</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBVIE INC.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBV</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">00287Y109</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">5/5/2017</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">04 APPROVAL OF A MANAGEMENT PROPOSAL REGARDING THE ANNUAL ELECTION OF DIRECTORS</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">MGMT</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">FOR</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBVIE INC.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">ABBV</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">00287Y109</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">5/5/2017</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">05 STOCKHOLDER PROPOSAL - TO ISSUE A REPORT ON LOBBYING</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">shareholder</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">Y</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">AGAINST</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt">AGAINST</FONT></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

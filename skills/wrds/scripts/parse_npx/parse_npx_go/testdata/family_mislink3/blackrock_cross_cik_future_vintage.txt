@@ -1,0 +1,50 @@
+<SEC-DOCUMENT>0001193125-04-147200.txt : 20040826
+<SEC-HEADER>0001193125-04-147200.hdr.sgml : 20040826
+<ACCEPTANCE-DATETIME>20040826144340
+ACCESSION NUMBER:		0001193125-04-147200
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040826
+DATE AS OF CHANGE:		20040826
+EFFECTIVENESS DATE:		20040826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			BLACKROCK FUNDS
+		CENTRAL INDEX KEY:			0000844779
+		IRS NUMBER:				510318674
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0930
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>dnpx.htm
+<DESCRIPTION>BLACKROCK FUNDS
+<TEXT>
+<p Style='page-break-before:always'>
+<HR  SIZE="3" COLOR="#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+&lt;PRE&gt;
+========================= BLACKROCK BALANCED PORTFOLIO =========================
+
+ITEM 1 PROXY VOTING RECORD
+
+ACE LTD.
+
+Ticker:       ACE            Security ID:  G0070K103
+Meeting Date: MAY 27, 2004   Meeting Type: Annual
+Record Date:  APR 8, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Brian Duperreault         For       For        Management
+1.2   Elect  Director Robert M. Hernandez       For       For        Management
+1.3   Elect  Director Peter Menikoff            For       For        Management
+1.4   Elect  Director Robert Ripp               For       For        Management
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

@@ -1,0 +1,78 @@
+<SEC-DOCUMENT>0001683863-21-004726.txt : 20210827
+<SEC-HEADER>0001683863-21-004726.hdr.sgml : 20210827
+ACCESSION NUMBER:		0001683863-21-004726
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		2
+CONFORMED PERIOD OF REPORT:	20210630
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			VICTORY PORTFOLIOS
+		CENTRAL INDEX KEY:			0000802716
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000802716
+<SERIES-ID>S000053561
+<SERIES-NAME>Victory RS Partners Fund
+<SERIES>
+<OWNER-CIK>0000802716
+<SERIES-ID>S000053562
+<SERIES-NAME>Victory RS Value Fund
+<SERIES>
+<OWNER-CIK>0000802716
+<SERIES-ID>S000053563
+<SERIES-NAME>Victory RS Global Fund
+<SERIES>
+<OWNER-CIK>0000802716
+<SERIES-ID>S000053564
+<SERIES-NAME>Victory RS International Fund
+<SERIES>
+<OWNER-CIK>0000802716
+<SERIES-ID>S000053566
+<SERIES-NAME>Victory Sophus Emerging Markets Fund
+<SERIES>
+<OWNER-CIK>0000802716
+<SERIES-ID>S000053572
+<SERIES-NAME>Victory High Yield Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+
+<br style='page-break-after:always;'><p align='center'>Victory High Yield VIP Series</p>
+
+<table cellpadding='2' cellspacing='0' width='100%' border='1'>
+<tr style='font-size:10pt;border:none;'><th style='font-size:10pt;border:none;' colspan='5'>&nbsp;</th></tr>
+<tr>
+<td style='font-size:10pt;font-weight:bold;' colspan='5'>IHEARTMEDIA, INC.
+<br>Meeting Date:&nbsp;&nbsp;APR 21, 2021
+<br>Record Date:&nbsp;&nbsp;MAR 01, 2021
+<br>Meeting Type:&nbsp;&nbsp;ANNUAL
+</td>
+</tr>
+<tr>
+<td style='font-size:10pt;' colspan='5'>
+Ticker:&nbsp;&nbsp;IHRT
+<br>Security ID:&nbsp;&nbsp;45174J509
+<br>
+</td>
+</tr>
+<tr>
+<th style='font-size:10pt' width='10%'>Proposal No</th>
+<th style='font-size:10pt' width='55%'>Proposal</th>
+<th style='font-size:10pt' width='15%'>Proposed By</th>
+<th style='font-size:10pt' width='15%'>Management Recommendation</th>
+<th style='font-size:10pt' width='10%'>Vote Cast</th>
+</tr>
+<tr>
+<td style='font-size=10pt'>1..1</td>
+<td style='font-size=10pt'>DIRECTOR-Richard J. Bressler</td>
+<td style='font-size=10pt'>Management</td>
+<td style='font-size=10pt'>For</td>
+<td style='font-size=10pt'>For</td>
+</tr>
+</table>
+
+end
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

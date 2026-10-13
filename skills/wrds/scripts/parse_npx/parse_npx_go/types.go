@@ -35,6 +35,12 @@ type VoteRow struct {
 	VoteOtherInfo            string
 	ParseMode                string // xml | text | none
 	Layout                   string
+
+	// FundFromAccountCell marks a FundName read off the row's own account-name
+	// cell rather than a section masthead, which withholds the cross-CIK sibling
+	// rung in dictFallback.apply. It is not a votes.tsv column and is not
+	// serialized.
+	FundFromAccountCell bool
 }
 
 // FilingMeta is one row of manifest.tsv.gz, one per filing.
@@ -46,11 +52,23 @@ type FilingMeta struct {
 	FiledDate      string
 	FormType       string
 	CompanyName    string
+	FormerNames    []string // FORMER CONFORMED NAME lines, in header order
 	NRows          int
 	ParseMode      string // xml | text | none
 	Layout         string
 	ParseStatus    string // ok | error | skip
 	ErrorMsg       string
+
+	// SeriesDecls carries the header's series declarations to the layout
+	// parsers, which are the only layer that knows which series a given vote
+	// belongs to. It is not a manifest column and is not serialized.
+	SeriesDecls []SeriesDecl
+
+	// ReportPeriodEnd is the end date of the `Reporting Period:` line the ISS
+	// report prints in its own preamble, YYYYMMDD. It stands in for
+	// PeriodOfReport only when the SGML header omits that field, and only for
+	// dating the dictionary; it is not a manifest column and is not serialized.
+	ReportPeriodEnd string
 }
 
 // ParseResult bundles the output of parsing a single filing.
@@ -65,6 +83,31 @@ type SeriesClass struct {
 	SeriesID string
 	ClassID  string
 	Ticker   string
+}
+
+// SeriesDecl is one series as the SGML header DECLARES it: the id, the name the
+// header spells for it, and the class contracts listed under it. Unlike the
+// triples above there is exactly one per <SERIES-ID>, so a series declaring no
+// class contract still appears.
+//
+// The name is what lets a legacy layout attribute a vote: the body prints a fund
+// heading and the header declares the same fund by name, so the name is the only
+// bridge between a vote and its series id.
+type SeriesDecl struct {
+	SeriesID string
+	Name     string
+	ClassIDs []string
+	// ClassNames are the <CLASS-CONTRACT-NAME> values declared under this
+	// series, kept so a heading printing a class word behind the series name
+	// can be read against the registrant's own vocabulary.
+	ClassNames []string
+	// Tickers are the class tickers the header lists under this series; a
+	// heading that is exactly one of them names the series (RevenueShares 2012).
+	Tickers []string
+	// DeclDate is the period of the filing this (id, name) pair was declared
+	// in, YYYYMMDD. Set only on dictionary decls; a header declares the filing
+	// it sits in and carries none.
+	DeclDate string
 }
 
 // MultiValueSep joins repeated child values into one TSV cell.

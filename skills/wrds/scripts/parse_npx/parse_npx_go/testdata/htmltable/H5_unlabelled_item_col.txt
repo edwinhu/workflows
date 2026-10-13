@@ -1,0 +1,365 @@
+<SEC-DOCUMENT>0001135428-22-000090.txt : 20220817
+<SEC-HEADER>0001135428-22-000090.hdr.sgml : 20220817
+<ACCEPTANCE-DATETIME>20220817161733
+ACCESSION NUMBER:		0001135428-22-000090
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20220817
+DATE AS OF CHANGE:		20220817
+EFFECTIVENESS DATE:		20220817
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ADVISORS' INNER CIRCLE FUND
+		CENTRAL INDEX KEY:			0000878719
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-06400
+		FILM NUMBER:		221174247
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1 FREEDOM VALLEY DRIVE
+		CITY:			OAKS
+		STATE:			PA
+		ZIP:			19087
+		BUSINESS PHONE:		8009327781
+
+	MAIL ADDRESS:	
+		STREET 1:		1 FREEDOM VALLEY DRIVE
+		CITY:			OAKS
+		STATE:			PA
+		ZIP:			19087
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	ADVISORS INNER CIRCLE FUND
+		DATE OF NAME CHANGE:	19920929
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000878719
+<SERIES-ID>S000041278
+<SERIES-NAME>Sarofim Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000127983
+<CLASS-CONTRACT-NAME>Sarofim Equity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>SRFMX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>sarofim-2022npx.htm
+<DESCRIPTION>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY
+<TEXT>
+<html>
+  <head>
+    <title></title>
+    <!-- Licensed to: Printerlink
+         Document created using Broadridge PROfile 22.7.2.5063
+         Copyright 1995 - 2022 Broadridge -->
+  </head>
+<body bgcolor="#ffffff" style="font-family: 'Times New Roman'; font-size: 10pt; text-align: left; color: #000000;">
+  <div><br>
+  </div>
+  <div>
+    <hr align="center" style="border: none; border-bottom: 1px solid black; border-top: 4px solid black; height: 10px; color: #ffffff; background-color: #ffffff; text-align: center; margin-left: auto; margin-right: auto;"></div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div style="text-align: center; font-family: 'Times New Roman',serif; font-size: 12pt; font-weight: bold;">UNITED STATES</div>
+  <div>
+    <div style="text-align: center; margin-bottom: 3pt; font-family: 'Times New Roman', serif; font-size: 12pt; font-weight: bold;">SECURITIES AND EXCHANGE COMMISSION</div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif; font-weight: bold;">Washington, D.C. 20549</div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif;">________</div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: Arial, sans-serif; font-size: 14pt; font-weight: bold;">FORM N-PX</div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif; font-weight: bold;">________</div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif; font-size: 14pt; font-weight: bold;">ANNUAL REPORT OF PROXY VOTING RECORD OF</div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif; font-size: 14pt; font-weight: bold;">REGISTERED MANAGEMENT INVESTMENT COMPANY</div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif;">Investment Company Act File Number:&#160; 811-06400</div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: Arial, sans-serif; font-size: 14pt; font-weight: bold;">The Advisors&#8217; Inner Circle Fund</div>
+    <div style="text-align: center; margin-top: 3pt; font-family: 'Times New Roman', serif; font-size: 8pt;">(Exact name of registrant as specified in charter)</div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif;">________</div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: Arial, sans-serif;">101 Federal Street</div>
+    <div style="text-align: center; font-family: Arial, sans-serif;">Boston, Massachusetts 02110</div>
+    <div style="text-align: center; margin-top: 3pt; font-family: 'Times New Roman', serif; font-size: 8pt;">&#160;(Address of principal executive offices)</div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif;">________</div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: Arial, sans-serif;">Michael Beattie, President</div>
+    <div style="text-align: center; font-family: Arial, sans-serif;">The Advisors&#8217; Inner Circle Fund</div>
+    <div style="text-align: center; font-family: Arial, sans-serif;">c/o SEI Investments</div>
+    <div style="text-align: center; font-family: Arial, sans-serif;">One Freedom Valley Drive</div>
+    <div style="text-align: center; font-family: Arial, sans-serif;">Oaks, PA 19456</div>
+    <div style="text-align: center; margin-top: 3pt; font-family: 'Times New Roman', serif; font-size: 8pt;">(Name and address of agent for service)</div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif;">________</div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif;">Registrant&#8217;s telephone number, including area code: 1-877-446-3863</div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif;">Date of Fiscal Year End: December 31</div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif;">Date of Reporting Period: July 1, 2021 to June 30, 2022</div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif;">________</div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div>
+      <hr align="center" style="border: none; border-bottom: 4px solid black; border-top: 1px solid black; height: 10px; color: #ffffff; background-color: #ffffff; text-align: center; margin-left: auto; margin-right: auto;"></div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div id="DSPFPageBreakArea" style="clear: both; margin-top: 10pt; margin-bottom: 10pt;">
+      <div id="DSPFPageFooter"></div>
+      <div id="DSPFPageBreak" style="page-break-after:always;">
+        <hr noshade="noshade" style="margin: 4px 0px; width: 100%; border-width: 0; height: 1px; color: #BFBFBF; background-color: #BFBFBF; clear: both;"></div>
+      <div id="DSPFPageHeader"></div>
+    </div>
+    <div><br>
+    </div>
+    <div style="font-family: 'Times New Roman', serif; font-size: 11pt; font-weight: bold;">Item 1. Proxy Voting Record.</div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">Attached are the proxy voting records for:</div>
+    <div><br>
+    </div>
+    <div style="text-align: center; margin-bottom: 2pt; font-family: 'Times New Roman', serif; font-size: 14pt; font-weight: bold;">Sarofim Equity Fund</div>
+    <div style="text-align: center; font-family: 'Times New Roman', serif; font-style: italic;">A series of The Advisors&#8217; Inner Circle Fund</div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div><br>
+    </div>
+    <div id="DSPFPageBreakArea" style="clear: both; margin-top: 10pt; margin-bottom: 10pt;">
+      <div id="DSPFPageFooter"></div>
+      <div id="DSPFPageBreak" style="page-break-after:always;">
+        <hr noshade="noshade" style="margin: 4px 0px; width: 100%; border-width: 0; height: 1px; color: #BFBFBF; background-color: #BFBFBF; clear: both;"></div>
+    </div>
+    <!--PROfilePageNumberReset%Num%1%%%-->
+    <table cellspacing="0" cellpadding="0" id="z2947a2d0149c43c09de6f9b984c897a7" style="font-family: 'Times New Roman'; font-size: 10pt; width: 100%; text-align: left; color: #000000;">
+
+        <tr>
+          <td style="vertical-align: top;" colspan="5">
+            <div style="text-align: center; font-family: 'Times New Roman', serif; font-size: 16pt; font-weight: bold;">Sarofim Equity Fund</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width: 5.57%; vertical-align: top;">&#160;</td>
+          <td style="width: 46.05%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif; font-size: 9pt; font-weight: bold;">Proposal</div>
+          </td>
+          <td style="width: 13.75%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif; font-size: 9pt; font-weight: bold;">Proposed by</div>
+          </td>
+          <td style="width: 12.51%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif; font-size: 9pt; font-weight: bold;">Mgt. Position</div>
+          </td>
+          <td style="width: 22.11%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif; font-size: 9pt; font-weight: bold;">Registrant Voted</div>
+          </td>
+        </tr>
+
+    </table>
+    <div><br>
+    </div>
+    <div style="margin-top: 12pt; font-family: Arial, sans-serif; font-size: 9pt; font-weight: bold;">ABBOTT LABORATORIES</div>
+    <div style="margin-left: 5.75pt; margin-top: 12pt; margin-bottom: 6pt;"><font style="font-family: Arial, sans-serif; font-size: 9pt; font-style: italic; color: #000000;">Security ID: 002824100</font><font id="TRGRRTFtoHTMLTab" style="display: inline-block; text-indent: 0px; font-size: 1px; width: 174.25pt">&#160;</font><font style="font-family: Arial, sans-serif; font-size: 9pt; font-style: italic; color: #000000;">Ticker: ABT</font></div>
+    <div style="margin-left: 3.6pt; margin-top: 12pt; margin-bottom: 12pt; color: #000000; font-family: Arial, sans-serif; font-size: 9pt;">Meeting Date: 29-Apr-22</div>
+    <table cellspacing="0" cellpadding="0" id="z9d7197b107324faa9ef7c7dbb9ce62d0" style="font-family: 'Times New Roman'; font-size: 10pt; width: 100%; text-align: left; color: #000000;">
+
+        <tr>
+          <td style="width: 5.57%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">1.1</div>
+          </td>
+          <td style="width: 46.05%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Elect Robert J. Alpern</div>
+          </td>
+          <td style="width: 13.75%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Management</div>
+          </td>
+          <td style="width: 12.51%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">For</div>
+          </td>
+          <td style="width: 22.11%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Voted - For</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width: 5.57%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">1.2</div>
+          </td>
+          <td style="width: 46.05%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Elect Sally E. Blount</div>
+          </td>
+          <td style="width: 13.75%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Management</div>
+          </td>
+          <td style="width: 12.51%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">For</div>
+          </td>
+          <td style="width: 22.11%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Voted - For</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width: 5.57%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">1.3</div>
+          </td>
+          <td style="width: 46.05%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Elect Robert B. Ford</div>
+          </td>
+          <td style="width: 13.75%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Management</div>
+          </td>
+          <td style="width: 12.51%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">For</div>
+          </td>
+          <td style="width: 22.11%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Voted - For</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width: 5.57%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">1.4</div>
+          </td>
+          <td style="width: 46.05%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Elect Paola Gonzalez</div>
+          </td>
+          <td style="width: 13.75%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Management</div>
+          </td>
+          <td style="width: 12.51%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">For</div>
+          </td>
+          <td style="width: 22.11%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Voted - For</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width: 5.57%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">1.5</div>
+          </td>
+          <td style="width: 46.05%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Elect Michelle A. Kumbier</div>
+          </td>
+          <td style="width: 13.75%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Management</div>
+          </td>
+          <td style="width: 12.51%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">For</div>
+          </td>
+          <td style="width: 22.11%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Voted - For</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width: 5.57%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">1.6</div>
+          </td>
+          <td style="width: 46.05%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Elect Darren W. McDew</div>
+          </td>
+          <td style="width: 13.75%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Management</div>
+          </td>
+          <td style="width: 12.51%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">For</div>
+          </td>
+          <td style="width: 22.11%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Voted - For</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width: 5.57%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">1.7</div>
+          </td>
+          <td style="width: 46.05%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Elect Nancy McKinstry</div>
+          </td>
+          <td style="width: 13.75%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Management</div>
+          </td>
+          <td style="width: 12.51%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">For</div>
+          </td>
+          <td style="width: 22.11%; vertical-align: top;">
+            <div style="font-family: 'Times New Roman', serif;">Voted - For</div>
+          </td>
+        </tr>
+</TABLE>
+</TEXT>
+</DOCUMENT>

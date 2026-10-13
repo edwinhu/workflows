@@ -1,0 +1,1017 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ DHOU2fF5+wOOyZhPey1yyRG0WO08qLVWdqqKBsvM6eTiAuvEfwSjgJzEXA/sV8vo
+ aTPGLKQqUVVjOqMWMUzE8A==
+
+<SEC-DOCUMENT>0000928816-10-000915.txt : 20100810
+<SEC-HEADER>0000928816-10-000915.hdr.sgml : 20100810
+<ACCEPTANCE-DATETIME>20100809190059
+ACCESSION NUMBER:		0000928816-10-000915
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		3
+CONFORMED PERIOD OF REPORT:	20090630
+FILED AS OF DATE:		20100810
+DATE AS OF CHANGE:		20100809
+EFFECTIVENESS DATE:		20100810
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PUTNAM VARIABLE TRUST
+		CENTRAL INDEX KEY:			0000822671
+		IRS NUMBER:				046649095
+		STATE OF INCORPORATION:			NY
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05346
+		FILM NUMBER:		101003038
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE POST OFFICE SQ
+		STREET 2:		MAILSTOP A 14
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+		BUSINESS PHONE:		8002551581
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PUTNAM CAPITAL MANAGER TRUST /MA/
+		DATE OF NAME CHANGE:	19920703
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003871
+<SERIES-NAME>Putnam VT American Government Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010837
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010838
+<CLASS-CONTRACT-NAME>Class IB shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003872
+<SERIES-NAME>Putnam VT Capital Appreciation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010839
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010840
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003873
+<SERIES-NAME>Putnam VT Growth Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010841
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010842
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003874
+<SERIES-NAME>Putnam VT Global Health Care Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010843
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010844
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003875
+<SERIES-NAME>Putnam VT High Yield Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010845
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010846
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003876
+<SERIES-NAME>Putnam VT Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010847
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010848
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003877
+<SERIES-NAME>Putnam VT International Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010849
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010850
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003878
+<SERIES-NAME>Putnam VT International Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010851
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010852
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003879
+<SERIES-NAME>Putnam VT International Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010853
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010854
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003880
+<SERIES-NAME>Putnam VT Investors Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010855
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010856
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003881
+<SERIES-NAME>Putnam VT Mid Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010857
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010858
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003882
+<SERIES-NAME>Putnam VT Money Market Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010859
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010860
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003883
+<SERIES-NAME>Putnam VT Capital Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010861
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010862
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003884
+<SERIES-NAME>Putnam VT New Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010863
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010864
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003885
+<SERIES-NAME>Putnam VT New Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010865
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010866
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003886
+<SERIES-NAME>Putnam VT OTC & Emerging Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010867
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010868
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003887
+<SERIES-NAME>Putnam VT Research Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010869
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010870
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003888
+<SERIES-NAME>Putnam VT Small Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010871
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010872
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003889
+<SERIES-NAME>Putnam VT Global Utilities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010873
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010874
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003890
+<SERIES-NAME>Putnam VT Vista Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010875
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010876
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003891
+<SERIES-NAME>Putnam VT Voyager Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010877
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010878
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003892
+<SERIES-NAME>Putnam VT Discovery Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010879
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010880
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003893
+<SERIES-NAME>Putnam VT Diversified Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010881
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010882
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003894
+<SERIES-NAME>Putnam VT Equity Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010883
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010884
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003895
+<SERIES-NAME>Putnam VT George Putnam Fund of Boston
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010885
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010886
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003896
+<SERIES-NAME>Putnam VT Global Asset Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010887
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010888
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003897
+<SERIES-NAME>Putnam VT Global Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010889
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010890
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003898
+<SERIES-NAME>Putnam VT Growth and Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010891
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010892
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a_variabletrustnpx4.htm
+<DESCRIPTION>PUTNAM VARIABLE TRUST
+<TEXT>
+<!DOCTYPE HTML PUBLIC "">
+
+
+<HTML>
+<HEAD>
+   <TITLE></TITLE>
+   <META name="HandheldFriendly" content="true">
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<A name="page_1"></A><BR>
+<a name="_bclPageBorder1"></a><DIV style="PADDING-LEFT: 0%; WIDTH: 100%; PADDING-RIGHT: 0%">
+<DIV align=left>
+<TABLE style="WIDTH: 100%" border=0 cellSpacing=0>
+<TR>
+     <TD width="20%"></TD>
+     <TD width="10%"></TD>
+     <TD width="70%"></TD></TR>
+<TR height=20>
+     <TD style="BORDER-BOTTOM: #000000 2pt double" colSpan=3>&nbsp;</TD></TR>
+<TR height=20>
+     <TD colSpan=3 noWrap align=center><B><FONT size=5 face=sans-serif></FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=3 noWrap align=center><B><FONT size=5 face=sans-serif>UNITED STATES</FONT></B> <B><FONT size=5 face=sans-serif></FONT></B></TD></TR>
+<TR>
+     <TD colSpan=3 align=center>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=3 noWrap align=center><B><FONT size=5 face=sans-serif>SECURITIES AND EXCHANGE COMMISSION</FONT></B> <B><FONT size=5 face=sans-serif></FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=3 noWrap align=center><B><FONT size=2 face=sans-serif>Washington, DC 20549</FONT></B> <B><FONT size=2 face=sans-serif></FONT></B></TD></TR>
+<TR>
+     <TD colSpan=3 align=center></TD></TR>
+<TR>
+     <TD colSpan=3 align=center>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=3 noWrap align=center><B><FONT size=5 face=sans-serif>FORM N-PX</FONT></B> <B><FONT size=5 face=sans-serif></FONT></B></TD></TR>
+<TR>
+     <TD colSpan=3 align=center>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=3 noWrap align=center><B><FONT size=2 face=sans-serif>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED</FONT></B> <B><FONT size=2 face=sans-serif></FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=3 noWrap align=center><B><FONT size=2 face=sans-serif>MANAGEMENT INVESTMENT COMPANY</FONT></B> <B><FONT size=2 face=sans-serif></FONT></B></TD></TR>
+<TR>
+     <TD colSpan=3>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Investment Company Act File Number :</FONT></TD>
+     <TD noWrap align=right><B><FONT size=2 face=sans-serif>811-5346</FONT></B></TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=3>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Name of Registrant:</FONT></TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=4 face=sans-serif>Putnam Variable Trust</FONT></B></TD></TR>
+<TR>
+     <TD colSpan=3>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=2 noWrap align=left><FONT size=2 face=sans-serif>Address of Principal Executive Offices:</FONT></TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif>One Post Office Square</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif>Boston, Massachusetts 02109</FONT></B></TD></TR>
+<TR height=20>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif></FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=2 noWrap align=left><FONT size=2 face=sans-serif>Name and address of agent of service:</FONT></TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif>James P. Pappas, Vice President</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif>Putnam Variable Trust</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif>One Post Office Square</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif>Boston, Massachusetts 02109</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>CC:</FONT></TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif>John W. Gerstmayr, Esq.</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=2 face=sans-serif>Ropes &amp; Gray LLP</FONT></B></TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif>One International Place</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif>Boston, Massachusetts 02110</FONT></B></TD></TR>
+<TR height=20>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif></FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=3 noWrap align=left><FONT size=2 face=sans-serif>Registrant's telephone number including area code:</FONT></TD></TR>
+<TR height=20>
+     <TD colSpan=3 noWrap align=left><FONT size=2 face=sans-serif>&nbsp;</FONT></TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=2 face=sans-serif>(617) 292-1000</FONT></B></TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR height=20>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=2 face=sans-serif></FONT></B></TD>
+     <TD noWrap align=left></TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=2 noWrap align=left><FONT size=2 face=sans-serif>Date of fiscal year end:</FONT></TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp; </TD>
+     <TD noWrap align=left><B><FONT size=2 face=sans-serif>12/31/09</FONT></B></TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=2 noWrap align=left><FONT size=2 face=sans-serif>Date of reporting period:</FONT></TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif>07/01/2009 - 06/30/2010</FONT></B></TD></TR>
+<TR height=20>
+     <TD noWrap align=left></TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif></FONT></B></TD></TR>
+<TR height=20>
+     <TD style="BORDER-TOP: #000000 2pt double" colSpan=3 noWrap align=left><B><FONT size=2 face=sans-serif>&nbsp;</FONT></B></TD></TR></TABLE></DIV>
+<P style="MARGIN: 0px">&nbsp;</P>
+</DIV>
+<HR align=center SIZE=2 width="100%" noShade>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--$$/page=-->
+<A name="page_1"></A><BR>
+<a name="_bclPageBorder1"></a><DIV style="PADDING-LEFT: 0%; WIDTH: 100%; PADDING-RIGHT: 0%">
+<DIV align=left>
+<TABLE style="WIDTH: 100%" border=0 cellSpacing=0>
+<TR>
+     <TD width="100%"></TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Registrant Name : Putnam Variable Trust</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Fund Name : Putnam VT American Government Income Fund</FONT>&nbsp;</TD></TR>
+<TR>
+<TD></TD>
+     <TD colSpan=6>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" colSpan=2 noWrap align=left><FONT size=2 face=sans-serif></FONT><FONT size=2 face=sans-serif>Date of fiscal year end: 12/31/2009</FONT>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" noWrap align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" noWrap align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" noWrap align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" noWrap align=left>&nbsp;</TD>
+     <TD style="BORDER-BOTTOM: #000000 1px solid" noWrap align=left>&nbsp;</TD></TR></TABLE>
+<TR>
+
+
+
+
+
+
+
+
+
+     <TD>&nbsp;</TD></TR>
+<TR>
+     <TD style="BORDER-BOTTOM: #000000 1px solid">&nbsp;</TD></TR>
+
+<DIV align=left>
+<TABLE style="WIDTH: 100%" border=0 cellSpacing=0>
+<TR>
+     <TD width="20%"></TD>
+     <TD width="18%"></TD>
+     <TD width="28%"></TD>
+     <TD width="8%"></TD>
+     <TD width="8%"></TD>
+     <TD width="8%"></TD>
+     <TD width="8%"></TD></TR>
+
+<TR height=20>
+     <TD noWrap align=left><B><FONT size=2 face=sans-serif>&nbsp;</FONT></B></TD>
+     <TD noWrap align=left></TD>
+     <TD noWrap align=left></TD>
+     <TD noWrap align=left></TD>
+     <TD noWrap align=left></TD>
+     <TD noWrap align=left></TD>
+     <TD noWrap align=left></TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left><B><FONT size=2 face=sans-serif>Putnam Money Market Liquidity</FONT></B>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left><B><FONT size=2 face=sans-serif>Fund</FONT></B>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=2 face=sans-serif>Ticker</FONT></B>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=2 face=sans-serif>Security ID:</FONT></B>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=2 face=sans-serif>Meeting Date</FONT></B>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD colSpan=2 noWrap align=left><B><FONT size=2 face=sans-serif>Meeting Status</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>CUSIP 746763168</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>11/19/2009</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Voted</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=2 face=sans-serif>Meeting Type</FONT></B>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=2 face=sans-serif>Country of Trade</FONT></B>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Special</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>United States</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=1 face=sans-serif>Issue No.</FONT></B>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=1 face=sans-serif>Description</FONT></B>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=1 face=sans-serif>Proponent</FONT></B>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=1 face=sans-serif>Mgmt Rec</FONT></B>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=1 face=sans-serif>Vote Cast</FONT></B>&nbsp;</TD>
+     <TD noWrap align=left><B><FONT size=1 face=sans-serif>For/Agnst Mgmt</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.01</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect Ravi Akhoury</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.02</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect Jameson Baxter</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.03</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect Charles Curtis</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.04</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect Robert Darretta</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.05</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect Myra Drucker</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.06</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect John Hill</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.07</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect Paul Joskow</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.08</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect Elizabeth Kennan</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.09</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect Kenneth Leibler</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.10</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect Robert Patterson</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.11</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect George Putnam, III</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.12</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect Robert Reynolds</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.13</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect W. Thomas Stephens</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>1.14</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Elect Richard Worley</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>2</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Approving A Proposed New</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Management Contract For Your</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Fund</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>2.A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Approving A Proposed New</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Management Contract For Your</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Fund: With Both Fund Family</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Breakpoints And Performance Fees</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=7>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>2.B</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Approving A Proposed New</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Management Contract For Your</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Fund: With Fund Family Breakpoints</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Only</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>2.C</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Approving A Proposed New</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Management Contract For Your</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Fund: With Performance Fees Only</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=7>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>3</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Approving An Amendment To Your</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Fund's Fundamental Investment</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Restriction With Respect To:</FONT>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>3.A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Investments in Commodities</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>3.B</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>Diversification of Investments</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD noWrap align=left>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>3.C</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>The Acquisition of Voting Securities</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD>
+     <TD noWrap align=left><FONT size=2 face=sans-serif>N/A</FONT>&nbsp;</TD></TR></TABLE></DIV>

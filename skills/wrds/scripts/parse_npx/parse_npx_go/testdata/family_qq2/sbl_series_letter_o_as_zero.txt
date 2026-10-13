@@ -1,0 +1,22 @@
+		COMPANY CONFORMED NAME:			SBL FUND
+		CENTRAL INDEX KEY:			0000217087
+<TEXT>
+============================= SBL Fund - Series 0 ==============================
+
+AEGION CORPORATION
+
+Ticker:       AEGN           Security ID:  00770F104
+Meeting Date: MAY 14, 2013   Meeting Type: Annual
+Record Date:  MAR 18, 2013
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director J. Joseph Burgess        For       For          Management
+1.2   Elect Director Stephen P. Cortinovis    For       For          Management
+1.3   Elect Director Stephanie A. Cuskley     For       For          Management
+1.4   Elect Director John P. Dubinsky         For       For          Management
+1.5   Elect Director Charles R. Gordon        For       For          Management
+1.6   Elect Director Juanita H. Hinshaw       For       For          Management
+1.7   Elect Director M. Richard Smith         For       For          Management
+1.8   Elect Director Alfred L. Woods          For       For          Management
+1.9   Elect Director Phillip D. Wright        For       For          Management
+2     Advisory Vote to Ratify Named           For       For          Management

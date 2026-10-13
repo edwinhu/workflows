@@ -1,0 +1,346 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ ObmMgdtY1/+ncsCCbkXIDxTRBu3fyAr9Qkib/k5jtrYSIu8PSmlUlLz5gVmBYzgg
+ Jj9PfmofwDRdeAQZi01grQ==
+
+<SEC-DOCUMENT>0000898432-06-000742.txt : 20060824
+<SEC-HEADER>0000898432-06-000742.hdr.sgml : 20060824
+<ACCEPTANCE-DATETIME>20060824112232
+ACCESSION NUMBER:		0000898432-06-000742
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060824
+DATE AS OF CHANGE:		20060824
+EFFECTIVENESS DATE:		20060824
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			HERITAGE SERIES TRUST
+		CENTRAL INDEX KEY:			0000897111
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07470
+		FILM NUMBER:		061052300
+
+	BUSINESS ADDRESS:	
+		STREET 1:		880 CARILLON PARKWAY
+		CITY:			ST PETERSBURG
+		STATE:			FL
+		ZIP:			33716
+		BUSINESS PHONE:		8135733800
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000897111
+<SERIES-ID>S000008481
+<SERIES-NAME>Diversified Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023254
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>HAGAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023255
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>HAGBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023256
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>HAGCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023257
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>HAGIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023258
+<CLASS-CONTRACT-NAME>Class R3
+<CLASS-CONTRACT-TICKER-SYMBOL>HAREX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023259
+<CLASS-CONTRACT-NAME>Class R5
+<CLASS-CONTRACT-TICKER-SYMBOL>HARSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000897111
+<SERIES-ID>S000008482
+<SERIES-NAME>Small Cap Stock Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023260
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>HRSCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023261
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>HRSBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023262
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>HSCCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023263
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>HSIIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023264
+<CLASS-CONTRACT-NAME>Class R3
+<CLASS-CONTRACT-TICKER-SYMBOL>HSRRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023265
+<CLASS-CONTRACT-NAME>Class R5
+<CLASS-CONTRACT-TICKER-SYMBOL>HSRSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000897111
+<SERIES-ID>S000008483
+<SERIES-NAME>Mid Cap Stock Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023267
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>HMCAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023268
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>HMCBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023269
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>HMCCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023270
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>HMCJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023271
+<CLASS-CONTRACT-NAME>Class R3
+<CLASS-CONTRACT-TICKER-SYMBOL>HMRRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023272
+<CLASS-CONTRACT-NAME>Class R5
+<CLASS-CONTRACT-TICKER-SYMBOL>HMRSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000897111
+<SERIES-ID>S000008485
+<SERIES-NAME>Core Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023274
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>HTCAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023275
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>HTCCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023276
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>HTCIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023277
+<CLASS-CONTRACT-NAME>Class R3
+<CLASS-CONTRACT-TICKER-SYMBOL>HTCRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023278
+<CLASS-CONTRACT-NAME>Class R5
+<CLASS-CONTRACT-TICKER-SYMBOL>HTCSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000897111
+<SERIES-ID>S000008486
+<SERIES-NAME>International Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023279
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>HEIAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023280
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>HEIBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023281
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>HEICX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>hstformnpx.htm
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<DIV STYLE="page-break-after:always"></DIV>
+<BODY style="line-height:12pt; font-family:Times New Roman; font-size:10pt; color:#000000">
+<DIV style="width:964.8pt"><P style="margin:0pt" align=center><BR></P>
+<P style="margin:0pt" align=center><BR></P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>UNITED STATES</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>SECURITIES AND EXCHANGE COMMISSION</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>Washington, D.C. &nbsp;20549</P>
+<P style="margin:0pt" align=center><BR></P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center><B>FORM N-PX</B></P>
+<P style="margin:0pt" align=center><BR></P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center><B>Annual Report of Proxy Voting Record of Registered Management Investment Company </B></P>
+<P style="margin:0pt" align=center><BR></P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>Investment Company Act file number: 811-07470</P>
+<P style="margin:0pt" align=justify><BR></P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center><B><U>HERITAGE SERIES TRUST</U></B></P>
+<P style="line-height:14pt; margin-top:0pt; margin-bottom:6pt; font-size:12pt" align=center>(Exact name of Registrant as Specified in Charter)</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>880 Carillon Parkway</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>St. Petersburg, FL 33716</P>
+<P style="line-height:14pt; margin-top:0pt; margin-bottom:6pt; font-size:12pt" align=center>(Address of Principal Executive Office) (Zip Code)</P>
+<P style="line-height:14pt; margin-top:0pt; margin-bottom:12pt; font-size:12pt" align=center>Registrant&#146;s Telephone Number, including Area Code: (727) 576-8143</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>STEPHEN G. HILL, PRESIDENT</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>880 Carillon Parkway</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>St. Petersburg, FL 33716</P>
+<P style="line-height:14pt; margin-top:0pt; margin-bottom:6pt; font-size:12pt" align=center>(Name and Address of Agent for Service)</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>Copy to:</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>CLIFFORD J. ALEXANDER, ESQ.</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>Kirkpatrick &amp; Lockhart Nicholson Graham LLP</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt" align=center>1601 K Street, NW</P>
+<P style="line-height:14pt; margin-top:0pt; margin-bottom:12pt; font-size:12pt" align=center>Washington, D.C. &nbsp;20006</P>
+<P style="line-height:14pt; margin-top:0pt; margin-bottom:-14pt; font-size:12pt">Date of fiscal year end: <A NAME="DaJaJeNi"></A></P>
+<P style="line-height:14pt; margin:0pt; text-indent:144pt; font-size:12pt">October 31</P>
+<P style="line-height:14pt; margin-top:0pt; margin-bottom:-14pt; font-size:12pt">Date of Reporting Period: </P>
+<P style="line-height:14pt; margin:0pt; text-indent:144pt; font-size:12pt">July 1, 2005 to June 30, 2006</P>
+<P style="margin:0pt" align=center><BR></P>
+<HR SIZE=5 COLOR=GRAY NOSHADE>
+
+<P style="line-height:14pt; margin:0pt; font-size:12pt"><B>Item 1. Proxy Voting Record.</B></P>
+
+
+<P style="margin:0pt"><BR></P>
+<P style="margin:0pt"><BR></P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt">Heritage Core Equity Fund</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt">Heritage Diversified Growth Fund </P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt">Heritage Mid Cap Stock Fund</P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt">Heritage Small Cap Stock Fund </P>
+<P style="line-height:14pt; margin:0pt; font-size:12pt">Heritage International Equity Fund </P>
+<P style="margin:0pt"><BR>
+<HR SIZE=5 COLOR=GRAY NOSHADE><BR></P>
+<P style="margin-top:2.65pt; margin-bottom:0pt"><BR></P>
+
+<DIV STYLE="page-break-after:always"></DIV>
+
+<BODY style="line-height:12pt; font-family:Times New Roman; font-size:10pt; color:#000000">
+<DIV style="width:964.8pt"><P style="margin:0pt"><BR></P>
+<P style="margin:0pt"><BR></P>
+<P style="margin-top:0pt; margin-bottom:8pt"><BR></P>
+<TABLE style="font-size:10pt" cellspacing=0><TR><TD width=100></TD><TD width=79></TD><TD width=83></TD><TD width=178></TD><TD width=69></TD><TD width=301></TD><TD width=76></TD><TD width=71></TD><TD width=72></TD><TD width=39></TD></TR>
+<TR><TD valign=bottom width=133.333><P style="line-height:10pt; margin:0pt; font-size:8pt"><B>Heritage Name</B></P>
+</TD><TD valign=bottom width=105.333><P style="line-height:10pt; margin:0pt; font-size:8pt"><B>CUSIP</B></P>
+</TD><TD valign=bottom width=110.667><P style="line-height:10pt; margin:0pt; font-size:8pt"><B>Ticker</B></P>
+</TD><TD valign=bottom width=237.333><P style="line-height:10pt; margin:0pt; font-size:8pt"><B>Issuer</B></P>
+</TD><TD valign=bottom width=92><P style="line-height:10pt; margin:0pt; font-size:8pt"><B>Meeting Date</B></P>
+</TD><TD valign=bottom width=401.333><P style="line-height:10pt; margin:0pt; font-size:8pt"><B>Issue </B></P>
+</TD><TD valign=bottom width=101.333><P style="line-height:10pt; margin:0pt; font-size:8pt"><B>Shareholder, Management or Issuer Proposal</B></P>
+</TD><TD valign=bottom width=94.667><P style="line-height:10pt; margin:0pt; font-size:8pt"><B>Voted With or Against Management</B></P>
+</TD><TD valign=bottom width=96><P style="line-height:10pt; margin:0pt; font-size:8pt"><B>How the Fund cast its vote</B></P>
+</TD><TD valign=bottom width=52><P style="line-height:10pt; margin:0pt; font-size:8pt"><B>Voted?</B></P>
+</TD></TR>
+<TR><TD valign=bottom width=133.333><P style="font-size:2pt">&nbsp;</P></TD><TD valign=bottom width=105.333><P style="font-size:2pt">&nbsp;</P></TD><TD valign=bottom width=110.667><P style="font-size:2pt">&nbsp;</P></TD><TD valign=bottom width=237.333><P style="font-size:2pt">&nbsp;</P></TD><TD valign=bottom width=92><P style="font-size:2pt">&nbsp;</P></TD><TD valign=bottom width=401.333><P style="font-size:2pt">&nbsp;</P></TD><TD valign=bottom width=101.333><P style="font-size:2pt">&nbsp;</P></TD><TD valign=bottom width=94.667><P style="font-size:2pt">&nbsp;</P></TD><TD valign=bottom width=96><P style="font-size:2pt">&nbsp;</P></TD><TD valign=bottom width=52><P style="font-size:2pt">&nbsp;</P></TD></TR>
+<TR><TD valign=top width=133.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Core Equity</P>
+</TD><TD valign=top width=105.333><P style="line-height:10pt; margin:0pt; font-size:8pt">24702R101</P>
+</TD><TD valign=top width=110.667><P style="line-height:10pt; margin:0pt; font-size:8pt">DELL</P>
+</TD><TD valign=top width=237.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Dell Inc.</P>
+</TD><TD valign=top width=92><P style="line-height:10pt; margin:0pt; font-size:8pt">2005 0715</P>
+</TD><TD valign=top width=401.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Elect Directors</P>
+</TD><TD valign=top width=101.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Management</P>
+</TD><TD valign=top width=94.667><P style="line-height:10pt; margin:0pt; font-size:8pt">With</P>
+</TD><TD valign=top width=96><P style="line-height:10pt; margin:0pt; font-size:8pt">For</P>
+</TD><TD valign=top width=52><P style="line-height:10pt; margin:0pt; font-size:8pt">Yes</P>
+</TD></TR>
+<TR><TD valign=top width=133.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Core Equity</P>
+</TD><TD valign=top width=105.333><P style="line-height:10pt; margin:0pt; font-size:8pt">24702R101</P>
+</TD><TD valign=top width=110.667><P style="line-height:10pt; margin:0pt; font-size:8pt">DELL</P>
+</TD><TD valign=top width=237.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Dell Inc.</P>
+</TD><TD valign=top width=92><P style="line-height:10pt; margin:0pt; font-size:8pt">2005 0715</P>
+</TD><TD valign=top width=401.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Ratify Auditors</P>
+</TD><TD valign=top width=101.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Management</P>
+</TD><TD valign=top width=94.667><P style="line-height:10pt; margin:0pt; font-size:8pt">With</P>
+</TD><TD valign=top width=96><P style="line-height:10pt; margin:0pt; font-size:8pt">For</P>
+</TD><TD valign=top width=52><P style="line-height:10pt; margin:0pt; font-size:8pt">Yes</P>
+</TD></TR>
+<TR><TD valign=top width=133.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Core Equity</P>
+</TD><TD valign=top width=105.333><P style="line-height:10pt; margin:0pt; font-size:8pt">24702R101</P>
+</TD><TD valign=top width=110.667><P style="line-height:10pt; margin:0pt; font-size:8pt">DELL</P>
+</TD><TD valign=top width=237.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Dell Inc.</P>
+</TD><TD valign=top width=92><P style="line-height:10pt; margin:0pt; font-size:8pt">2005 0715</P>
+</TD><TD valign=top width=401.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Prop: Dir election vote threshold of simple majority</P>
+</TD><TD valign=top width=101.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Shareholder</P>
+</TD><TD valign=top width=94.667><P style="line-height:10pt; margin:0pt; font-size:8pt">Against</P>
+</TD><TD valign=top width=96><P style="line-height:10pt; margin:0pt; font-size:8pt">Against</P>
+</TD><TD valign=top width=52><P style="line-height:10pt; margin:0pt; font-size:8pt">Yes</P>
+</TD></TR>
+<TR><TD valign=top width=133.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Core Equity</P>
+</TD><TD valign=top width=105.333><P style="line-height:10pt; margin:0pt; font-size:8pt">24702R101</P>
+</TD><TD valign=top width=110.667><P style="line-height:10pt; margin:0pt; font-size:8pt">DELL</P>
+</TD><TD valign=top width=237.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Dell Inc.</P>
+</TD><TD valign=top width=92><P style="line-height:10pt; margin:0pt; font-size:8pt">2005 0715</P>
+</TD><TD valign=top width=401.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Prop: Expensing costs of future options to execs</P>
+</TD><TD valign=top width=101.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Shareholder</P>
+</TD><TD valign=top width=94.667><P style="line-height:10pt; margin:0pt; font-size:8pt">Against</P>
+</TD><TD valign=top width=96><P style="line-height:10pt; margin:0pt; font-size:8pt">Against</P>
+</TD><TD valign=top width=52><P style="line-height:10pt; margin:0pt; font-size:8pt">Yes</P>
+</TD></TR>
+<TR><TD valign=top width=133.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Core Equity</P>
+</TD><TD valign=top width=105.333><P style="line-height:10pt; margin:0pt; font-size:8pt">871503108</P>
+</TD><TD valign=top width=110.667><P style="line-height:10pt; margin:0pt; font-size:8pt">SYMC</P>
+</TD><TD valign=top width=237.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Symantec Corp.</P>
+</TD><TD valign=top width=92><P style="line-height:10pt; margin:0pt; font-size:8pt">2005 0916</P>
+</TD><TD valign=top width=401.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Elect Directors</P>
+</TD><TD valign=top width=101.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Management</P>
+</TD><TD valign=top width=94.667><P style="line-height:10pt; margin:0pt; font-size:8pt">With</P>
+</TD><TD valign=top width=96><P style="line-height:10pt; margin:0pt; font-size:8pt">For</P>
+</TD><TD valign=top width=52><P style="line-height:10pt; margin:0pt; font-size:8pt">Yes</P>
+</TD></TR>
+<TR><TD valign=top width=133.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Core Equity</P>
+</TD><TD valign=top width=105.333><P style="line-height:10pt; margin:0pt; font-size:8pt">871503108</P>
+</TD><TD valign=top width=110.667><P style="line-height:10pt; margin:0pt; font-size:8pt">SYMC</P>
+</TD><TD valign=top width=237.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Symantec Corp.</P>
+</TD><TD valign=top width=92><P style="line-height:10pt; margin:0pt; font-size:8pt">2005 0916</P>
+</TD><TD valign=top width=401.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Ratify Auditors</P>
+</TD><TD valign=top width=101.333><P style="line-height:10pt; margin:0pt; font-size:8pt">Management</P>
+</TD><TD valign=top width=94.667><P style="line-height:10pt; margin:0pt; font-size:8pt">With</P>
+</TD><TD valign=top width=96><P style="line-height:10pt; margin:0pt; font-size:8pt">For</P>
+</TD><TD valign=top width=52><P style="line-height:10pt; margin:0pt; font-size:8pt">Yes</P>
+</TD></TR>

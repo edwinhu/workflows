@@ -1,0 +1,105 @@
+<SEC-DOCUMENT>0000907244-05-000310.txt : 20050826
+<SEC-HEADER>0000907244-05-000310.hdr.sgml : 20050826
+<ACCEPTANCE-DATETIME>20050826154408
+ACCESSION NUMBER:		0000907244-05-000310
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050826
+DATE AS OF CHANGE:		20050826
+EFFECTIVENESS DATE:		20050826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			EVERGREEN INTERNATIONAL TRUST
+		CENTRAL INDEX KEY:			0001046027
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>eitaug.htm
+<DESCRIPTION>EVERGREEN INTERNATIONAL TRUST
+<TEXT>
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<div>
+<p><font size="2" face="Courier New"></font></p>
+
+<p><font size="2" face="Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The following are series of Evergreen International Trust (the</font></p>
+
+<p><font size="2" face="Courier New">"Registrant"):</font></p>
+
+<p><font size="2" face="Courier New"></font></p>
+
+<p><font size="2" face="Courier New">&nbsp; Evergreen Global and International Funds (FYE 10/31)</font></p>
+
+<p><font size="2" face="Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Evergreen Emerging Markets Growth Fund</font></p>
+
+<p><font size="2" face="Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Evergreen Global Large Cap Equity Fund</font></p>
+
+<p><font size="2" face="Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (changed name from Evergreen Global Leaders Fund on 11/05/04)</font></p>
+
+<p><font size="2" face="Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Evergreen Global Opportunities Fund</font></p>
+
+<p><font size="2" face="Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Evergreen International Equity Fund</font></p>
+
+<p><font size="2" face="Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Evergreen Precious Metals Fund</font></p>
+
+<p><font size="2" face="Courier New"></font></p>
+<p><font size="2" face="Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ******************************* FORM N-Px REPORT *******************************</font></p>
+
+<p><font size="2" face="Courier New"></font></p>
+
+<p><font size="2" face="Courier New">ICA File Number: 811-08553
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></p>
+
+<p><font size="2" face="Courier New">Reporting Period: 07/01/2004 -
+06/30/2005&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></p>
+
+<p><font size="2" face="Courier New">Evergreen International
+Trust&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></p>
+<p><font size="2" face="Courier New">======================== EVERGREEN GLOBAL LEADERS FUND =========================</font></p>
+
+<p><font size="2" face="Courier New"></font></p>
+
+<p><font size="2" face="Courier New"></font></p>
+
+<p><font size="2" face="Courier New">ACE
+LTD.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></p>
+
+<p><font size="2" face="Courier New"></font></p>
+
+<p><font size="2" face="Courier New">Ticker:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ACE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Security ID:&nbsp;
+G0070K103&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></p>
+
+<p><font size="2" face="Courier New">Meeting Date: MAY 26, 2005&nbsp;&nbsp; Meeting Type:
+Annual&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></p>
+
+<p><font size="2" face="Courier New">Record Date:&nbsp; APR 8,
+2005&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></p>
+
+<p><font size="2" face="Courier New"></font></p>
+
+<p><font size="2" face="Courier New">#&nbsp;&nbsp;&nbsp;&nbsp;
+Proposal&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mgt Rec&nbsp;&nbsp; Vote Cast&nbsp;
+Sponsor&nbsp;&nbsp;&nbsp;</font></p>
+
+<p><font size="2" face="Courier New">1.1&nbsp;&nbsp; Elect&nbsp; Director Evan G. Greenberg&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Management</font></p>
+
+<p><font size="2" face="Courier New">1.2&nbsp;&nbsp; Elect&nbsp; Director John A. Krol&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Management</font></p>
+
+<p><font size="2" face="Courier New">2&nbsp;&nbsp;&nbsp;&nbsp; Ratify Auditors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+For&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Management</font></p>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

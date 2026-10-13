@@ -1,0 +1,29 @@
+		COMPANY CONFORMED NAME:			SALOMON BROTHERS SERIES FUNDS INC
+		CENTRAL INDEX KEY:			0000862502
+<TEXT>
+
+
+========================= SALMON BALANCED FUND EQUITY ==========================
+
+
+ALCOA INC.
+
+Ticker:       AA             Security ID:  013817101
+Meeting Date: APR 30, 2004   Meeting Type: Annual
+Record Date:  FEB 2, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Alain J.P. Belda          For       For        Management
+1.2   Elect  Director Carlos Ghosn              For       For        Management
+1.3   Elect  Director Henry B. Schacht          For       For        Management
+1.4   Elect  Director Franklin A. Thomas        For       For        Management
+2     Approve Omnibus Stock Plan                For       For        Management
+3     Report on Pay Disparity                   Against   Against    Shareholder
+4     Submit Severance Agreement                Against   Against    Shareholder
+      (Change-in-Control) to Shareholder Vote
+
+
+- --------------------------------------------------------------------------------
+
+AMERICAN EXPRESS CO.
+

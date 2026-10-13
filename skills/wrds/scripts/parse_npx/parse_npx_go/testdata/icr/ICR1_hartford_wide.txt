@@ -1,0 +1,120 @@
+Item 1. Proxy Voting Record
+
+The Hartford Advisers Fund
+Investment Company Report
+07/01/10 - 06/30/11
+
+<TABLE>
+<S>              <C>                                   <C>         <C>         <C>         <C>
+3M Company
+Ticker           Security ID:                          Meeting Date             Meeting Status
+MMM              CUSIP 88579Y101                      05/10/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Linda Alvarado                  Mgmt        For         For         For
+2                Elect George Buckley                  Mgmt        For         For         For
+3                Elect Vance Coffman                   Mgmt        For         For         For
+4                Elect Michael Eskew                   Mgmt        For         For         For
+5                Elect W. James Farrell                Mgmt        For         For         For
+6                Elect Herbert Henkel                  Mgmt        For         For         For
+7                Elect Edward Liddy                    Mgmt        For         For         For
+8                Elect Robert Morrison                 Mgmt        For         For         For
+9                Elect Aulana Peters                   Mgmt        For         For         For
+10               Elect Robert Ulrich                   Mgmt        For         For         For
+11               Ratification of Auditor               Mgmt        For         For         For
+12               Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+13               Frequency of Advisory Vote on         Mgmt        1 Year      3 Years     Against
+                  Executive
+                  Compensation
+
+14               Shareholder Proposal Regarding        ShrHoldr    Against     Against     For
+                  Political Contributions and
+                  Expenditure
+                  Report
+
+</TABLE>
+
+<TABLE>
+<S>              <C>                                   <C>         <C>         <C>         <C>
+Accenture PLC
+Ticker           Security ID:                          Meeting Date             Meeting Status
+ACN              CUSIP G1151C101                      02/03/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Accounts and Reports                  Mgmt        For         For         For
+2                Elect Charles Giancarlo               Mgmt        For         For         For
+3                Elect Dennis Hightower                Mgmt        For         For         For
+4                Elect Blythe McGarvie                 Mgmt        For         For         For
+5                Elect Mark Moody-Stuart               Mgmt        For         For         For
+6                Elect Pierre  Nanterme                Mgmt        For         For         For
+7                Ratification of Auditor and           Mgmt        For         For         For
+                  Authority to Set
+                  Fees
+
+8                Advisory Vote on Executive            Mgmt        For         For         For
+                  Compensation
+
+9                Frequency of Advisory Vote on         Mgmt        3 Years     3 Years     For
+                  Executive
+                  Compensation
+
+10               Authorization to Hold the 2012        Mgmt        For         For         For
+                  Annual Meeting Outside of
+                  Ireland
+
+11               Authority to Repurchase Shares        Mgmt        For         For         For
+12               Authority to Set Price of Reissued    Mgmt        For         For         For
+                  Treasury
+                  Shares
+
+</TABLE>
+<TABLE>
+<S>              <C>                                   <C>         <C>         <C>         <C>
+Ace Limited
+Ticker           Security ID:                          Meeting Date             Meeting Status
+ACE              CUSIP H0023R105                      05/18/2011               Voted
+Meeting Type     Country of Trade
+Annual           United States
+Issue No.        Description                           Proponent   Mgmt Rec    Vote Cast   For/Agnst
+                                                                                            Mgmt
+
+1                Elect Evan Greenberg                  Mgmt        For         For         For
+2                Elect Leo Mullin                      Mgmt        For         For         For
+3                Elect Olivier Steimer                 Mgmt        For         For         For
+4                Elect Michael Connors                 Mgmt        For         For         For
+5                Elect Eugene B. Shanks, Jr.           Mgmt        For         For         For
+6                Elect John Krol                       Mgmt        For         For         For
+
+7                Approval of Annual Report             Mgmt        For         For         For
+8                Approval of Statutory Financial       Mgmt        For         For         For
+                  Statements
+
+9                Approval of Consolidated Financial    Mgmt        For         For         For
+                  Statements
+
+10               Allocation of Disposable Profits      Mgmt        For         For         For
+11               DISCHARGE OF THE BOARD OF DIRECTORS   Mgmt        For         For         For
+12               Appointment of Auditor (Zurich)       Mgmt        For         For         For
+13               Appointment of Auditor (US)           Mgmt        For         For         For
+14               Appointment of Special Auditor        Mgmt        For         For         For
+                  (Zurich)
+
+15               APPROVAL OF DIVIDENDS FROM LEGAL      Mgmt        For         For         For
+                  RESERVES
+
+16               ADVISORY VOTE ON EXECUTIVE            Mgmt        For         For         For
+                  COMPENSATION
+
+17               Frequency of Advisory Vote on         Mgmt        For         1 Year      N/A
+                  Executive
+                  Compensation
+
+</TABLE>

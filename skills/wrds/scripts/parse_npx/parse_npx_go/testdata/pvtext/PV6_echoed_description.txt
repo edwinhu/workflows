@@ -1,0 +1,836 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ Nh1YzOn2zt1mFiOravnnGzRjcEavcJJdJLln/X5JBY8+8qm1hCF5DbBK1Cv21gNB
+ sE2vr++XI1MlwY/pplxQTg==
+
+<SEC-DOCUMENT>0000928816-04-000801.txt : 20040830
+<SEC-HEADER>0000928816-04-000801.hdr.sgml : 20040830
+<ACCEPTANCE-DATETIME>20040830123538
+ACCESSION NUMBER:		0000928816-04-000801
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040830
+DATE AS OF CHANGE:		20040830
+EFFECTIVENESS DATE:		20040830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PUTNAM INVESTMENT FUNDS
+		CENTRAL INDEX KEY:			0000932101
+		IRS NUMBER:				043251560
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07237
+		FILM NUMBER:		041004567
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE POST OFFICE SQUARE
+		STREET 2:		MAIL STOP A 14
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+		BUSINESS PHONE:		6172921562
+
+	MAIL ADDRESS:	
+		STREET 1:		PUTNAM EQUITY FUNDS
+		STREET 2:		ONE POST OFFICE SQUARE MAILSTOP A 14
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PUTNAM EQUITY FUNDS
+		DATE OF NAME CHANGE:	19941028
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>pin.txt
+<DESCRIPTION>PUTNAM INVESTMENT FUNDS
+<TEXT>
+
+                        FORM N-PX
+     ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+                    INVESTMENT COMPANY
+
+INVESTMENT COMPANY ACT FILE NUMBER: FILE NO. 811-7237
+
+PUTNAM INVESTMENT FUNDS
+- -------------------------------------------------------------------------
+   (EXACT NAME OF REGISTRANT AS SPECIFIED IN CHARTER)
+
+ONE POST OFFICE SQUARE, BOSTON, MASSACHUSETTS 02109
+- -------------------------------------------------------------------------
+   (ADDRESS OF PRINCIPAL EXECUTIVE OFFICES)
+
+BETH S. MAZOR, VICE PRESIDENT
+PUTNAM INVESTMENT FUNDS
+ONE POST OFFICE SQUARE
+BOSTON, MASSACHUSETTS 02109
+
+COPY TO:
+JOHN W. GERSTMAYR, ESQ.
+ROPES & GRAY LLP
+ONE INTERNATIONAL PLACE
+BOSTON, MASSACHUSETTS 02110
+- -------------------------------------------------------------------------
+   (NAME AND ADDRESS OF AGENT FOR SERVICE)
+
+REGISTRANT'S TELEPHONE NUMBER, INCLUDING AREA CODE: (617) 292-1000
+
+DATE OF FISCAL YEAR-END: VARIOUS
+DATE OF REPORTING PERIOD: 7/1/2003 - 6/30/2004
+
+ITEM 1. PROXY VOTING RECORD
+
+ACCOUNT NUMBER: PUTNAM MID CAP VALUE FUND
+DATE OF FISCAL YEAR-END: 4/30
+
+<TABLE>
+<CAPTION>
+
+ISSUER NAME                                                 TICKER   CUSIP      MTG DATE       MTG TYPE
+                                                                                PROPOSAL TYPE  VOTED?     VOTE   FOR/AGNST MGMT
+- -------------------------------------------------------------------------------------------------------------------------------
+<S>    <C>                                                  <C>      <C>        <C>            <C>        <C>    <C>
+AMERICAN POWER CONVERSION CORP.                             APCC     029066107  6/10/04        ANNUAL
+1.00   FIX NUMBER OF DIRECTORS                                                  MGMT           YES        FOR    FOR
+       FIX NUMBER OF DIRECTORS
+2.10   ELECT DIRECTOR RODGER B. DOWDELL, JR.                                    MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RODGER B. DOWDELL, JR.
+2.20   ELECT DIRECTOR EMANUEL E. LANDSMAN                                       MGMT           YES        FOR    FOR
+       ELECT DIRECTOR EMANUEL E. LANDSMAN
+2.30   ELECT DIRECTOR NEIL E. RASMUSSEN                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR NEIL E. RASMUSSEN
+2.40   ELECT DIRECTOR ERVIN F. LYON                                             MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ERVIN F. LYON
+2.50   ELECT DIRECTOR JAMES D. GERSON                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JAMES D. GERSON
+2.60   ELECT DIRECTOR JOHN G. KASSAKIAN                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JOHN G. KASSAKIAN
+2.70   ELECT DIRECTOR JOHN F. KEANE, SR.                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JOHN F. KEANE, SR.
+2.80   ELECT DIRECTOR ELLEN B. RICHSTONE                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ELLEN B. RICHSTONE
+3.00   APPROVE OMNIBUS STOCK PLAN                                               MGMT           YES        AGNST  AGNST
+       APPROVE OMNIBUS STOCK PLAN
+4.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+APPLERA CORP                                                ABI      038020103  10/16/03       ANNUAL
+1.10   ELECT DIRECTOR RICHARD H. AYERS                                          MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR TONY L. WHITE
+       ELECT DIRECTOR RICHARD H. AYERS
+       ELECT DIRECTOR TONY L. WHITE
+1.20   ELECT DIRECTOR JEAN-LUC BELINGARD                                        MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR JEAN-LUC BELINGARD
+1.30   ELECT DIRECTOR ROBERT H. HAYES                                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR ROBERT H. HAYES
+1.40   ELECT DIRECTOR ARNOLD J. LEVINE                                          MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR ARNOLD J. LEVINE
+1.50   ELECT DIRECTOR WILLIAM H. LONGFIELD                                      MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR WILLIAM H. LONGFIELD
+1.60   ELECT DIRECTOR THEODORE E. MARTIN                                        MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR THEODORE E. MARTIN
+1.70   ELECT DIRECTOR CAROLYN W. SLAYMAN                                        MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR CAROLYN W. SLAYMAN
+1.80   ELECT DIRECTOR ORIN R. SMITH                                             MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR ORIN R. SMITH
+1.90   ELECT DIRECTOR JAMES R. TOBIN                                            MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR JAMES R. TOBIN
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+AUTONATION, INC.                                            AN       05329W102  5/12/04        ANNUAL
+1.10   ELECT DIRECTOR MIKE JACKSON                                              MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR MIKE JACKSON
+1.20   ELECT DIRECTOR ROBERT J. BROWN                                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR ROBERT J. BROWN
+1.30   ELECT DIRECTOR J.P. BRYAN                                                MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR J.P. BRYAN
+1.40   ELECT DIRECTOR RICK L. BURDICK                                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR RICK L. BURDICK
+1.50   ELECT DIRECTOR WILLIAM C. CROWLEY                                        MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR WILLIAM C. CROWLEY
+1.60   ELECT DIRECTOR ALAN S. DAWES                                             MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR ALAN S. DAWES
+1.70   ELECT DIRECTOR EDWARD S. LAMPERT                                         MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR EDWARD S. LAMPERT
+1.80   ELECT DIRECTOR IRENE B. ROSENFELD                                        MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR IRENE B. ROSENFELD
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+AVERY DENNISON CORP.                                        AVY      053611109  4/22/04        ANNUAL
+1.10   ELECT DIRECTORS PHILIP M. NEAL                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTORS PHILIP M. NEAL
+1.20   ELECT DIRECTORS FRANK V. CAHOUET                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTORS FRANK V. CAHOUET
+1.30   ELECT DIRECTORS PETER W. MULLIN                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTORS PETER W. MULLIN
+1.40   ELECT DIRECTORS BRUCE E. KARATZ                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTORS BRUCE E. KARATZ
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+3.00   AMEND EXECUTIVE INCENTIVE BONUS PLAN                                     MGMT           YES        FOR    FOR
+       AMEND EXECUTIVE INCENTIVE BONUS PLAN
+4.00   AMEND EXECUTIVE INCENTIVE BONUS PLAN                                     MGMT           YES        FOR    FOR
+       AMEND EXECUTIVE INCENTIVE BONUS PLAN
+
+BECTON, DICKINSON AND COMPANY                               BDX      075887109  2/11/04        ANNUAL
+1.10   ELECT DIRECTOR HENRY P. BECTON, JR.                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR HENRY P. BECTON, JR.
+1.20   ELECT DIRECTOR EDWARD F. DEGRAAN                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR EDWARD F. DEGRAAN
+1.30   ELECT DIRECTOR JAMES F. ORR                                              MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JAMES F. ORR
+1.40   ELECT DIRECTOR MARGARETHA AF UGGLAS                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR MARGARETHA AF UGGLAS
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+3.00   APPROVE OMNIBUS STOCK PLAN                                               MGMT           YES        FOR    FOR
+       APPROVE OMNIBUS STOCK PLAN
+4.00   PROVIDE FOR CUMULATIVE VOTING                                            SHLDR          YES        AGNST  FOR
+       PROVIDE FOR CUMULATIVE VOTING
+
+BIG LOTS INC.                                               BLI      089302103  5/18/04        ANNUAL
+1.10   ELECT DIRECTOR ALBERT J. BELL                                            MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ALBERT J. BELL
+1.20   ELECT DIRECTOR SHELDON M. BERMAN                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR SHELDON M. BERMAN
+1.30   ELECT DIRECTOR DAVID T. KOLLAT                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR DAVID T. KOLLAT
+1.40   ELECT DIRECTOR BRENDA J. LAUDERBACK                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR BRENDA J. LAUDERBACK
+1.50   ELECT DIRECTOR PHILIP E. MALLOTT                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR PHILIP E. MALLOTT
+1.60   ELECT DIRECTOR NED MANSOUR                                               MGMT           YES        FOR    FOR
+       ELECT DIRECTOR NED MANSOUR
+1.70   ELECT DIRECTOR MICHAEL J. POTTER                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR MICHAEL J. POTTER
+1.80   ELECT DIRECTOR RUSSELL SOLT                                              MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RUSSELL SOLT
+1.90   ELECT DIRECTOR DENNIS B. TISHKOFF                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR DENNIS B. TISHKOFF
+
+BOSTON PROPERTIES INC.                                      BXP      101121101  5/5/04         ANNUAL
+1.10   ELECT DIRECTOR MORTIMER B. ZUCKERMAN                                     MGMT           YES        FOR    FOR
+       ELECT DIRECTOR MORTIMER B. ZUCKERMAN
+1.20   ELECT DIRECTOR CAROL B. EINIGER                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR CAROL B. EINIGER
+1.30   ELECT DIRECTOR ALAN B. LANDIS                                            MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ALAN B. LANDIS
+1.40   ELECT DIRECTOR RICHARD E. SALOMON                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RICHARD E. SALOMON
+2.00   DECLASSIFY THE BOARD OF DIRECTORS                                        SHLDR          YES        FOR    AGNST
+       DECLASSIFY THE BOARD OF DIRECTORS
+
+BURLINGTON NORTHERN SANTA FE CORP.                          BNI      12189T104  4/21/04        ANNUAL
+1.10   ELECT DIRECTOR ALAN L. BOECKMANN                                         MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR EDWARD E. WHITACRE, JR.
+       ELECT DIRECTOR ALAN L. BOECKMANN
+       ELECT DIRECTOR EDWARD E. WHITACRE, JR.
+1.11   ELECT DIRECTOR MICHAEL B. YANNEY                                         MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR MICHAEL B. YANNEY
+1.20   ELECT DIRECTOR VILMA S. MARTINEZ                                         MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR VILMA S. MARTINEZ
+1.30   ELECT DIRECTOR MARC F. RACICOT                                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR MARC F. RACICOT
+1.40   ELECT DIRECTOR ROY S. ROBERTS                                            MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR ROY S. ROBERTS
+1.50   ELECT DIRECTOR MATTHEW K. ROSE                                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR MATTHEW K. ROSE
+1.60   ELECT DIRECTOR MARC J. SHAPIRO                                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR MARC J. SHAPIRO
+1.70   ELECT DIRECTOR J.C. WATTS, JR.                                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR J.C. WATTS, JR.
+1.80   ELECT DIRECTOR ROBERT H. WEST                                            MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR ROBERT H. WEST
+1.90   ELECT DIRECTOR J. STEVEN WHISLER                                         MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR J. STEVEN WHISLER
+2.00   AMEND OMNIBUS STOCK PLAN                                                 MGMT           YES        FOR    FOR
+       AMEND OMNIBUS STOCK PLAN
+3.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+CADENCE DESIGN SYSTEMS, INC.                                CDN      127387108  6/15/04        ANNUAL
+1.10   ELECT DIRECTOR H. RAYMOND BINGHAM                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR H. RAYMOND BINGHAM
+1.20   ELECT DIRECTOR SUSAN L. BOSTROM                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR SUSAN L. BOSTROM
+1.30   ELECT DIRECTOR DONALD L. LUCAS                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR DONALD L. LUCAS
+1.40   ELECT DIRECTOR SEAN M. MALONEY                                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR SEAN M. MALONEY
+1.50   ELECT DIRECTOR ALBERTO SANGIOVANNI-VINCENTELLI                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR ALBERTO SANGIOVANNI-VINCENTELLI
+1.60   ELECT DIRECTOR GEORGE M. SCALISE                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR GEORGE M. SCALISE
+1.70   ELECT DIRECTOR JOHN B. SHOVEN                                            MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JOHN B. SHOVEN
+1.80   ELECT DIRECTOR ROGER S. SIBONI                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ROGER S. SIBONI
+1.90   ELECT DIRECTOR LIP-BU TAN                                                MGMT           YES        FOR    FOR
+       ELECT DIRECTOR LIP-BU TAN
+2.00   AMEND STOCK OPTION PLAN                                                  MGMT           YES        AGNST  AGNST
+       AMEND STOCK OPTION PLAN
+3.00   AMEND EMPLOYEE STOCK PURCHASE PLAN                                       MGMT           YES        FOR    FOR
+       AMEND EMPLOYEE STOCK PURCHASE PLAN
+4.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+CALLAWAY GOLF CO.                                           ELY      131193104  5/25/04        ANNUAL
+1.10   ELECT DIRECTOR RONALD A. DRAPEAU                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RONALD A. DRAPEAU
+1.20   ELECT DIRECTOR SAMUEL H. ARMACOST                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR SAMUEL H. ARMACOST
+1.30   ELECT DIRECTOR WILLIAM C. BAKER                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR WILLIAM C. BAKER
+1.40   ELECT DIRECTOR RONALD S. BEARD                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RONALD S. BEARD
+1.50   ELECT DIRECTOR JOHN C. CUSHMAN, III                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JOHN C. CUSHMAN, III
+1.60   ELECT DIRECTOR YOTARO KOBAYASHI                                          MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR YOTARO KOBAYASHI
+1.70   ELECT DIRECTOR RICHARD L. ROSENFIELD                                     MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RICHARD L. ROSENFIELD
+1.80   ELECT DIRECTOR ANTHONY S. THORNLEY                                       MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ANTHONY S. THORNLEY
+2.00   APPROVE OMNIBUS STOCK PLAN                                               MGMT           YES        AGNST  AGNST
+       APPROVE OMNIBUS STOCK PLAN
+3.00   AMEND EMPLOYEE STOCK PURCHASE PLAN                                       MGMT           YES        FOR    FOR
+       AMEND EMPLOYEE STOCK PURCHASE PLAN
+
+CATELLUS DEVELOPMENT CORP.                                  CDX      149111106  9/26/03        ANNUAL
+1.00   APPROVE MERGER AGREEMENT                                                 MGMT           NO
+       APPROVE MERGER AGREEMENT
+2.10   ELECT DIRECTOR JOSEPH F. ALIBRANDI                                       MGMT           NO
+       ELECT DIRECTOR THOMAS M. STEINBERG
+       ELECT DIRECTOR JOSEPH F. ALIBRANDI
+       ELECT DIRECTOR THOMAS M. STEINBERG
+2.11   ELECT DIRECTOR CORA M. TELLEZ                                            MGMT           NO
+       ELECT DIRECTOR CORA M. TELLEZ
+2.20   ELECT DIRECTOR STEPHEN F. BOLLENBACH                                     MGMT           NO
+       ELECT DIRECTOR STEPHEN F. BOLLENBACH
+2.30   ELECT DIRECTOR DARYL J. CARTER                                           MGMT           NO
+       ELECT DIRECTOR DARYL J. CARTER
+2.40   ELECT DIRECTOR RICHARD D. FARMAN                                         MGMT           NO
+       ELECT DIRECTOR RICHARD D. FARMAN
+2.50   ELECT DIRECTOR CHRISTINE GARVEY                                          MGMT           NO
+       ELECT DIRECTOR CHRISTINE GARVEY
+2.60   ELECT DIRECTOR WILLIAM M. KAHANE                                         MGMT           NO
+       ELECT DIRECTOR WILLIAM M. KAHANE
+2.70   ELECT DIRECTOR LESLIE D. MICHELSON                                       MGMT           NO
+       ELECT DIRECTOR LESLIE D. MICHELSON
+2.80   ELECT DIRECTOR DEANNA W. OPPENHEIMER                                     MGMT           NO
+       ELECT DIRECTOR DEANNA W. OPPENHEIMER
+2.90   ELECT DIRECTOR NELSON C. RISING                                          MGMT           NO
+       ELECT DIRECTOR NELSON C. RISING
+3.00   AMEND OMNIBUS STOCK PLAN                                                 MGMT           NO
+       AMEND OMNIBUS STOCK PLAN
+4.00   APPROVE OMNIBUS STOCK PLAN                                               MGMT           NO
+       APPROVE OMNIBUS STOCK PLAN
+5.00   SUBMIT SHAREHOLDER RIGHTS PLAN (POISON PILL) TO
+       SHAREHOLDER VOTE                                                         SHLDR          NO
+       SUBMIT SHAREHOLDER RIGHTS PLAN (POISON PILL) TO
+       SHAREHOLDER VOTE
+
+CENTURYTEL, INC.                                            CTL      156700106  5/6/04         ANNUAL
+1.10   ELECT DIRECTOR WILLIAM R. BOLES, JR.                                     MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR WILLIAM R. BOLES, JR.
+1.20   ELECT DIRECTOR W. BRUCE HANKS                                            MGMT           YES        FOR    FOR
+       ELECT DIRECTOR W. BRUCE HANKS
+1.30   ELECT DIRECTOR C.G. MELVILLE, JR.                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR C.G. MELVILLE, JR.
+1.40   ELECT DIRECTOR GLEN F. POST, III                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR GLEN F. POST, III
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+CIGNA CORP.                                                 CI       125509109  4/28/04        ANNUAL
+1.10   ELECT DIRECTOR ROBERT H. CAMPBELL                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ROBERT H. CAMPBELL
+1.20   ELECT DIRECTOR JANE E. HENNEY, M.D.                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JANE E. HENNEY, M.D.
+1.30   ELECT DIRECTOR CHARLES R. SHOEMATE                                       MGMT           YES        FOR    FOR
+       ELECT DIRECTOR CHARLES R. SHOEMATE
+1.40   ELECT DIRECTOR LOUIS W. SULLIVAN, M.D.                                   MGMT           YES        FOR    FOR
+       ELECT DIRECTOR LOUIS W. SULLIVAN, M.D.
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+CNF INC.                                                    CNF      12612W104  4/20/04        ANNUAL
+1.10   ELECT DIRECTOR W. KEITH KENNEDY, JR.                                     MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR W. KEITH KENNEDY, JR.
+1.20   ELECT DIRECTOR JOHN C. POPE                                              MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR JOHN C. POPE
+1.30   ELECT DIRECTOR GREGORY L. QUESNEL                                        MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR GREGORY L. QUESNEL
+1.40   ELECT DIRECTOR PETER W. STOTT                                            MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR PETER W. STOTT
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+COCA-COLA ENTERPRISES INC.                                  CCE      191219104  4/30/04        ANNUAL
+1.10   ELECT DIRECTOR JOHN R. ALM                                               MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JOHN R. ALM
+1.20   ELECT DIRECTOR J. TREVOR EYTON                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR J. TREVOR EYTON
+1.30   ELECT DIRECTOR GARY P. FAYARD                                            MGMT           YES        FOR    FOR
+       ELECT DIRECTOR GARY P. FAYARD
+1.40   ELECT DIRECTOR L. PHILLIP HUMANN                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR L. PHILLIP HUMANN
+1.50   ELECT DIRECTOR PAULA G. ROSPUT                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR PAULA G. ROSPUT
+2.00   APPROVE EXECUTIVE INCENTIVE BONUS PLAN                                   MGMT           YES        FOR    FOR
+       APPROVE EXECUTIVE INCENTIVE BONUS PLAN
+3.00   APPROVE OMNIBUS STOCK PLAN                                               MGMT           YES        AGNST  AGNST
+       APPROVE OMNIBUS STOCK PLAN
+4.00   AMEND DEFERRED COMPENSATION PLAN                                         MGMT           YES        FOR    FOR
+       AMEND DEFERRED COMPENSATION PLAN
+5.00   APPROVE EMPLOYEE STOCK PURCHASE PLAN                                     MGMT           YES        FOR    FOR
+       APPROVE EMPLOYEE STOCK PURCHASE PLAN
+6.00   APPROVE EMPLOYEE STOCK PURCHASE PLAN                                     MGMT           YES        FOR    FOR
+       APPROVE EMPLOYEE STOCK PURCHASE PLAN
+7.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+8.00   SUBMIT SEVERANCE AGREEMENT (CHANGE-IN-CONTROL) TO
+       SHAREHOLDER VOTE                                                         SHLDR          YES        FOR    AGNST
+       SUBMIT SEVERANCE AGREEMENT (CHANGE-IN-CONTROL) TO
+       SHAREHOLDER VOTE
+9.00   REPORT ON RECYCLING POLICY                                               SHLDR          YES        AGNST  FOR
+       REPORT ON RECYCLING POLICY
+
+COGNEX CORP.                                                CGNX     192422103  4/22/04        SPECIAL
+1.10   ELECT DIRECTOR ROBERT J. SHILLMAN                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ROBERT J. SHILLMAN
+1.20   ELECT DIRECTOR ANTHONY SUN                                               MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ANTHONY SUN
+
+COMERICA INC.                                               CMA      200340107  5/18/04        ANNUAL
+1.10   ELECT DIRECTOR RALPH W. BABB, JR.                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RALPH W. BABB, JR.
+1.20   ELECT DIRECTOR JAMES F. CORDES                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JAMES F. CORDES
+1.30   ELECT DIRECTOR PETER D. CUMMINGS                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR PETER D. CUMMINGS
+1.40   ELECT DIRECTOR TODD W. HERRICK                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR TODD W. HERRICK
+1.50   ELECT DIRECTOR WILLIAM P. VITITOE                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR WILLIAM P. VITITOE
+1.60   ELECT DIRECTOR KENNETH L. WAY                                            MGMT           YES        FOR    FOR
+       ELECT DIRECTOR KENNETH L. WAY
+2.00   APPROVE EMPLOYEE STOCK PURCHASE PLAN                                     MGMT           YES        FOR    FOR
+       APPROVE EMPLOYEE STOCK PURCHASE PLAN
+3.00   APPROVE NON-EMPLOYEE DIRECTOR OMNIBUS STOCK PLAN                         MGMT           YES        FOR    FOR
+       APPROVE NON-EMPLOYEE DIRECTOR OMNIBUS STOCK PLAN
+4.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+COMPUTER SCIENCES CORPORATION                               CSC      205363104  8/11/03        ANNUAL
+1.10   ELECT DIRECTOR IRVING W. BAILEY, II                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR WILLIAM P. RUTLEDGE
+       ELECT DIRECTOR IRVING W. BAILEY, II
+       ELECT DIRECTOR WILLIAM P. RUTLEDGE
+1.20   ELECT DIRECTOR STEPHEN L. BAUM                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR STEPHEN L. BAUM
+1.30   ELECT DIRECTOR RODNEY F. CHASE                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RODNEY F. CHASE
+1.40   ELECT DIRECTOR VAN B. HONEYCUTT                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR VAN B. HONEYCUTT
+1.50   ELECT DIRECTOR WILLIAM R. HOOVER                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR WILLIAM R. HOOVER
+1.60   ELECT DIRECTOR LEON J. LEVEL                                             MGMT           YES        FOR    FOR
+       ELECT DIRECTOR LEON J. LEVEL
+1.70   ELECT DIRECTOR THOMAS A. MCDONNELL                                       MGMT           YES        FOR    FOR
+       ELECT DIRECTOR THOMAS A. MCDONNELL
+1.80   ELECT DIRECTOR F. WARREN MCFARLAN                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR F. WARREN MCFARLAN
+1.90   ELECT DIRECTOR JAMES R. MELLOR                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JAMES R. MELLOR
+
+CONSOLIDATED EDISON, INC.                                   ED       209115104  5/17/04        ANNUAL
+1.10   ELECT DIRECTOR VINCENT A. CALARCO                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR FREDERIC V. SALERNO
+       ELECT DIRECTOR VINCENT A. CALARCO
+       ELECT DIRECTOR FREDERIC V. SALERNO
+1.11   ELECT DIRECTOR STEPHEN R. VOLK                                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR STEPHEN R. VOLK
+1.20   ELECT DIRECTOR GEORGE CAMPBELL, JR.                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR GEORGE CAMPBELL, JR.
+1.30   ELECT DIRECTOR GORDON J. DAVIS                                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR GORDON J. DAVIS
+1.40   ELECT DIRECTOR MICHAEL J. DEL GIUDICE                                    MGMT           YES        FOR    FOR
+       ELECT DIRECTOR MICHAEL J. DEL GIUDICE
+1.50   ELECT DIRECTOR JOAN S. FREILICH                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JOAN S. FREILICH
+1.60   ELECT DIRECTOR ELLEN V. FUTTER                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ELLEN V. FUTTER
+1.70   ELECT DIRECTOR SALLY HERNANDEZ-PINERO                                    MGMT           YES        FOR    FOR
+       ELECT DIRECTOR SALLY HERNANDEZ-PINERO
+1.80   ELECT DIRECTOR PETER W. LIKINS                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR PETER W. LIKINS
+1.90   ELECT DIRECTOR EUGENE R. MCGRATH                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR EUGENE R. MCGRATH
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+3.00   APPROVE EMPLOYEE STOCK PURCHASE PLAN                                     MGMT           YES        FOR    FOR
+       APPROVE EMPLOYEE STOCK PURCHASE PLAN
+4.00   INCREASE DISCLOSURE OF EXECUTIVE COMPENSATION                            SHLDR          YES        AGNST  FOR
+       INCREASE DISCLOSURE OF EXECUTIVE COMPENSATION
+
+COORS (ADOLPH) COMPANY                                      RKY      217016104  10/3/03        SPECIAL
+1.00   CHANGE STATE OF INCORPORATION FROM COLORADO TO
+       DELAWARE                                                                 MGMT           YES        FOR    FOR
+       CHANGE STATE OF INCORPORATION FROM COLORADO TO
+       DELAWARE
+2.00   ADJOURN MEETING                                                          MGMT           YES        FOR    FOR
+       ADJOURN MEETING
+
+CSX CORP.                                                   CSX      126408103  5/5/04         ANNUAL
+1.10   ELECT DIRECTOR E.E. BAILEY                                               MGMT           NO
+       ELECT DIRECTOR D.J. SHEPARD
+       ELECT DIRECTOR E.E. BAILEY
+       ELECT DIRECTOR D.J. SHEPARD
+1.11   ELECT DIRECTOR M.J. WARD                                                 MGMT           NO
+       ELECT DIRECTOR M.J. WARD
+1.20   ELECT DIRECTOR R.L. BURRUS, JR.                                          MGMT           NO
+       ELECT DIRECTOR R.L. BURRUS, JR.
+1.30   ELECT DIRECTOR E.J. KELLY, III                                           MGMT           NO
+       ELECT DIRECTOR E.J. KELLY, III
+1.40   ELECT DIRECTOR R.D. KUNISCH                                              MGMT           NO
+       ELECT DIRECTOR R.D. KUNISCH
+1.50   ELECT DIRECTOR S.J. MORCOTT                                              MGMT           NO
+       ELECT DIRECTOR S.J. MORCOTT
+1.60   ELECT DIRECTOR D.M. RATCLIFFE                                            MGMT           NO
+       ELECT DIRECTOR D.M. RATCLIFFE
+1.70   ELECT DIRECTOR C.E. RICE                                                 MGMT           NO
+       ELECT DIRECTOR C.E. RICE
+1.80   ELECT DIRECTOR W.C. RICHARDSON                                           MGMT           NO
+       ELECT DIRECTOR W.C. RICHARDSON
+1.90   ELECT DIRECTOR F.S. ROYAL, M.D.                                          MGMT           NO
+       ELECT DIRECTOR F.S. ROYAL, M.D.
+2.00   RATIFY AUDITORS                                                          MGMT           NO
+       RATIFY AUDITORS
+3.00   LIMIT EXECUTIVE COMPENSATION                                             SHLDR          NO
+       LIMIT EXECUTIVE COMPENSATION
+4.00   SUBMIT SHAREHOLDER RIGHTS PLAN (POISON PILL) TO
+       SHAREHOLDER VOTE                                                         SHLDR          NO
+       SUBMIT SHAREHOLDER RIGHTS PLAN (POISON PILL) TO
+       SHAREHOLDER VOTE
+5.00   LIMIT AWARDS TO EXECUTIVES                                               SHLDR          NO
+       LIMIT AWARDS TO EXECUTIVES
+
+CULLEN/FROST BANKERS, INC.                                  CFR      229899109  5/19/04        ANNUAL
+1.10   ELECT DIRECTOR ROYCE S. CALDWELL                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ROYCE S. CALDWELL
+1.20   ELECT DIRECTOR RICHARD W. EVANS, JR.                                     MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RICHARD W. EVANS, JR.
+1.30   ELECT DIRECTOR T.C. FROST                                                MGMT           YES        FOR    FOR
+       ELECT DIRECTOR T.C. FROST
+1.40   ELECT DIRECTOR PRESTON M. GEREN III                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR PRESTON M. GEREN III
+1.50   ELECT DIRECTOR KAREN E. JENNINGS                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR KAREN E. JENNINGS
+1.60   ELECT DIRECTOR RICHARD M. KLEBERG, III                                   MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RICHARD M. KLEBERG, III
+1.70   ELECT DIRECTOR HORACE WILKINS, JR.                                       MGMT           YES        FOR    FOR
+       ELECT DIRECTOR HORACE WILKINS, JR.
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+CVS CORPORATION                                             CVS      126650100  5/12/04        ANNUAL
+1.10   ELECT DIRECTOR W. DON CORNWELL                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR W. DON CORNWELL
+1.20   ELECT DIRECTOR THOMAS P. GERRITY                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR THOMAS P. GERRITY
+1.30   ELECT DIRECTOR STANLEY P. GOLDSTEIN                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR STANLEY P. GOLDSTEIN
+1.40   ELECT DIRECTOR MARIAN L. HEARD                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR MARIAN L. HEARD
+1.50   ELECT DIRECTOR WILLIAM H. JOYCE                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR WILLIAM H. JOYCE
+1.60   ELECT DIRECTOR TERRY R. LAUTENBACH                                       MGMT           YES        FOR    FOR
+       ELECT DIRECTOR TERRY R. LAUTENBACH
+1.70   ELECT DIRECTOR TERRENCE MURRAY                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR TERRENCE MURRAY
+1.80   ELECT DIRECTOR SHELI Z. ROSENBERG                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR SHELI Z. ROSENBERG
+1.90   ELECT DIRECTOR THOMAS M. RYAN                                            MGMT           YES        FOR    FOR
+       ELECT DIRECTOR THOMAS M. RYAN
+2.00   AMEND OMNIBUS STOCK PLAN                                                 MGMT           YES        FOR    FOR
+       AMEND OMNIBUS STOCK PLAN
+3.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+4.00   LIMIT EXECUTIVE COMPENSATION                                             SHLDR          YES        AGNST  FOR
+       LIMIT EXECUTIVE COMPENSATION
+
+DOVER CORP.                                                 DOV      260003108  4/20/04        ANNUAL
+1.10   ELECT DIRECTOR DAVID H. BENSON                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR MICHAEL B. STUBBS
+       ELECT DIRECTOR DAVID H. BENSON
+       ELECT DIRECTOR MICHAEL B. STUBBS
+1.20   ELECT DIRECTOR JEAN-PIERRE M. ERGAS                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JEAN-PIERRE M. ERGAS
+1.30   ELECT DIRECTOR KRISTIANE C. GRAHAM                                       MGMT           YES        FOR    FOR
+       ELECT DIRECTOR KRISTIANE C. GRAHAM
+1.40   ELECT DIRECTOR RONALD L. HOFFMAN                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RONALD L. HOFFMAN
+1.50   ELECT DIRECTOR JAMES L. KOLEY                                            MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JAMES L. KOLEY
+1.60   ELECT DIRECTOR RICHARD K. LOCHRIDGE                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RICHARD K. LOCHRIDGE
+1.70   ELECT DIRECTOR THOMAS L. REECE                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR THOMAS L. REECE
+1.80   ELECT DIRECTOR BERNARD G. RETHORE                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR BERNARD G. RETHORE
+1.90   ELECT DIRECTOR GARY L. ROUBOS                                            MGMT           YES        FOR    FOR
+       ELECT DIRECTOR GARY L. ROUBOS
+2.00   APPROVE OMNIBUS STOCK PLAN                                               MGMT           YES        FOR    FOR
+       APPROVE OMNIBUS STOCK PLAN
+3.00   OTHER BUSINESS                                                           MGMT           YES        AGNST  AGNST
+       OTHER BUSINESS
+
+EASTMAN KODAK CO.                                           EK       277461109  5/12/04        ANNUAL
+1.10   ELECT DIRECTOR WILLIAM H. HERNANDEZ                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR WILLIAM H. HERNANDEZ
+1.20   ELECT DIRECTOR HECTOR DE J. RUIZ                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR HECTOR DE J. RUIZ
+1.30   ELECT DIRECTOR LAURA D'ANDREA TYSON                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR LAURA D'ANDREA TYSON
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+3.00   APPROVE OMNIBUS STOCK PLAN                                               MGMT           YES        FOR    FOR
+       APPROVE OMNIBUS STOCK PLAN
+4.00   ADOPT CHEMICAL POLICY                                                    SHLDR          YES        AGNST  FOR
+       ADOPT CHEMICAL POLICY
+5.00   PROHIBIT AWARDS TO EXECUTIVES                                            SHLDR          YES        AGNST  FOR
+       PROHIBIT AWARDS TO EXECUTIVES
+
+ELECTRONIC DATA SYSTEMS CORP.                               EDS      285661104  5/25/04        ANNUAL
+1.10   ELECT DIRECTOR ROGER A. ENRICO                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ROGER A. ENRICO
+1.20   ELECT DIRECTOR ELLEN M. HANCOCK                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ELLEN M. HANCOCK
+1.30   ELECT DIRECTOR C. ROBERT KIDDER                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR C. ROBERT KIDDER
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+3.00   DECLASSIFY THE BOARD OF DIRECTORS                                        SHLDR          YES        FOR    AGNST
+       DECLASSIFY THE BOARD OF DIRECTORS
+4.00   SUBMIT SHAREHOLDER RIGHTS PLAN (POISON PILL) TO
+       SHAREHOLDER VOTE                                                         SHLDR          YES        FOR    AGNST
+       SUBMIT SHAREHOLDER RIGHTS PLAN (POISON PILL) TO
+       SHAREHOLDER VOTE
+5.00   AMEND VOTE REQUIREMENTS TO AMEND
+       ARTICLES/BYLAWS/CHARTER                                                  SHLDR          YES        FOR    AGNST
+       AMEND VOTE REQUIREMENTS TO AMEND
+       ARTICLES/BYLAWS/CHARTER
+
+EOG RESOURCES, INC.                                         EOG      26875P101  5/4/04         ANNUAL
+1.10   ELECT DIRECTOR GEORGE A. ALCORN                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR GEORGE A. ALCORN
+1.20   ELECT DIRECTOR CHARLES R. CRISP                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR CHARLES R. CRISP
+1.30   ELECT DIRECTOR MARK G. PAPA                                              MGMT           YES        FOR    FOR
+       ELECT DIRECTOR MARK G. PAPA
+1.40   ELECT DIRECTOR EDMUND P. SEGNER, III                                     MGMT           YES        FOR    FOR
+       ELECT DIRECTOR EDMUND P. SEGNER, III
+1.50   ELECT DIRECTOR DONALD F. TEXTOR                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR DONALD F. TEXTOR
+1.60   ELECT DIRECTOR FRANK G. WISNER                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR FRANK G. WISNER
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+3.00   AMEND OMNIBUS STOCK PLAN                                                 MGMT           YES        FOR    FOR
+       AMEND OMNIBUS STOCK PLAN
+4.00   OTHER BUSINESS                                                           MGMT           YES        AGNST  AGNST
+       OTHER BUSINESS
+
+EQUITY OFFICE PROPERTIES TRUST                              EOP      294741103  5/19/04        ANNUAL
+1.10   ELECT DIRECTOR THOMAS E. DOBROWSKI                                       MGMT           YES        FOR    FOR
+       ELECT DIRECTOR THOMAS E. DOBROWSKI
+1.20   ELECT DIRECTOR WILLIAM M. GOODYEAR                                       MGMT           YES        FOR    FOR
+       ELECT DIRECTOR WILLIAM M. GOODYEAR
+1.30   ELECT DIRECTOR JAMES D. HARPER, JR.                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JAMES D. HARPER, JR.
+1.40   ELECT DIRECTOR RICHARD D. KINCAID                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RICHARD D. KINCAID
+1.50   ELECT DIRECTOR DAVID K. MCKOWN                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR DAVID K. MCKOWN
+1.60   ELECT DIRECTOR SHELI Z. ROSENBERG                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR SHELI Z. ROSENBERG
+1.70   ELECT DIRECTOR EDWIN N. SIDMAN                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR EDWIN N. SIDMAN
+1.80   ELECT DIRECTOR J. H.W.R. VAN DER VLIST                                   MGMT           YES        FOR    FOR
+       ELECT DIRECTOR J. H.W.R. VAN DER VLIST
+1.90   ELECT DIRECTOR SAMUEL ZELL                                               MGMT           YES        FOR    FOR
+       ELECT DIRECTOR SAMUEL ZELL
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+EQUITY RESIDENTIAL                                          EQR      29476L107  5/28/04        ANNUAL
+1.10   ELECT DIRECTOR JOHN W. ALEXANDER                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR B. JOSEPH WHITE
+       ELECT DIRECTOR JOHN W. ALEXANDER
+       ELECT DIRECTOR B. JOSEPH WHITE
+1.11   ELECT DIRECTOR SAMUEL ZELL                                               MGMT           YES        FOR    FOR
+       ELECT DIRECTOR SAMUEL ZELL
+1.20   ELECT DIRECTOR CHARLES L. ATWOOD                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR CHARLES L. ATWOOD
+1.30   ELECT DIRECTOR BRUCE W. DUNCAN                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR BRUCE W. DUNCAN
+1.40   ELECT DIRECTOR STEPHEN O. EVANS                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR STEPHEN O. EVANS
+1.50   ELECT DIRECTOR JAMES D. HARPER, JR.                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JAMES D. HARPER, JR.
+1.60   ELECT DIRECTOR BOONE A. KNOX                                             MGMT           YES        FOR    FOR
+       ELECT DIRECTOR BOONE A. KNOX
+1.70   ELECT DIRECTOR DESIREE G. ROGERS                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR DESIREE G. ROGERS
+1.80   ELECT DIRECTOR SHELI Z. ROSENBERG                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR SHELI Z. ROSENBERG
+1.90   ELECT DIRECTOR GERALD A. SPECTOR                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR GERALD A. SPECTOR
+2.00   AMEND ARTICLES/BYLAWS/CHARTER TO REMOVE
+       ANTITAKEOVER PROVISION(S)                                                MGMT           YES        FOR    FOR
+       AMEND ARTICLES/BYLAWS/CHARTER TO REMOVE
+       ANTITAKEOVER PROVISION(S)
+3.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+ETHAN ALLEN INTERIORS INC.                                  ETH      297602104  11/17/03       ANNUAL
+1.00   ELECT DIRECTOR FRANK G. WISNER                                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR FRANK G. WISNER
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+FISERV, INC.                                                FISV     337738108  4/6/04         ANNUAL
+1.10   ELECT DIRECTOR K.R. JENSEN                                               MGMT           YES        FOR    FOR
+       ELECT DIRECTOR K.R. JENSEN
+1.20   ELECT DIRECTOR K.M. ROBAK                                                MGMT           YES        FOR    FOR
+       ELECT DIRECTOR K.M. ROBAK
+1.30   ELECT DIRECTOR T.C. WERTHEIMER                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR T.C. WERTHEIMER
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+3.00   AMEND OMNIBUS STOCK PLAN                                                 MGMT           YES        FOR    FOR
+       AMEND OMNIBUS STOCK PLAN
+
+FLUOR CORP.                                                 FLR      343412102  4/28/04        ANNUAL
+1.10   ELECT DIRECTOR JAMES T. HACKETT                                          MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR JAMES T. HACKETT
+1.20   ELECT DIRECTOR KENT KRESA                                                MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR KENT KRESA
+1.30   ELECT DIRECTOR ROBIN W. RENWICK                                          MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR ROBIN W. RENWICK
+1.40   ELECT DIRECTOR MARTHA R. SEGER                                           MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR MARTHA R. SEGER
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+3.00   AMEND NON-EMPLOYEE DIRECTOR RESTRICTED STOCK PLAN                        MGMT           YES        FOR    FOR
+       AMEND NON-EMPLOYEE DIRECTOR RESTRICTED STOCK PLAN
+
+FPL GROUP, INC.                                             FPL      302571104  5/21/04        ANNUAL
+1.10   ELECT DIRECTOR H. JESSE ARNELLE                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR FRANK G. ZARB
+       ELECT DIRECTOR H. JESSE ARNELLE
+       ELECT DIRECTOR FRANK G. ZARB
+1.20   ELECT DIRECTOR SHERRY S. BARRAT                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR SHERRY S. BARRAT
+1.30   ELECT DIRECTOR ROBERT M. BEALL, II                                       MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ROBERT M. BEALL, II
+1.40   ELECT DIRECTOR J. HYATT BROWN                                            MGMT           YES        FOR    FOR
+       ELECT DIRECTOR J. HYATT BROWN
+1.50   ELECT DIRECTOR JAMES L. CAMAREN                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JAMES L. CAMAREN
+1.60   ELECT DIRECTOR LEWIS HAY III                                             MGMT           YES        FOR    FOR
+       ELECT DIRECTOR LEWIS HAY III
+1.70   ELECT DIRECTOR FREDERIC V. MALEK                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR FREDERIC V. MALEK
+1.80   ELECT DIRECTOR MICHAEL H. THAMAN                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR MICHAEL H. THAMAN
+1.90   ELECT DIRECTOR PAUL R. TREGURTHA                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR PAUL R. TREGURTHA
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+3.00   AMEND OMNIBUS STOCK PLAN                                                 MGMT           YES        FOR    FOR
+       AMEND OMNIBUS STOCK PLAN
+4.00   APPROVE EXECUTIVE INCENTIVE BONUS PLAN                                   MGMT           YES        FOR    FOR
+       APPROVE EXECUTIVE INCENTIVE BONUS PLAN
+5.00   APPROVE EXECUTIVE INCENTIVE BONUS PLAN                                   MGMT           YES        FOR    FOR
+       APPROVE EXECUTIVE INCENTIVE BONUS PLAN
+6.00   INCREASE AUTHORIZED COMMON STOCK                                         MGMT           YES        FOR    FOR
+       INCREASE AUTHORIZED COMMON STOCK
+
+FREMONT GENERAL CORP.                                       FMT      357288109  5/20/04        ANNUAL
+1.10   ELECT DIRECTOR JAMES A. MCINTYRE                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JAMES A. MCINTYRE
+1.20   ELECT DIRECTOR LOUIS J. RAMPINO                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR LOUIS J. RAMPINO
+1.30   ELECT DIRECTOR WAYNE R. BAILEY                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR WAYNE R. BAILEY
+1.40   ELECT DIRECTOR THOMAS W. HAYES                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR THOMAS W. HAYES
+1.50   ELECT DIRECTOR ROBERT F. LEWIS                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR ROBERT F. LEWIS
+1.60   ELECT DIRECTOR RUSSELL K. MAYERFELD                                      MGMT           YES        FOR    FOR
+       ELECT DIRECTOR RUSSELL K. MAYERFELD
+1.70   ELECT DIRECTOR DICKINSON C. ROSS                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR DICKINSON C. ROSS
+2.00   APPROVE EXECUTIVE INCENTIVE BONUS PLAN                                   MGMT           YES        FOR    FOR
+       APPROVE EXECUTIVE INCENTIVE BONUS PLAN
+3.00   APPROVE EXECUTIVE INCENTIVE BONUS PLAN                                   MGMT           YES        FOR    FOR
+       APPROVE EXECUTIVE INCENTIVE BONUS PLAN
+4.00   APPROVE RETIREMENT PLAN                                                  MGMT           YES        FOR    FOR
+       APPROVE RETIREMENT PLAN
+5.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+GREAT LAKES CHEMICAL CORP.                                  GLK      390568103  5/6/04         ANNUAL
+1.10   ELECT DIRECTOR JAMES W. CROWNOVER                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JAMES W. CROWNOVER
+1.20   ELECT DIRECTOR LOUIS E. LATAIF                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR LOUIS E. LATAIF
+1.30   ELECT DIRECTOR MACK G. NICHOLS                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR MACK G. NICHOLS
+2.00   SEEK SALE OF COMPANY/ASSETS                                              SHLDR          YES        AGNST  FOR
+       SEEK SALE OF COMPANY/ASSETS
+
+HERMAN MILLER, INC.                                         MLHR     600544100  9/29/03        ANNUAL
+1.10   ELECT DIRECTOR DOUGLAS D. FRENCH                                         MGMT           YES        FOR    FOR
+       ELECT DIRECTOR DOUGLAS D. FRENCH
+1.20   ELECT DIRECTOR JAMES R. KACKLEY                                          MGMT           YES        FOR    FOR
+       ELECT DIRECTOR JAMES R. KACKLEY
+1.30   ELECT DIRECTOR THOMAS C. PRATT                                           MGMT           YES        FOR    FOR
+       ELECT DIRECTOR THOMAS C. PRATT
+1.40   ELECT DIRECTOR MICHAEL A. VOLKEMA                                        MGMT           YES        FOR    FOR
+       ELECT DIRECTOR MICHAEL A. VOLKEMA
+2.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR
+       RATIFY AUDITORS
+
+INGERSOLL-RAND COMPANY LIMITED                              IR                  6/2/04         ANNUAL
+1.10   ELECT DIRECTOR P.C. GODSOE                                               MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR P.C. GODSOE
+1.20   ELECT DIRECTOR C.J. HORNER                                               MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR C.J. HORNER
+1.30   ELECT DIRECTOR O.R. SMITH                                                MGMT           YES        AGNST  AGNST
+       ELECT DIRECTOR O.R. SMITH
+2.00   ADOPTION OF AMENDED AND RESTATED INCENTIVE STOCK
+       PLAN OF 1998.                                                            MGMT           YES        AGNST  AGNST
+       ADOPTION OF AMENDED AND RESTATED INCENTIVE STOCK
+       PLAN OF 1998.
+3.00   APPROVAL OF AMENDED AND RESTATED BYE-LAWS.                               MGMT           YES        FOR    FOR
+       APPROVAL OF AMENDED AND RESTATED BYE-LAWS.
+4.00   RATIFY AUDITORS                                                          MGMT           YES        FOR    FOR

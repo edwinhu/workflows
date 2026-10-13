@@ -1,0 +1,1031 @@
+<SEC-DOCUMENT>0000897101-12-001459.txt : 20120828
+<SEC-HEADER>0000897101-12-001459.hdr.sgml : 20120828
+<ACCEPTANCE-DATETIME>20120828135534
+ACCESSION NUMBER:		0000897101-12-001459
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120828
+DATE AS OF CHANGE:		20120828
+EFFECTIVENESS DATE:		20120828
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CLEARWATER INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000811161
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MN
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05038
+		FILM NUMBER:		121059404
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2000 WELLS FARGO PLACE
+		STREET 2:		30 EAST 7TH STREET
+		CITY:			ST PAUL
+		STATE:			MN
+		ZIP:			55101-4930
+		BUSINESS PHONE:		6122280935
+
+	MAIL ADDRESS:	
+		STREET 1:		2000 WELLS FARGO PLACE
+		STREET 2:		30 EAST 7TH STREET
+		CITY:			ST PAUL
+		STATE:			MN
+		ZIP:			55101
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000697
+<SERIES-NAME>Clearwater Core Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002050
+<CLASS-CONTRACT-NAME>Clearwater Core Equity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>QWVPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000698
+<SERIES-NAME>Clearwater Small Companies Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002051
+<CLASS-CONTRACT-NAME>Clearwater Small Companies Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>QWVOX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000699
+<SERIES-NAME>Clearwater Tax-Exempt Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002052
+<CLASS-CONTRACT-NAME>Clearwater Tax-Exempt Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>QWVQX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000024756
+<SERIES-NAME>CLEARWATER INTERNATIONAL FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073549
+<CLASS-CONTRACT-NAME>CLEARWATER INTERNATIONAL FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>QCVAX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>clearwater123289_npx.htm
+<DESCRIPTION>FORM N-PX
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+<P STYLE="margin: 0"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>FUND NAME:&nbsp;&nbsp;&nbsp;CLEARWATER CORE EQUITY
+(Knightsbridge)&nbsp;</B></FONT></P>
+
+<P STYLE="margin: 0">&nbsp;</P>
+
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 8pt Arial Unicode MS">
+<TR>
+    <TD COLSPAN="9" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>CAREFUSION
+    CORPORATION</b></FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD COLSPAN="3" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Security:</b></FONT></TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">14170T101</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD COLSPAN="3" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Meeting
+    Type:</b></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD COLSPAN="3" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Ticker:</b></FONT></TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">CFN</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD COLSPAN="3" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Meeting
+    Date:</b></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">02-Nov-2011</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD COLSPAN="3" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>ISIN</b></FONT></TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">US14170T1016</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD COLSPAN="3" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Vote
+    Deadline Date:</b></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">01-Nov-2011</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD COLSPAN="3" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Agenda</b></FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">933508561</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD COLSPAN="3" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Total
+    Ballot Shares:</b></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">1964030</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD COLSPAN="3" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Last
+    Vote Date:</b></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">11-Oct-2011</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Item</b></FONT></TD>
+    <TD COLSPAN="4" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Proposal</b></FONT></TD>
+    <TD STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Recommendation</b></FONT></TD>
+    <TD COLSPAN="2" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>For</b></FONT></TD>
+    <TD STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Against</b></FONT></TD>
+    <TD COLSPAN="2" STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Abstain</b></FONT></TD>
+    <TD STYLE="font-size: 7pt;  vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><b>Take
+    No Action</b></FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">1</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ELECTION
+    OF DIRECTOR: JACQUELINE B. KOSECOFF,<BR> PH.D.</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">78000</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">2</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ELECTION
+    OF DIRECTOR: MICHAEL D. O&#8217;HALLERAN</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">78000</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ELECTION
+    OF DIRECTOR: ROBERT P. WAYMAN</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">78000</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">RATIFICATION
+    OF THE APPOINTMENT OF ERNST &amp;<BR> YOUNG LLP AS OUR INDEPENDENT REGISTERED<BR> PUBLIC ACCOUNTING FIRM FOR THE FISCAL YEAR<BR>
+    ENDING JUNE 30, 2012.</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">78000</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">5</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">APPROVAL
+    OF A NON-BINDING ADVISORY VOTE ON<BR> THE COMPENSATION OF OUR NAMED EXECUTIVE<BR> OFFICERS.</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">78000</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">0</FONT></TD>
+    <TD STYLE="font: 7pt Arial, Helvetica, Sans-Serif; vertical-align: bottom"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+</TABLE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Arial, Helvetica, Sans-Serif">
+<TR STYLE="vertical-align: middle">
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>FUND NAME:</B></FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD COLSPAN="12" STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>CLEARWATER CORE EQUITY (Osterweis)</B></FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: middle">
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-weight: bold"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: middle">
+    <TD NOWRAP STYLE="font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>Issuer
+    Name</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 35pt; font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>Ticker</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 56pt; font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>CUSIP</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 73pt; font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>ISIN</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 69pt; font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>Meeting
+    Date</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 67pt; font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>Item
+    Number</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>Proposal</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>Meeting
+    Type</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>Proponent</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>Vote
+    Instruction</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>For/Against
+    Mngmt Recommendation</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; vertical-align: bottom; text-align: center"><FONT STYLE="font: 6 Times New Roman, Times, Serif"><B>Shares
+    Voted</B></FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA, Inc.</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">12673P105</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">US12673P1057</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;03-Aug-11</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: bottom; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">1</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Elect Director Raymond J. Bromark</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">39535</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA, Inc.</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">12673P105</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">US12673P1057</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;03-Aug-11</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: bottom; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">2</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Elect Director Gary J. Fernandes</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">39535</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA, Inc.</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">12673P105</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">US12673P1057</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;03-Aug-11</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: bottom; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">3</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Elect Director Rohit Kapoor</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">39535</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA, Inc.</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">12673P105</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">US12673P1057</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;03-Aug-11</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: bottom; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">4</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Elect Director Kay Koplovitz</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">39535</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA, Inc.</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">12673P105</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">US12673P1057</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;03-Aug-11</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: bottom; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">5</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Elect Director Christopher B. Lofgren</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">39535</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA, Inc.</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">12673P105</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">US12673P1057</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;03-Aug-11</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: bottom; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">6</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Elect Director William E. McCracken</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">39535</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA, Inc.</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">12673P105</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">US12673P1057</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;03-Aug-11</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: bottom; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">7</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Elect Director Richard Sulpizio</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">39535</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA, Inc.</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">12673P105</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">US12673P1057</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;03-Aug-11</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: bottom; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">8</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Elect Director Laura S. Unger</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">39535</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA, Inc.</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">12673P105</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">US12673P1057</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;03-Aug-11</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: bottom; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">9</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Elect Director Arthur F. Weinbach</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">39535</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA, Inc.</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">12673P105</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">US12673P1057</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;03-Aug-11</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: bottom; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">10</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Elect Director Renato (Ron) Zambonini</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">39535</FONT></TD></TR>
+<TR>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA, Inc.</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">CA</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">12673P105</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">US12673P1057</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;03-Aug-11</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: bottom; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">11</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Ratify Auditors</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font: 6 Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 6 Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: top; text-align: right"><FONT STYLE="font: 6 Times New Roman, Times, Serif">39535</FONT></TD></TR>
+</TABLE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 11pt Calibri, Helvetica, Sans-Serif">
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>FUND NAME:</B></FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD COLSPAN="20" STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>CLEARWATER CORE EQUITY
+    (Heartland)</B></FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="width: 48pt; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="width: 14pt; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="width: 71pt; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="width: 14pt; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="width: 90pt; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>Company Name</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>Ticker</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>CUSIP</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>Country of Origin</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>Record Date</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>Meeting Date</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>Proposal Number</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>Proposal Description</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>Proponent</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>Mgmt</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>Vote Decision</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>For Or Against
+    Mgmt</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>&nbsp;</B></FONT></TD>
+    <TD NOWRAP STYLE="font-weight: bold; text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif"><B>Shares Listed</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB Ltd.</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">375204</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">IN</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3/20/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4/26/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">1</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Accounts and Reports</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">36100</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB Ltd.</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">375204</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">IN</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3/20/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4/26/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">2</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Remuneration Report</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">36100</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB Ltd.</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">375204</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">IN</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3/20/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4/26/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Ratification of Board and Management Acts</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">36100</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB Ltd.</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">375204</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">IN</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3/20/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4/26/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Allocation of Profits/Dividends</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">36100</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB Ltd.</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">375204</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">IN</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3/20/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4/26/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">5</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Elect Roger Agnelli</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">36100</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB Ltd.</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">375204</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">IN</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3/20/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4/26/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">6</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Elect Louis Hughes</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">36100</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB Ltd.</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">375204</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">IN</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3/20/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4/26/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">7</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Elect Hans M?rki</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">36100</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB Ltd.</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">375204</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">IN</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3/20/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4/26/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">8</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Elect Michel de Rosen</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">36100</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB Ltd.</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">375204</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">IN</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3/20/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4/26/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">9</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Elect Michael Treschow</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">36100</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB Ltd.</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">375204</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">IN</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3/20/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4/26/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">10</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Elect Jacob Wallenberg</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">36100</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB Ltd.</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">375204</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">IN</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3/20/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4/26/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">11</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Elect Ying Yeh</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">36100</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB Ltd.</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">ABB</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">375204</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">IN</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">3/20/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">4/26/2012 0:00</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">12</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: left"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Elect Hubertus von Gr?nberg</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: center"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">36100</FONT></TD></TR>
+</TABLE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 9pt Arial, Helvetica, Sans-Serif">
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD>
+    <TD STYLE="font-size: 10pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Fund Name</FONT></TD>
+    <TD COLSPAN=10 STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">CLEARWATER INTERNATIONAL (AXA)<BR><BR></FONT></TD>
+
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Issuer Name</FONT></TD>
+    <TD STYLE="font-size: 10pt" nowrap><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Ticker</FONT></TD>
+    <TD STYLE="font-size: 10pt" nowrap><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Meeting Date</FONT></TD>
+    <TD STYLE="font-size: 10pt" nowrap><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Country</FONT></TD>
+    <TD STYLE="font-size: 10pt" nowrap><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Security ID</FONT></TD>
+    <TD STYLE="font-size: 10pt" nowrap><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Meeting Type</FONT></TD>
+    <TD STYLE="font-size: 10pt" nowrap><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp;</FONT></TD>
+    <TD NOWRAP STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Record Date</FONT></TD>
+    <TD STYLE="font-size: 10pt" nowrap><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp;</FONT></TD>
+    <TD NOWRAP STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Item Number</FONT></TD>
+    <TD STYLE="font-size: 10pt" nowrap><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Proposal</FONT></TD>
+    <TD STYLE="font-size: 10pt" nowrap><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Proponent</FONT></TD>
+    <TD STYLE="font-size: 10pt" nowrap><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Mgmt Rec</FONT></TD>
+    <TD STYLE="font-size: 10pt" nowrap><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp;</FONT></TD>
+    <TD NOWRAP STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Vote Instruction</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Voestalpine AG</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">VOE</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">06-Jul-11</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Austria</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">A9101Y103</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: right" nowrap><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;26-Jun-11</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp; 1</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Receive Financial Statements and Statutory Reports (Non-Voting)</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font-size: 10pt"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Voestalpine AG</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">VOE</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">06-Jul-11</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Austria</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">A9101Y103</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Annual</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="text-align: right"><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;26-Jun-11</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;&nbsp; 2</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Approve Allocation of Income</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font: 7pt Times New Roman, Times, Serif">For</FONT></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

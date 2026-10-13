@@ -1,0 +1,142 @@
+<SEC-HEADER>0001324443-08-000067.hdr.sgml : 20080826
+<ACCEPTANCE-DATETIME>20080826140057
+ACCESSION NUMBER:		0001324443-08-000067
+CONFORMED SUBMISSION TYPE:	N-PX
+CONFORMED PERIOD OF REPORT:	20080630
+FILED AS OF DATE:		20080826
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			American Independence Funds Trust
+		CENTRAL INDEX KEY:			0001324443
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001324443
+<SERIES-ID>S000011459
+<SERIES-NAME>American Independence Funds International Equity Fund
+</SERIES>
+<SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx0630082.htm
+<DESCRIPTION>NPX063008_PART_2
+<TEXT>
+
+<HTML>
+</TABLE><BR>
+<P align="left">
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">--------------------------------------------------------------------------------</FONT></P>
+<TABLE border=0 cellspacing=0 cellpadding=0>
+<TR valign="bottom">
+	<TD align=left width=36% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">ESSILOR INTERNATIONAL</FONT>&nbsp;
+	</TD>
+	<TD align=left width=23% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=13% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Ticker:</FONT>&nbsp;
+	</TD>
+	<TD align=center width=23% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">EF</FONT>&nbsp;
+	</TD>
+	<TD align=right width=35% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Security ID: F31668100</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=36% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Meeting Date: MAY 14, 2008</FONT>&nbsp;
+	</TD>
+	<TD align=right width=35% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Meeting Type: Annual/Special</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=36% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Record Date: MAY 9, 2008</FONT>&nbsp;
+	</TD>
+	<TD align=left width=23% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=12% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">#</FONT>&nbsp;
+	</TD>
+	<TD align=left width=31% nowrap colspan=2>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Proposal</FONT>&nbsp;
+	</TD>
+	<TD align=left width=23% nowrap>
+&nbsp;
+	</TD>
+	<TD align=right width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Mgt Rec</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Vote Cast</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Sponsor</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left width=5% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">1</FONT>&nbsp;
+	</TD>
+	<TD align=left width=54% nowrap colspan=3>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Approve Financial Statements and</FONT>&nbsp;
+	</TD>
+	<TD align=right width=12% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">For</FONT>&nbsp;
+	</TD>
+	<TD align=left width=13% nowrap>
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">Management</FONT>&nbsp;
+	</TD>
+</TR>
+</TABLE><BR>
+<P align="left">
+<FONT size=2 face="CourierNewPSMT,Courier New,Courier,monospace">========================= NESTEGG DOW JONES U.S. 2040 ==========================</FONT></P>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

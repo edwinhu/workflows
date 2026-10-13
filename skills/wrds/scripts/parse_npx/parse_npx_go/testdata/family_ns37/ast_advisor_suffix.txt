@@ -1,0 +1,107 @@
+<SEC-DOCUMENT>0000067590-06-000187.txt : 20060829
+<SEC-HEADER>0000067590-06-000187.hdr.sgml : 20060829
+<ACCEPTANCE-DATETIME>20060829134512
+ACCESSION NUMBER:		0000067590-06-000187
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060829
+DATE AS OF CHANGE:		20060829
+EFFECTIVENESS DATE:		20060829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			STRATEGIC PARTNERS MUTUAL FUNDS, INC.
+		CENTRAL INDEX KEY:			0001035018
+		IRS NUMBER:				061483806
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08085
+		FILM NUMBER:		061061663
+
+	BUSINESS ADDRESS:	
+		STREET 1:		100 MULBERRY STREET
+		STREET 2:		GATEWAY CENTER THREE, 4TH FLOOR
+		CITY:			NEWARK
+		STATE:			NJ
+		ZIP:			07102
+		BUSINESS PHONE:		973-802-2698
+
+	MAIL ADDRESS:	
+		STREET 1:		100 MULBERRY STREET
+		STREET 2:		GATEWAY CENTER THREE, 4TH FLOOR
+		CITY:			NEWARK
+		STATE:			NJ
+		ZIP:			07102
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AMERICAN SKANDIA ADVISOR FUNDS INC
+		DATE OF NAME CHANGE:	19970305
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>astnpx2006final.txt
+<DESCRIPTION>AST N-PX
+<TEXT>
+                                    FORM N-PX
+
+                     ANNUAL REPORT OF PROXY VOTING RECORD OF
+                    REGISTERED MANAGEMENT INVESTMENT COMPANY
+
+                  Investment Company Act file number 811-05186
+
+                             American Skandia Trust
+
+               (Exact name of registrant as specified in charter)
+
+=========== AST DEAM SMALL-CAP GROWTH PORTFOLIO - ADVISOR: DEUTSCHE ============
+===========                    ASSET MANAGEMENT                     ============
+
+
+AAR CORP.
+
+Ticker:       AIR            Security ID:  000361105
+Meeting Date: OCT 19, 2005   Meeting Type: Annual
+Record Date:  AUG 22, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Ronald R. Fogleman        For       For        Management
+1.2   Elect  Director Ronald B. Woodard         For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Amend Non-Employee Director Omnibus Stock For       Against    Management
+      Plan
+
+
+
+================ AST MFS GLOBAL EQUITY PORTFOLIO - ADVISOR: MFS ================
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 9, 2006    Meeting Type: Annual
+Record Date:  MAR 10, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Linda G. Alvarado          For       For        Management
+1.2   Elect Director Edward M. Liddy            For       For        Management
+1.3   Elect Director Robert S. Morrison         For       For        Management
+1.4   Elect Director Aulana L. Peters           For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Declassify the Board of Directors         For       For        Management
+4     Performance-Based                         Against   Against    Shareholder
+5     Adopt Animal Welfare Policy               Against   Against    Shareholder
+6     Implement China Principles                Against   Against    Shareholder
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

@@ -1,0 +1,69 @@
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ETFis Series Trust I
+		CENTRAL INDEX KEY:			0001559109
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22819
+		FILM NUMBER:		151099512
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001559109
+<SERIES-ID>S000045418
+<SERIES-NAME>InfraCap MLP ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000141421
+<CLASS-CONTRACT-NAME>InfraCap MLP ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>AMZA
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>e66016npx.htm
+<DESCRIPTION>FORM N-PX
+<TEXT>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center">================================ INFRACAP
+MLP ETF ================================</P>
+<TABLE BORDER="0" CELLPADDING="2" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+<tr style="vertical-align: middle; background-color: silver">
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: center; width: 380pt">Issuer of Portfolio Security</td>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center; border-left-color: Black; border-left-width: 1pt; width: 50pt">Exchange Ticker Symbol</td>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center; border-left-color: Black; border-left-width: 1pt; width: 61pt">CUSIP #</td>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center; border-left-color: Black; border-left-width: 1pt; width: 66pt">Shareholder Meeting Date</td>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center; border-left-color: Black; border-left-width: 1pt; width: 198pt">Summary of Matter Voted On</td>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center; border-left-color: Black; border-left-width: 1pt; width: 66pt">Who Proposed Matter: Issuer / Shareholder</td>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center; border-left-color: Black; border-left-width: 1pt; width: 59pt">Whether Fund Cast Vote on Matter</td>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center; border-left-color: Black; border-left-width: 1pt; width: 72pt">Fund's Vote For or Against Proposal, or Abstain; For or Withhold Regarding Election of Directors&nbsp;&nbsp;</td>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center; border-left-color: Black; border-left-width: 1pt; width: 72pt">Whether Vote Was For or Against Management</td></tr>
+<tr style="vertical-align: middle">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 1pt solid; border-top-color: Black; border-top-width: 0.5pt">Atlas Pipeline Partners, L.P.&nbsp;</td>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">APL</td>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt; text-align: right">49392103</td>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: right; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">2/20/2015</td>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Approve Merger Agreement</td>
+    <TD STYLE="border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Issuer</td>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Yes</td>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">For</td>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt; border-left-color: Black; border-left-width: 0.5pt">For</td></tr>
+<tr style="vertical-align: middle">
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 1pt solid; border-top-color: Black; border-top-width: 0.5pt">Atlas Pipeline Partners, L.P.&nbsp;</td>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">APL</td>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt; text-align: right">49392103</td>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: right; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">2/20/2015</td>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Advisory Vote on Golden Parachutes</td>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Issuer</td>
+    <TD STYLE="border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-left-color: Black; border-top-width: 0.5pt; border-left-width: 0.5pt">Yes</td>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">For</td>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 0.5pt solid; border-top-color: Black; border-top-width: 0.5pt; border-left-color: Black; border-left-width: 0.5pt">For</td></tr>
+</table>

@@ -1,0 +1,107 @@
+		COMPANY CONFORMED NAME:			FIDELITY DEVONSHIRE TRUST
+		CENTRAL INDEX KEY:			0000035341
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fidstrucmidcapv_05649n-512.htm
+<TEXT>
+<html>
+   <body><FONT size="2" face="arial">
+         <p align="center" style="font-weight: bold">FORM N-PX</p>
+         <p align="center" style="font-weight: bold">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY</p><br><br><p>INVESTMENT COMPANY ACT FILE NUMBER: 811-01352</p>
+         <p>EXACT NAME OF REGISTRANT AS SPECIFIED IN CHARTER: Fidelity Devonshire Trust</p>
+         <p>Fund Name: Fidelity Structured Mid Cap Value Fund</p>
+         <p>82 DEVONSHIRE STREET, BOSTON, MA 02109<br> 	(ADDRESS OF PRINCIPAL EXECUTIVE OFFICES) (ZIP CODE)
+         </p>
+         <p>ERIC D. ROITER, SECRETARY, 82 DEVONSHIRE STREET, BOSTON, MA 02109<br> 	(NAME AND ADDRESS OF AGENT FOR SERVICE)
+         </p>
+         <p>REGISTRANT'S TELEPHONE NUMBER, INCLUDING AREA CODE: 617-563-7000</p>
+         <p>DATE OF FISCAL YEAR END: JANUARY 31</p>
+         <p>DATE OF REPORTING PERIOD: 06/30/2004</p>
+         <p align="center" style="font-weight: bold">SIGNATURES</p>
+         <p>PURSUANT TO THE REQUIREMENTS OF THE INVESTMENT COMPANY ACT OF 1940, THE  REGISTRANT HAS DULY CAUSED THIS REPORT TO BE SIGNED
+            ON ITS BEHALF BY THE  UNDERSIGNED, THERE UNTO DULY AUTHORIZED.
+         </p>
+         <p><br>Fidelity Devonshire Trust
+         </p>
+         <p>					BY:&nbsp;&nbsp;/s/ CHRISTINE REYNOLDS<br>					-----------------------------------------------------<br>					CHRISTINE REYNOLDS, TREASURER, FIDELITY MANAGEMENT &amp; RESEARCH COMPANY<br>DATE: 08/25/2004 07:42:16 AM
+         </p>
+         <p align="center">EXHIBIT A</p>
+         <p align="center">VOTE SUMMARY REPORT<br>Fidelity Structured Mid Cap Value Fund<br>07/01/2003 - 06/30/2004<br></p>
+         <p align="left" style="font-style:italic;">Note:  The Security ID will be the CUSIP (Committee on Uniform Securities Identification Procedures) when available.  When
+            CUSIP is not available, an alternate identifier, e.g., CINS, will be provided.
+         </p>
+         <table cellSpacing="0" width="100%" border="1" cellPadding="2">
+            <tr style="font-size:10pt;border:none;">
+               <th style="font-size:10pt;border:none;" width="10%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="55%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="15%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="10%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="10%">&nbsp;</th>
+            </tr>
+            <tr>
+               <td style="font-size:10pt;font-weight:bold;" colSpan="5">ISSUER NAME: 					ABERCROMBIE &amp; FITCH CO.<br>					MEETING DATE: 05/20/2004
+               </td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt" align="left" colSpan="5">								TICKER: 						ANF														 &nbsp;&nbsp;&nbsp;&nbsp;SECURITY ID: 002896207<br></td>
+            </tr>
+            <tr>
+               <th style="font-size:10pt" width="10%">Proposal No</th>
+               <th style="font-size:10pt" width="55%">Proposal</th>
+               <th style="font-size:10pt" width="15%">Proposed By</th>
+               <th style="font-size:10pt" width="10%">Management Recommendation</th>
+               <th style="font-size:10pt" width="10%">Vote Cast</th>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.1</td>
+               <td style="font-size:10pt">ELECT JOHN A. GOLDEN AS A DIRECTOR				</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">For</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.2</td>
+               <td style="font-size:10pt">ELECT SETH R. JOHNSON AS A DIRECTOR				</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">For</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.3</td>
+               <td style="font-size:10pt">ELECT EDWARD F. LIMATO AS A DIRECTOR				</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">For</td>
+            </tr>
+         </table>
+         <table cellSpacing="0" width="100%" border="1" cellPadding="2">
+            <tr style="font-size:10pt;border:none;">
+               <th style="font-size:10pt;border:none;" width="10%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="55%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="15%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="10%">&nbsp;</th>
+               <th style="font-size:10pt;border:none;" width="10%">&nbsp;</th>
+            </tr>
+            <tr>
+               <td style="font-size:10pt;font-weight:bold;" colSpan="5">ISSUER NAME: 					ACCREDO HEALTH, INCORPORATED<br>					MEETING DATE: 11/25/2003
+               </td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt" align="left" colSpan="5">								TICKER: 						ACDO														 &nbsp;&nbsp;&nbsp;&nbsp;SECURITY ID: 00437V104<br></td>
+            </tr>
+            <tr>
+               <th style="font-size:10pt" width="10%">Proposal No</th>
+               <th style="font-size:10pt" width="55%">Proposal</th>
+               <th style="font-size:10pt" width="15%">Proposed By</th>
+               <th style="font-size:10pt" width="10%">Management Recommendation</th>
+               <th style="font-size:10pt" width="10%">Vote Cast</th>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.1</td>
+               <td style="font-size:10pt">ELECT DICK R. GOURLEY* AS A DIRECTOR				</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Withhold</td>
+            </tr>
+            <tr>

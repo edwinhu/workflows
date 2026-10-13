@@ -1,0 +1,14 @@
+========================== Saba Closed-End Funds ETF ===========================
+
+
+ANGEL OAK FINANCIAL STRATS INC TERM TR
+
+Ticker:       FINS           Security ID:  US03464A1007
+Meeting Date: MAY 27, 2020   Meeting Type: Special
+Record Date:  APR 06, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+2.    Ratify Appointment of Independent       F         S            Management
+      Auditors
+1.    Approve Reorganization Plan             F         S            Management
+

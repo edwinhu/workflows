@@ -1,0 +1,37 @@
+ACCESSION NUMBER:		0000950152-04-006430
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040820
+EFFECTIVENESS DATE:		20040820
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			HSBC ADVISOR FUNDS TRUST
+		CENTRAL INDEX KEY:			0001010296
+<PAGE>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-07583
+Reporting Period: 07/01/2003 - 06/30/2004
+HSBC Advisor Funds Trust
+
+=================== HSBC INVESTOR INTERNATIONAL EQUITY FUND ====================
+
+
+ABBEY NATIONAL PLC
+
+Ticker:       ABYNY          Security ID:  GB0000044551
+Meeting Date: APR 22, 2004   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept Financial Statements and Statutory For       For        Management
+      Reports
+2     Approve Remuneration Report               For       For        Management
+3     Approve Final Dividend of 16.67 Pence Per For       For        Management
+      Share
+4.1   Elect Priscilla Vacassin as Director      For       For        Management
+4.2   Elect Angus Porter as Director            For       For        Management
+4.3   Elect Tony Wyatt as Director              For       For        Management
+4.4   Elect Gerard Murphy as Director           For       For        Management
+4.5   Elect Geoffrey Cooper as Director         For       For        Management

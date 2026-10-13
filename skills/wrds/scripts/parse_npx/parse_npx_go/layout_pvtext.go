@@ -1,0 +1,1517 @@
+package main
+
+import (
+	"regexp"
+	"strings"
+)
+
+var pvTextNCFAccount = regexp.MustCompile(`^NCF-[0-9]+ NCF-\s*[A-Z]+\s+.+$`)
+
+var pvTextDatedHeading = regexp.MustCompile(`(?i)^(.+?)\s+(\d{1,2}-\d{1,2}-\d{4})\s+through\s+(\d{1,2}-\d{1,2}-\d{4})$`)
+
+// pvtext is a plain-text account report made of a wrapped two-line header,
+// followed by meeting lines and item-numbered vote lines. The filing that exposed
+// it also carries unrelated fixed-width sections, so this layout opens only on
+// the complete header and closes on any line outside this grammar.
+
+const (
+	pvTextHeaderFirst = "ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE"
+	// The same header with MTG TYPE wrapped onto a continuation line.
+	pvTextHeaderFirstMin = "ISSUER NAME TICKER CUSIP MTG DATE"
+	pvTextHeaderSecond   = "Proposal Type Voted? Vote For/Agnst Mgmt"
+	// The column-aligned rendering wraps `Type` and `Mgmt` onto a third line.
+	pvTextHeaderSecondWrapped = "Proposal Voted? Vote For/Agnst"
+	pvTextHeaderThirdWrapped  = "Type Mgmt"
+	// Blank lines tolerated between the header's physical lines. Bounded so a
+	// generic first line cannot pair with a distant continuation.
+	pvTextHeaderGapMax = 6
+	// How far past blanks, page furniture and further unnumbered lines to look for
+	// the row that proves a fragment is a continuation rather than the end of the
+	// table. Measured on a filing that echoes every director name beneath its vote:
+	// in-table runs reach 25 lines, so a bound of 8 closed the table mid-slate. The
+	// bound is generous but finite; what actually does the work is the requirement
+	// that a real meeting or item row FOLLOW the run.
+	pvTextContinuationLookahead = 64
+	// How many following lines a wrapped description may span before its columns.
+	pvTextWrapLookahead = 4
+)
+
+type pvTextMeeting struct {
+	issuer      string
+	ticker      string
+	cusip       string
+	meetingDate string
+	meetingType string
+}
+
+// Register pvtext ahead of the generic HTML and fixed-width fallbacks. The
+// named layouts still get first refusal, while pvtext's exact two-line signature
+// prevents it from claiming the other table shapes in a mixed filing.
+func init() {
+	entry := layoutEntry{Name: "pvtext", Match: matchPVText, ParseRaw: parsePVTextRaw,
+		// This format's header can sit megabytes into a filing: measured over 40
+		// filings that yielded nothing, the offset has median 2,784 but p90
+		// 2,260,260 and max 10,972,887, and one 5.5 MB filing carries its first
+		// vote table at line 28,340. The default 128 KB made those invisible.
+		HeadBytes: 16 << 20}
+	for i, candidate := range layoutRegistry {
+		if candidate.Name == "htmltable" {
+			layoutRegistry = append(layoutRegistry, layoutEntry{})
+			copy(layoutRegistry[i+1:], layoutRegistry[i:])
+			layoutRegistry[i] = entry
+			return
+		}
+	}
+	layoutRegistry = append(layoutRegistry, entry)
+}
+
+func matchPVText(head string) bool {
+	lines := strings.Split(head, "\n")
+	for i := 0; i+1 < len(lines); i++ {
+		if pvTextHeaderAt(lines, i) || pvSEIHeaderAt(lines, i) {
+			return true
+		}
+	}
+	return false
+}
+
+// parsePVTextRaw re-normalizes the document for the SEI sub-layout alone, which
+// is the one reader in this file that needs to know what column a line starts
+// at. Every other grammar here trims its lines, so the ordinary normalization
+// serves them and the extra pass is paid only by a document that carries the SEI
+// column header.
+func parsePVTextRaw(raw []byte, text string, meta FilingMeta) ([]VoteRow, error) {
+	lines := strings.Split(text, "\n")
+	for i := range lines {
+		if !pvSEIHeaderAt(lines, i) {
+			continue
+		}
+		indented := strings.Split(string(stripHTMLIndent(raw)), "\n")
+		if rows := parsePVTextSEI(indented, meta); len(rows) > 0 {
+			return rows, nil
+		}
+		break
+	}
+	return parsePVText(text, meta)
+}
+
+func parsePVText(text string, meta FilingMeta) ([]VoteRow, error) {
+	lines := strings.Split(text, "\n")
+	if rows := parsePVTextSEI(lines, meta); len(rows) > 0 {
+		return rows, nil
+	}
+	// The Account Number heading resolves against the declared (or dictionary)
+	// series under the shared rules, as in every other layout.
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
+	issFormerKeys(seriesIx, meta.FormerNames)
+	// What THIS document's own section banners already spell out in full, before
+	// any banner is resolved: the one rung that reads it (issNearMissDecl's
+	// claimed elimination) needs the whole set, so it cannot be gathered as the
+	// loop goes.
+	issExactBannerClaims(seriesIx, pvTextBanners(lines))
+	// Read definitions before references so a later conflicting definition also
+	// refuses attribution. References are not themselves fund definitions.
+	accounts := make(map[string]*SeriesDecl)
+	for _, line := range lines {
+		if name, ok := pvTextAccountFund(line); ok {
+			f := strings.Fields(name)
+			if len(f) < 2 || !internalFundCode(f[0]) || pvTextAccountReference(name) != "" {
+				continue
+			}
+			code := strings.ToUpper(f[0])
+			d := pvTextResolveAccount(seriesIx, name)
+			if prior, seen := accounts[code]; seen && (prior == nil || d == nil || prior.SeriesID != d.SeriesID) {
+				d = nil
+			}
+			accounts[code] = d
+		}
+	}
+	var (
+		rows            []VoteRow
+		meeting         pvTextMeeting
+		inTable         bool
+		haveMtg         bool
+		pendingIssuer   bool
+		continuationRow = -1
+		fund            string
+		fundSeries      string
+		bareAccount     bool
+		namedAt         = -1
+	)
+
+	for i := 0; i < len(lines); i++ {
+		if f, ok := pvTextAccountFund(lines[i]); ok {
+			d := pvTextResolveAccount(seriesIx, f)
+			if target := pvTextAccountReference(f); target != "" {
+				d = accounts[target]
+			}
+			// Only the first numeric or NCF sleeve account following a resolved
+			// bare heading belongs to it; later accounts are new boundaries.
+			opaque := strings.HasPrefix(strings.ToUpper(strings.TrimSpace(lines[i])), "ACCOUNT NUMBER:") && len(f) > 0 && (f[0] >= '0' && f[0] <= '9' || pvTextNCFAccount.MatchString(f) || pvTextBareAccountCode(f))
+			// `Account Number: 9485` printed directly under the `Account Name:`
+			// line that just resolved is that account's number, not a new
+			// section (Seligman Portfolios 2004, 646 rows filed under `9485`
+			// with no series). Overwriting here discards the series one line
+			// after the filing printed the name it came from.
+			numbered := opaque && d == nil && namedAt >= 0 && pvTextBlankBetween(lines, namedAt, i)
+			if !numbered && (!bareAccount || !opaque || d != nil) {
+				fund, fundSeries = f, ""
+				if d != nil {
+					fundSeries = d.SeriesID
+				}
+			}
+			bareAccount = false
+			namedAt = -1
+			if !opaque && fundSeries != "" {
+				namedAt = i
+			}
+			inTable, haveMtg, pendingIssuer, continuationRow = false, false, false, -1
+			continue
+		}
+		if line := strings.TrimSpace(lines[i]); line != "" && i+1 < len(lines) && pvTextHeadingTerminator(lines[i+1]) {
+			if _, d := issResolveFund(seriesIx, line); d != nil {
+				fund, fundSeries, bareAccount = line, d.SeriesID, true
+				inTable, haveMtg, pendingIssuer, continuationRow = false, false, false, -1
+				continue
+			}
+		}
+		if m := pvTextDatedHeading.FindStringSubmatch(strings.TrimSpace(lines[i])); m != nil && htmlDate(m[2]) != "" && htmlDate(m[3]) != "" {
+			for j := i + 1; j < len(lines) && j <= i+pvTextHeaderGapMax; j++ {
+				if pvTextHeaderAt(lines, j) {
+					fund, fundSeries, bareAccount = m[1], "", false
+					if _, d := issResolveFund(seriesIx, fund); d != nil {
+						fundSeries = d.SeriesID
+					}
+					inTable, haveMtg, pendingIssuer, continuationRow = false, false, false, -1
+					break
+				}
+			}
+		}
+		if n := pvTextHeaderLinesAt(lines, i); n != 0 {
+			bareAccount = false
+			inTable = true
+			haveMtg = false
+			continuationRow = -1
+			i += n - 1 // header continuations are never rows
+			continue
+		}
+		if !inTable {
+			continue
+		}
+
+		line := strings.TrimSpace(lines[i])
+		// Page furniture, not end of table. A meeting's votes are split across pages
+		// and the footer sits between them: 43 of 60 sampled filings carry <PAGE>
+		// breaks and one holds 72. Treating a footer as end-of-section discarded every
+		// row after the first page break -- 47 of 109 in the two-section fixture.
+		// Blank lines are furniture for the same reason: they surround every break, so
+		// resetting the open meeting on one loses the rows that continue it.
+		if line == "" || pvTextPageFurniture(line) {
+			// Furniture does not break the continuation anchor either. An echo's own
+			// tail can be separated from it by blank lines:
+			//
+			//	2.00   Confirm First Interim Dividend of USD 0.255 Per
+			//	       Ordinary Share and Confirm as the Final Dividend
+			//	       the                              MGMT  YES  FOR
+			//	       Confirm First Interim Dividend of USD 0.255 Per
+			//	       Ordinary Share and Confirm as the Final Dividend
+			//	       <blank>
+			//	       <blank>
+			//	       the
+			//	3.00   Reappoint KPMG Audit Plc as Auditors of the
+			//
+			// Clearing the anchor here left that trailing `the` with nothing to attach
+			// to, so it closed the table -- the guard had already judged it a genuine
+			// continuation. What bounds the anchor is that a meeting line clears it and
+			// the lookahead requires a real row to follow, not the presence of a blank.
+			continue
+		}
+		if next, ok := pvTextMeetingLine(line); ok {
+			meeting = next
+			haveMtg = true
+			continuationRow = -1
+			pendingIssuer = true // the issuer's name may wrap onto the next line
+			continue
+		}
+
+		// A WRAPPED ISSUER NAME. The line after a meeting can be the rest of the
+		// issuer, and a meeting clears continuationRow, so that tail had nothing to
+		// attach to and closed the table:
+		//
+		//	Alexandria Real   ARE  015271109  5/12/2004  Annual
+		//	Estate Equities                                      <- closed the table
+		//	1.01  Elect Jerry M. Sudarsky   MGMT  YES  AGNST
+		//
+		// Instrumented output was `CLOSE line="Estate Equities" contRow=-1 cont=true`:
+		// the continuation guard already judged it a continuation. Only the line
+		// IMMEDIATELY after the meeting is eligible, and only when it is neither a
+		// vote nor a meeting itself, so this cannot swallow a block of text.
+		if pendingIssuer {
+			pendingIssuer = false
+			if _, isVote := pvTextVoteLine(line, meeting); !isVote {
+				if f := strings.Fields(line); len(f) > 0 && !pvTextItemLoose(f[0]) {
+					meeting.issuer = strings.TrimSpace(meeting.issuer + " " + line)
+					continue
+				}
+			}
+		}
+		if haveMtg {
+			if row, ok := pvTextVoteLine(line, meeting); ok {
+				row.FundName, row.SeriesID = fund, fundSeries
+				rows = append(rows, row)
+				continuationRow = len(rows) - 1
+				continue
+			}
+
+			// Look ahead only when the current line ends in a proper prefix of a
+			// multi-word vote. This completes wrapped values without merging the next
+			// compact-rendering item into the current row.
+			if pvTextIncompleteVoteLine(line) && i+1 < len(lines) {
+				tail := strings.TrimSpace(lines[i+1])
+				tailFields := strings.Fields(tail)
+				if len(tailFields) > 0 && !pvTextItem(tailFields[0]) {
+					// Insert the tail BEFORE a trailing vs-management indicator rather
+					// than after it. `... MGMT YES DID NOT FOR` + `VOTE` appended
+					// naively becomes `DID NOT FOR VOTE`, which no longer parses: the
+					// indicator is no longer trailing, the row is dropped and the table
+					// then closes, costing the following item too. This shape occurs
+					// zero times in 80 sampled filings, so it is a silent row-loss path
+					// rather than a live defect -- closed cheaply, not designed around.
+					joined := line + " " + tail
+					if f := strings.Fields(line); len(f) > 0 {
+						if last := strings.ToUpper(f[len(f)-1]); last == "FOR" || last == "AGNST" {
+							joined = strings.Join(f[:len(f)-1], " ") + " " + tail + " " + f[len(f)-1]
+						}
+					}
+					if row, ok := pvTextVoteLine(joined, meeting); ok {
+						row.FundName, row.SeriesID = fund, fundSeries
+						rows = append(rows, row)
+						continuationRow = len(rows) - 1
+						i++ // the vote tail is part of this row, never a row of its own
+						continue
+					}
+				}
+			}
+
+			// DESCRIPTION CONTINUATION -- a decision, recorded rather than implied.
+			// A fragment on a line carrying no item number and no vote columns is
+			// appended to the preceding row's description, but ONLY when the next line
+			// is a proper meeting or item row, so a fragment must be the last line of
+			// its block.
+			//
+			// Whether `Amend Board/Supervisory Board Size` is a second topic under item
+			// 7.00's single vote or a separate agenda line is NOT decidable from these
+			// bytes; European AGMs bundle both ways. The join is kept because it cannot
+			// cost a ROW -- the fragment carries no vote columns and so could never be
+			// one -- while dropping it would discard report text outright. What it can
+			// affect is description completeness, and carrying the filing's own words
+			// is the lesser risk. Review flagged the join as unconditional; it is not,
+			// but the previous round did make this choice silently, which was the
+			// actual defect.
+			// INVERTED WRAP -- the mirror of the block above. There the vote value
+			// spilled FORWARD onto the next line; here the item number and the start of
+			// the description sit alone and the columns arrive on the line after:
+			//
+			//	2.00     PROPOSAL TO APPROVE THE ACE LIMITED 2004
+			//	         LONG-TERM INCENTIVE PLAN.        MGMT   YES   FOR   FOR
+			//
+			// Without this the layout sees an item line carrying no vote, closes the
+			// table and loses the REST OF THE DOCUMENT. In the PV5 fixture that cost
+			// every meeting after the first: 23 of 40 rows, and corpus-wide it is the
+			// difference between claiming 120 of 277 filings and claiming them all.
+			//
+			// Guarded from both sides: this line must begin with an item number and
+			// carry no complete vote of its own, and the next must carry the columns
+			// while beginning with no item number -- otherwise two adjacent ordinary
+			// items in the compact rendering would merge into one row.
+			if f := strings.Fields(line); len(f) > 0 && pvTextItem(f[0]) {
+				// The description may wrap over SEVERAL lines before the columns
+				// arrive, so join a bounded run rather than a single line:
+				//
+				//	1.00   Elect Dong Kil Cho, Marlene Davidge, William
+				//	       Davis, Richard Drouin, Lise Lachapelle, Gary
+				//	       Lukassen,                    MGMT   YES   AGNST
+				//
+				// Joining one line left this row unparsed, which closed the table and
+				// cost the rest of the document. The run stops at the first line that
+				// begins with an item number, so the next vote can never be absorbed.
+				joined, wrapped := line, false
+				for k := i + 1; k < len(lines) && k <= i+pvTextWrapLookahead; k++ {
+					nf := strings.Fields(strings.TrimSpace(lines[k]))
+					if len(nf) == 0 {
+						break
+					}
+					if pvTextItem(nf[0]) {
+						break
+					}
+					joined += " " + strings.TrimSpace(lines[k])
+					if row, ok := pvTextVoteLine(joined, meeting); ok {
+						row.FundName, row.SeriesID = fund, fundSeries
+						rows = append(rows, row)
+						continuationRow = len(rows) - 1
+						i = k // every joined line belongs to this row
+						wrapped = true
+						break
+					}
+				}
+				if wrapped {
+					continue
+				}
+			}
+
+			if continuationRow >= 0 && pvTextDescriptionContinuationAt(lines, i) {
+				// An echo of the row's own lines beneath it (`1.10 ELECT
+				// DIRECTOR DOUGLAS D. FRENCH ... FOR` / `ELECT DIRECTOR DOUGLAS
+				// D. FRENCH`, and both lines of a wrapped item; Putnam 2004,
+				// 2,529 doubled descriptions) is not a continuation: the
+				// description already carries it.
+				if d := rows[continuationRow].VoteDescription; strings.Contains(" "+d+" ", " "+line+" ") {
+					continue
+				}
+				rows[continuationRow].VoteDescription += " " + line
+				// continuationRow is NOT cleared: a run of echo lines all belong to
+				// the row above them, and clearing after the first left the second
+				// with nothing to attach to, which closed the table.
+				continue
+			}
+		}
+
+		// A line that IS structurally a vote row -- item number, then a proponent
+		// followed by a voted flag -- but whose vote value this layout does not
+		// recognise must not close the table. Closing on one unknown spelling cost the
+		// entire remainder of a document: a single `WHOLD` line in one filing's
+		// Ameritrade block lost 26,157 of its 26,384 rows. The row is SKIPPED rather
+		// than emitted, because how_voted is verbatim by contract and an unrecognised
+		// token is not yet known to be a vote -- but the document keeps being read, so
+		// one unfamiliar spelling costs one row instead of every row after it.
+		if f := strings.Fields(line); len(f) >= 4 && pvTextItem(f[0]) {
+			structural := false
+			for k := 1; k+1 < len(f); k++ {
+				pk := strings.ToUpper(f[k])
+				vk := strings.ToUpper(f[k+1])
+				if (pk == "MGMT" || pk == "SHLDR") && (vk == "YES" || vk == "NO") {
+					structural = true
+					break
+				}
+			}
+			if structural {
+				continue
+			}
+		}
+
+		// A line that is neither a meeting, vote, nor an immediate unnumbered
+		// description continuation closes this table until another full header opens it.
+		inTable = false
+		haveMtg = false
+		continuationRow = -1
+	}
+
+	if len(rows) == 0 {
+		return nil, errLayoutDeclined
+	}
+	return rows, nil
+}
+
+// pvTextHeaderLinesAt returns how many physical lines the header occupies at i,
+// or 0 if there is no header there. The format has two renderings. The COMPACT one
+// puts every continuation on line two. The COLUMN-ALIGNED one is too wide for the
+// page, so `Type` and `Mgmt` wrap alone onto a third line:
+//
+//	ISSUER NAME                       TICKER      CUSIP           MTG DATE    MTG TYPE
+//	                                                              Proposal    Voted?    Vote      For/Agnst
+//	                                                              Type                            Mgmt
+//
+// A two-line rule reads that third line as data and declines the whole block, which
+// is why one 4,321-vote-line filing returned nothing.
+// pvTextHeaderLinesAt returns how many physical lines the header occupies at i, or 0
+// if there is no header there.
+//
+// The first line is exact. What FOLLOWS it is not: four wrapping permutations of the
+// same header appear in this corpus, because the column block is wider than the page
+// and filers broke it wherever it happened to land --
+//
+//	Proposal Type Voted? Vote For/Agnst Mgmt          (one line)
+//	Proposal Voted? Vote For/Agnst  /  Type Mgmt      (split, tail second)
+//	FOR/AGNST  /  PROPOSAL TYPE VOTED? VOTE MGMT      (split, tail FIRST)
+//	... Vote For/  /  <tail lands on the meeting line>
+//
+// Enumerating them was losing a variant each time, so this consumes following lines
+// while they carry ONLY header vocabulary, stopping at the first meeting or item row.
+// A dashed rule and the SGML <S>/<C> markers count as furniture in that run. At least
+// one consumed line must mention VOTE or VOTED, so a bare first line cannot open a
+// table on its own.
+func pvTextHeaderLinesAt(lines []string, i int) int {
+	if i < 0 || i+1 >= len(lines) {
+		return 0
+	}
+	// The first line is a PREFIX match, not an exact one. `MTG TYPE` is the last
+	// column and sometimes wraps into the continuation, leaving the first line as
+	// `ISSUER NAME TICKER CUSIP MTG DATE`. Requiring the full form declined those
+	// filings outright.
+	first := pvTextCanonical(lines[i])
+	if !strings.HasPrefix(first, pvTextHeaderFirstMin) {
+		return 0
+	}
+	if first != pvTextHeaderFirstMin && first != strings.ToUpper(pvTextHeaderFirst) {
+		return 0
+	}
+	sawVote, last := false, i
+	for k := i + 1; k < len(lines) && k <= i+pvTextHeaderGapMax; k++ {
+		t := strings.TrimSpace(lines[k])
+		if t == "" || pvTextPageFurniture(t) {
+			last = k
+			continue
+		}
+		if _, ok := pvTextMeetingLine(t); ok {
+			break
+		}
+		if f := strings.Fields(t); len(f) > 0 && pvTextItem(f[0]) {
+			break
+		}
+		if !pvTextHeaderWords(t) {
+			break
+		}
+		up := pvTextCanonical(t)
+		if strings.Contains(up, "VOTE") {
+			sawVote = true
+		}
+		last = k
+	}
+	if !sawVote {
+		return 0
+	}
+	return last - i + 1
+}
+
+// pvTextHeaderWords reports whether every token on a line belongs to this header's
+// vocabulary. It is what distinguishes a wrapped header fragment from the first row
+// of data, without depending on WHERE the filer chose to break the line.
+func pvTextHeaderWords(line string) bool {
+	fields := strings.Fields(strings.ToUpper(line))
+	if len(fields) == 0 {
+		return false
+	}
+	for _, f := range fields {
+		switch strings.Trim(f, ".,:") {
+		case "ISSUER", "NAME", "TICKER", "CUSIP", "MTG", "DATE", "TYPE",
+			"PROPOSAL", "VOTED?", "VOTED", "VOTE", "CAST", "MATTER", "FOR/AGNST", "FOR/", "AGNST",
+			"MGMT", "FOR", "AGAINST", "<S>", "<C>", "<F>", "<FN>":
+		default:
+			return false
+		}
+	}
+	return true
+}
+
+func pvTextHeaderAt(lines []string, i int) bool {
+	return pvTextHeaderLinesAt(lines, i) != 0
+}
+
+func pvTextCanonical(line string) string {
+	return strings.ToUpper(strings.Join(strings.Fields(line), " "))
+}
+
+// pvTextDescriptionContinuationAt accepts one unnumbered agenda fragment only
+// when the next physical line resumes the grammar with a meeting or item. Upstream
+// whitespace normalization removes indentation, so the following structural line
+// is the available boundary between a continuation and foreign text.
+func pvTextDescriptionContinuationAt(lines []string, i int) bool {
+	if i+1 >= len(lines) {
+		return false
+	}
+	// Look PAST blanks and page furniture for the next real line. The last echo of a
+	// meeting is followed by a blank before the next meeting line, and stopping at
+	// that blank rejected the echo as a continuation -- which closed the table. The
+	// cost was severe and invisible: only the FIRST meeting of each section survived,
+	// so one filing yielded 8 issuers out of 2,681 meetings.
+	// Look past blanks, page furniture AND further unnumbered lines for the next real
+	// row. A vote can be followed by a RUN of echo lines -- one filing prints three,
+	// including a duplicate:
+	//
+	//	1.10   Elect Director Samuel Zell        MGMT  YES  FOR  FOR
+	//	       Elect Director Lord James Blyth
+	//	       Elect Director Lord James Blyth
+	//	       Elect Director Samuel Zell
+	//	1.20   Elect Director Robert L. Crandall MGMT  YES  FOR  FOR
+	//
+	// Stopping at the first of those found a line that was neither meeting nor item
+	// and closed the table. The run is BOUNDED: what proves these are continuations
+	// rather than the end of the report is that a real row follows within a few lines.
+	for k := i + 1; k < len(lines) && k <= i+pvTextContinuationLookahead; k++ {
+		t := strings.TrimSpace(lines[k])
+		if t == "" || pvTextPageFurniture(t) {
+			continue
+		}
+		if _, ok := pvTextMeetingLine(t); ok {
+			return true
+		}
+		if f := strings.Fields(t); len(f) > 0 && pvTextItem(f[0]) {
+			return true
+		}
+		// another unnumbered line: keep looking within the bound
+	}
+	return false
+}
+
+// pvTextMeetingLine locates the date/type pair rather than counting from the
+// right: a wrapped header can leave trailing words on the same physical line as
+// the meeting. The closed meeting-type vocabulary keeps this search out of prose.
+func pvTextMeetingLine(line string) (pvTextMeeting, bool) {
+	fields := strings.Fields(line)
+	// A line that is a VOTE ROW is never a meeting. The caller tries meetings before
+	// votes, and searching for the date rather than indexing from the end made a vote
+	// row whose DESCRIPTION contains a date and a meeting-type word match here:
+	//
+	//	1.01 Approve 5/4/04 Annual Meeting MGMT YES FOR FOR
+	//	  -> matched as a meeting, issuer "1.01"
+	//
+	// That loses the vote AND corrupts the meeting context for every row after it.
+	//
+	// The test is BOTH an item-shaped first token AND a parseable vote, not the item
+	// token alone. Rejecting on the token alone cost 10,267 rows in one filing, because
+	// issuers begin with numbers: `77 Bank 8341 J71348106 6/29/05 Annual` reads "77" as
+	// an item and the meeting was declined, closing the table.
+	if len(fields) > 0 && pvTextItemLoose(fields[0]) {
+		if _, _, isVote := pvTextVoteParts(fields); isVote {
+			return pvTextMeeting{}, false
+		}
+	}
+	// Three fields is the floor, not five: a single-word issuer with no ticker and no
+	// CUSIP prints `Accor  4/26/04  Special`. Requiring five declined it, which closed
+	// the table. The strict CUSIP/ticker path below does its own bounds checking.
+	if len(fields) < 3 {
+		return pvTextMeeting{}, false
+	}
+
+	// Search from the right for a parseable date immediately followed by a CLOSED
+	// meeting type. Words after that pair are wrapped header text, not identity fields.
+	dateAt, date := -1, ""
+	for i := len(fields) - 2; i >= 1; i-- {
+		if parsed := htmlDate(fields[i]); parsed != "" && pvTextMeetingType(fields[i+1]) {
+			dateAt, date = i, parsed
+			break
+		}
+	}
+	if dateAt < 0 {
+		return pvTextMeeting{}, false
+	}
+	meetingType := fields[dateAt+1]
+
+	// The CUSIP is the strongest identity anchor but it is NOT always printed:
+	// foreign issuers can carry a ticker only, or neither ticker nor CUSIP.
+	cusip, tickerAt := "", dateAt-2
+	if dateAt >= 2 && pvTextCUSIP(fields[dateAt-1]) {
+		cusip = fields[dateAt-1]
+	} else {
+		// No CUSIP column: the ticker sits directly before the date.
+		tickerAt = dateAt - 1
+	}
+	if tickerAt < 1 || !pvTextTicker(fields[tickerAt]) {
+		// Neither CUSIP nor ticker. Foreign issuers print only a name, a date and a
+		// meeting type: `3I Group PLC (formerly Investors In Industry)  7/9/03  Annual`.
+		// One filing of 16,259 vote lines yielded 70 rows because every one of its
+		// meetings looks like this and none was recognised.
+		issuerEnd := dateAt
+		if cusip != "" {
+			issuerEnd--
+		}
+		issuer := strings.Join(fields[:issuerEnd], " ")
+		if issuer == "" {
+			return pvTextMeeting{}, false
+		}
+		return pvTextMeeting{
+			issuer:      issuer,
+			cusip:       cusip,
+			meetingDate: date,
+			meetingType: meetingType,
+		}, true
+	}
+	issuer := strings.Join(fields[:tickerAt], " ")
+	if issuer == "" {
+		return pvTextMeeting{}, false
+	}
+
+	return pvTextMeeting{
+		issuer:      issuer,
+		ticker:      fields[tickerAt],
+		cusip:       cusip,
+		meetingDate: date,
+		meetingType: meetingType,
+	}, true
+}
+
+// pvTextVoteLine peels the four governed columns from the right. Everything
+// between the item and the proponent is description text; none of the trailing
+// For/Agnst indicator is promoted to management_recommendation, because the
+// filing prints no recommendation column.
+func pvTextVoteLine(line string, meeting pvTextMeeting) (VoteRow, bool) {
+	fields := strings.Fields(line)
+	p, rest, ok := pvTextVoteParts(fields)
+	if !ok {
+		return VoteRow{}, false
+	}
+
+	// The VOTED? cell sits immediately right of the proponent. Recording it is
+	// what makes an empty how_voted AFFIRMATIVE: `NO` says the fund declined to
+	// vote, which is a fact the filing states, and without it such a row is
+	// indistinguishable from one this parser failed on. Measured 2026-09-01 the
+	// corpus carries 7,421 blank-vote pvtext rows and every one was classified
+	// as an unexplained gap for exactly that reason. vanguard already carries
+	// its own VOTED? column in this field.
+	var voted string
+	if p+1 < len(fields) {
+		if up := strings.ToUpper(fields[p+1]); up == "YES" || up == "NO" {
+			voted = fields[p+1]
+		}
+	}
+
+	cast := strings.Join(rest, " ")
+	if cast == "" {
+		// Verbatim means verbatim: the filing printed no vote value here, so
+		// how_voted stays EMPTY rather than being filled with an inferred `NOT VOTED`.
+		// The row still records the proposal, its proponent and that it was reported.
+		if p+1 >= len(fields) || strings.ToUpper(fields[p+1]) != "NO" {
+			return VoteRow{}, false
+		}
+	} else if !pvTextVote(strings.ToUpper(cast)) {
+		return VoteRow{}, false
+	}
+
+	description := strings.Join(fields[1:p], " ")
+	if description == "" {
+		return VoteRow{}, false
+	}
+
+	return VoteRow{
+		IssuerName:      meeting.issuer,
+		CUSIP:           meeting.cusip,
+		Ticker:          meeting.ticker,
+		MeetingDate:     meeting.meetingDate,
+		MeetingType:     meeting.meetingType,
+		ItemSeq:         fields[0],
+		VoteDescription: description,
+		VoteSource:      fields[p],
+		HowVoted:        cast,
+		VoteOtherInfo:   voted,
+	}, true
+}
+
+// pvTextVoteParts anchors on the proponent/voted pair rather than counting from
+// the right. Multi-word vote values and an optional trailing vs-management field
+// make fixed offsets ambiguous. The latter is not a manifest column.
+func pvTextVoteParts(fields []string) (int, []string, bool) {
+	if len(fields) < 5 || !pvTextItemLoose(fields[0]) {
+		return 0, nil, false
+	}
+
+	// Anchor on the proponent, preferring the proponent/voted PAIR. Some renderings
+	// omit the `Voted?` column entirely and print the vote straight after the
+	// proponent -- `1.00 Elect Michael T. Dugan<TAB>MGMT NOT VOTED` -- so demanding
+	// YES/NO there declines every line of those filings. The pair is tried first
+	// because it is what stops a description word being read as the proponent; the
+	// fallback compensates by requiring everything after the proponent to form a
+	// COMPLETE known vote value, which is the stricter test of the two.
+	p, voteAt := -1, -1
+	for k := len(fields) - 2; k >= 1; k-- {
+		pk := strings.ToUpper(fields[k])
+		vk := strings.ToUpper(fields[k+1])
+		if (pk == "MGMT" || pk == "SHLDR") && (vk == "YES" || vk == "NO") {
+			p, voteAt = k, k+2
+			break
+		}
+	}
+	if p < 0 {
+		for k := len(fields) - 2; k >= 1; k-- {
+			pk := strings.ToUpper(fields[k])
+			if pk != "MGMT" && pk != "SHLDR" {
+				continue
+			}
+			tail := fields[k+1:]
+			if len(tail) > 1 {
+				if last := strings.ToUpper(tail[len(tail)-1]); last == "FOR" || last == "AGNST" {
+					tail = tail[:len(tail)-1]
+				}
+			}
+			if pvTextVote(strings.ToUpper(strings.Join(tail, " "))) {
+				p, voteAt = k, k+1
+				break
+			}
+		}
+	}
+	// A row where the fund did NOT vote prints no vote value at all:
+	//	1.00   Receive Report of Management Board        MGMT   NO
+	// The proposal was reported and the fund declined to vote, so there is nothing in
+	// the vote column. Declining the line closed the table and cost the rest of the
+	// document; one filing of 16,259 vote lines returned 70 rows because most of its
+	// meetings are foreign proposals reported this way.
+	if p < 1 {
+		return 0, nil, false
+	}
+	if voteAt >= len(fields) {
+		return p, nil, true
+	}
+
+	rest := fields[voteAt:]
+	if len(rest) > 1 {
+		// The vs-management indicator is spelled four ways in this corpus -- FOR,
+		// AGNST, AGAINST and N/A. Stripping only the first two left `Withhold Against`
+		// glued into one cast value, which matched no vocabulary, so the line was
+		// declined and the table closed. Surveyed pairs include `WHOLD AGNST`,
+		// `NOT VOTED AGAINST`, `AGNST N/A` and `FOR N/A`.
+		switch strings.ToUpper(rest[len(rest)-1]) {
+		case "FOR", "AGNST", "AGAINST", "N/A":
+			rest = rest[:len(rest)-1]
+		}
+	}
+	return p, rest, true
+}
+
+func pvTextIncompleteVoteLine(line string) bool {
+	_, rest, ok := pvTextVoteParts(strings.Fields(line))
+	if !ok {
+		return false
+	}
+	prefix := strings.ToUpper(strings.Join(rest, " "))
+	for _, vote := range []string{"TAKE NO ACTION", "DID NOT VOTE", "NOT VOTED"} {
+		if strings.HasPrefix(vote, prefix+" ") {
+			return true
+		}
+	}
+	return false
+}
+
+func pvTextItem(s string) bool {
+	if len(s) < 4 {
+		return false
+	}
+	dot := strings.IndexByte(s, '.')
+	if dot <= 0 || dot != len(s)-3 {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		if i == dot {
+			continue
+		}
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return true
+}
+
+func pvTextCUSIP(s string) bool {
+	if len(s) != 9 {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if (c < '0' || c > '9') && (c < 'A' || c > 'Z') && (c < 'a' || c > 'z') {
+			return false
+		}
+	}
+	return true
+}
+
+func pvTextTicker(s string) bool {
+	if s == "" || len(s) > 12 {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if (c < '0' || c > '9') && (c < 'A' || c > 'Z') && (c < 'a' || c > 'z') && c != '.' && c != '-' {
+			return false
+		}
+	}
+	return true
+}
+
+func pvTextVote(s string) bool {
+	switch s {
+	case "FOR", "AGNST", "ABSTAIN", "WITHHELD":
+		return true
+	// Multi-word values this corpus prints. `TAKE NO ACTION` appears on foreign
+	// ballots the fund held but did not vote, and is what the filing said.
+	case "TAKE NO ACTION", "DID NOT VOTE", "NOT VOTED", "NONE", "NON-VOTING":
+		return true
+	// Surveyed across 40 filings of this family: WHOLD is this corpus's spelling of
+	// Withhold and occurs 12,936 times, more than any value except FOR and AGNST.
+	// Its absence did not merely lose those rows -- an unrecognised vote CLOSED THE
+	// TABLE, so one WHOLD line cost the entire rest of the document. In the worst
+	// filing that was 26,157 of its 26,384 rows.
+	case "WHOLD", "AGAINST", "WITHHOLD", "REFER", "SPLIT", "UNVOTED":
+		return true
+	}
+	// A fund of funds votes one security several ways at one meeting and the
+	// whole tally is printed in the vote column: `SPLIT 96% FOR 4% WITHHELD`.
+	// That is a vote, spelled long, and this is the validator the how_voted
+	// invariant reaches for every layout that has no validator of its own.
+	return brCompoundSplitVote(s)
+}
+
+// pvTextPageFurniture reports whether a line is pagination rather than report
+// content. It is deliberately narrow: the table must still CLOSE on genuinely
+// foreign text, because these documents also carry unrelated sections in a
+// `Mtg Date/Type | Company/Ballot Issues | Security | Mgmt Rec | Vote Cast`
+// fixed-width layout under other sub-advisors, and a layout that never closes
+// would run on and emit rows from a format it was never written for.
+// pvTextHeadingTerminator reports whether a line closes off the line above it as
+// a bare fund heading. A blank line is the common form; Hillman Capital's 2004
+// filing underlines each heading with a dashed rule (`- ---------------`)
+// instead, which disqualified both of its headings and left all 729 rows without
+// a series.
+func pvTextHeadingTerminator(line string) bool {
+	t := strings.TrimSpace(line)
+	if t == "" {
+		return true
+	}
+	return strings.Trim(t, "- ") == "" && strings.Contains(t, "--")
+}
+
+func pvTextPageFurniture(line string) bool {
+	if line == "<PAGE>" || line == "\f" {
+		return true
+	}
+	t := strings.TrimLeft(line, "\f")
+	t = strings.TrimSpace(t)
+	if t == "" || t == "<PAGE>" {
+		return true
+	}
+	// EDGAR table furniture printed between the header and the first meeting: a
+	// dashed rule, and the <S>/<C> column-width markers SGML uses to size columns.
+	// The layout used to close the table on the first of these, so filings carrying
+	// them yielded nothing at all rather than a partial read.
+	if strings.Trim(t, "- ") == "" && strings.Contains(t, "--") {
+		return true
+	}
+	if fs := strings.Fields(strings.ToUpper(t)); len(fs) > 0 {
+		allMarkers := true
+		for _, f := range fs {
+			if f != "<S>" && f != "<C>" && f != "<F>" && f != "<FN>" {
+				allMarkers = false
+				break
+			}
+		}
+		if allMarkers {
+			return true
+		}
+	}
+
+	up := strings.ToUpper(t)
+	if strings.HasPrefix(up, "PAGE ") {
+		rest := strings.TrimSpace(up[len("PAGE "):])
+		if rest == "" {
+			return false
+		}
+		for _, r := range rest {
+			if r < '0' || r > '9' {
+				return false
+			}
+		}
+		return true
+	}
+	return false
+}
+
+// pvTextMeetingType is the closed set of words this corpus prints after a meeting
+// date. It exists so the CUSIP-less, ticker-less form of a meeting line is anchored
+// on a vocabulary rather than on shape, which would otherwise admit prose.
+func pvTextMeetingType(s string) bool {
+	switch strings.ToUpper(strings.Trim(s, ".,")) {
+	case "ANNUAL", "SPECIAL", "AGM", "EGM", "OGM", "MIX", "SPECIFIC",
+		"COURT", "A", "S", "B", "C":
+		return true
+	}
+	return false
+}
+
+// pvTextItemLoose accepts the item-number forms pvTextItem rejects. Surveyed over 30
+// filings, the corpus prints N.NN 116,005 times but also bare integers 22,738 times,
+// plus N.N (565) and N.NNN (73). A bare `1  Approve name change MGMT YES FOR FOR` was
+// declined, and a declined line closes the table, so one such item cost the rest of
+// its document.
+//
+// It is used ONLY by pvTextVoteParts, where the rest of the line must independently
+// parse as a proponent, a voted flag and a vote value. Widening pvTextItem itself was
+// tried and REVERTED: the strict form also gates the continuation guard and the wrap
+// boundaries, and loosening it there sent one real slice from 1,370 rows to 214 while
+// pushing another to 981 rows against 691 item lines -- inventing rows. The fixtures
+// passed throughout; only the real slices showed it.
+func pvTextItemLoose(s string) bool {
+	if s == "" || len(s) > 8 {
+		return false
+	}
+	dot := strings.IndexByte(s, '.')
+	if dot == 0 || dot == len(s)-1 {
+		return false
+	}
+	if dot > 0 && len(s)-dot-1 > 3 {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		if i == dot {
+			continue
+		}
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return true
+}
+
+func pvTextAccountReference(name string) string {
+	f := strings.Fields(name)
+	if len(f) == 4 && internalFundCode(f[0]) && strings.EqualFold(f[1], "part") && strings.EqualFold(f[2], "of") && internalFundCode(strings.ToUpper(f[3])) {
+		return strings.ToUpper(f[3])
+	}
+	return ""
+}
+
+// pvSEIHeadingAbove is the fund heading this SEI page prints directly above the
+// column header at i, on its own line: walking back past blanks and page
+// furniture, the first line that follows must carry a single cell and no label
+// colon. A line with columns on it is the tail of the previous page's table, not
+// a heading, and leaves the fund as it was.
+func pvSEIHeadingAbove(lines []string, i int) (string, bool) {
+	for k := i - 1; k >= 0; k-- {
+		prev := strings.TrimSpace(lines[k])
+		if prev == "" || pvTextPageFurniture(prev) {
+			continue
+		}
+		return prev, len(icrCells(prev)) == 1 && !strings.Contains(prev, ":")
+	}
+	return "", false
+}
+
+// pvSEIBanners returns the page headings of every SEI column header in the
+// document, in document order, read by the same pvSEIHeadingAbove the parse loop
+// itself reads them with, so the set carries exactly the document's own section
+// banners and nothing looser.
+func pvSEIBanners(lines []string) []string {
+	var out []string
+	for i := range lines {
+		if !pvSEIHeaderAt(lines, i) {
+			continue
+		}
+		if h, ok := pvSEIHeadingAbove(lines, i); ok {
+			out = append(out, h)
+		}
+	}
+	return out
+}
+
+// pvTextBanners returns the fund headings this document prints, in document
+// order, under exactly the three forms the parse loop itself treats as a section
+// boundary: the account line's own value, the bare heading closed by a blank or
+// a dashed rule, and the dated heading that precedes a column header. Nothing
+// looser may enter -- a heading set gathered from prose would make every
+// declared name look as though the body had claimed it, which is the opposite of
+// the evidence issExactBannerClaims exists to carry.
+func pvTextBanners(lines []string) []string {
+	var out []string
+	for i := range lines {
+		if f, ok := pvTextAccountFund(lines[i]); ok {
+			out = append(out, f)
+			continue
+		}
+		if line := strings.TrimSpace(lines[i]); line != "" && i+1 < len(lines) && pvTextHeadingTerminator(lines[i+1]) {
+			out = append(out, line)
+			continue
+		}
+		if m := pvTextDatedHeading.FindStringSubmatch(strings.TrimSpace(lines[i])); m != nil && htmlDate(m[2]) != "" && htmlDate(m[3]) != "" {
+			out = append(out, m[1])
+		}
+	}
+	return out
+}
+
+func pvTextResolveAccount(ix *issSeriesIndex, name string) *SeriesDecl {
+	_, d := issResolveFund(ix, name)
+	if _, declared := lookupSeriesEntry(ix.byName, name); d != nil || declared {
+		return d
+	}
+	if f := strings.Fields(name); len(f) > 1 && internalFundCode(f[0]) {
+		if _, declared := lookupSeriesEntry(ix.byName, strings.Join(f[1:], " ")); declared {
+			return nil
+		}
+	}
+	// Remove only an echo of the leading account code, never a fund token.
+	if f := strings.Fields(name); len(f) > 2 && internalFundCode(f[0]) && strings.EqualFold(f[0], f[len(f)-1]) {
+		_, d = issResolveFund(ix, strings.Join(f[:len(f)-1], " "))
+	}
+	// The account code carries no digit at all: `JUGH Focused Growth and
+	// Income` beside the sibling `JU68 Focused Dividend Strategy`, which
+	// internalFundCode already reads (SunAmerica Focused Series 2005, 1,253
+	// rows). Four upper-case letters, and what remains must be a declared name
+	// EXACTLY -- a leading word of a fund's own name is never dropped, because
+	// the whole heading is looked up first and a residual that only nearly
+	// matches stamps nothing.
+	if d == nil {
+		if f := strings.Fields(name); len(f) > 2 && pvTextLetterAccountCode(f[0]) {
+			if alt, _ := lookupSeriesEntry(ix.byName, strings.Join(f[1:], " ")); alt != nil {
+				d = alt
+			}
+		}
+	}
+	// A vendor ACCOUNT CODE in front of the fund name the same line prints:
+	// `BOk-APgrowth American Performance Growth Equity` for the declared
+	// `Growth Equity Fund` (S000008944, American Performance Funds 2005,
+	// 1,174 rows with no series). The code comes off and the NAME goes
+	// through the whole chain, but the answer is kept only when the two agree
+	// token for token once the registrant's own words and the type word are
+	// dropped: the sibling account `BOk-APequity American Performance Equity
+	// Fund` reaches that same series by DROPPING `Growth`, and a subset match
+	// of that shape names the OTHER account's fund. Both stay blank instead.
+	if d == nil {
+		if f := strings.Fields(name); len(f) > 2 && pvTextVendorAccountCode(ix, f[0]) {
+			rest := strings.Join(f[1:], " ")
+			if _, alt := issResolveFund(ix, rest); alt != nil && pvTextNameAgrees(ix, rest, alt.Name) {
+				d = alt
+			}
+		}
+	}
+	// VALIC's numbered second accounts use -2, not a target date or class.
+	if d == nil && (ix.registrantKey == "valic co i" || ix.registrantKey == "valic company i") {
+		if f := strings.Fields(name); len(f) > 1 && internalFundCode(f[0]) && strings.HasSuffix(name, "-2") {
+			stem := strings.TrimSuffix(strings.Join(f[1:], " "), "-2")
+			switch normalizeSeriesName(stem) {
+			case "science and technology fund", "vci large capital growth":
+				_, d = issResolveFund(ix, stem)
+			}
+		}
+	}
+	return d
+}
+
+// pvTextTypeNounSwapDecl resolves a pvtext banner that spells one of the
+// FILING'S OWN declared series names exactly except for the trailing generic
+// type noun: Advisors' Inner Circle Fund (CIK 878719) declares S000006442 as
+// `FMA SMALL COMPANY PORTFOLIO` and heads that fund's vote table
+// `FMA SMALL COMPANY FUND`, so every rung of the pvtext chain -- each of which
+// matches on spelling -- refuses and the section's 371 rows fall through blank.
+//
+// The issnpx layout meets the same substitution and reads it (`AMERITAS SMALL
+// CAP FUND` for a declared `Ameritas Small Cap Portfolio`), but its
+// dropped-type-word rung is guarded by issTierMismatch, which nils the answer
+// wherever the registrant also declares a series on the HEADING's tier -- the
+// Summit two-tier shape, where `SUMMIT RUSSELL 2000 SMALL CAP INDEX FUND` and
+// `SUMMIT RUSSELL SMALL CAP INDEX PORTFOLIO` are different funds. This
+// registrant declares 30-odd ...FUND series, so that guard fires here too.
+//
+// What makes the swap safe here is narrower than the tier guard's condition:
+// everything BEFORE the type noun must match a declaration token for token,
+// which is exactly what the Summit pair does not do (`russell 2000 small cap
+// index` against `russell small cap index`). Both type nouns come from the
+// closed vocabulary issDropTypeWord already owns, the banner must not name a
+// declared series as printed, and two declarations sharing the banner's stem
+// under different type nouns refuse rather than pick. Reads only the filing's
+// own header declarations -- dictionary rows carry a DeclDate and are skipped --
+// never a sibling CIK.
+func pvTextTypeNounSwapDecl(ix *issSeriesIndex, banner string) *SeriesDecl {
+	if ix == nil {
+		return nil
+	}
+	key := normalizeSeriesName(banner)
+	stem, typed := issDropTypeWord(key)
+	if !typed || stem == "" {
+		return nil
+	}
+	keyToks := strings.Fields(key)
+	tw := keyToks[len(keyToks)-1]
+	// The banner as printed already names a series: nothing to swap.
+	if _, declared := lookupSeriesEntry(ix.byName, banner); declared {
+		return nil
+	}
+	if _, d := issResolveFund(ix, banner); d != nil {
+		return nil
+	}
+	var found *SeriesDecl
+	for i := range ix.decls {
+		d := &ix.decls[i]
+		if d.SeriesID == "" || d.DeclDate != "" {
+			continue
+		}
+		declStem, declTyped := issDropTypeWord(normalizeSeriesName(d.Name))
+		if !declTyped || declStem != stem {
+			continue
+		}
+		if f := ix.declToks(i); len(f) == 0 || f[len(f)-1] == tw {
+			continue // the same type noun: not a swap, and the chain had its say
+		}
+		if found != nil && found.SeriesID != d.SeriesID {
+			return nil // two declarations share the stem; neither is the answer
+		}
+		found = d
+	}
+	return found
+}
+
+// pvTextVendorAccountCode reports a leading token that is the custodian's own
+// account code rather than a word of the fund's name: it is hyphenated, it
+// changes case inside itself the way no printed fund word does, and no name
+// this registrant declares carries either of its parts. That last test is what
+// keeps a hyphenated fund word -- `Tax-Free`, `Bal-Aggresive` -- out.
+func pvTextVendorAccountCode(ix *issSeriesIndex, tok string) bool {
+	if len(tok) < 5 || len(tok) > 24 || !strings.Contains(tok, "-") {
+		return false
+	}
+	lower, mixed := false, false
+	for i := 0; i < len(tok); i++ {
+		switch c := tok[i]; {
+		case c >= 'a' && c <= 'z':
+			lower = true
+		case c >= 'A' && c <= 'Z':
+			if lower {
+				mixed = true
+			}
+		case c >= '0' && c <= '9', c == '-':
+		default:
+			return false
+		}
+	}
+	if !mixed {
+		return false
+	}
+	for _, part := range strings.Fields(normalizeSeriesName(tok)) {
+		if pvTextDeclaredToken(ix, part) {
+			return false
+		}
+	}
+	return true
+}
+
+// pvTextDeclaredToken reports whether any name this filing's index knows spells
+// the token.
+func pvTextDeclaredToken(ix *issSeriesIndex, tok string) bool {
+	for i := range ix.decls {
+		for _, t := range strings.Fields(normalizeSeriesName(ix.decls[i].Name)) {
+			if t == tok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// pvTextNameAgrees reports whether a printed account name and the declared name
+// it resolved to carry the SAME distinguishing words -- everything either one
+// spells once the registrant's own words and the generic type words are set
+// aside. A heading that merely contains a subset of the declared words, or adds
+// one of its own, names a different sleeve and is refused.
+func pvTextNameAgrees(ix *issSeriesIndex, printed, declared string) bool {
+	a, b := pvTextDistinctWords(ix, printed), pvTextDistinctWords(ix, declared)
+	if len(a) == 0 || len(a) != len(b) {
+		return false
+	}
+	for w := range a {
+		if !b[w] {
+			return false
+		}
+	}
+	return true
+}
+
+var pvTextGenericWord = map[string]bool{
+	"fund": true, "funds": true, "portfolio": true, "portfolios": true,
+	"trust": true, "series": true, "account": true, "accounts": true,
+	"inc": true, "the": true, "of": true,
+}
+
+func pvTextDistinctWords(ix *issSeriesIndex, name string) map[string]bool {
+	reg := map[string]bool{}
+	for _, t := range strings.Fields(ix.registrantKey) {
+		reg[t] = true
+	}
+	out := map[string]bool{}
+	for _, t := range strings.Fields(normalizeSeriesName(name)) {
+		if reg[t] || pvTextGenericWord[t] {
+			continue
+		}
+		out[t] = true
+	}
+	return out
+}
+
+// pvTextLetterAccountCode reports an account code of exactly four upper-case
+// letters, the digitless sibling of internalFundCode.
+func pvTextLetterAccountCode(tok string) bool {
+	if len(tok) != 4 {
+		return false
+	}
+	for i := 0; i < len(tok); i++ {
+		if tok[i] < 'A' || tok[i] > 'Z' {
+			return false
+		}
+	}
+	return true
+}
+
+// pvTextBareAccountCode reports a single alphanumeric token carrying a digit and
+// no name words -- `ONF19-6559`, `ONFS71B` -- which Ohio National prints under
+// the page's portfolio heading. It names no fund, so it must not displace a
+// heading that already resolved.
+func pvTextBareAccountCode(name string) bool {
+	if strings.ContainsAny(name, " \t") || len(name) < 4 {
+		return false
+	}
+	digit := false
+	for i := 0; i < len(name); i++ {
+		switch c := name[i]; {
+		case c >= '0' && c <= '9':
+			digit = true
+		case c >= 'a' && c <= 'z', c >= 'A' && c <= 'Z', c == '-':
+		default:
+			return false
+		}
+	}
+	return digit
+}
+
+// pvTextAccountFund retains the printed account code and name; only the
+// resolver removes account decorations when matching a declared series.
+func pvTextAccountFund(line string) (string, bool) {
+	t := strings.TrimSpace(line)
+	for _, label := range []string{"ACCOUNT NUMBER:", "ACCOUNT NAME:"} {
+		if len(t) > len(label) && strings.EqualFold(t[:len(label)], label) {
+			name := strings.TrimSpace(t[len(label):])
+			return name, name != ""
+		}
+	}
+	return "", false
+}
+
+// pvTextBlankBetween reports that nothing but blank lines separates lines a and b.
+func pvTextBlankBetween(lines []string, a, b int) bool {
+	for j := a + 1; j < b; j++ {
+		if strings.TrimSpace(lines[j]) != "" {
+			return false
+		}
+	}
+	return true
+}
+
+// -- The SEI Institutional rendering -------------------------------------
+//
+// pvtext's second shape, and the largest coherent family left unread on
+// 2026-09-19: 144 of the 997 large skipped filings, 246 MB, every one filed
+// through agent 0001135428. It is the same two-part grammar -- an identity
+// block, then a fixed-width proposal table -- with a header the vendor spells
+// differently and GLUES TOGETHER:
+//
+//	                          CORE FIXED INCOME FUND
+//	 PROPOSAL                        PROPOSED BY MGT. POSITION     REGISTRANT VOTED
+//	<S>                                   <C>         <C>               <C>
+//	EVERGREEN FUNDS
+//	 CUSIP: 300250602
+//	 Meeting Date: 3/12/2009  Meeting Type: Special
+//	 1. Approve Investment Advisory Agreement   Management   For   Voted - For
+//
+// The header's four labels are PROPOSAL, PROPOSED BY, MGT. POSITION and
+// REGISTRANT VOTED, and the last three are separated by a SINGLE space -- on
+// most pages all three are glued -- so a gap split of the header yields two or
+// three cells however it is cut. The `<S> <C> <C> <C>` alignment line is what
+// says there are four columns; the data rows, whose cells the vendor does
+// separate by a real gap, are what says where they are. There is no rule line
+// anywhere in the document.
+//
+// how_voted is `Voted - For` verbatim, as the filing prints it. The management
+// position (`For`) is a separate column and is never read as the vote.
+
+// pvSEIHeaderAt reports the header line at i. The `<S> <C> <C> <C>` alignment
+// line the vendor prints beneath it is NOT available here and cannot be the
+// column witness: stripHTML deletes every SGML tag, so by the time the text
+// reaches a Parse layout the alignment line is gone entirely. What survives is
+// the two-space gap collapseSpaces preserves, which is exactly the cut the DATA
+// rows are laid out on -- four cells, however the header itself is glued. The
+// header phrase is the signature; the row arity is the column count.
+func pvSEIHeaderAt(lines []string, i int) bool {
+	return pvSEIHeaderLine(lines[i])
+}
+
+func pvSEIHeaderLine(line string) bool {
+	cells := icrCells(strings.TrimSpace(line))
+	if len(cells) < 2 || strings.ToUpper(cells[0]) != "PROPOSAL" {
+		return false
+	}
+	rest := strings.ToUpper(strings.Join(cells[1:], " "))
+	return strings.Contains(rest, "PROPOSED BY") &&
+		strings.Contains(rest, "MGT. POSITION") &&
+		strings.Contains(rest, "REGISTRANT VOTED")
+}
+
+// pvSEIItemPrefix splits a leading item number off the proposal cell, returning
+// the number and the description. A cell with no such prefix is not a vote row.
+func pvSEIItemPrefix(cell string) (string, string, bool) {
+	fields := strings.Fields(cell)
+	if len(fields) < 2 {
+		return "", "", false
+	}
+	item := strings.TrimSuffix(fields[0], ".")
+	if item == fields[0] || item == "" || len(item) > 6 {
+		return "", "", false
+	}
+	digit := false
+	for i := 0; i < len(item); i++ {
+		switch {
+		case item[i] >= '0' && item[i] <= '9':
+			digit = true
+		case item[i] >= 'a' && item[i] <= 'z', item[i] >= 'A' && item[i] <= 'Z', item[i] == '.':
+		default:
+			return "", "", false
+		}
+	}
+	if !digit {
+		return "", "", false
+	}
+	return item, strings.Join(fields[1:], " "), true
+}
+
+// pvSEIPageNumber reports the bare page number this vendor prints at the foot
+// of a page. It is a line of digits and nothing else, so no issuer name can be
+// one.
+func pvSEIPageNumber(line string) bool {
+	line = strings.TrimSpace(line)
+	if line == "" {
+		return false
+	}
+	for i := 0; i < len(line); i++ {
+		if line[i] < '0' || line[i] > '9' {
+			return false
+		}
+	}
+	return true
+}
+
+// pvSEIFundReprint reports the bare line at i as the fund heading a page break
+// reprints, rather than an issuer heading, by looking ahead to the next content
+// line: on a resumed page that line is the column header, because the vendor
+// reprints <PAGE>, the fund and the header and does NOT reprint the issuer.
+func pvSEIFundReprint(lines []string, i int) bool {
+	for k := i + 1; k < len(lines); k++ {
+		next := strings.TrimSpace(lines[k])
+		if next == "" || pvTextPageFurniture(next) {
+			continue
+		}
+		return pvSEIHeaderLine(next)
+	}
+	return false
+}
+
+func parsePVTextSEI(lines []string, meta FilingMeta) []VoteRow {
+	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
+	issFormerKeys(seriesIx, meta.FormerNames)
+	// What THIS document's own page headings already spell out in full, before
+	// any of them is resolved: the one rung that reads it (issNearMissDecl's
+	// claimed elimination) needs the whole set, so it cannot be gathered as the
+	// loop goes.
+	issExactBannerClaims(seriesIx, pvSEIBanners(lines))
+	dict := cikDict.exactFallback(meta)
+
+	var (
+		rows       []VoteRow
+		fund       string
+		fundSeries string
+		issuer     string
+		ticker     string
+		cusip      string
+		mtgDate    string
+		mtgType    string
+		inTable    bool
+	)
+
+	for i := 0; i < len(lines); i++ {
+		line := strings.TrimSpace(lines[i])
+		if pvSEIHeaderAt(lines, i) {
+			// The fund is the page heading printed directly above the column
+			// header, on its own line. A line with columns on it is the tail of
+			// the previous page's table, not a heading, and leaves the fund as
+			// it was.
+			if prev, ok := pvSEIHeadingAbove(lines, i); ok && prev != fund {
+				fund = prev
+				fundSeries = icrResolveFundShared(seriesIx, prev)
+				// The filing's own header answers before the corpus
+				// dictionary does; see pvTextTypeNounSwapDecl.
+				if fundSeries == "" {
+					if d := pvTextTypeNounSwapDecl(seriesIx, prev); d != nil {
+						fundSeries = d.SeriesID
+					}
+				}
+				if fundSeries == "" {
+					fundSeries = htmlDictionaryFund(seriesIx, dict, prev)
+				}
+			}
+			inTable = true
+			continue
+		}
+		if !inTable || line == "" || pvTextPageFurniture(line) {
+			continue
+		}
+		cells := icrCells(line)
+		if pairs := lvPairs(cells); len(pairs) > 0 {
+			for _, p := range pairs {
+				switch p.label {
+				case "CUSIP", "ISSUER":
+					// The 2010 vintage relabels the identity line: where 2008
+					// and 2009 print `CUSIP: 300250602`, 2010 prints
+					// `Issuer: 88579Y101 Ticker: MMM` for the same field. The
+					// value is the security id either way; icrCUSIP/icrISIN
+					// pick the token out of it. Scoped to this layout -- in
+					// other renderings `Issuer:` names the company.
+					cusip = p.value
+				case "TICKER":
+					ticker = p.value
+				case "MEETING DATE":
+					mtgDate = htmlDate(p.value)
+				case "MEETING TYPE":
+					mtgType = p.value
+				}
+			}
+			continue
+		}
+		if len(cells) >= 4 {
+			item, desc, ok := pvSEIItemPrefix(cells[0])
+			if !ok {
+				continue
+			}
+			n := len(cells)
+			if n > 4 {
+				desc = strings.TrimSpace(desc + " " + strings.Join(cells[1:n-3], " "))
+			}
+			rows = append(rows, VoteRow{
+				FundName:                 fund,
+				SeriesID:                 fundSeries,
+				IssuerName:               issuer,
+				Ticker:                   ticker,
+				CUSIP:                    icrCUSIP(cusip),
+				ISIN:                     icrISIN(cusip),
+				MeetingDate:              mtgDate,
+				MeetingType:              mtgType,
+				ItemSeq:                  item,
+				VoteDescription:          desc,
+				VoteSource:               cells[n-3],
+				ManagementRecommendation: cells[n-2],
+				HowVoted:                 cells[n-1],
+			})
+			continue
+		}
+		if len(cells) == 1 {
+			// A bare line: the issuer heading that opens the next meeting's
+			// identity block. Everything the previous block left is stale.
+			//
+			// Two bare lines are not issuer headings and must not clear the
+			// carried identity. A meeting that runs past the bottom of a page
+			// resumes with <PAGE>, the fund heading and the column header, and
+			// no reprinted issuer block -- so a bare line whose next content
+			// line is the column header is that reprinted fund heading, which
+			// the header branch above already reads as the fund. And a proposal
+			// description too long for its column is continued on its own
+			// indented line; an issuer heading starts at column 0. The page
+			// number the vendor prints at the foot of the page is bare too.
+			if lineIndented(lines[i]) || pvSEIPageNumber(line) || pvSEIFundReprint(lines, i) {
+				continue
+			}
+			issuer = cells[0]
+			ticker, cusip, mtgDate, mtgType = "", "", "", ""
+		}
+	}
+	return rows
+}

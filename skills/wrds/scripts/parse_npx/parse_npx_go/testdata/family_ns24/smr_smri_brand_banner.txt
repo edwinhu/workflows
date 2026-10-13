@@ -1,0 +1,132 @@
+<SEC-DOCUMENT>0000881166-10-000014.txt : 20100820
+<SEC-HEADER>0000881166-10-000014.hdr.sgml : 20100820
+<ACCEPTANCE-DATETIME>20100820113855
+ACCESSION NUMBER:		0000881166-10-000014
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20100630
+FILED AS OF DATE:		20100820
+DATE AS OF CHANGE:		20100820
+EFFECTIVENESS DATE:		20100820
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SM&R INVESTMENTS, INC.
+		CENTRAL INDEX KEY:			0000881166
+		IRS NUMBER:				760360347
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			0831
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010236
+<SERIES-NAME>SM&R Growth Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010239
+<SERIES-NAME>SM&R Equity Income Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010240
+<SERIES-NAME>SM&R Balanced Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>smrinpx06302010.htm
+<TEXT>
+<html>
+
+<head>
+<title>SM&R NPX</title>
+</head>
+<p align="center">
+<b>FORM N-PX</b><br>
+<br>
+ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT<br>
+
+INVESTMENT COMPANY<br>
+<br>
+Investment Company Act file number:  811-6477<br>
+Date of fiscal year end:  August 31<br>
+
+Date of reporting period:  July 1, 2009 - June 30, 2010<br>
+</p>
+<hr>
+<b>SMRI Growth</b><br>
+<br>
+MARVELL TECHNOLOGY GROUP LTD.<br>
+
+  <table border="0" width="800" cellpadding="2">
+   <tr>
+    <td width="200" valign="top"><b>Security</b></td>
+    <td width="200" valign="top">G5876H105</td>
+    <td width="200" valign="top"><b>Meeting Type</b></td>
+    <td width="200" valign="top">Annual  </td>
+   </tr>
+  </table>
+  <table border="0" width="800" cellpadding="2">
+   <tr>
+    <td width="200" valign="top"><b>Ticker Symbol</b></td>
+    <td width="200" valign="top">MRVL           </td>
+    <td width="200" valign="top"><b>Meeting Date</b></td>
+    <td width="200" valign="top">10-Jul-2009</td>
+   </tr>
+  </table>
+  <table border="0" width="800" cellpadding="2">
+   <tr>
+    <td width="200" valign="top"><b>ISIN</b></td>
+    <td width="200" valign="top">BMG5876H1051</td>
+    <td width="200" valign="top"><b>Agenda</b></td>
+    <td width="200" valign="top">933101519 - Management</td>
+   </tr>
+  </table>
+  <table border="0" width="800" cellpadding="2">
+   <tr>
+    <td width="150" valign="top"><b><u>Item</u></b></td>
+    <td width="300" valign="top"><b><u>Proposal</u></b></td>
+    <td width="150" valign="top"><b><u>Type</u></b></td>
+    <td width="100" valign="top"><b><u>Vote</u></b></td>
+    <td width="100" valign="top"><b><u>For/Against&#10;Management</u></b></td>
+   </tr>
+  </table>
+  <table border="0" width="800" cellpadding="2">
+   <tr>
+    <td width="150" valign="top">1A   </td>
+    <td width="300" valign="top">ELECTION OF DIRECTOR: DR. SEHAT SUTARDJA</td>
+    <td width="150" valign="top">Management</td>
+    <td width="100" valign="top">For</td>
+    <td width="100" valign="top">For</td>
+   </tr>
+  </table>
+  <table border="0" width="800" cellpadding="2">
+   <tr>
+    <td width="150" valign="top">1B   </td>
+    <td width="300" valign="top">ELECTION OF DIRECTOR: DR. PANTAS SUTARDJA</td>
+    <td width="150" valign="top">Management</td>
+    <td width="100" valign="top">For</td>
+    <td width="100" valign="top">For</td>
+   </tr>
+  </table>
+  <table border="0" width="800" cellpadding="2">
+   <tr>
+    <td width="150" valign="top">02   </td>
+    <td width="300" valign="top">TO RE-APPOINT PRICEWATERHOUSECOOPERS LLP AS OUR AUDITORS AND INDEPENDENT REGISTERED PUBLIC ACCOUNTING FIRM, AND TO AUTHORIZE THE AUDIT COMMITTEE, ACTING ON BEHALF OF THE BOARD OF DIRECTORS, TO FIX THE REMUNERATION OF THE AUDITORS AND INDEPENDENT REGISTERED PUBLIC ACCOUNTING FIRM, IN BOTH CASES FOR THE FISCAL YEAR ENDING JANUARY 30, 2010</td>
+    <td width="150" valign="top">Management</td>
+    <td width="100" valign="top">For</td>
+    <td width="100" valign="top">For</td>
+   </tr>
+  </table>
+  <table border="0" width="800" cellpadding="2">
+   <tr>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

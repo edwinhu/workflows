@@ -1,0 +1,134 @@
+<SEC-DOCUMENT>0001104659-11-049118.txt : 20110829
+<SEC-HEADER>0001104659-11-049118.hdr.sgml : 20110829
+<ACCEPTANCE-DATETIME>20110829101351
+ACCESSION NUMBER:		0001104659-11-049118
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110829
+DATE AS OF CHANGE:		20110829
+EFFECTIVENESS DATE:		20110829
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Columbia Funds Variable Series Trust II
+		CENTRAL INDEX KEY:			0001413032
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22127
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001413032
+<SERIES-ID>S000019838
+<SERIES-NAME>Columbia Variable Portfolio - Balanced Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001413032
+<SERIES-ID>S000019839
+<SERIES-NAME>Columbia Variable Portfolio - Global Inflation Protected Securities Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001413032
+<SERIES-ID>S000019840
+<SERIES-NAME>Columbia Variable Portfolio - Large Cap Growth Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001413032
+<SERIES-ID>S000019841
+<SERIES-NAME>Columbia Variable Portfolio - High Yield Bond Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001413032
+<SERIES-ID>S000019842
+<SERIES-NAME>Columbia Variable Portfolio - Income Opportunities Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001413032
+<SERIES-ID>S000019843
+<SERIES-NAME>Columbia Variable Portfolio - International Opportunity Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001413032
+<SERIES-ID>S000019844
+<SERIES-NAME>Columbia Variable Portfolio - Dynamic Equity Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001413032
+<SERIES-ID>S000019845
+<SERIES-NAME>Columbia Variable Portfolio - Select Large-Cap Value Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001413032
+<SERIES-ID>S000019846
+<SERIES-NAME>Columbia Variable Portfolio - Mid Cap Growth Opportunity Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001413032
+<SERIES-ID>S000019847
+<SERIES-NAME>Columbia Variable Portfolio - Mid Cap Value Opportunity Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001413032
+<SERIES-ID>S000019849
+<SERIES-NAME>Columbia Variable Portfolio - Cash Management Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">================= COLUMBIA VARIABLE PORTFOLIO - BALANCED FUND ==================</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">ABB LTD.&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker:&#160;&#160;&#160;&#160;&#160;&#160; ABBN&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;Security ID:&#160; 000375204&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Date: APR 29, 2011&#160;&#160; Meeting Type: Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Record Date:&#160; MAR 24, 2011&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">#&#160;&#160;&#160;&#160; Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;Mgt Rec&#160;&#160; Vote Cast&#160;&#160;&#160; Sponsor&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1&#160;&#160;&#160;&#160; Receive Financial Statements and&#160;&#160;&#160;&#160;&#160;&#160;&#160; None&#160;&#160;&#160;&#160;&#160; None&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;Statutory Reports (Non-Voting)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">--------------------------------------------------------------------------------</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">RIO TINTO PLC&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker:&#160;&#160;&#160;&#160;&#160;&#160; RIO&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Security ID:&#160; 767204100&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Date: APR 14, 2011&#160;&#160; Meeting Type: Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Record Date:&#160; MAR 09, 2011&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">#&#160;&#160;&#160;&#160; Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgt Rec&#160;&#160; Vote Cast&#160;&#160;&#160; Sponsor&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1&#160;&#160;&#160;&#160; Accept Financial Statements and&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">17&#160;&#160;&#160; Amend Performance Share Plan&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">18&#160;&#160;&#160; Amend Share Ownership Plan&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">19&#160;&#160;&#160; Authorise Issue of Equity with&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;Pre-emptive Rights&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">20 &#160;&#160;&#160;Authorise Issue of Equity without&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;Pre-emptive Rights&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">21&#160;&#160;&#160; Authorise Market Purchase&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">22&#160;&#160;&#160; Authorise the Company to Call EGM with&#160; For&#160;&#160;&#160;&#160;&#160;&#160; Against&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;Two Weeks' Notice&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">--------------------------------------------------------------------------------</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">SCHLUMBERGER LIMITED&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker:&#160;&#160;&#160;&#160;&#160;&#160; SLB&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Security ID:&#160; 806857108&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Date: APR 06, 2011&#160;&#160; Meeting Type: Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Record Date:&#160; FEB 16, 2011&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">#&#160;&#160;&#160;&#160; Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgt Rec&#160;&#160; Vote Cast&#160;&#160;&#160; Sponsor&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160; Elect Director Philippe Camus&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.2&#160;&#160; Elect Director Peter L.S. Currie&#160;&#160;&#160;&#160;&#160;&#160;&#160; For &#160;&#160;&#160;&#160;&#160;&#160;For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.3&#160;&#160; Elect Director Andrew Gould&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; Against&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.4&#160;&#160; Elect Director Tony Isaac&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; Against&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.5&#160;&#160; Elect Director K. Vaman Kamath&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.6&#160;&#160; Elect Director Nikolay Kudryavtsev&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.7&#160;&#160; Elect Director Adrian Lajous&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.8&#160;&#160; Elect Director Michael E. Marks&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.9&#160;&#160; Elect Director Elizabeth Moler&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.10&#160; Elect Director Leo Rafael Reif&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.11&#160; Elect Director Tore I. Sandvold&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>

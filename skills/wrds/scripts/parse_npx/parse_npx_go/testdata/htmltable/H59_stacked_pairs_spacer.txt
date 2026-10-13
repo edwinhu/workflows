@@ -1,0 +1,242 @@
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top" colspan="13"><hr size="2" color="#000000" noshade></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="1%"  align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="11%" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="1%"  align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="24%" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="2%"  align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="8%"  align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="2%"  align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="8%"  align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="2%"  align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="8%"  align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="2%"  align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="6%" ><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2"><b>Akamai
+ Technologies, Inc.</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2"><b>Ticker</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2"><b>Security
+ ID:</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap colspan="3" valign="top" align="left"><font face="Arial" size="2"><b>Meeting Date</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap colspan="3" valign="top" align="left"><font face="Arial" size="2"><b>Meeting Status</b></font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">AKAM</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">CUSIP 00971T101</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">05/14/2014</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Voted</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2"><b>Meeting Type</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2"><b>Country
+ of Trade</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Annual</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">United States</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2"><b>Issue No.
+</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2"><b>Description
+</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2"><b>Proponent
+</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2"><b>Mgmt Rec
+</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2"><b>Vote Cast
+</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td nowrap valign="top" align="left"><font face="Arial" size="2"><b>For/Agnst
+</b></font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2"><b>Mgmt</b></font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">1</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Elect Monte
+ Ford</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Mgmt</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">2</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Elect Frederic
+ V. Salerno</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Mgmt</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">3</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Elect Steven
+ Scopellite</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Mgmt</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">4</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Elect Bernardus
+ Verwaayen</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Mgmt</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">5</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Advisory Vote
+ on Executive Compensation</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Mgmt</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">6</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Ratification
+ of Auditor</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Mgmt</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">7</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Shareholder
+ Proposal Regarding Declassification of the Board</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">ShrHoldr</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Against</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">Against</font></td>
+</tr>
+</table>

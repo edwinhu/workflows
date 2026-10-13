@@ -1,0 +1,630 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ CUsez1QMSupyMjiQNCCh21OzaxdLg/28Wa3T5ftd7y/G6EosGRzNeJLzk4xhX//O
+ MDiEhy241SrqnUxmamwTKQ==
+
+<SEC-DOCUMENT>0001135428-07-000386.txt : 20070829
+<SEC-HEADER>0001135428-07-000386.hdr.sgml : 20070829
+<ACCEPTANCE-DATETIME>20070829131912
+ACCESSION NUMBER:		0001135428-07-000386
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20070630
+FILED AS OF DATE:		20070829
+DATE AS OF CHANGE:		20070829
+EFFECTIVENESS DATE:		20070829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CNI CHARTER FUNDS
+		CENTRAL INDEX KEY:			0001026977
+		IRS NUMBER:				911766001
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07923
+		FILM NUMBER:		071086733
+
+	BUSINESS ADDRESS:	
+		STREET 1:		650 CALIFORNIA ST
+		STREET 2:		STE 2800
+		CITY:			SAN FRANCISCO
+		STATE:			CA
+		ZIP:			94108
+		BUSINESS PHONE:		4153930300
+
+	MAIL ADDRESS:	
+		STREET 1:		650 CALIFORNIA ST
+		STREET 2:		SUITE 2800
+		CITY:			SAN FRANCISCO
+		STATE:			CA
+		ZIP:			94108
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	BERKELEY FUNDS TRUST
+		DATE OF NAME CHANGE:	19980319
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	BERKELEY CAPITAL MANAGEMENT FUNDS
+		DATE OF NAME CHANGE:	19961113
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005742
+<SERIES-NAME>AHA FULL MATURITY FIXED INCOME FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015766
+<CLASS-CONTRACT-NAME>AHA FULL MATURITY FIXED INCOME FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>AHAFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015767
+<CLASS-CONTRACT-NAME>AHA FULL MATURITY FIXED INCOME FUND - CLASS I
+<CLASS-CONTRACT-TICKER-SYMBOL>AHFMX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005763
+<SERIES-NAME>AHA LIMITED MATURITY FIXED INCOME FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015839
+<CLASS-CONTRACT-NAME>AHA LIMITED MATURITY FIXED INCOME FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>AHALX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015840
+<CLASS-CONTRACT-NAME>AHA LIMITED MATURITY FIXED INCOME FUND - CLASS I
+<CLASS-CONTRACT-TICKER-SYMBOL>AHLFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005765
+<SERIES-NAME>AHA BALANCED FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015846
+<CLASS-CONTRACT-NAME>AHA BALANCED FUND - CLASS I
+<CLASS-CONTRACT-TICKER-SYMBOL>AHBPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005770
+<SERIES-NAME>AHA DIVERSIFIED EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015854
+<CLASS-CONTRACT-NAME>AHA DIVERSIFIED EQUITY FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>AHADX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015855
+<CLASS-CONTRACT-NAME>AHA DIVERSIFIED EQUITY FUND - CLASS I
+<CLASS-CONTRACT-TICKER-SYMBOL>AHDEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005771
+<SERIES-NAME>AHA SOCIALLY RESPONSIBLE EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015856
+<CLASS-CONTRACT-NAME>AHA SOCIALLY RESPONSIBLE EQUITY FUND - CLASS I
+<CLASS-CONTRACT-TICKER-SYMBOL>AHSRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015857
+<CLASS-CONTRACT-NAME>AHA SOCIALLY RESPONSIBLE EQUITY FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>AHRAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005827
+<SERIES-NAME>CNI CHARTER LARGE CAP GROWTH EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015985
+<CLASS-CONTRACT-NAME>CNI CHARTER LARGE CAP GROWTH EQUITY FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>CLEAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015986
+<CLASS-CONTRACT-NAME>CNI CHARTER LARGE CAP GROWTH EQUITY FUND - INSTITUTIONAL
+<CLASS-CONTRACT-TICKER-SYMBOL>CNGIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005828
+<SERIES-NAME>CNI CHARTER HIGH YIELD BOND FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015987
+<CLASS-CONTRACT-NAME>CNI CHARTER HIGH YIELD BOND FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>CHBAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015988
+<CLASS-CONTRACT-NAME>CNI CHARTER HIGH YIELD BOND FUND - INSTITUTIONAL
+<CLASS-CONTRACT-TICKER-SYMBOL>CHYIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005829
+<SERIES-NAME>CNI LARGE CAP VALUE EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015989
+<CLASS-CONTRACT-NAME>CNI LARGE CAP VALUE EQUITY FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>CVEAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015990
+<CLASS-CONTRACT-NAME>CNI LARGE CAP VALUE EQUITY FUND - INSTITUTIONAL
+<CLASS-CONTRACT-TICKER-SYMBOL>CNLIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005830
+<SERIES-NAME>CNI CHARTER TECHNOLOGY GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015991
+<CLASS-CONTRACT-NAME>CNI CHARTER TECHNOLOGY GROWTH FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>CTGAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015992
+<CLASS-CONTRACT-NAME>CNI CHARTER TECHNOLOGY GROWTH FUND - INSTITUTIONAL
+<CLASS-CONTRACT-TICKER-SYMBOL>CTEIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005831
+<SERIES-NAME>CNI CHARTER RCB SMALL CAP VALUE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015993
+<CLASS-CONTRACT-NAME>CNI CHARTER RCB SMALL CAP VALUE FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>RCBAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015994
+<CLASS-CONTRACT-NAME>CNI CHARTER RCB SMALL CAP VALUE FUND - INSTITUTIONAL
+<CLASS-CONTRACT-TICKER-SYMBOL>RCBIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015995
+<CLASS-CONTRACT-NAME>CNI CHARTER RCB SMALL CAP VALUE FUND - CLASS R
+<CLASS-CONTRACT-TICKER-SYMBOL>RCBSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005832
+<SERIES-NAME>CNI CHARTER PRIME MONEY MARKET FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015996
+<CLASS-CONTRACT-NAME>CNI CHARTER PRIME MONEY MARKET FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>CNPXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015997
+<CLASS-CONTRACT-NAME>CNI CHARTER PRIME MONEY MARKET FUND - INSTITUTIONAL
+<CLASS-CONTRACT-TICKER-SYMBOL>CNMXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015998
+<CLASS-CONTRACT-NAME>CNI CHARTER PRIME MONEY MARKET FUND - CLASS S
+<CLASS-CONTRACT-TICKER-SYMBOL>CNSXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005833
+<SERIES-NAME>CNI CHARTER GOVERNMENT MONEY MARKET FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015999
+<CLASS-CONTRACT-NAME>CNI CHARTER GOVERNMENT MONEY MARKET FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>CNGXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016000
+<CLASS-CONTRACT-NAME>CNI CHARTER GOVERNMENT MONEY MARKET FUND - INSTITUTIONAL
+<CLASS-CONTRACT-TICKER-SYMBOL>CNIXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016001
+<CLASS-CONTRACT-NAME>CNI CHARTER GOVERNMENT MONEY MARKET FUND - CLASS S
+<CLASS-CONTRACT-TICKER-SYMBOL>CNFXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005834
+<SERIES-NAME>CNI CHARTER CALIFORNIA TAX EXEMPT MONEY MARKET FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016002
+<CLASS-CONTRACT-NAME>CNI CHARTER CALIFORNIA TAX EXEMPT MONEY MARKET FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>CNEXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016003
+<CLASS-CONTRACT-NAME>CNI CHARTER CALIFORNIA TAX EXEMPT MONEY MARKET FUND - INSTITUTIONAL
+<CLASS-CONTRACT-TICKER-SYMBOL>CNTXX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016004
+<CLASS-CONTRACT-NAME>CNI CHARTER CALIFORNIA TAX EXEMPT MONEY MARKET FUND - CLASS S
+<CLASS-CONTRACT-TICKER-SYMBOL>CEMXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005835
+<SERIES-NAME>CNI CHARTER CALIFORNIA TAX - EXEMPT BOND FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016005
+<CLASS-CONTRACT-NAME>CNI CHARTER CALIFORNIA TAX - EXEMPT BOND FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>CCTEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016006
+<CLASS-CONTRACT-NAME>CNI CHARTER CALIFORNIA TAX - EXEMPT BOND FUND - INSTITUTIONAL
+<CLASS-CONTRACT-TICKER-SYMBOL>CNTIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005836
+<SERIES-NAME>CNI CHARTER CORPORATE BOND FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016007
+<CLASS-CONTRACT-NAME>CNI CHARTER CORPORATE BOND FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>CCBAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016008
+<CLASS-CONTRACT-NAME>CNI CHARTER CORPORATE BOND FUND - INSTITUTIONAL
+<CLASS-CONTRACT-TICKER-SYMBOL>CNCIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000005837
+<SERIES-NAME>CNI CHARTER GOVERNMENT BOND FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016009
+<CLASS-CONTRACT-NAME>CNI CHARTER GOVERNMENT BOND FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>CGBAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016010
+<CLASS-CONTRACT-NAME>CNI CHARTER GOVERNMENT BOND FUND - INSTITUTIONAL
+<CLASS-CONTRACT-TICKER-SYMBOL>CNBIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001026977
+<SERIES-ID>S000018801
+<SERIES-NAME>Multi-Asset Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000052022
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000052023
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>cni.txt
+<TEXT>
+<PAGE>
+
+
+
+                                                         Large Cap Growth Fund
+
+  Proposal                                                                           Proposed by   Mgt. Position Registrant Voted
+
+
+
+CENDANT CORPORATION (CONTINUED)
+
+  1.5.  Elect Director Martin L. Edelman                                                        Management  For     Voted - Withhold
+  1.6.  Elect Director George Herrera                                                           Management  For     Voted - Withhold
+  1.7.  Elect Director Stephen P. Holmes                                                        Management  For     Voted - Withhold
+  1.8.  Elect Director Louise T. Blouin Macbain                                                 Management  For     Voted - Withhold
+  1.9.  Elect Director Cheryl D. Mills                                                          Management  For     Voted - Withhold
+  1.10. Elect Director Brian Mulroney                                                           Management  For     Voted - Withhold
+  1.11. Elect Director Robert E. Nederlander                                                    Management  For     Voted - Withhold
+  1.12. Elect Director Ronald L. Nelson                                                         Management  For     Voted - Withhold
+  1.13. Elect Director Robert W. Pittman                                                        Management  For     Voted - Withhold
+  1.14. Elect Director Pauline D.E. Richards                                                    Management  For     Voted - Withhold
+  1.15. Elect Director Sheli Z. Rosenberg                                                       Management  For     Voted - Withhold
+  1.16. Elect Director Robert F. Smith                                                          Management  For     Voted - Withhold
+  1.17. Elect Director Ronald L. Nelson                                                         Management  For     Voted - Withhold
+  1.18. Elect Director Leonard S. Coleman                                                       Management  For     Voted - Withhold
+  1.19. Elect Director Martin L. Edelman                                                        Management  For     Voted - Withhold
+  1.20. Elect Director Sheli Z. Rosenberg                                                       Management  For     Voted - Withhold
+  1.21. Elect Director F. Robert Salerno                                                        Management  For     Voted - Withhold
+  1.22. Elect Director Stender E. Sweeney                                                       Management  For     Voted - For
+  2.    Ratify Auditors                                                                         Management  For     Voted - For
+  3.    Approve Reverse Stock Split                                                             Management  For     Voted - For
+  4.    Change Company Name                                                                     Management  For     Voted - For
+  5.    Company Specific-Redesignation of Common Stock                                          Management  For     Voted - For
+  6.    Reduce Authorized Common Stock                                                          Management  For     Voted - For
+  7.    Non-Employee Director Compensation                                                      Shareholder Against Voted - Against
+  8.    Submit Severance Agreement (Change In Control) to Shareholder Vote                      Shareholder Against Voted - For
+
+CHEVRON CORPORATION
+
+  CUSIP: 166764100       Ticker: CVX
+
+
+ Meeting Date: 4/25/2007            Meeting Type: Annual
+
+  1.    Elect Director Samuel H. Armacost                                                       Management  For     Voted - For
+  2.    Elect Director Linnet F. Deily                                                          Management  For     Voted - For
+  3.    Elect Director Robert E. Denham                                                         Management  For     Voted - For
+  4.    Elect Director Robert J. Eaton                                                          Management  For     Voted - For
+  5.    Elect Director Sam Ginn                                                                 Management  For     Voted - For
+  6.    Elect Director Franklyn G. Jenifer                                                      Management  For     Voted - For
+  7.    Elect Director Sam Nunn                                                                 Management  For     Voted - For
+  8.    Elect Director David J. O'reilly                                                        Management  For     Voted - For
+  9.    Elect Director Donald B. Rice                                                           Management  For     Voted - For
+  10.   Elect Director Peter J. Robertson                                                       Management  For     Voted - For
+  11.   Elect Director Kevin W. Sharer                                                          Management  For     Voted - For
+  12.   Elect Director Charles R. Shoemate                                                      Management  For     Voted - For
+  13.   Elect Director Ronald D. Sugar                                                          Management  For     Voted - For
+  14.   Elect Director Carl Ware                                                                Management  For     Voted - For
+  15.   Ratify Auditors                                                                         Management  For     Voted - For
+  16.   Reduce Supermajority Vote Requirement                                                   Management  For     Voted - For
+  17.   Adopt Human Rights Policy                                                               Shareholder Against Voted - For
+  18.   Adopt Greenhouse Gas Emission Reduction Goals                                           Shareholder Against Voted - Against
+  19.   Adopt Animal Welfare Policy                                                             Shareholder Against Voted - Against
+  20.   Separate Chairman and CEO Positions                                                     Shareholder Against Voted - For
+  21.   Approve/Amend Terms of Existing Poison Pill                                             Shareholder Against Voted - Against
+  22.   Report On Market Specific Environmental Laws                                            Shareholder Against Voted - Against
+
+
+<PAGE>
+
+
+
+                                                         Large Cap Value Fund
+
+  Proposal                                                                           Proposed by   Mgt. Position Registrant Voted
+
+
+
+CATERPILLAR INC.
+
+  CUSIP: 149123101       Ticker: CAT
+
+
+ Meeting Date: 6/13/2007            Meeting Type: Annual
+
+  1.1.  Elect Director John T. Dillon                                                           Management  For     Voted - For
+  1.2.  Elect Director Juan Gallardo                                                            Management  For     Voted - Withhold
+  1.3.  Elect Director William A. Osborn                                                        Management  For     Voted - For
+  1.4.  Elect Director Edward B. Rust, Jr.                                                      Management  For     Voted - For
+  2.    Ratify Auditors                                                                         Management  For     Voted - For
+  3.    Separate Chairman and CEO Positions                                                     Shareholder Against Voted - Against
+  4.    Require A Majority Vote for the Election of Directors                                   Shareholder Against Voted - For
+
+CENDANT CORPORATION
+
+  CUSIP: 151313103       Ticker: CAR
+
+
+ Meeting Date: 8/29/2006            Meeting Type: Annual
+
+  1.1.  Elect Director Henry R. Silverman                                                       Management  For     Voted - Withhold
+  1.2.  Elect Director Myra J. Biblowit                                                         Management  For     Voted - Withhold
+  1.3.  Elect Director James E. Buckman                                                         Management  For     Voted - Withhold
+  1.4.  Elect Director Leonard S. Coleman                                                       Management  For     Voted - Withhold
+  1.5.  Elect Director Martin L. Edelman                                                        Management  For     Voted - Withhold
+  1.6.  Elect Director George Herrera                                                           Management  For     Voted - Withhold
+  1.7.  Elect Director Stephen P. Holmes                                                        Management  For     Voted - Withhold
+  1.8.  Elect Director Louise T. Blouin Macbain                                                 Management  For     Voted - Withhold
+  1.9.  Elect Director Cheryl D. Mills                                                          Management  For     Voted - Withhold
+  1.10. Elect Director Brian Mulroney                                                           Management  For     Voted - Withhold
+  1.11. Elect Director Robert E. Nederlander                                                    Management  For     Voted - Withhold
+  1.12. Elect Director Ronald L. Nelson                                                         Management  For     Voted - Withhold
+  1.13. Elect Director Robert W. Pittman                                                        Management  For     Voted - Withhold
+  1.14. Elect Director Pauline D.E. Richards                                                    Management  For     Voted - Withhold
+  1.15. Elect Director Sheli Z. Rosenberg                                                       Management  For     Voted - Withhold
+  1.16. Elect Director Robert F. Smith                                                          Management  For     Voted - Withhold
+  1.17. Elect Director Ronald L. Nelson                                                         Management  For     Voted - Withhold
+  1.18. Elect Director Leonard S. Coleman                                                       Management  For     Voted - Withhold
+  1.19. Elect Director Martin L. Edelman                                                        Management  For     Voted - Withhold
+  1.20. Elect Director Sheli Z. Rosenberg                                                       Management  For     Voted - Withhold
+  1.21. Elect Director F. Robert Salerno                                                        Management  For     Voted - Withhold
+  1.22. Elect Director Stender E. Sweeney                                                       Management  For     Voted - For
+  2.    Ratify Auditors                                                                         Management  For     Voted - For
+  5.    Company Specific-Redesignation of Common Stock                                          Management  For     Voted - For
+  6.    Reduce Authorized Common Stock                                                          Management  For     Voted - For
+  7.    Non-Employee Director Compensation                                                      Shareholder Against Voted - Against
+  8.    Submit Severance Agreement (Change In Control) to Shareholder Vote                      Shareholder Against Voted - For
+
+CHEVRON CORPORATION
+
+  CUSIP: 166764100       Ticker: CVX
+
+
+ Meeting Date: 4/25/2007            Meeting Type: Annual
+
+  1.    Elect Director Samuel H. Armacost                                                       Management  For     Voted - For
+  2.    Elect Director Linnet F. Deily                                                          Management  For     Voted - For
+  3.    Elect Director Robert E. Denham                                                         Management  For     Voted - For
+  4.    Elect Director Robert J. Eaton                                                          Management  For     Voted - For
+
+
+<PAGE>
+
+
+
+                                                       RCB Small Cap Value Fund
+
+  Proposal                                                                           Proposed by   Mgt. Position Registrant Voted
+
+
+
+TRIARC COMPANIES, INC. (CONTINUED)
+
+  1.10. Gerald Tsai, Jr                                                                         Management  For     Voted - For
+  1.11. Russell V Umphenour, Jr                                                                 Management  For     Voted - For
+  1.12. Jack G Wasserman                                                                        Management  For     Voted - For
+  2.    To Approve an Amendment to the Company's Amended and Restated
+         2002 Equity Participation Plan and to Reapprove the Performance Based
+         Provisions of That Plan as Described In the Proxy Statement                            Management  For     Voted - Against
+  3.    To Approve an Amendment to the Company's 1999 Executive Bonus Plan
+         As Described In the Proxy Statement                                                    Management  For     Voted - Against
+  4.    To Ratify the Appointment of Deloitte & Touche Llp as the Company's
+         Independent Registered Public Accountants                                              Management  For     Voted - For
+
+USI HOLDINGS CORP
+
+  CUSIP UNKNOWN          Ticker: USIH
+
+
+ Meeting Date: 03/29/2007           Meeting Type: Special
+
+  1.     Adoption of the Agreement and Plan of Merger Dated as of January 15,
+         2007 by and Among Usi Holdings Corporation Compass
+         Acquisition Holdings Corp, and Compass Merger Sub Inc                                  Management  For     Voted - For
+  2.    Approval of the Adjournment of the Special Meeting If Necessary Or
+         Appropriate to Solicit Additional Proxies If There Are Insufficient Votes At
+         The Time of the Meeting to Adopt the Merger Agreement                                  Management  For     Voted - For
+
+WHITE MOUNTAIN INSURANCE GROUP, LTD
+
+  CUSIP UNKNOWN          Ticker: WTM
+
+
+ Meeting Date: 05/24/2007           Meeting Type: Annual
+
+  1.1.  Br Berkowitz                                                                            Management  For     Voted - For
+  1.2.  Mw Davis                                                                                Management  For     Voted - For
+  1.3.  Ee Holiday                                                                              Management  For     Voted - For
+  1.4.  La Smith                                                                                Management  For     Voted - For
+  1.5.  R Barrette                                                                              Management  For     Voted - For
+  1.6.  Cb Chokel                                                                               Management  For     Voted - For
+  1.7.  J.A.M. Silverudd                                                                        Management  For     Voted - For
+  1.8.  G Thorstensson                                                                          Management  For     Voted - For
+  1.9.  Al Waters                                                                               Management  For     Voted - For
+  1.10. Cb Chokel                                                                               Management  For     Voted - For
+  1.11. Cr Fletcher                                                                             Management  For     Voted - For
+  1.12. G Thorstensson                                                                          Management  For     Voted - For
+  1.13. Al Waters                                                                               Management  For     Voted - For
+  1.14. R Barrette                                                                              Management  For     Voted - For
+  1.15. Dp Beaulieu                                                                             Management  For     Voted - For
+  1.16. Cr Fletcher                                                                             Management  For     Voted - For
+  1.17. Dt Foy                                                                                  Management  For     Voted - For
+  1.18. Rr Lusardi                                                                              Management  For     Voted - For
+  1.19. Dp Beaulieu                                                                             Management  For     Voted - For
+  1.20. Cr Fletcher                                                                             Management  For     Voted - For
+  1.21. Dt Foy                                                                                  Management  For     Voted - For
+  1.22. R Barrette                                                                              Management  For     Voted - For
+  1.23. Dp Beaulieu                                                                             Management  For     Voted - For
+  1.24. Cr Fletcher                                                                             Management  For     Voted - For
+  1.25. Dt Foy                                                                                  Management  For     Voted - For
+  7.    Amendment to the Company's Bye-Laws                                                     Management  For     Voted - For
+  8.    Appointment of Independent Registered Public Accounting Firm                            Management  For     Voted - For
+
+
+<PAGE>
+
+
+
+                                                            Technology Fund
+
+  Proposal                                                                           Proposed by   Mgt. Position Registrant Voted
+
+
+
+INTEL CORP. (CONTINUED)
+
+  1.8.  Elect Director David S. Pottruck                                                        Management  For     Voted - For
+  1.9.  Elect Director Jane E. Shaw                                                             Management  For     Voted - For
+  1.10. Elect Director John L. Thornton                                                         Management  For     Voted - For
+  1.11. Elect Director David B. Yoffie                                                          Management  For     Voted - For
+  2.    Ratify Auditors                                                                         Management  For     Voted - For
+  3.    Amend Omnibus Stock Plan                                                                Management  For     Voted - For
+  4.    Approve Executive Incentive Bonus Plan                                                  Management  For     Voted - For
+  5.    Limit Executive Compensation                                                            Shareholder Against Voted - Against
+
+INTERGRAPH CORP.
+
+  CUSIP: 458683109       Ticker: INGR
+
+
+ Meeting Date: 11/20/2006           Meeting Type: Special
+
+  1.    Approve Merger Agreement                                                                Management  For     Voted - For
+  2.    Adjourn Meeting                                                                         Management  For     Voted - For
+
+INTERNATIONAL BUSINESS MACHINES CORP.
+
+  CUSIP: 459200101       Ticker: IBM
+
+
+ Meeting Date: 4/24/2007            Meeting Type: Annual
+
+  1.1.  Elect Director Cathleen Black                                                           Management  For     Voted - For
+  1.2.  Elect Director Kenneth I. Chenault                                                      Management  For     Voted - For
+  1.3.  Elect Director Juergen Dormann                                                          Management  For     Voted - For
+  1.4.  Elect Director Michael L. Eskew                                                         Management  For     Voted - For
+  1.5.  Elect Director Shirley Ann Jackson                                                      Management  For     Voted - For
+  1.6.  Elect Director Minoru Makihara                                                          Management  For     Voted - For
+  1.7.  Elect Director Lucio A. Noto                                                            Management  For     Voted - For
+  1.8.  Elect Director James W. Owens                                                           Management  For     Voted - For
+  1.9.  Elect Director Samuel J. Palmisano                                                      Management  For     Voted - For
+  1.10. Elect Director Joan E. Spero                                                            Management  For     Voted - For
+  1.11. Elect Director Sidney Taurel                                                            Management  For     Voted - For
+  1.12. Elect Director Lorenzo H. Zambrano                                                      Management  For     Voted - For
+  2.    Ratify Auditors                                                                         Management  For     Voted - For
+  3.    Reduce Supermajority Vote Requirement                                                   Management  For     Voted - For
+  4.    Reduce Supermajority Vote Requirement                                                   Management  For     Voted - For
+  5.    Reduce Supermajority Vote Requirement                                                   Management  For     Voted - For
+  6.    Reduce Supermajority Vote Requirement                                                   Management  For     Voted - For
+  7.    Restore Or Provide for Cumulative Voting                                                Shareholder Against Voted - For
+  8.    Evaluate Age Discrimination In Retirement Plans                                         Shareholder Against Voted - Against
+  9.    Review Executive Compensation                                                           Shareholder Against Voted - For
+  10.   Report On Outsourcing                                                                   Shareholder Against Voted - Against
+  11.   Require A Majority Vote for the Election of Directors                                   Shareholder Against Voted - For
+
+INTUIT INC.
+
+  CUSIP: 461202103       Ticker: INTU
+
+
+ Meeting Date: 12/15/2006           Meeting Type: Annual
+
+  1.1.  Elect Director Stephen M. Bennett                                                       Management  For     Voted - For
+  1.2.  Elect Director Christopher W. Brody                                                     Management  For     Voted - For
+  1.3.  Elect Director William V. Campbell                                                      Management  For     Voted - For
+  1.4.  Elect Director Scott D. Cook                                                            Management  For     Voted - For
+
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

@@ -1,0 +1,92 @@
+<SEC-DOCUMENT>0000088053-05-000934.txt : 20050825
+<SEC-HEADER>0000088053-05-000934.hdr.sgml : 20050825
+<ACCEPTANCE-DATETIME>20050825160507
+ACCESSION NUMBER:		0000088053-05-000934
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050825
+DATE AS OF CHANGE:		20050825
+EFFECTIVENESS DATE:		20050825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SCUDDER VARIABLE SERIES I
+		CENTRAL INDEX KEY:			0000764797
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORMER CONFORMED NAME:	SCUDDER VARIABLE LIFE INVESTMENT FUND/MA/
+		DATE OF NAME CHANGE:	19920703
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-allfunds.txt
+<DESCRIPTION>N-PX FILING
+<TEXT>
+                                  UNITED STATES
+                                    FORM N-PX
+                     ANNUAL REPORT OF PROXY VOTING RECORD OF
+                          21st Century Growth Portfolio
+                               Balanced Portfolio
+                                 Bond Portfolio
+                            Capital Growth Portfolio
+                           Global Discovery Portfolio
+                           Growth and Income Portfolio
+                            Health Sciences Portfolio
+                             International Portfolio
+                             Money Market Portfolio
+                   Each a Series of Scudder Variable Series I
+
+Investment Company Act file number  811-4257
+<PAGE>
+
+ProxyEdge -  Investment Company Report                   Report Date: 08/04/2005
+Meeting Date Range: 07/01/2004 to 06/30/2005
+Selected Accounts: SVS I 21st Century Growth Port
+
+<TABLE>
+<CAPTION>
+- ------------------------------------------------------------------------------------------------------------------------------------
+COST PLUS, INC.                                                                        CPWM         Annual Meeting Date: 07/01/2004
+
+<PAGE>
+ProxyEdge -  Investment Company Report                   Report Date: 08/04/2005
+Meeting Date Range: 07/01/2004 to 06/30/2005
+Selected Accounts: SVS I Capital Growth Port
+
+
+
+- ----------------------------------------------------------------------------------------------------------------------------------
+BED BATH & BEYOND INC.                                                         BBBY          Annual Meeting Date: 07/01/2004
+Issuer: 075896                          ISIN:
+SEDOL:
+- ----------------------------------------------------------------------------------------------------------------------------------
+
+Vote Group: UNASSIGNED
+
+Proposal                                                                     Proposal         Vote          Against
+Number   Proposal                                                              Type           Cast           Mgmt.
+- ----------------------------------------------------------------------------------------------------------------------------------
+
+01       DIRECTOR                                                           Management        For             No
+
+02       RATIFICATION OF THE APPOINTMENT OF KPMG LLP.                       Management        For             No
+
+03       RATIFICATION OF THE ADOPTION OF THE 2004 INCENTIVE                 Management        For             No
+         COMPENSATION PLAN.
+
+04       SHAREHOLDER PROPOSAL; GLASS CEILING REPORT.                        Shareholder     Against           No
+
+05       SHAREHOLDER PROPOSAL; EXECUTIVE STOCK HOLDINGS.                    Shareholder     Against           No
+
+
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

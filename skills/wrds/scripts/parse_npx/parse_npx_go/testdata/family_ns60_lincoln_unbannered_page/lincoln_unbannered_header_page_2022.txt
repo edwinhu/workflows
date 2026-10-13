@@ -1,0 +1,265 @@
+<SEC-DOCUMENT>0001193125-22-231315.txt : 20220826
+<SEC-HEADER>0001193125-22-231315.hdr.sgml : 20220826
+<ACCEPTANCE-DATETIME>20220826161426
+ACCESSION NUMBER:		0001193125-22-231315
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20220826
+DATE AS OF CHANGE:		20220826
+EFFECTIVENESS DATE:		20220826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+		CENTRAL INDEX KEY:			0000914036
+		IRS NUMBER:				521835648
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08090
+		FILM NUMBER:		221205330
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1301 SOUTH HARRISON STREET
+		CITY:			FORT WAYNE
+		STATE:			IN
+		ZIP:			46802
+		BUSINESS PHONE:		260-455-2000
+
+	MAIL ADDRESS:	
+		STREET 1:		1301 SOUTH HARRISON STREET
+		CITY:			FORT WAYNE
+		STATE:			IN
+		ZIP:			46802
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AGGRESSIVE GROWTH FUND /
+		DATE OF NAME CHANGE:	20031001
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+		DATE OF NAME CHANGE:	20030910
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	LINCOLN NATIONAL AGGRESSIVE GROWTH FUND INC
+		DATE OF NAME CHANGE:	19931025
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000002813
+<SERIES-NAME>LVIP Blended Large Cap Growth Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000007722
+<CLASS-CONTRACT-NAME>Standard Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000007723
+<CLASS-CONTRACT-NAME>Service Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000002815
+<SERIES-NAME>LVIP BlackRock Dividend Value Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000007726
+<CLASS-CONTRACT-NAME>Standard Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000007727
+<CLASS-CONTRACT-NAME>Service Class
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d357272dnpx.htm
+<DESCRIPTION>LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+<TEXT>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+LVIP Blended Large Cap Growth Managed Volatility Fund
+
+
+
+                   Exchange                                                     Who Proposed
+Issuer of          Ticker               Shareholder   Summary of Matter Voted  Matter: Issuer /     Whether Fund
+Portfolio Security Symbol     CUSIP #   Meeting Date            On               Shareholder     Cast Vote on Matter
+------------------ --------  ---------- ------------  ------------------------ ----------------  -------------------
+ABIOMED, Inc.                                         Advisory Vote to Ratify
+                                                      Named Executive
+                    ABMD     003654100   11-Aug-21    Officers' Compensation     Management             Yes
+ABIOMED, Inc.                                         Elect Director Eric A.
+                    ABMD     003654100   11-Aug-21    Rose                       Management             Yes
+ABIOMED, Inc.                                         Elect Director Jeannine
+                    ABMD     003654100   11-Aug-21    M. Rivet                   Management             Yes
+ABIOMED, Inc.                                         Elect Director Myron L.
+                    ABMD     003654100   11-Aug-21    Rolle                      Management             Yes
+ABIOMED, Inc.                                         Ratify Deloitte &amp;
+                    ABMD     003654100   11-Aug-21    Touche LLP as Auditors     Management             Yes
+Adobe Inc.                                            Advisory Vote to Ratify
+                                                      Named Executive
+                    ADBE     00724F101   14-Apr-22    Officers' Compensation     Management             Yes
+Adobe Inc.                                            Elect Director Amy
+                    ADBE     00724F101   14-Apr-22    Banse                      Management             Yes
+Adobe Inc.                                            Elect Director Brett
+                    ADBE     00724F101   14-Apr-22    Biggs                      Management             Yes
+Adobe Inc.                                            Elect Director Daniel
+                    ADBE     00724F101   14-Apr-22    Rosensweig                 Management             Yes
+Adobe Inc.                                            Elect Director David
+                    ADBE     00724F101   14-Apr-22    Ricks                      Management             Yes
+Adobe Inc.                                            Elect Director Dheeraj
+                    ADBE     00724F101   14-Apr-22    Pandey                     Management             Yes
+                    Fund's Vote For or
+                   Against Proposal, or
+                     Abstain; For or        Whether Vote
+Issuer of           Withhold Regarding    Was For or Against
+Portfolio Security Election of Directors     Management
+------------------ ---------------------  ------------------
+ABIOMED, Inc.
+
+                         For                     No
+ABIOMED, Inc.
+                         For                     No
+ABIOMED, Inc.
+                         For                     No
+ABIOMED, Inc.
+                         For                     No
+ABIOMED, Inc.
+                         For                     No
+Adobe Inc.
+
+                         For                     No
+Adobe Inc.
+                         For                     No
+Adobe Inc.
+                         For                     No
+Adobe Inc.
+                         Against                 Yes
+Adobe Inc.
+                         For                     No
+Adobe Inc.
+                         For                     No
+</PRE>
+ </DIV>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+Adobe Inc.                                     Elect Director Frank
+                   ADBE  00724F101  14-Apr-22  Calderoni                 Management  Yes  For  No
+Adobe Inc.                                     Elect Director John
+                   ADBE  00724F101  14-Apr-22  Warnock                   Management  Yes  For  No
+Adobe Inc.                                     Elect Director Kathleen
+                   ADBE  00724F101  14-Apr-22  Oberg                     Management  Yes  For  No
+Adobe Inc.                                     Elect Director Laura
+                   ADBE  00724F101  14-Apr-22  Desmond                   Management  Yes  For  No
+Adobe Inc.                                     Elect Director Melanie
+                   ADBE  00724F101  14-Apr-22  Boulden                   Management  Yes  For  No
+Adobe Inc.                                     Elect Director Shantanu
+                   ADBE  00724F101  14-Apr-22  Narayen                   Management  Yes  For  No
+Adobe Inc.                                     Elect Director Spencer
+                   ADBE  00724F101  14-Apr-22  Neumann                   Management  Yes  For  No
+Adobe Inc.                                     Ratify KPMG LLP as
+                   ADBE  00724F101  14-Apr-22  Auditors                  Management  Yes  For  No
+Advanced Micro                                 Advisory Vote to Ratify
+Devices, Inc.                                  Named Executive
+                   AMD   007903107  18-May-22  Officers' Compensation    Management  Yes  For  No
+Advanced Micro                                 Elect Director Abhi Y.
+Devices, Inc.      AMD   007903107  18-May-22  Talwalkar                 Management  Yes  For  No
+Advanced Micro                                 Elect Director Elizabeth
+Devices, Inc.      AMD   007903107  18-May-22  W. Vanderslice            Management  Yes  For  No
+</PRE>
+ </DIV>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+
+
+                   Exchange                                                     Who Proposed
+Issuer of          Ticker               Shareholder   Summary of Matter Voted  Matter: Issuer /  Whether Fund Cast
+Portfolio Security Symbol     CUSIP #   Meeting Date            On               Shareholder      Vote on Matter
+------------------ --------  ---------- ------------  ------------------------ ----------------  -----------------
+Healthcare Trust                                      Elect Director Scott D.
+of America, Inc.     HTA     42225P501   07-Jul-21    Peters                     Management            Yes
+Healthcare Trust                                      Elect Director W.
+of America, Inc.     HTA     42225P501   07-Jul-21    Bradley Blair, II          Management            Yes
+Healthcare Trust                                      Elect Director Vicki U.
+of America, Inc.     HTA     42225P501   07-Jul-21    Booth                      Management            Yes
+Healthcare Trust                                      Elect Director H. Lee
+of America, Inc.     HTA     42225P501   07-Jul-21    Cooper                     Management            Yes
+Healthcare Trust                                      Elect Director Warren
+of America, Inc.     HTA     42225P501   07-Jul-21    D. Fix                     Management            Yes
+Healthcare Trust                                      Elect Director Peter N.
+of America, Inc.     HTA     42225P501   07-Jul-21    Foss                       Management            Yes
+Healthcare Trust                                      Elect Director Jay P.
+of America, Inc.     HTA     42225P501   07-Jul-21    Leupp                      Management            Yes
+Healthcare Trust                                      Advisory Vote to Ratify
+of America, Inc.                                      Named Executive
+                     HTA     42225P501   07-Jul-21    Officers' Compensation     Management            Yes
+Healthcare Trust                                      Ratify Deloitte &amp;
+of America, Inc.     HTA     42225P501   07-Jul-21    Touche LLP as Auditors     Management            Yes
+                    Fund's Vote For or
+                   Against Proposal, or
+                     Abstain; For or      Whether Vote Was
+Issuer of           Withhold Regarding    For or Against
+Portfolio Security Election of Directors    Management
+------------------ ---------------------  ----------------
+Healthcare Trust
+of America, Inc.         For                    No
+Healthcare Trust
+of America, Inc.         Against                Yes
+Healthcare Trust
+of America, Inc.         Against                Yes
+Healthcare Trust
+of America, Inc.         Against                Yes
+Healthcare Trust
+of America, Inc.         For                    No
+Healthcare Trust
+of America, Inc.         Against                Yes
+Healthcare Trust
+of America, Inc.         Against                Yes
+Healthcare Trust
+of America, Inc.
+                         For                    No
+Healthcare Trust
+of America, Inc.         For                    No
+</PRE>
+ </DIV>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+Healthcare Trust                               Amend Omnibus Stock
+of America, Inc.   HTA   42225P501  07-Jul-21  Plan                      Management  Yes  For       No
+VMware, Inc.                                   Elect Director Kenneth
+                   VMW   928563402  23-Jul-21  Denman                    Management  Yes  For       No
+VMware, Inc.                                   Advisory Vote to Ratify
+                                               Named Executive
+                   VMW   928563402  23-Jul-21  Officers' Compensation    Management  Yes  For       No
+VMware, Inc.                                   Amend Omnibus Stock
+                   VMW   928563402  23-Jul-21  Plan                      Management  Yes  Against   Yes
+VMware, Inc.                                   Amend Qualified
+                                               Employee Stock
+                   VMW   928563402  23-Jul-21  Purchase Plan             Management  Yes  Against   Yes
+VMware, Inc.                                   Ratify
+                                               PricewaterhouseCoopers
+                   VMW   928563402  23-Jul-21  LLP as Auditors           Management  Yes  For       No
+AMERCO                                         Elect Director Edward J.
+                   UHAL  023586100  19-Aug-21  "Joe" Shoen               Management  Yes  Withhold  Yes
+</PRE>
+ </DIV>
+</TEXT>
+</DOCUMENT>

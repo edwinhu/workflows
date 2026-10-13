@@ -1,0 +1,65 @@
+VODAFONE GROUP PLC
+
+SECURITY       92857W209     MEETING TYPE  Annual
+TICKER SYMBOL  VOD           MEETING DATE  27-Jul-2010
+ISIN           US92857W2098  AGENDA        933299681 - Management
+
+<TABLE>
+<CAPTION>
+                                                                                               FOR/AGAINST
+ITEM  PROPOSAL                                                               TYPE        VOTE  MANAGEMENT
+----  ---------------------------------------------------------------------  ----------  ----  -----------
+<S>   <C>                                                                    <C>         <C>   <C>
+  01  TO RECEIVE THE COMPANY'S ACCOUNTS AND REPORTS OF THE                   Management  For   For
+      DIRECTORS AND THE AUDITORS FOR THE YEAR ENDED 31 MARCH 2010
+  02  TO RE-ELECT SIR JOHN BOND AS A DIRECTOR (MEMBER OF THE                 Management  For   For
+      NOMINATIONS AND GOVERNANCE COMMITTEE)
+  03  TO RE-ELECT JOHN BUCHANAN AS A DIRECTOR (MEMBER OF THE AUDIT           Management  For   For
+      COMMITTEE, MEMBER OF THE NOMINATIONS AND GOVERNANCE COMMITTEE)
+  04  TO RE-ELECT VITTORIO COLAO AS A DIRECTOR                               Management  For   For
+  05  TO RE-ELECT MICHEL COMBES AS A DIRECTOR                                Management  For   For
+  06  TO RE-ELECT ANDY HALFORD AS A DIRECTOR                                 Management  For   For
+  07  TO RE-ELECT STEPHEN PUSEY AS A DIRECTOR                                Management  For   For
+  08  TO RE-ELECT ALAN JEBSON AS A DIRECTOR (MEMBER OF THE AUDIT COMMITTEE)  Management  For   For
+  09  TO RE-ELECT SAMUEL JONAH AS A DIRECTOR (MEMBER OF THE                  Management  For   For
+      REMUNERATION COMMITTEE)
+</TABLE>
+
+<PAGE>
+
+ProxyEdge                                                Report Date: 07/08/2011
+Meeting Date Range: 07/01/2010 to 06/30/2011                                   2
+The Gabelli Utilities Fund
+
+<TABLE>
+<CAPTION>
+                                                                                                                 FOR/AGAINST
+ITEM              PROPOSAL                                                                     TYPE        VOTE  MANAGEMENT
+----------------  ---------------------------------------------------------------------------  ----------  ----  -----------
+<S>               <C>                                                                          <C>         <C>   <C>
+10                TO RE-ELECT NICK LAND AS A DIRECTOR (MEMBER OF THE
+                  AUDIT COMMITTEE)                                                             Management  For   For
+11                TO RE-ELECT ANNE LAUVERGEON AS A DIRECTOR (MEMBER OF THE AUDIT COMMITTEE)    Management  For   For
+12                TO RE-ELECT LUC VANDEVELDE AS A DIRECTOR (MEMBER OF THE                      Management  For   For
+                  NOMINATIONS AND GOVERNANCE COMMITTEE, MEMBER OF THE
+                  REMUNERATION COMMITTEE)
+13                TO RE-ELECT ANTHONY WATSON AS A DIRECTOR (MEMBER OF THE                      Management  For   For
+                  REMUNERATION COMMITTEE)
+14                TO RE-ELECT PHILIP YEA AS A DIRECTOR (MEMBER OF THE REMUNERATION COMMITTEE)  Management  For   For
+15                TO APPROVE A FINAL DIVIDEND OF 5.65P PER ORDINARY SHARE                      Management  For   For
+16                TO APPROVE THE REMUNERATION REPORT                                           Management  For   For
+17                TO RE-APPOINT DELOITTE LLP AS AUDITORS                                       Management  For   For
+18                TO AUTHORISE THE AUDIT COMMITTEE TO DETERMINE THE REMUNERATION               Management  For   For
+                  OF THE AUDITORS
+19                TO AUTHORISE THE DIRECTORS TO ALLOT SHARES                                   Management  For   For
+S20               TO AUTHORISE THE DIRECTORS TO DIS-APPLY PRE- EMPTION RIGHTS                  Management  For   For
+                  (SPECIAL RESOLUTION)
+S21               TO AUTHORISE THE COMPANY'S TO PURCHASE ITS OWN SHARES (SECTION               Management  For   For
+                  701, COMPANIES ACT 2006) (SPECIAL RESOLUTION)
+S22               TO ADOPT NEW ARTICLES OF ASSOCIATION (SPECIAL RESOLUTION)                    Management  For   For
+S23               TO AUTHORISE THE CALLING OF A GENERAL MEETING OTHER THAN AN                  Management  For   For
+                  ANNUAL GENERAL MEETING ON NOT LESS THAN 14 CLEAR DAYS' NOTICE
+                  (SPECIAL RESOLUTION)
+24                TO APPROVE THE CONTINUED OPERATION OF THE VODAFONE SHARE                     Management  For   For
+                  INCENTIVE PLAN.
+</TABLE>

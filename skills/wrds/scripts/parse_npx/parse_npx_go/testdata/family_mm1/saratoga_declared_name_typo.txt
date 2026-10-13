@@ -1,0 +1,270 @@
+		COMPANY CONFORMED NAME:			SARATOGA ADVANTAGE TRUST
+		CENTRAL INDEX KEY:			0000924628
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000924628
+<SERIES-ID>S000010884
+<SERIES-NAME>Health & Biotchnology Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030151
+<CLASS-CONTRACT-NAME>Health & Biotechnology Portfolio Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>SBHIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030153
+<CLASS-CONTRACT-NAME>Health & Biotechnology Porfolio Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>SHPCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030154
+<CLASS-CONTRACT-NAME>Health & Biotechnology Portfolio Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SHPAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000924628
+<SERIES-ID>S000010885
+<SERIES-NAME>Mid Capitalization Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030155
+<CLASS-CONTRACT-NAME>Mid Capitalization Portfolio - Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>SMIPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030157
+<CLASS-CONTRACT-NAME>Mid Capitalization Portfolio - Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>SPMCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030158
+<CLASS-CONTRACT-NAME>Mid Capitalization Portfolio - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SPMAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000924628
+<SERIES-ID>S000010891
+<SERIES-NAME>Small Capitalization Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030179
+<CLASS-CONTRACT-NAME>Small Capitalization Portfolio Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SSCYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030180
+<CLASS-CONTRACT-NAME>Small Capitalization Portfolio Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>SSCPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030182
+<CLASS-CONTRACT-NAME>Small Capitalization Portfolio Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>SSCCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000924628
+<SERIES-ID>S000010892
+<SERIES-NAME>International Equity Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030183
+<CLASS-CONTRACT-NAME>International Equity Portfolio Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SIEYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030184
+<CLASS-CONTRACT-NAME>International Equity Portfolio Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>SIEPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030186
+<CLASS-CONTRACT-NAME>International Equity Portfolio Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>SIECX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000924628
+<SERIES-ID>S000033377
+<SERIES-NAME>James Alpha Global Real Estate Investments Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102468
+<CLASS-CONTRACT-NAME>James Alpha Global Real Estate Investments Portfolio Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>JARIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102469
+<CLASS-CONTRACT-NAME>James Alpha Global Real Estate Investments Portfolio Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>JAREX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000109475
+<CLASS-CONTRACT-NAME>James Alpha Global Real Estate Investments Portfolio Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>JACRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000924628
+<SERIES-ID>S000046239
+<SERIES-NAME>James Alpha Multi Strategy Alternative Income Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000144545
+<CLASS-CONTRACT-NAME>James Alpha Multi Strategy Alternative Income Portfolio Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>JAIMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000144546
+<CLASS-CONTRACT-NAME>James Alpha Multi Strategy Alternative Income Portfolio Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>JAAMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000144547
+<CLASS-CONTRACT-NAME>James Alpha Multi Strategy Alternative Income Portfolio Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>JACMX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<TEXT>
+<HTML>
+<BODY>
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="6" STYLE="text-decoration: underline"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 12pt"><B><U>Registrant: Saratoga Advantage Trust- Health &amp; Biotechnology Portfolio&nbsp;&nbsp;&nbsp;&nbsp;Item 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</U></B></FONT></TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="4"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 12pt"><B>Investment Company Act file number:&nbsp;&nbsp;811-08542</B></FONT></TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="5"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 12pt"><B>Reporting Period: July 1, 2015 through June 30, 2016</B></FONT></TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="width: 1%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 11%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 2%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 3%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 3%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 53%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 5%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 4%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 13%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 5%">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="10" STYLE="border-top: Black 1pt solid; border-right: black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-decoration: underline; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 14pt"><B><U>ITEM 1- PROXY VOTING RECORD </U></B></FONT></TD></TR>
+<TR>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(d) Shareholder Meeting Date</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(f) Proposal Type (by issuer or shareholder)</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(h) How was vote cast (for or against proposal, or abstain; for or withhold regarding election of directors)</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 9pt"><B>(i) Was Vote For or Against Management</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: right"><FONT STYLE="font-size: 10pt">1</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">McKesson Corporation</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">MCK</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">58155Q103</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">07/29/2015</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">Elect Director Andy D. Bryant</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">Yes</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: right"><FONT STYLE="font-size: 10pt">2</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">McKesson Corporation</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">MCK</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">58155Q103</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">07/29/2015</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">Elect Director Wayne A. Budd</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">Yes</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; text-align: right"><FONT STYLE="font-size: 10pt">3</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">McKesson Corporation</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">MCK</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">58155Q103</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">07/29/2015</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">Elect Director N. Anthony Coles</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">Yes</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 10pt">For</FONT></TD></TR>
+</TABLE>
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="6"><B>Registrant:&nbsp;&nbsp;<U>Saratoga Advantage Trust - James Alpha Global Real Estate Investments Portfolio</U></B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="5"><B>Investment Company Act file number:&nbsp;&nbsp;811-08542</B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="6"><B>Reporting Period:&nbsp;&nbsp;July 1, 2015 through June 30, 2016</B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: #3366FF">
+    <TD STYLE="border: Black 1pt solid; width: 9%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt; color: white"><B>Company Name</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; width: 24%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt; color: white"><B>Primary Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; width: 2%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt; color: white"><B>Security ID</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; width: 2%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt; color: white"><B>Meeting Date</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; width: 10%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt; color: white"><B>Sedol(s)</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; width: 40%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt; color: white"><B>Proposal Long Text</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; width: 3%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt; color: white"><B>Proponent</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; width: 6%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt; color: white"><B>Was Vote For/Against Mgmt?</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; width: 3%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt; color: white"><B>How Was Vote Cast?</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid">GREAT PORTLAND ESTATES PLC R.E.I.T., LONDON</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">GPOR LN</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">G40712179</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">08-Jul-2015</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">B01FLL1 B11BQK0 B1FDFJ4</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">TO RECEIVE AND ADOPT THE AUDITED FINANCIAL STATEMENTS TOGETHER WITH THE DIRECTORS' AND AUDITORS' REPORTS FOR THE YEAR ENDED 31 MARCH 2015 </TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Management</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid">GREAT PORTLAND ESTATES PLC R.E.I.T., LONDON</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">GPOR LN</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">G40712179</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">08-Jul-2015</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">B01FLL1 B11BQK0 B1FDFJ4</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">TO AUTHORISE THE PAYMENT OF A FINAL DIVIDEND FOR THE YEAR ENDED 31 MARCH 2015 </TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Management</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid">GREAT PORTLAND ESTATES PLC R.E.I.T., LONDON</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">GPOR LN</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">G40712179</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">08-Jul-2015</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">B01FLL1 B11BQK0 B1FDFJ4</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">TO APPROVE THE DIRECTORS' REMUNERATION REPORT </TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">Management</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid">For</TD></TR>
+</TABLE>
+</BODY>
+</HTML>

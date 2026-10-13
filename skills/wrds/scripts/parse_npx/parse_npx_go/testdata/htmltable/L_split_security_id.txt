@@ -1,0 +1,291 @@
+                                                                                                                  <table cellpadding="0" cellspacing="0" width="100%">
+                                                                                                                      <tr>
+                                                                                                                        <td colspan="18" valign="top" width="100%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Proxy
+      Voting Summary Report</font></div>
+                                                                                                                        </td>
+                                                                                                                      </tr>
+                                                                                                                      <tr>
+                                                                                                                        <td colspan="18" valign="top" width="100%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">For
+      the 2009 N-PX Report for the Period July 1, 2008 - June 30,
+      2009</font></div>
+                                                                                                                        </td>
+                                                                                                                      </tr>
+                                                                                                                      <tr>
+                                                                                                                        <td align="right" valign="top" width="15%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Portfolio:</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" colspan="16" valign="top" width="83%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Masters
+      Select Equity Fund</font></div>
+                                                                                                                        </td>
+                                                                                                                      </tr>
+                                                                                                                      <tr bgcolor="#c0c0c0">
+                                                                                                                        <td valign="bottom" width="15%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Company</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td valign="bottom" width="2%"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td valign="bottom" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Ticker</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td valign="bottom" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Security
+      ID</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td valign="bottom" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Meeting
+      Date</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td valign="bottom" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Record
+      Date</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td valign="bottom" width="2%"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td valign="bottom" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Meeting
+      Type</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td valign="bottom" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Meeting
+      Status</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td valign="bottom" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Agenda
+      Item Number</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td valign="bottom" width="2%"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td valign="bottom" width="12%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Agenda
+      Item</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td valign="bottom" width="1%"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td valign="bottom" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Proponent</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td valign="bottom" width="1%"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td valign="bottom" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Mgmt
+      Rec</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td valign="bottom" width="1%"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td valign="bottom" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Vote
+      Cast</font></div>
+                                                                                                                        </td>
+                                                                                                                      </tr>
+                                                                                                                      <tr>
+                                                                                                                        <td align="left" valign="top" width="15%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">American
+      Express Co.</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">AXP</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">25816109</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">4/27/2009</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">2/27/2009</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">AGM</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Voted</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">1.1</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="12%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Elect
+      Director D.F. Akerson</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="1%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Mgmt</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="1%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">For</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="1%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">For</font></div>
+                                                                                                                        </td>
+                                                                                                                      </tr>
+                                                                                                                      <tr>
+                                                                                                                        <td align="left" valign="top" width="15%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">American
+      Express Co.</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">AXP</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">25816109</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">4/27/2009</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">2/27/2009</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">AGM</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Voted</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">1.2</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="12%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Elect
+      Director C. Barshefsky</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="1%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Mgmt</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="1%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">For</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="1%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">For</font></div>
+                                                                                                                        </td>
+                                                                                                                      </tr>
+                                                                                                                      <tr>
+                                                                                                                        <td align="left" valign="top" width="15%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">American
+      Express Co.</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">AXP</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">25816109</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">4/27/2009</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">2/27/2009</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">AGM</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Voted</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">1.3</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="12%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Elect
+      Director U.M. Burns</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="1%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Mgmt</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="1%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">For</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="1%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">For</font></div>
+                                                                                                                        </td>
+                                                                                                                      </tr>
+                                                                                                                      <tr>
+                                                                                                                        <td align="left" valign="top" width="15%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">American
+      Express Co.</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">AXP</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">25816109</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">4/27/2009</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">2/27/2009</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">AGM</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Voted</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">1.4</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="12%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Elect
+      Director K.I. Chenault</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="1%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Mgmt</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="1%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">For</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="1%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">For</font></div>
+                                                                                                                        </td>
+                                                                                                                      </tr>
+                                                                                                                      <tr>
+                                                                                                                        <td align="left" valign="top" width="15%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">American
+      Express Co.</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">AXP</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">25816109</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">4/27/2009</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="7%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">2/27/2009</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">AGM</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Voted</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="right" valign="top" width="6%">
+                                                                                                                          <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="right"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">1.5</font></div>
+                                                                                                                        </td>
+                                                                                                                        <td align="left" valign="top" width="2%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160;</font></td>
+                                                                                                                        <td align="left" valign="top" width="12%">

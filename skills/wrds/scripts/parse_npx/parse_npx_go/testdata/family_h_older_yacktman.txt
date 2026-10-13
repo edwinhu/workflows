@@ -1,0 +1,144 @@
+<TABLE>
+<CAPTION>
+
+<S>                               <C>    <C>                                     <C>         <C>         <C>         <C>
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Item 1: Proxy Voting Record - Yacktman Fund
+
+Registrant: The Yacktman Funds, Inc.
+
+
+Altria Group                             Ticker     Security ID:                 Meeting Date            Meeting Status
+                                         MO         CUSIP9 02209S103             04/27/2006              Voted
+
+                                  Issue
+                                  No.    Description                             Proponent   Mgmt Rec    Vote Cast   For/Agnst Mgmt
+                                  1.1    Elect Elizabeth Bailey                  Mgmt        For         For         For
+                                  1.2    Elect Harold Brown                      Mgmt        For         For         For
+                                  1.3    Elect Mathis Cabiallavetta              Mgmt        For         For         For
+                                  1.4    Elect Louis Camilleri                   Mgmt        For         For         For
+                                  1.5    Elect J.Dudley Fishburn                 Mgmt        For         For         For
+                                  1.6    Elect Robert Huntley                    Mgmt        For         For         For
+                                  1.7    Elect Thomas Jones                      Mgmt        For         For         For
+                                  1.8    Elect George Munoz                      Mgmt        For         For         For
+                                  1.9    Elect Lucio Noto                        Mgmt        For         For         For
+                                  1.10   Elect John Reed                         Mgmt        For         For         For
+                                  1.11   Elect Stephen Wolf                      Mgmt        For         For         For
+                                  2      RATIFICATION OF THE                     Mgmt        For         For         For
+                                         SELECTION OF INDEPENDENT
+                                         AUDITORS
+                                  3      STOCKHOLDER PROPOSAL 1 -                ShrHoldr    Against     Against     For
+                                         REQUESTING INDEPENDENT
+                                         BOARD CHAIRMAN
+
+
+                                  4      Shareholder Proposal Regarding          ShrHoldr    Against     Against     For
+                                         Global Human Rights Standards
+
+                                  5      Shareholder Proposal Regarding          ShrHoldr    Against     Against     For
+                                         African American Health Hazards
+
+                                  6      Shareholder Proposal Regarding          ShrHoldr    Against     Against     For
+                                         Extending New York Fire-Safe
+                                         Products Globally
+
+                                  7      STOCKHOLDER PROPOSAL 5 -                ShrHoldr    Against     Against     For
+                                         REQUESTING ADOPTION OF
+                                         ANIMAL WELFARE POLICY
+
+
+                                  8      Shareholder Proposal Regarding          ShrHoldr    Against     Against     For
+                                         Medical Efforts To Dissuade
+                                         Secondhand Smoke
+
+                                  9      Shareholder Proposal Regarding          ShrHoldr    Against     Against     For
+                                         Medical Efforts To Dissuade
+                                         Secondhand Smoke
+
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Anheuser-Busch Companies Inc             Ticker     Security ID:                 Meeting Date            Meeting Status
+                                         BUD        CUSIP9 035229103             04/26/2006              Voted
+
+                                  Issue
+                                  No.    Description                             Proponent   Mgmt Rec    Vote Cast   For/Agnst Mgmt
+                                  1.1    Elect James Forese                      Mgmt        For         For         For
+                                  1.2    Elect Vernon Loucks, Jr.                Mgmt        For         For         For
+                                  1.3    Elect Vilma Martinez                    Mgmt        For         For         For
+                                  1.4    Elect William Payne                     Mgmt        For         For         For
+                                  1.5    Elect Edward Whitacre, Jr.              Mgmt        For         For         For
+                                  2      AMENDMENT OF THE RESTATED               Mgmt        For         For         For
+                                         CERTIFICATE OF
+                                         INCORPORATION
+                                  3      APPROVAL OF 2006                        Mgmt        For         For         For
+                                         RESTRICTED STOCK PLAN FOR
+                                         NON-EMPLOYEE DIRECTORS
+
+                                  4      APPROVAL OF INDEPENDENT                 Mgmt        For         For         For
+                                         REGISTERED PUBLIC
+                                         ACCOUNTING FIRM
+
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+Bristol Myers Squibb Company             Ticker     Security ID:                 Meeting Date            Meeting Status
+                                         BMY        CUSIP9 110122108             05/02/2006              Voted
+
+                                  Issue
+                                  No.    Description                             Proponent   Mgmt Rec    Vote Cast   For/Agnst Mgmt
+                                  1.1    Elect Robert Allen                      Mgmt        For         Withhold    Against
+                                  1.2    Elect Lewis Campbell                    Mgmt        For         For         For
+                                  1.3    Elect Vance Coffman                     Mgmt        For         Withhold    Against
+                                  1.4    Elect James Cornelius                   Mgmt        For         For         For
+                                  1.5    Elect Peter Dolan                       Mgmt        For         For         For
+                                  1.6    Elect Louis Freeh                       Mgmt        For         For         For
+                                  1.7    Elect Laurie Glimcher                   Mgmt        For         Withhold    Against
+                                  1.8    Elect Leif Johansson                    Mgmt        For         Withhold    Against
+                                  1.9    Elect James Robinson III                Mgmt        For         For         For
+                                  2      RATIFICATION OF INDEPENDENT             Mgmt        For         For         For
+                                         REGISTERED PUBLIC
+                                         ACCOUNTING FIRM
+
+                                  3      EXECUTIVE COMPENSATION                  ShrHoldr    Against     Against     For
+                                         DISCLOSURE
+
+                                  4      CUMULATIVE VOTING                       ShrHoldr    Against     For         Against
+                                  5      RECOUPMENT                              ShrHoldr    Against     Against     For
+                                  6      ANIMAL TREATMENT                        ShrHoldr    Against     Against     For
+                                  7      TERM LIMITS                             ShrHoldr    Against     Against     For
+
+- ------------------------------------------------------------------------------------------------------------------------------------
+
+CADBURY SCHWEPPES PLC - ADR              Ticker     Security ID:                 Meeting Date            Meeting Status
+                                         CSG        CUSIP9 127209302             05/18/2006              Voted
+
+                                  Issue
+                                  No.    Description                             Proponent   Mgmt Rec    Vote Cast   For/Agnst Mgmt
+                                  1      FINANCIAL STATEMENTS                    Mgmt        For         For         For
+                                  2      DECLARATION OF FINAL                    Mgmt        For         For         For
+                                         DIVIDEND 2005
+                                  3      DIRECTORS REMUNERATION                  Mgmt        For         For         For
+                                         REPORT
+                                  4.1    Elect Roger Carr                        Mgmt        For         For         For
+                                  4.2    Elect Ken Hanna                         Mgmt        For         For         For
+                                  4.3    Elect Todd Stitzer                      Mgmt        For         For         For
+                                  4.4    Elect Lord Patten                       Mgmt        For         For         For
+                                  4.5    Elect Baroness Wilcox                   Mgmt        For         For         For
+                                  5      RE-APPOINTMENT OF AUDITORS              Mgmt        For         For         For
+
+                                  6      REMUNERATION OF AUDITORS                Mgmt        For         For         For
+
+                                  7      APPROVE PROPOSED                        Mgmt        For         For         For
+                                         AMENDMENTS TO THE
+                                         INTERNATIONAL SHARE AWARD PLAN
+                                  8      APPROVE PROPOSED                        Mgmt        For         For         For
+                                         AMENDMENTS TO THE 2004
+                                         LONG TERM INCENTIVE PLAN
+
+                                  9      AUTHORITY TO ALLOT                      Mgmt        For         For         For
+                                         RELEVANT SECURITIES
+                                  10     AUTHORITY TO DISAPPLY PRE               Mgmt        For         For         For
+                                         EMPTION RIGHTS
+                                  11     AUTHORITY TO PURCHASE OWN               Mgmt        For         For         For
+                                         ORDINARY SHARES
+

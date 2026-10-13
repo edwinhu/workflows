@@ -1,0 +1,115 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ OegfggPasIzt3Ma2AGNxNzMpo7d5F02U1NvzLcibCcnaSClGX6GCty225EFoUxUS
+ SBRyrCqAGSHbS292heVyPQ==
+
+<SEC-DOCUMENT>0000932471-04-001061.txt : 20040922
+<SEC-HEADER>0000932471-04-001061.hdr.sgml : 20040922
+<ACCEPTANCE-DATETIME>20040922091024
+ACCESSION NUMBER:		0000932471-04-001061
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040922
+DATE AS OF CHANGE:		20040922
+EFFECTIVENESS DATE:		20040922
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			VANGUARD INDEX FUNDS
+		CENTRAL INDEX KEY:			0000036405
+		IRS NUMBER:				231999755
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX/A
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-02652
+		FILM NUMBER:		041040278
+
+	BUSINESS ADDRESS:	
+		STREET 1:		PO BOX 2600
+		STREET 2:		V26
+		CITY:			VALLEY FORGE
+		STATE:			PA
+		ZIP:			19482
+		BUSINESS PHONE:		6106696295
+
+	MAIL ADDRESS:	
+		STREET 1:		PO BOX 2600
+		STREET 2:		V26
+		CITY:			VALLEY FORGE
+		STATE:			PA
+		ZIP:			19482
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	VANGUARD INDEX FUNDS/
+		DATE OF NAME CHANGE:	20011121
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	VANGUARD INDEX TRUST
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FIRST INDEX INVESTMENT TRUST
+		DATE OF NAME CHANGE:	19800904
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>indexfunds85.htm
+<DESCRIPTION>VANGUARD INDEX FUNDS 85
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+
+<PRE>
+
+
+                                                               UNITED STATES
+                                                    SECURITIES AND EXCHANGE COMMISSION
+                                                          WASHINGTON, D.C. 20549
+
+                                                                 FORM N-PX
+
+                                                   ANNUAL REPORT OF PROXY VOTING RECORD
+                                                                    OF
+                                                 REGISTERED MANAGEMENT INVESTMENT COMPANIES
+
+
+   INVESTMENT COMPANY ACT FILE NUMBER:                                811-2652
+
+   NAME OF REGISTRANT:                                             VANGUARD INDEX FUNDS
+
+   ADDRESS OF REGISTRANT:                                          PO BOX 2600, VALLEY FORGE, PA 19482
+   NAME AND ADDRESS OF AGENT FOR SERVICE:                          R. GREGORY BARTON
+                                                                   PO BOX 876
+                                                                   VALLEY FORGE, PA 19482
+
+   REGISTRANT'S TELEPHONE NUMBER, INCLUDING AREA CODE:  (610) 669-1000
+   DATE OF FISCAL YEAR END:                                        December 31, 2003
+
+   DATE OF REPORTING PERIOD:  JULY 1, 2003 - JUNE 30, 2004
+
+Fund             VANGUARD TOTAL STOCK MARKET INDEX FUND
+- ----------------------------------------------------------------------------------------------------
+Issuer:             1-800 CONTACTS, INC.
+Ticker:             CTAC                     CUSIP:       681977104
+Meeting Date        5/21/2004                                                                                      For/Against
+Proposal:                                                              Proposed by      Voted?     Vote Cast           Mgmt
+
+ELECTION OF DIRECTOR: JASON S. SUBOTKY                                 ISSUER             YES       WITHHOLD     AGAINST
+
+ELECTION OF DIRECTOR: BRADLEY T. KNIGHT                                ISSUER             YES       WITHHOLD     AGAINST
+
+ELECTION OF DIRECTOR: JONATHAN C. COON                                 ISSUER             YES       FOR          FOR

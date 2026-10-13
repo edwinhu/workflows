@@ -1,0 +1,12 @@
+
+DUKE ENERGY CORPORATION
+
+Ticker:       DUK            Security ID:  26441C204
+Meeting Date: MAY 01, 2014   Meeting Type: Annual
+Record Date:  MAR 03, 2014
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Election of Directors                   For       No shares    Management
+                                                        held on
+                                                        record
+1     Election of Directors                   For       No shares    Management

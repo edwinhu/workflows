@@ -1,0 +1,60 @@
+ACCESSION NUMBER:		0001104659-18-053810
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20180630
+FILED AS OF DATE:		20180828
+DATE AS OF CHANGE:		20180828
+EFFECTIVENESS DATE:		20180828
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ALGER FUNDS II
+		CENTRAL INDEX KEY:			0000092751
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000092751
+<SERIES-ID>S000009190
+<SERIES-NAME>Alger Spectra Fund
+<CLASS-CONTRACT>
+<SERIES>
+<OWNER-CIK>0000092751
+<SERIES-ID>S000026226
+<SERIES-NAME>Alger Dynamic Opportunities Fund
+<CLASS-CONTRACT>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a18-15483_4npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<div>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">******************************* FORM N-Px REPORT *******************************</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">ICA File Number: 811-01743&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Reporting Period: 07/01/2017 - 06/30/2018&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">============= Alger Funds II - Alger Dynamic Opportunities Fund -&#160; =============</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">=============&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Weatherbie Capital&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; =============</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">2U, INC.&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker:&#160;&#160;&#160;&#160;&#160;&#160; TWOU&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Security ID:&#160; 90214J101&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Date: JUN 26, 2018&#160;&#160; Meeting Type: Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Record Date:&#160; APR 27, 2018&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">#&#160;&#160;&#160;&#160; Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgt Rec&#160;&#160; Vote Cast&#160;&#160;&#160; Sponsor&#160;&#160;&#160; </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160; Elect Director Paul A. Maeder&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; Withhold&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.2&#160;&#160; Elect Director Robert M. Stavis&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; Withhold&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.3&#160;&#160; Elect Director Christopher J. Paucek&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; Withhold&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.4&#160;&#160; Elect Director Gregory K. Peters&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">2&#160;&#160;&#160;&#160; Ratify KPMG LLP as Auditors&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">3&#160;&#160;&#160;&#160; Advisory Vote to Ratify Named&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;Executive Officers' Compensation&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>

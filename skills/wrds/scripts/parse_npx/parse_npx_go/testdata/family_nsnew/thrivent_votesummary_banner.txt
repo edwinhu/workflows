@@ -1,0 +1,54 @@
+<SEC-DOCUMENT>0000811869-04-000076.txt : 20040831
+<SEC-HEADER>0000811869-04-000076.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831120001
+ACCESSION NUMBER:		0000811869-04-000076
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			THRIVENT MUTUAL FUNDS
+		CENTRAL INDEX KEY:			0000811869
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			0430
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a4771137.htm
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE>Form N-PX
+</TITLE>
+
+
+
+
+                                              Vote Summary Report
+                                          Apr 01, 2004 - Jun 30, 2004
+
+THRIVENT TECHNOLOGY FUND
+
+Mtg              Company/                                    Mgmt       Vote         Record              Shares
+Date/Type        Ballot Issues                    Security   Rec        Cast         Date      Prpnent    Voted
+- ---------------- -------------------------------- ---------- ---------- ------------ --------- -------- --------
+- ----------------------------------------------------------------------------------------------------------------
+
+04/29/04 - A     Active Power, Inc. *ACPW*        00504W100                          02/13/04            43,700
+                 1     Elect Directors                       For        Split                  Mgmt
+                 1.1   Elect Director Richard E. Anderson
+                       --- Withhold
+                          We recommend a vote FOR the  directors  with the
+                          exception  of  affiliated  outsider  Richard  E.
+                          Anderson.   We   recommend   that   shareholders
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

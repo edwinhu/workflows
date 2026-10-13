@@ -1,0 +1,475 @@
+<SEC-DOCUMENT>0001209286-13-000352.txt : 20130822
+<SEC-HEADER>0001209286-13-000352.hdr.sgml : 20130822
+<ACCEPTANCE-DATETIME>20130822171030
+ACCESSION NUMBER:		0001209286-13-000352
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20130630
+FILED AS OF DATE:		20130822
+DATE AS OF CHANGE:		20130822
+EFFECTIVENESS DATE:		20130822
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			WORLD FUNDS INC /MD/
+		CENTRAL INDEX KEY:			0001040674
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08255
+		FILM NUMBER:		131055768
+
+	BUSINESS ADDRESS:	
+		STREET 1:		8730 STONY POINT PARKWAY
+		STREET 2:		SUITE 205
+		CITY:			RICHMOND
+		STATE:			VA
+		ZIP:			23235
+		BUSINESS PHONE:		8042677400
+
+	MAIL ADDRESS:	
+		STREET 1:		8730 STONY POINT PARKWAY
+		STREET 2:		SUITE 205
+		CITY:			RICHMOND
+		STATE:			VA
+		ZIP:			23235
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001040674
+<SERIES-ID>S000008412
+<SERIES-NAME>REMS Real Estate Income 50/50 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023088
+<CLASS-CONTRACT-NAME>Class A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023089
+<CLASS-CONTRACT-NAME>Class C Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023090
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RREIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023091
+<CLASS-CONTRACT-NAME>Institutional Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001040674
+<SERIES-ID>S000008421
+<SERIES-NAME>REMS Real Estate Value Opportunity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023113
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HLRRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080660
+<CLASS-CONTRACT-NAME>Class P Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>HLPPX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>e1307.htm
+<TEXT>
+<!--page-->
+<br clear="all" style="page-break-before:always;">
+<p align="left"><font face="Times New Roman" size="2">Item 1. Proxy Voting Record.</font></p>
+<p><font face="Arial" size="5">Investment Company Report</font></p>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td width="20%" nowrap valign="bottom" align="left"><font face="Arial" size="2"><b>Meeting
+ Date Range:</b></font></td>
+<td width="1%"><font face="Arial" size="2">&#160;</font></td>
+<td width="30%" valign="bottom" align="left"><font face="Arial" size="2">01-Jul-2012
+ - 30-Jun-2013</font></td>
+<td width="1%"><font face="Arial" size="2">&#160;</font></td>
+<td width="10%" nowrap valign="bottom" align="left"><font face="Arial" size="2"><b>Report
+ Date:</b></font></td>
+<td width="2%"><font face="Arial" size="2">&#160;</font></td>
+<td width="10%" nowrap valign="bottom" align="right"><font face="Arial" size="2">09-Jul-2013
+</font></td>
+<td><font face="Arial" size="2">&#160;</font></td>
+</tr>
+
+<tr>
+<td align="left"><font face="Arial" size="2">&#160;</font></td>
+<td align="left"><font face="Arial" size="2">&#160;</font></td>
+<td align="left"><font face="Arial" size="2">&#160;</font></td>
+<td align="left"><font face="Arial" size="2">&#160;</font></td>
+<td align="left"><font face="Arial" size="2">&#160;</font></td>
+<td align="left"><font face="Arial" size="2">&#160;</font></td>
+<td valign="bottom" align="right"><font face="Arial" size="2"><br>Page 1 of
+ 38</font></td>
+<td><font face="Arial" size="2">&#160;</font></td>
+</tr>
+</table>
+<p><font face="Arial" size="2"><b>REMS Real Estate 50/50 Fund</b></font></p>
+
+
+
+<table border="1" cellpadding="4" cellspacing="0" width="100%" bordercolor="gray">
+<tr>
+<td valign="bottom" align="left"><font face="Arial" size="2"><b>AGREE REALTY
+ CORPORATION</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td width="50%" valign="top" align="left"><p style="margin-left:40px;"><font face="Arial" size="2">
+<b>Security:</b> </b> 008492100<br><b>&#160;&#160;&#160;Ticker:</b> ADC<br><b>&#160;&#160;&#160;&#160;&#160;&#160;ISIN:</b> US0084921008</font></td>
+<td valign="top" align="left"><p style="margin-left:40px;"><font face="Arial" size="2">
+<b>Agenda Number:</b> 933761276<br><b>&#160;&#160;&#160;&#160;Meeting Type:</b> Annual<br><b>&#160;&#160;&#160;&#160;Meeting Date:
+</b> 06-May-13</font></td>
+</tr>
+</table><br>
+
+
+
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr bgcolor="#08088A">
+<td valign="top" align="left" nowrap ><font face="Arial" size="2" color="#FFFFFF"><b>Prop. #
+</b> </font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td colspan="2" valign="top" align="left"><font face="Arial" size="2" color="#FFFFFF"><b>&#160;&#160;&#160;&#160;Proposal</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center" nowrap><font face="Arial" size="2" color="#FFFFFF"><b>Proposed<br>by</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center" nowrap><font face="Arial" size="2" color="#FFFFFF"><b>Proposal Vote</b></font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2"color="#FFFFFF"><b>For/Against<br>Management&#146;s<br>Recommendation</b> </font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+
+<tr>
+<td width="5%" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="2%" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="5%" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="4%" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="7%" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="4%" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="7%" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="4%" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="10%" align="left"><font face="Arial" size="1">&#160;</font></td>
+<td width="2%" ><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">1.</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" colspan="2" align="left"><font face="Arial" size="2">
+DIRECTOR</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">1</font></td>
+<td valign="top" align="left"><font face="Arial" size="2"> JOEY AGREE</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">Mgmt</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">2</font></td>
+<td valign="top" align="left"><font face="Arial" size="2"> LEON M. SCHURGIN</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">Mgmt</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="left"><font face="Arial" size="2">3</font></td>
+<td valign="top" align="left"><font face="Arial" size="2"> WILLIAM S.
+ RUBENFAER</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">Mgmt</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">2.</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" colspan="2" align="left"><font face="Arial" size="2">
+TO RATIFY THE APPOINTMENT OF GRANT THORNTON LLP AS THE COMPANY&#146;S INDEPENDENT
+ REGISTERED PUBLIC ACCOUNTING FIRM FOR 2013.</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">Mgmt</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">3.</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" colspan="2" align="left"><font face="Arial" size="2">
+TO APPROVE, BY NON-BINDING VOTE, EXECUTIVE COMPENSATION.</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">Mgmt</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td align="left"><font face="Arial" size="1">&#160;</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+<tr>
+<td valign="top" align="left"><font face="Arial" size="2">4.</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" colspan="2" align="left"><font face="Arial" size="2">
+TO APPROVE AN AMENDMENT TO THE COMPANY&#146;S CHARTER TO INCREASE THE NUMBER AUTHORIZED
+ SHARES.</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">Mgmt</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+<td valign="top" align="center"><font face="Arial" size="2">For</font></td>
+<td><font face="Arial" size="1">&#160;</font></td>
+</tr>
+</table><br>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

@@ -1,0 +1,47 @@
+<SEC-DOCUMENT>0000891804-14-000786.txt : 20140815
+<SEC-HEADER>0000891804-14-000786.hdr.sgml : 20140815
+<ACCEPTANCE-DATETIME>20140815151141
+ACCESSION NUMBER:		0000891804-14-000786
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20140630
+FILED AS OF DATE:		20140815
+DATE AS OF CHANGE:		20140815
+EFFECTIVENESS DATE:		20140815
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Claymore Exchange-Traded Fund Trust 2
+		CENTRAL INDEX KEY:			0001365662
+Fund Name : Guggenheim  BRIC ETF
+
+Date of fiscal year end: 06/30/2014
+
+In all markets, for all statuses, for
+
+Key-
+
+________________________________________________________________________________
+21Vianet Group Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+VNET       CUSIP 90138A103          05/29/2014            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          2014 Share Incentive     Mgmt       For        Abstain    Against
+            Plan
+
+2          Increase of Authorized   Mgmt       For        Abstain    Against
+            Common
+            Stock
+
+
+________________________________________________________________________________
+51Job Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+JOBS       CUSIP 316827104          06/20/2014            Voted
+Meeting Type                        Country of Trade
+Special                             United States

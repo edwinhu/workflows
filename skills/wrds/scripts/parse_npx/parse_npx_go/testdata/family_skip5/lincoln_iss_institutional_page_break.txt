@@ -1,0 +1,97 @@
+<SEC-DOCUMENT>0001193125-20-228094.txt : 20200824
+<SEC-HEADER>0001193125-20-228094.hdr.sgml : 20200824
+<ACCEPTANCE-DATETIME>20200824133929
+ACCESSION NUMBER:		0001193125-20-228094
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20200630
+FILED AS OF DATE:		20200824
+DATE AS OF CHANGE:		20200824
+EFFECTIVENESS DATE:		20200824
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000016761
+<SERIES-NAME>LVIP BlackRock Global Real Estate Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000046809
+<CLASS-CONTRACT-NAME>Standard Class
+</CLASS-CONTRACT>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d35445dnpx.htm
+<DESCRIPTION>LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+<TEXT>
+<HTML><HEAD>
+<TITLE>Lincoln Variable Insurance Products Trust</TITLE>
+</HEAD>
+ <BODY BGCOLOR="WHITE">
+<PRE>
+
+LVIP BlackRock Global Real Estate Fund
+
+Institutional Account Name      LVIP BlackRock Global Real Estate Fund
+Institutional Account Number    (All)
+
+                              Primary                   Proposal                                                 Vote
+Company Name         Ticker  Security ID  Meeting Date  Number            Proposal Text           Proponent   Instruction
+------------         ------  -----------  ------------  --------  ------------------------------- ----------- -----------
+Activia Properties,                                               Amend Articles to Change
+Inc.                                                              Location of Head Office--
+                                                                  Amend Asset Management
+                     3279    J00089102     09-Aug-19      1       Compensation                    Management     For
+Activia Properties,                                               Elect Executive Director Sato,
+Inc.                 3279    J00089102     09-Aug-19      2       Kazushi                         Management     For
+Activia Properties,                                               Elect Alternate Executive
+Inc.                 3279    J00089102     09-Aug-19      3       Director Murayama, Kazuyuki     Management     For
+Activia Properties,                                               Elect Supervisory Director
+Inc.                 3279    J00089102     09-Aug-19      4.1     Yamada, Yonosuke                Management     For
+Activia Properties,                                               Elect Supervisory Director
+Inc.                 3279    J00089102     09-Aug-19      4.2     Ariga, Yoshinori                Management     For
+AEDAS Homes                                                       Approve Consolidated and
+SAU                                                               Standalone Financial
+                     AEDAS   E01587109     30-Mar-20      1       Statements                      Management     For
+                     Vote Against
+Company Name         Management
+------------         ------------
+Activia Properties,
+Inc.
+
+                         No
+Activia Properties,
+Inc.                     No
+Activia Properties,
+Inc.                     No
+Activia Properties,
+Inc.                     No
+Activia Properties,
+Inc.                     No
+AEDAS Homes
+SAU
+                         No
+</PRE>
+ </DIV>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+AEDAS Homes                                   Advisory Vote on
+SAU          AEDAS  E01587109  30-Mar-20  10  Remuneration Report            Management  For  No
+AEDAS Homes                                   Approve Consolidated and
+SAU                                           Standalone Management
+             AEDAS  E01587109  30-Mar-20  2   Reports                        Management  For  No
+AEDAS Homes
+SAU          AEDAS  E01587109  30-Mar-20  3   Approve Discharge of Board     Management  For  No
+AEDAS Homes
+SAU          AEDAS  E01587109  30-Mar-20  4   Approve Allocation of Income   Management  For  No
+AEDAS Homes
+SAU          AEDAS  E01587109  30-Mar-20  5   Amend Articles                 Management  For  No
+</BODY></HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

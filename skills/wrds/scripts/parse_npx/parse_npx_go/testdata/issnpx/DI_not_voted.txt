@@ -1,0 +1,7 @@
+Ticker:       2395           Security ID:  Y0017P108
+Meeting Date: MAY 28, 2019   Meeting Type: Annual
+Record Date:  MAR 29, 2019
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accounts and Reports                    For       Not voted    Management
+2     Allocation of Profits/Dividends         For       Not voted    Management

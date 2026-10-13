@@ -1,0 +1,317 @@
+<table border="0" cellpadding="2" cellspacing="0" width="695">
+  <caption></caption>
+  <tr>    <td colspan="6" rowspan="1" width="691"> <div><div align="right"><b>
+<hr noshade>
+</b></div></div>
+</td>
+</tr>
+  <tr>    <td colspan="3" rowspan="1" width="382"> <div><b><font size="1">
+FEDERATED DEPARTMENT STORES, INC.
+</font></b></div>
+</td>
+    <td width="83"> <div><b><font size="1">
+FD
+</font></b></div>
+</td>
+    <td width="51"><font size="1">&#160;</font></td>
+    <td width="163"> <div><div align="right"><b><font size="1">Annual Meeting</font></b><font size="1">&#160;<b>Date:</b></font></div></div>
+</td>
+</tr>
+  <tr>    <td colspan="2" rowspan="1" width="183"> <div><b><font size="1">
+Issuer: 31410H
+</font></b></div>
+</td>
+    <td width="195"> <div><b><font size="1">
+ISIN:
+</font></b></div>
+</td>
+    <td width="83"><font size="1">&#160;</font></td>
+    <td width="51"><font size="1">&#160;</font></td>
+    <td width="163">
+					<div align="right">
+						<font size="1"><b> 07/13/2005</b></font></div>
+				</td>
+</tr>
+  <tr>    <td width="50"> <div><b><font size="1">
+SEDOL:
+</font></b></div>
+</td>
+    <td width="129"><font size="1">&#160;</font></td>
+    <td width="195"><font size="1">&#160;</font></td>
+    <td width="83"><font size="1">&#160;</font></td>
+    <td width="51"><font size="1">&#160;</font></td>
+    <td width="163"><font size="1">&#160;</font></td>
+</tr>
+  <tr>    <td colspan="6" rowspan="1" width="691"> <div><b>
+<hr noshade>
+</b></div>
+</td>
+</tr>
+  <tr>    <td width="50"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="129"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="195"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="83"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="51"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="163"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+</tr>
+  <tr>    <td colspan="2" rowspan="1" width="183"> <div><b><font size="1">
+Vote Group: GLOBAL
+</font></b></div>
+</td>
+    <td width="195"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="83"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="51"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="163"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+</tr>
+  <tr>    <td width="50"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="129"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="195"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="83"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="51"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="163"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+</tr>
+  <tr>    <td width="50"> <div>
+						<font size="1">
+Proposal
+</font></div>
+</td>
+    <td width="129"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="195"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="83"> <div>
+						<font size="1">
+Proposal
+</font></div>
+</td>
+    <td width="51"> <div>
+						<font size="1">
+Vote
+</font></div>
+</td>
+    <td width="163"> <div>
+						<font size="1">
+For or Against
+</font></div>
+</td>
+</tr>
+  <tr>    <td width="50"> <div>
+						<font size="1">
+Number
+</font></div>
+</td>
+    <td width="129"> <div>
+						<font size="1">
+Proposal
+</font></div>
+</td>
+    <td width="195"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="83"> <div>
+						<font size="1">
+Type
+</font></div>
+</td>
+    <td width="51"> <div>
+						<font size="1">
+Cast
+</font></div>
+</td>
+    <td width="163"> <div>
+						<font size="1">
+Mgmt.
+</font></div>
+</td>
+</tr>
+  <tr>    <td colspan="6" rowspan="1" width="691"> <div>
+<hr noshade>
+</div>
+</td>
+</tr>
+  <tr>    <td width="50"> <div>
+						<font size="1">
+01
+</font></div>
+</td>
+    <td colspan="2" rowspan="1" width="328"> <div>
+						<font size="1">
+APPROVE MERGER AGREEMENT
+</font></div>
+</td>
+    <td width="83"> <div>
+						<font size="1">
+Management
+</font></div>
+</td>
+    <td width="51"> <div>
+						<font size="1">
+For
+</font></div>
+</td>
+    <td width="163"> <div>
+						<font size="1">
+For
+</font></div>
+</td>
+</tr>
+  <tr>    <td width="50"> <div>
+						<font size="1">
+02
+</font></div>
+</td>
+    <td colspan="2" rowspan="1" width="328"> <div>
+						<font size="1">
+ELECTION OF DIRECTORS
+</font></div>
+</td>
+    <td width="83"> <div>
+						<font size="1">
+Management
+</font></div>
+</td>
+    <td width="51"> <div>
+						<font size="1">
+For
+</font></div>
+</td>
+    <td width="163"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+</tr>
+  <tr>    <td width="50"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="129"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="195"> <div>
+						<font size="1">
+MEYER FELDBERG
+</font></div>
+</td>
+    <td width="83"> <div>
+						<font size="1">
+Management
+</font></div>
+</td>
+    <td width="51"> <div>
+						<font size="1">
+For
+</font></div>
+</td>
+    <td width="163"> <div>
+						<font size="1">
+For
+</font></div>
+</td>
+</tr>
+  <tr>    <td width="50"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="129"> <div>
+						<font size="1">
+&#160;
+</font></div>
+</td>
+    <td width="195"> <div>
+						<font size="1">
+TERRY J. LUNDGREN
+</font></div>
+</td>
+    <td width="83"> <div>
+						<font size="1">
+Management
+</font></div>
+</td>
+    <td width="51"> <div>
+						<font size="1">
+For
+</font></div>
+</td>
+    <td width="163"> <div>
+						<font size="1">
+For
+</font></div>
+</td>
+</tr>

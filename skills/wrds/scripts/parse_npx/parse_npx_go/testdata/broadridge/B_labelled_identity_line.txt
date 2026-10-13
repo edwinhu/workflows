@@ -1,0 +1,177 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ Nb3lTdjQQL7g9x4kZJsgBzP58+cp4fixbUdegbw2u6t50lhJ9UaTkXKk9UhAQBEg
+ Lk6U4yHHbWLo45g5UskZ7Q==
+
+<SEC-DOCUMENT>0001017918-05-000121.txt : 20050901
+<SEC-HEADER>0001017918-05-000121.hdr.sgml : 20050901
+<ACCEPTANCE-DATETIME>20050901141949
+ACCESSION NUMBER:		0001017918-05-000121
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050901
+DATE AS OF CHANGE:		20050901
+EFFECTIVENESS DATE:		20050901
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			BARON INVESTMENT FUNDS TRUST (f/k/a BARON ASSET FUND)
+		CENTRAL INDEX KEY:			0000810902
+		IRS NUMBER:				136891420
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX/A
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05032
+		FILM NUMBER:		051064286
+
+	BUSINESS ADDRESS:	
+		STREET 1:		767 FIFTH AVE
+		STREET 2:		49TH FL
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10153
+		BUSINESS PHONE:		2125832000
+
+	MAIL ADDRESS:	
+		STREET 1:		767 FIFTH AVE
+		STREET 2:		49TH FL
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10153
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	BARON ASSET FUND
+		DATE OF NAME CHANGE:	19920703
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>biftproxies05.txt
+<DESCRIPTION>AMENDMENT #1 TO FORM N-PX 06/05
+<TEXT>
+
+                                                  ------------------------------
+                                                         OMB APPROVAL
+                                                  ------------------------------
+                                                  OMB Number:          3235-0582
+                UNITED STATES                     Expires:        March 31, 2006
+    SECURITIES AND EXCHANGE COMMISSION            Estimated average burden
+                                                  hours per response....... 14.4
+           Washington, D.C. 20549
+
+                             FORM N-PX
+
+    ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+                         INVESTMENT COMPANY
+
+
+Investment Company Act file number      811-5032
+                                  ----------------------------------------------
+
+       767 Fifth Avenue, 49th Floor, New York, NY           10153
+- -----------------------------------------------------    -----------------------
+        (Address of Principal Executive Offices)         (Zip Code)
+
+Registrant's Telephone Number, including Area Code       212-583-2000
+                                                   -----------------------------
+
+                               Linda S. Martinson
+                        c/o Baron Investment Funds Trust
+                                767 Fifth Avenue
+                               New York, NY 10153
+- --------------------------------------------------------------------------------
+                   (Name and Address of Agent for Service)
+
+Date of fiscal year end:           September 30
+                        -----------------------
+
+Date of reporting period:         June 30, 2005
+                        -----------------------
+
+     Form  N-PX is to be used by a  registered  management  investment  company,
+other than a small business  investment  company  registered on Form N 5 (239.24
+and 274.5 of this chapter), to file reports with the Commission,  not later than
+August 31 of each year,  containing the registrant's proxy voting record for the
+most recent  twelve-month  period  ended June 30,  pursuant to section 30 of the
+Investment  Company Act of 1940 and rule 30b1-4 thereunder  (17CFR  270.30b1-4).
+The Commission may use the information  provided on Form N-PX in its regulatory,
+disclosure review, inspection, and policymaking roles.
+
+     A  registrant  is required to disclose  the  information  specified by Form
+N-PX, and the Commission will make this information  public. A registrant is not
+required to respond to the  collection  of  information  contained  in Form N-PX
+unless the Form  displays a  currently  valid  Office of  Management  and Budget
+("OMB")  control number.  Please direct comments  concerning the accuracy of the
+information  collection  burden  estimate and any  suggestions  for reducing the
+burden to the Secretary,  Securities and Exchange Commission,  450 Fifth Street,
+NW,  Washington,  DC  20549-0609.  The  OMB  has  reviewed  this  collection  of
+information under the clearance requirements of 44 U.S.C.3507.
+
+
+          Persons who are to respond to the collection of information  contained
+          in this form are not  required to respond  unless the form  displays a
+          currently valid OMB control number.
+
+
+
+SEC 2451 (4-03)
+
+<PAGE>
+                              VOTE SUMMARY REPORT
+                       JULY 1, 2004 THROUGH JUNE 30, 2005
+
+                          BARON INVESTMENT FUNDS TRUST
+
+BARON ASSET FUND SERIES
+- -----------------------
+<TABLE>
+<CAPTION>
+<S>   <C>                                        <C>               <C>           <C>      <C>                      <C>
+- -----------------------------------------------------------------------------------------------------------------------------------
+ALEXANDER'S INC.                                 CUSIP: 014752109  TICKER: ALX            MEETING DATE: 05/18/05   TYPE: ANNUAL
+- -----------------------------------------------------------------------------------------------------------------------------------
+ITEM  PROPOSAL                                   TYPE              VOTED?        VOTE CAST  FOR/AGAINST MANAGEMENT'S RECOMMENDATION
+- -----------------------------------------------------------------------------------------------------------------------------------
+01    ELECTION OF DIRECTORS                      MGMT              YES
+      1. STEVEN ROTH                                                             FOR        FOR
+      2. NEIL UNDERBERG                                                          FOR        FOR
+      3. RUSSELL B. WIGHT, JR.                                                   FOR        FOR
+
+02    RATIFICATION OF SELECTION OF INDEPENDENT   MGMT              YES           FOR        FOR
+      AUDITORS: THE RATIFICATION OF THE
+      SELECTION OF INDEPENDENT AUDITORS.
+===================================================================================================================================
+ARCH CAPITAL GROUP LTD                           CUSIP: G0450A105  TICKER: ACGL           MEETING DATE: 04/28/05   TYPE: ANNUAL
+- -----------------------------------------------------------------------------------------------------------------------------------
+ITEM  PROPOSAL                                   TYPE              VOTED?        VOTE CAST  FOR/AGAINST MANAGEMENT'S RECOMMENDATION
+- -----------------------------------------------------------------------------------------------------------------------------------
+01    ELECTION OF DIRECTORS                      MGMT              YES
+      1. PAUL B. INGREY*                                                         FOR        FOR
+      2. KEWSONG LEE*                                                            FOR        FOR
+      3. DAVID R. TUNNELL*                                                       FOR        FOR
+      4. ROBERT F. WORKS*                                                        FOR        FOR
+      5. JAMES J. ANSALDI**                                                      FOR        FOR
+      6. GRAHAM B. COLLIS**                                                      FOR        FOR
+      7. DWIGHT R. EVANS**                                                       FOR        FOR
+      8. MARC GRANDISSON**                                                       FOR        FOR
+      9. RALPH E. JONES III**                                                    FOR        FOR
+     10. THOMAS G. KAISER**                                                      FOR        FOR
+     11. MARTIN J. NILSEN**                                                      FOR        FOR
+     12. NICHOLAS PAPADOPOULO**                                                  FOR        FOR
+     13. MICHAEL QUINN**                                                         FOR        FOR
+     14. ROBERT T. VAN GIESON**                                                  FOR        FOR
+     15. JOHN D. VOLLARO**                                                       FOR        FOR
+     16. GRAHAM WARD**                                                           FOR        FOR
+
+02    TO APPROVE THE 2005 LONG TERM INCENTIVE    MGMT              YES           FOR        FOR
+      AND SHARE AWARD PLAN AS SET FORTH IN AN

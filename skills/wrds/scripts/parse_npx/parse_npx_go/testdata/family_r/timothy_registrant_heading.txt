@@ -1,0 +1,50 @@
+		CENTRAL INDEX KEY:			0000916490
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD COLSPAN="5"><FONT STYLE="font-size: 9pt"><B>Registrant:&nbsp;&nbsp;</B>Timothy Plan Small Cap Value Fund </FONT></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD COLSPAN="9" STYLE="border-top: Black 1pt solid; border-right: black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-decoration: underline; text-align: center"><FONT STYLE="font-size: 9pt"><B><U>FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</U></B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; text-align: center"><FONT STYLE="font-size: 9pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-size: 9pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-size: 9pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-size: 9pt"><B>(d) Shareholder Meeting Date</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-size: 9pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-size: 9pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-size: 9pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-size: 9pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; text-align: center"><FONT STYLE="font-size: 9pt"><B>(i) For/Against Management</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-size: 9pt">CHEMICAL FINANCIAL CORPORATION</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">CHFC</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">163731102</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">Special19-Jul-2016</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">1.TO APPROVE THE AGREEMENT AND PLAN OF MERGER, DATED AS OF JANUARY 25, 2016, BY AND BETWEEN TALMER BANCORP, INC. (&quot;TALMER&quot;) AND CHEMICAL FINANCIAL CORPORATION (&quot;CHEMICAL&quot;), UNDER WHICH TALMER WILL MERGE WITH AND INTO CHEMICAL (THE &quot;MERGER&quot;) </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">MGMT</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-size: 9pt">Y</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">FOR</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">FOR</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-size: 9pt">CHEMICAL FINANCIAL CORPORATION</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">CHFC</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">163731102</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">Special19-Jul-2016</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">2.TO VOTE ON A PROPOSAL TO APPROVE THE ISSUANCE OF SHARES OF CHEMICAL COMMON STOCK, $1 PAR VALUE PER SHARE, TO SHAREHOLDERS OF TALMER IN CONNECTION WITH THE MERGER </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">MGMT</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-size: 9pt">Y</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">FOR</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">FOR</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid"><FONT STYLE="font-size: 9pt">CHEMICAL FINANCIAL CORPORATION</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">CHFC</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">163731102</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">Special19-Jul-2016</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">3.TO VOTE ON A PROPOSAL TO APPROVE AN AMENDMENT TO CHEMICAL'S ARTICLES OF INCORPORATION TO INCREASE THE NUMBER OF AUTHORIZED SHARES OF COMMON STOCK FROM 60 MILLION TO 100 MILLION </FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">MGMT</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; text-align: center"><FONT STYLE="font-size: 9pt">Y</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">FOR</FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid"><FONT STYLE="font-size: 9pt">FOR</FONT></TD></TR>
