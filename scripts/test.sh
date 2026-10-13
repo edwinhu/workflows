@@ -19,6 +19,9 @@ if [ "${KEEP_TMP:-}" = 1 ]; then
 else
   trap 'rm -rf "$run_tmp"' EXIT
 fi
+# A caller inside a farm row or grind loop passes its identity (FARM_OUT_CHILD, FARM_ROW_ID, GRIND_*);
+# the fixture rows of farm-bgjob.test.ts would read it as their own. None reaches the suite.
+while IFS= read -r v; do unset "$v"; done < <(compgen -e | grep -E '^(FARM|GRIND)_' || true)
 export TMPDIR="$run_tmp" FARM_OUTCOMES="$run_tmp/farm-outcomes.jsonl"
 # No test reads the real OpenRouter balance: every interactive SessionStart spawn would, and a low
 # account would then change what those tests see. tests/openrouter-credits.test.ts points at its stubs.
