@@ -14,7 +14,7 @@ it -- including a `setsid nohup` that escapes the process group.
 A job is a run_in_background shell (the harness launches every Bash command through a shell that
 sources a `shell-snapshots/snapshot-*` file) or a process that left the child's tree. Plain children
 of the session -- MCP servers, hooks -- are neither. FARM_BG_IGNORE (a regex over the command line)
-exempts daemons a child may legitimately leave behind.
+exempts daemons a child may legitimately leave behind: they are neither reported nor killed.
 """
 import json
 import os
@@ -199,23 +199,27 @@ def reap(row, log):
         out.append({"cmd": cmd, "source": "process", "status": "running", "pid": pid})
     # The row is over and nobody will read these: stop them rather than let them write into the
     # tree after the caller has been told the row finished.
-    victims = [p for p, (_, _, r) in procs().items() if r == row]
-    for p in victims:
+    # An ignored helper and what runs under it are left to end on their own: the shared `zg server run`
+    # daemon carries the id of whichever row started it, and killing it broke every other session.
+    def victims():
+        table = procs()
+        return [p for p, (_, _, r) in table.items() if r == row
+                and not any(table[a][2] == row and IGNORE.search(table[a][1]) for a in ancestors(table, p))]
+    for p in victims():
         try:
             os.kill(p, signal.SIGTERM)
         except OSError:
             pass
     for _ in range(50):
-        if not any(r == row for _, _, r in procs().values()):
+        if not victims():
             break
         time.sleep(0.1)
     else:
-        for p, (_, _, r) in procs().items():
-            if r == row:
-                try:
-                    os.kill(p, signal.SIGKILL)
-                except OSError:
-                    pass
+        for p in victims():
+            try:
+                os.kill(p, signal.SIGKILL)
+            except OSError:
+                pass
     print(json.dumps(out))
 
 
