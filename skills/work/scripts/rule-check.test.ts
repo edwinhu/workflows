@@ -668,12 +668,49 @@ test('A1: a leave-one-out check in the parent package satisfies it', async () =>
   expect(state.specification_curve_sites.every((c: any) => c.file === 'src/models/curve.py')).toBe(true);
 });
 
-test('A1: a leave-one-out check in a sibling package satisfies it', async () => {
-  const { root } = a1Project({ 'src/models/curve.py': BUILD, 'src/robustness/loo.py': VERIFY });
+// a sibling package's check counts only when an import connects it to a touched file, either direction
+const IMPORTS_CURVE = 'from src.models.curve import build\n' + VERIFY;
+
+test('A1: a leave-one-out check in a sibling package that imports the touched module satisfies it', async () => {
+  const { root } = a1Project({ 'src/models/curve.py': BUILD, 'src/robustness/loo.py': IMPORTS_CURVE });
   const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
   expect(a1.verdict).toBe('MET');
   expect(res.exitCode).toBe(0);
   expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/robustness/loo.py']);
+});
+
+test('A1: a check in an unrelated sibling package, with no import either way, does not count', async () => {
+  const { root } = a1Project({ 'src/models/curve.py': BUILD, 'src/rpt/build.py': VERIFY });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('VIOLATED');
+  expect(res.exitCode).toBe(2);
+  expect(state.robustness_check_sites).toEqual([]);
+  expect(state.n_unconnected_sibling_package_files_dropped).toBe(1);
+});
+
+test('A1: a check in a sibling package the touched file imports satisfies it', async () => {
+  const { root } = a1Project({
+    // the import line itself names no check, so the touched file still holds none of its own
+    'src/models/curve.py': 'import src.robustness.checks\n' + BUILD,
+    'src/robustness/checks.py': VERIFY,
+  });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(res.exitCode).toBe(0);
+  expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/robustness/checks.py']);
+});
+
+test('A1: a relative import of the touched module connects a sibling package', async () => {
+  const { root } = a1Project({
+    'src/models/curve.py': BUILD,
+    // nearest first sorts attrib/ before robustness/: the unconnected one is read, and dropped, first
+    'src/attrib/build.py': VERIFY,
+    'src/robustness/loo.py': 'from ..models import curve\n' + VERIFY,
+  });
+  const { a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/robustness/loo.py']);
+  expect(state.n_unconnected_sibling_package_files_dropped).toBe(1);
 });
 
 test('A1: a check above the project root does not count', async () => {
