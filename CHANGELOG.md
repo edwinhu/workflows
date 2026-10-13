@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **`scripts/test.sh` says what a capped run was waiting on:** three farm rows' first runs on 2026-10-13 hit the 600 s wall cap, each with exactly one file in flight (`jev-rule-spans.test.ts (589s)` twice, `early-stop.test.ts (568s)`), and bun's bare "Interrupted while still running" line was all that survived. The suite is not slow on a first run: per-file timings of a cold run in a fresh worktree (122 s) and a warm re-run (138 s) match, and under 64 busy loops (365 s), 3 concurrent cold suites (about 298 s each, load 120) and 3 concurrent suites with 32 busy loops (about 450 s each, load 262), every file finished. `early-stop` peaked at 82 s and `jev-rule-spans` at 56 s. So the cap fires on a single stalled file, and 2 s before the cap a watchdog now records the 10 slowest finished files, every file still running with its elapsed time, and the process tree under the run with each process's age, state and wait channel. On exit 124 test.sh prints that record. Per-file start/end times come from a preload, `tests/helpers/file-timing.ts`, written outside the run's TMPDIR. `tests/test-sh-wall-cap.test.ts` runs a hung, a slow and a fast probe file at `TEST_WALL=8` and expects the report to rank slow above fast, list the hung file as in flight and show its `sleep 297` child (red before).
+- **No test binds its stub server to a literal port:** `early-stop`, `judge-integration`, `work-hold-judge-facts` and `work-hold` held 50 fixed ports (18781–18967). Farm rows run the suite in sibling worktrees at the same time, so the second stub on a port cannot bind, and that run's hook talks to the other run's stub, or to nothing once that stub is killed. Three concurrent suites failed 7, 5 and 4 tests, mostly judge verdicts ("judge endpoint unreachable"). A foreign listener on 18781 failed `judge-integration` alone. Each port now comes from `freePort()` (`tests/helpers/free-port.ts`, the kernel's pick), and `tests/no-fixed-stub-ports.test.ts` fails on any literal port in a test file (red before: 50 hits). Three concurrent suites after the fix: 2 failures each, the same two load timeouts in all three runs.
+
 ## [6.45.2] - 2026-10-13
 
 ### Fixed

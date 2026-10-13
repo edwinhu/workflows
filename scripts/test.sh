@@ -14,10 +14,12 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 run_tmp=$(mktemp -d "${TEST_TMP_BASE:-/tmp}/workflows-test.XXXXXX")
+# The run's own bookkeeping (per-file timings, the cap report), outside run_tmp so no test sees it.
+run_meta=$(mktemp -d "${TEST_TMP_BASE:-/tmp}/workflows-test-meta.XXXXXX")
 if [ "${KEEP_TMP:-}" = 1 ]; then
   echo "test.sh: KEEP_TMP=1 — fixtures kept in $run_tmp, leak guard off" >&2
 else
-  trap 'rm -rf "$run_tmp"' EXIT
+  trap 'rm -rf "$run_tmp" "$run_meta"' EXIT
 fi
 # A caller inside a farm row or grind loop passes its identity (FARM_OUT_CHILD, FARM_ROW_ID, GRIND_*);
 # the fixture rows of farm-bgjob.test.ts would read it as their own. None reaches the suite.
@@ -60,10 +62,44 @@ git rev-parse --is-inside-work-tree >/dev/null 2>&1 && in_git=1
 # A wall-clock cap, because a hang never fails on its own: once in nine runs a worker spun at 100%
 # CPU beside an un-reaped (zombie) `bun` child of converge-check.test.ts and the run sat for 18 min.
 # timeout signals its whole process group, so the workers go too. Exit 124 = the cap fired.
+# A capped run names its cause: bun prints only the in-flight file names, so 2 s before the cap a
+# watchdog records the slowest finished files, what is still running and the process tree under the
+# run — the stuck child is in that tree. Three first runs hit the cap on 2026-10-13, one file in
+# flight each, and none left a trace of what that file was waiting on.
+wall=${TEST_WALL:-600}
+export TEST_FILE_TIMING_LOG="$run_meta/file-timing.log"
+cap_report() {  # $1 = pid of the capped command
+  local now; now=$(date +%s%3N)
+  echo "test.sh: WALL CAP ($wall s) FIRED — the run 2 s before the kill (TEST_WALL raises the cap):"
+  echo "  slowest finished files:"
+  awk '{f=$0; sub(/^[^ ]+ [^ ]+ [^ ]+ /, "", f)} $1=="start"{s[f]=$2} $1=="end"{e[f]=$2}
+       END{for (f in e) if (f in s) printf "%.1f %s\n", (e[f]-s[f])/1000, f}' "$TEST_FILE_TIMING_LOG" 2>/dev/null \
+    | sort -rn | head -10 | awk '{printf "    %7.1fs  %s\n", $1, $2}'
+  echo "  still running (started, no end recorded):"
+  awk -v now="$now" '{f=$0; sub(/^[^ ]+ [^ ]+ [^ ]+ /, "", f)} $1=="start"{s[f]=$2} $1=="end"{e[f]=1}
+       END{for (f in s) if (!(f in e)) printf "%.1f %s\n", (now-s[f])/1000, f}' "$TEST_FILE_TIMING_LOG" 2>/dev/null \
+    | sort -rn | awk '{printf "    %7.1fs  %s\n", $1, $2}'
+  echo "  process tree of the run (pid, elapsed, state, wait channel, argv):"
+  ps -e -o pid=,ppid=,etimes=,stat=,wchan:22=,args= | awk -v root="$1" '
+    { kids[$2] = kids[$2] " " $1; row[$1] = sprintf("%8s %6ss %-5s %-22s ", $1, $3, $4, $5)
+      a = $0; sub(/^ *[^ ]+ +[^ ]+ +[^ ]+ +[^ ]+ +[^ ]+ /, "", a); args[$1] = a }
+    function walk(p, d,   n, k, i) {
+      printf "    %s%*s%s\n", row[p], 2 * d, "", substr(args[p], 1, 200)
+      n = split(kids[p], k, " "); for (i = 1; i <= n; i++) walk(k[i], d + 1)
+    }
+    END { if (root in row) walk(root, 0) }'
+}
 cap=()
-command -v timeout >/dev/null && cap=(timeout -k 10 "${TEST_WALL:-600}")
+command -v timeout >/dev/null && cap=(timeout -k 10 "$wall")
+wd=
+if [ ${#cap[@]} -gt 0 ] && [[ $wall =~ ^[0-9]+$ ]] && [ "$wall" -gt 2 ]; then
+  ( sleep $((wall - 2)); p=$(pgrep -P $$ -x timeout | head -1); [ -n "$p" ] && cap_report "$p" > "$run_meta/cap-report.txt" ) &
+  wd=$!
+fi
 rc=0
-${cap[@]+"${cap[@]}"} bun test --parallel${TEST_JOBS:+=$TEST_JOBS} "$@" || rc=$?
+${cap[@]+"${cap[@]}"} bun test --parallel${TEST_JOBS:+=$TEST_JOBS} --preload ./tests/helpers/file-timing.ts "$@" || rc=$?
+if [ -n "$wd" ]; then pkill -P "$wd" 2>/dev/null || true; kill "$wd" 2>/dev/null || true; wait "$wd" 2>/dev/null || true; fi
+[ "$rc" = 124 ] && [ -s "$run_meta/cap-report.txt" ] && cat "$run_meta/cap-report.txt" >&2
 
 # THE LEAK GUARD. A fixture that outlives its test lands in whatever TMPDIR the caller has, and
 # outside this script that is the user's: ~/.tmp held ~125K fixture dirs from one week of bare
