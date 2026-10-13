@@ -563,3 +563,80 @@ test('RULE_CHECK_OUT receives the exact verdict line stdout carries, for a score
   expect(e.exitCode).toBe(0);
   expect(JSON.parse(fs.readFileSync(empty, 'utf8'))).toMatchObject({ verdicts: [], unavailable: [], scope: expect.stringContaining('nothing in scope') });
 });
+
+// ---- A1 package scope: a robustness check in an untouched sibling module counts -----------------
+// The stub judges A1 the way its CRITERIA read: VIOLATED when a specification curve site carries
+// robustness_check_in_files false. Every other rule answers 0.05.
+
+const BUILD = [
+  'from .estimation import estimate',
+  '',
+  'def build(df):',
+  '    out = []',
+  '    for outcome in ["exit", "entry"]:',
+  '        for sample in ["all", "large"]:',
+  '            out.append(estimate(df, outcome, sample))',
+  '    return out',
+  '',
+].join('\n');
+const VERIFY = [
+  'from .estimation import estimate',
+  '',
+  'def leave_one_out(df, events):',
+  '    return [estimate(df[df.event != e], "exit", "all") for e in events]',
+  '',
+].join('\n');
+
+async function a1Run(files: string[]) {
+  let a1: any = null;
+  const server = Bun.serve({
+    port: 0,
+    async fetch(req) {
+      const body = await req.json();
+      const rule = /\(rule (\S+)\)/.exec(body.questions.q0.instructions)![1];
+      let p = 0.05;
+      if (rule === 'A1') {
+        a1 = JSON.parse(body.state.slice(body.state.indexOf('\n{')));
+        p = a1.specification_curve_sites.some((c: any) => c.robustness_check_in_files === false) ? 0.97 : 0.05;
+      }
+      return Response.json({ answers: { q0: { probabilities: { VIOLATED: p } } } });
+    }
+  });
+  const res = await runRuleCheck(['--files', ...files], server.port);
+  server.stop(true);
+  const by = Object.fromEntries(JSON.parse(res.stdout.toString()).verdicts.map((v: any) => [v.rule, v]));
+  return { res, a1: by.A1, state: a1 };
+}
+
+test('A1: touching only build.py, the leave-one-out check in sibling verify.py satisfies it', async () => {
+  const pkg = join(mkTmp('rule-check-a1-pkg-'), 'report');
+  fs.mkdirSync(pkg);
+  fs.writeFileSync(join(pkg, 'build.py'), BUILD);
+  fs.writeFileSync(join(pkg, 'verify.py'), VERIFY);
+  const { res, a1, state } = await a1Run([join(pkg, 'build.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(res.exitCode).toBe(0);
+  // the finding surface is still the touched file alone
+  expect(state.files.map((f: any) => f.path)).toEqual(['build.py']);
+  expect(state.specification_curve_sites.every((c: any) => c.file === 'build.py')).toBe(true);
+});
+
+test('A1: a package with no robustness check anywhere still fires, filed against the touched file only', async () => {
+  const pkg = join(mkTmp('rule-check-a1-none-'), 'report');
+  fs.mkdirSync(pkg);
+  fs.writeFileSync(join(pkg, 'build.py'), BUILD);
+  // an untouched sibling with its own unguarded curve: read for checks, never filed against
+  fs.writeFileSync(join(pkg, 'pooled.py'), BUILD.replace('def build', 'def pooled'));
+  const { res, a1 } = await a1Run([join(pkg, 'build.py')]);
+  expect(a1.verdict).toBe('VIOLATED');
+  expect(a1.spans).toEqual(['build.py:7']);
+  expect(res.exitCode).toBe(2);
+});
+
+test('A1: a touched file alone in its directory sees exactly the state it saw before (no sibling keys)', async () => {
+  const pkg = join(mkTmp('rule-check-a1-alone-'), 'report');
+  fs.mkdirSync(pkg);
+  fs.writeFileSync(join(pkg, 'build.py'), BUILD);
+  const { state } = await a1Run([join(pkg, 'build.py')]);
+  expect(Object.keys(state).filter(k => k.includes('sibling'))).toEqual([]);
+});

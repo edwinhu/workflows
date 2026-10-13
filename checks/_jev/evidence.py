@@ -23,6 +23,30 @@ def spans(state, spec):
     return out
 
 
+MAX_SIBLINGS = 100
+
+
+def siblings(files, root_dir):
+    """[(label, path)] of the untouched files in each touched file's directory: the package a presence
+    rule reads for evidence. Never recursive, never hidden; capped at MAX_SIBLINGS, sorted by path."""
+    touched = {os.path.realpath(f) for _, f in files}
+    out, seen = [], set()
+    for d in sorted({os.path.dirname(os.path.abspath(f)) for _, f in files}):
+        try:
+            names = sorted(os.listdir(d))
+        except OSError:
+            continue
+        for name in names:
+            path = os.path.join(d, name)
+            real = os.path.realpath(path)
+            if name.startswith('.') or not os.path.isfile(path) or real in touched or real in seen:
+                continue
+            seen.add(real)
+            label = os.path.relpath(path, os.path.abspath(root_dir)) if root_dir else name
+            out.append((label, path))
+    return out[:MAX_SIBLINGS]
+
+
 def main(my_dir=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--files', nargs='+', required=True)
@@ -87,11 +111,16 @@ def main(my_dir=None):
         mod_name = name[:-3]
         mod = importlib.import_module(mod_name)
         
-        # only a rule that takes `changed` is diff-scoped; every other rule sees exactly what it did before
-        if changed is not None and 'changed' in inspect.signature(mod.evidence).parameters:
-            state = mod.evidence(files, plan_lines, changed=changed)
-        else:
-            state = mod.evidence(files, plan_lines)
+        # only a rule that takes `changed` is diff-scoped, and only one that takes `siblings` reads the
+        # touched files' package; every other rule sees exactly what it did before. A sibling is evidence,
+        # never a finding: a rule files only against `files`.
+        params = inspect.signature(mod.evidence).parameters
+        kw = {}
+        if changed is not None and 'changed' in params:
+            kw['changed'] = changed
+        if 'siblings' in params:
+            kw['siblings'] = siblings(files, root_dir)
+        state = mod.evidence(files, plan_lines, **kw)
         out[mod_name] = {
             'state': state,
             'proposition': mod.PROPOSITION,
