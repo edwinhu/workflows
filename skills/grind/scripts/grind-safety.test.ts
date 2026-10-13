@@ -157,7 +157,7 @@ describe('append enforces the shape each agent record needs', () => {
       expect(grind(['append', '--journal', journal, rec]).status).toBe(0)
     }
     expect(records(journal).length).toBe(AGENT_OWNED.length)
-  })
+  }, 240_000)
 })
 
 describe('the agent may report observations, never verdicts about the run', () => {
@@ -170,7 +170,7 @@ describe('the agent may report observations, never verdicts about the run', () =
       expect({ kind, status: r.status }).toEqual({ kind, status: 2 })
     }
     expect(records(journal).length).toBe(0)
-  })
+  }, 480_000)
 
   test('a run is not ended by a stop record the agent tried to append', () => {
     const d = workdir('grind-forgestop')

@@ -1066,7 +1066,7 @@ test('mandateCeilingMs agrees with arm.sh minute for minute, across the 05:00, 0
     const typed = Date.UTC(2026, 9, 7, h + 4, m) // EDT is UTC-4 on 2026-10-07
     expect([hhmm, (mandateCeilingMs(typed, NY) - typed) / 60_000]).toEqual([hhmm, armed])
   }
-}, 120000)
+}, 660_000)
 
 // ---- stale ticks: heartbeat ticks answered with "no change" (nevada e83fb488, 2026-10-12 13:09-16:50) ----
 

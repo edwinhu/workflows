@@ -783,7 +783,7 @@ describe('a lens-only FAIL is narrowed by the files its findings name', () => {
       expect(redispatch(f.plan, f.args).code).toBe(0)
       expect(only(f.args)).toEqual(['T5'])
     }
-  })
+  }, 240_000)
 
   // An ABSOLUTE path carrying a location is both transformations at once: relativise, then strip.
   test('an absolute path with a line range maps too', () => {

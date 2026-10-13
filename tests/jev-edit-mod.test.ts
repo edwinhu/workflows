@@ -121,7 +121,7 @@ test('every rule set this plugin owns is a workflow the layout resolves with wir
     expect(rules.length, set).toBeGreaterThan(0)
     expect(rules.filter((f: string) => f.includes('/uncalibrated/')), set).toEqual([])
   }
-}, 60_000)
+}, 480_000)
 
 test('changed lines: Write is the whole file, an edit the span its new string occupies', () => {
   const text = 'alpha\nbeta\nnew one\nnew two\nomega\n'

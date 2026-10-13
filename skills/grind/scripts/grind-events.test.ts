@@ -308,7 +308,7 @@ describe('grind.sh — the watcher mod reads the stream without being taught a s
     const views = watchPass(eventDir)
     expect(views[0]!.state).toBe('gone')
     expect(wakeText(views[0]!, Date.now())).toContain(`grind loop grind journal.jsonl is GONE: pid ${pid}`)
-  }, 120_000)
+  }, 1_080_000)
 
   test('a grind file in the directory leaves the farm run\'s classification unchanged', () => {
     // The watcher reads every file in the directory. A grind loop parked beside a farm dispatch must

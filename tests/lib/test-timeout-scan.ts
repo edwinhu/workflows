@@ -7,6 +7,11 @@
 // file-level options object `{ timeout: N }` spread or passed whole. An async spawn with no
 // timeout option is bounded by the test itself and costs nothing. The rest is `unresolved`, with
 // the reason in `causes`.
+// A spawn inside a `for` / `for-of` loop whose trip count is literal (`i < N`, an array literal, a
+// file-level const array literal) is multiplied by it, helper calls included; any other loop
+// (`while`, a variable bound) counts once and adds `loop-unknown-count` to the causes.
+// `test.each(rows)(name, fn, timeout?)` is one test whose body is summed once, the cost of one row
+// invocation; `describe.each` needs nothing special, its inner tests are found like any other.
 
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -159,6 +164,96 @@ function addImports(src: string, mask: boolean[], dir: string, scope: Scope): vo
   }
 }
 
+interface Loop { start: number; body: Span; count: number | null }
+
+/** Elements of a file-level `const NAME = [ ... ]` array literal; null when it holds a spread. */
+function fileArrays(src: string, mask: boolean[]): Map<string, number | null> {
+  const arrays = new Map<string, number | null>();
+  const re = /(?:^|\n)\s*(?:export\s+)?const\s+([A-Za-z_]\w*)\s*(?::[^=\n]+)?=\s*\[/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(src)) !== null) {
+    if (!mask[m.index + m[0].indexOf("const")]) continue;
+    arrays.set(m[1], arrayCount(src, mask, m.index + m[0].length - 1));
+  }
+  return arrays;
+}
+
+function arrayCount(src: string, mask: boolean[], open: number): number | null {
+  const sp = splitArgs(src, mask, open);
+  if (!sp) return null;
+  let code = "";
+  for (let k = open; k <= sp.close; k++) code += mask[k] ? src[k] : " ";
+  return /\.\.\./.test(code) ? null : sp.args.length;
+}
+
+/** Trip count of a loop header, or null when it is not a literal one. */
+function tripCount(src: string, mask: boolean[], kind: string, open: number, close: number,
+                   consts: Map<string, number>, arrays: Map<string, number | null>): number | null {
+  if (kind !== "for") return null;
+  let code = "";
+  for (let k = open + 1; k < close; k++) code += mask[k] ? src[k] : " ";
+  const of = code.match(/^\s*(?:const|let|var)\s+(?:\w+|\[[^\]]*\]|\{[^}]*\})\s+of\s+/);
+  if (of) {
+    const exprStart = open + 1 + of[0].length;
+    const expr = code.slice(of[0].length).trim();
+    if (expr.startsWith("[")) {
+      const sp = splitArgs(src, mask, exprStart);
+      return sp && sp.close === close - 1 - (code.length - code.trimEnd().length) ? arrayCount(src, mask, exprStart) : null;
+    }
+    return /^[A-Za-z_]\w*$/.test(expr) ? arrays.get(expr) ?? null : null;
+  }
+  const parts = code.split(";");
+  if (parts.length !== 3) return null;
+  const init = parts[0].match(/^\s*(?:let|var|const)\s+([A-Za-z_]\w*)\s*=\s*(.+?)\s*$/s);
+  if (!init) return null;
+  const v = init[1];
+  const from = numeric(init[2], consts);
+  const cond = parts[1].match(new RegExp(String.raw`^\s*${v}\s*(<=|<|>=|>)\s*(.+?)\s*$`, "s"));
+  const bound = cond ? numeric(cond[2], consts) : null;
+  if (from === null || !cond || bound === null) return null;
+  const up = new RegExp(String.raw`^\s*(?:${v}\s*\+\+|\+\+\s*${v}|${v}\s*\+=\s*(\d+))\s*$`).exec(parts[2]);
+  const down = new RegExp(String.raw`^\s*(?:${v}\s*--|--\s*${v}|${v}\s*-=\s*(\d+))\s*$`).exec(parts[2]);
+  if (up && (cond[1] === "<" || cond[1] === "<=")) {
+    const step = Number(up[1] ?? 1);
+    return step > 0 ? Math.max(0, Math.ceil((bound - from + (cond[1] === "<=" ? 1 : 0)) / step)) : null;
+  }
+  if (down && (cond[1] === ">" || cond[1] === ">=")) {
+    const step = Number(down[1] ?? 1);
+    return step > 0 ? Math.max(0, Math.ceil((from - bound + (cond[1] === ">=" ? 1 : 0)) / step)) : null;
+  }
+  return null;
+}
+
+function findLoops(src: string, mask: boolean[], consts: Map<string, number>): Loop[] {
+  const arrays = fileArrays(src, mask);
+  const out: Loop[] = [];
+  const re = /(?<![\w$.])(for|while)\s*(?:await\s*)?\(/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(src)) !== null) {
+    if (!mask[m.index]) continue;
+    const open = m.index + m[0].length - 1;
+    const close = matchClose(src, mask, open);
+    if (close === -1) continue;
+    let b = close + 1;
+    while (b < src.length && /\s/.test(src[b])) b++;
+    let end = -1;
+    if (src[b] === "{") end = matchClose(src, mask, b); // else a one-statement body, ended by `;` or the line
+    else {
+      let depth = 0;
+      for (let k = b; k < src.length; k++) {
+        if (!mask[k]) continue;
+        const c = src[k];
+        if ("([{".includes(c)) depth++;
+        else if (")]}".includes(c)) { depth--; if (depth === 0 && c === "}") { end = k; break; } if (depth < 0) { end = k; break; } }
+        else if ((c === ";" || c === "\n") && depth === 0) { end = k; break; }
+      }
+    }
+    if (end === -1) continue;
+    out.push({ start: m.index, body: [b, end], count: tripCount(src, mask, m[1], open, close, consts, arrays) });
+  }
+  return out;
+}
+
 interface Helper { name: string; span: Span; params: string }
 
 function findHelpers(src: string, mask: boolean[]): Helper[] {
@@ -288,8 +383,19 @@ export function scanTestCosts(src: string, opts: { dir?: string } = {}): TestCos
   if (opts.dir) addImports(src, mask, opts.dir, scope);
   const helpers = findHelpers(src, mask);
   const directs = directSpawns(src, mask, scope, helpers);
+  const loops = findLoops(src, mask, consts);
 
   const inSpan = (at: number, s: Span) => at >= s[0] && at <= s[1];
+  /** The trip-count product of the loops around `at` that lie inside `span`; `unknown` when one has no literal count. */
+  const around = (at: number, span: Span): { mult: number; unknown: boolean } => {
+    let mult = 1;
+    let unknown = false;
+    for (const l of loops) {
+      if (l.start < span[0] || l.body[1] > span[1] || !inSpan(at, l.body)) continue;
+      if (l.count === null) unknown = true; else mult *= l.count;
+    }
+    return { mult, unknown };
+  };
   /** `args`: what the call site passed for each parameter: a literal, null when unreadable, absent when omitted. */
   const costIn = (span: Span, depth = 0, args: (number | null)[] = []): { ms: number; causes: string[] } => {
     let ms = 0;
@@ -303,7 +409,12 @@ export function scanTestCosts(src: string, opts: { dir?: string } = {}): TestCos
         const passed = args[d.param.index];
         if (passed !== undefined) v = passed;
       }
-      if (v === null) causes.push(cause ?? "unresolved-identifier"); else ms += v;
+      const loop = around(d.at, span);
+      if (v === null) causes.push(cause ?? "unresolved-identifier");
+      else {
+        ms += v * loop.mult;
+        if (loop.unknown && v > 0) causes.push("loop-unknown-count");
+      }
     }
     if (depth < 4) {
       for (const h of helpers) {
@@ -316,8 +427,10 @@ export function scanTestCosts(src: string, opts: { dir?: string } = {}): TestCos
           const call = splitArgs(src, mask, span[0] + m.index + m[0].length - 1);
           const passed = (call?.args ?? []).map((a) => numeric(src.slice(a[0], a[1]), consts));
           const c = costIn(h.span, depth + 1, passed);
-          ms += c.ms;
+          const loop = around(span[0] + m.index, span);
+          ms += c.ms * loop.mult;
           causes.push(...c.causes);
+          if (loop.unknown && c.ms > 0) causes.push("loop-unknown-count");
         }
       }
     }
@@ -327,34 +440,51 @@ export function scanTestCosts(src: string, opts: { dir?: string } = {}): TestCos
   const dm = [...src.matchAll(/setDefaultTimeout\s*\(\s*([^)]+?)\s*\)/g)].find((m) => mask[m.index!]);
   const fileDefault = dm ? numeric(dm[1], consts) : null;
 
-  const out: TestCost[] = [];
-  const re = /(?<![\w$.])(?:test|it)(?:\.(?:only|skip|serial|concurrent))?\s*\(/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(src)) !== null) {
-    if (!mask[m.index]) continue;
-    const open = m.index + m[0].length - 1;
-    const sp = splitArgs(src, mask, open);
-    if (!sp || sp.args.length < 2) continue;
-    const body = sp.args[1];
-    const nameText = src.slice(sp.args[0][0], sp.args[0][1]).trim();
+  const out: { at: number; cost: TestCost }[] = [];
+  const emit = (at: number, name: Span, body: Span, timeoutArg: Span | undefined, close: number): void => {
     let perTest: number | null = null;
-    if (sp.args.length >= 3) {
-      const t = src.slice(sp.args[2][0], sp.args[2][1]);
+    if (timeoutArg) {
+      const t = src.slice(timeoutArg[0], timeoutArg[1]);
       const opt = t.match(/timeout\s*:\s*([^,}\n]+)/);
       perTest = numeric(opt ? opt[1] : t, consts);
     }
     const c = costIn([body[0], body[1]]);
     out.push({
-      name: nameText.replace(/^['"`]|['"`]$/g, "").slice(0, 90),
-      line: src.slice(0, m.index).split("\n").length,
-      effectiveMs: perTest ?? fileDefault ?? BUN_DEFAULT_MS,
-      source: perTest !== null ? "test" : fileDefault !== null ? "file" : "bun",
-      spawnMs: c.ms,
-      unresolved: c.causes.length,
-      causes: c.causes,
-      close: sp.close,
-      timeoutArg: sp.args.length >= 3 ? [sp.args[2][0], sp.args[2][1]] : null,
+      at,
+      cost: {
+        name: src.slice(name[0], name[1]).trim().replace(/^['"`]|['"`]$/g, "").slice(0, 90),
+        line: src.slice(0, at).split("\n").length,
+        effectiveMs: perTest ?? fileDefault ?? BUN_DEFAULT_MS,
+        source: perTest !== null ? "test" : fileDefault !== null ? "file" : "bun",
+        spawnMs: c.ms,
+        unresolved: c.causes.length,
+        causes: c.causes,
+        close,
+        timeoutArg: timeoutArg ? [timeoutArg[0], timeoutArg[1]] : null,
+      },
     });
+  };
+
+  let m: RegExpExecArray | null;
+  const re = /(?<![\w$.])(?:test|it)(?:\.(?:only|skip|serial|concurrent))?\s*\(/g;
+  while ((m = re.exec(src)) !== null) {
+    if (!mask[m.index]) continue;
+    const sp = splitArgs(src, mask, m.index + m[0].length - 1);
+    if (!sp || sp.args.length < 2) continue;
+    emit(m.index, sp.args[0], sp.args[1], sp.args[2], sp.close);
   }
-  return out;
+  // test.each(rows)(name, fn, timeout?): the second call is the test; one row invocation is one body.
+  const each = /(?<![\w$.])(?:test|it)(?:\.(?:only|skip|serial|concurrent))?\.each\s*\(/g;
+  while ((m = each.exec(src)) !== null) {
+    if (!mask[m.index]) continue;
+    const rows = splitArgs(src, mask, m.index + m[0].length - 1);
+    if (!rows) continue;
+    let o = rows.close + 1;
+    while (o < src.length && /\s/.test(src[o])) o++;
+    if (src[o] !== "(") continue;
+    const sp = splitArgs(src, mask, o);
+    if (!sp || sp.args.length < 2) continue;
+    emit(m.index, sp.args[0], sp.args[1], sp.args[2], sp.close);
+  }
+  return out.sort((a, b) => a.at - b.at).map((x) => x.cost);
 }

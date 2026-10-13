@@ -161,5 +161,5 @@ describe('grind.sh — operator notes are injected into every iteration prompt',
     expect(block.join('\n')).not.toContain('note 1\t')
     expect(lines).not.toContain('  k1\tnote 1')
     expect(lines).not.toContain('  k2\tnote 2')
-  })
+  }, 420_000)
 })

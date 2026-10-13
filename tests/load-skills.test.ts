@@ -46,7 +46,7 @@ test('every bang output a main-thread rule skill renders stays under the inline 
   expect(ds.status).toBe(0)
   sizes['ds --digest'] = ds.stdout.length
   for (const [k, n] of Object.entries(sizes)) expect([k, n < BANG_CAP]).toEqual([k, true])
-}, 60_000)
+}, 150_000)
 
 test('a rendered skill is the file itself: frontmatter gone, variables substituted, bangs run', () => {
   const dir = join(mkTmp('load-skills-'), 'skills', 'x')

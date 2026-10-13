@@ -119,7 +119,7 @@ test('the four structural writing constraints honour the CLI contract and a topi
   const topic = sh('python3', [join(ROOT, 'checks/writing/constraints/writing-topic-sentences.py'), '--project-dir', p, '--files', join(p, 'drafts/s.md')])
   expect(topic.status, topic.stdout + topic.stderr).toBe(1)
   expect(topic.stdout).toMatch(/s\.md:3: \S+ \S/)
-})
+}, 960_000)
 
 test('workflow-check writing runs the structural constraints on a draft: a violation fails, a clean draft passes', () => {
   const bad = wcheck(['writing', '--project-dir', project({ 'drafts/s.md': 'Plain opening paragraph here.\n\nThe key finding is robust to every specification.\n' }), '--constraints-only', '--changed'])

@@ -336,7 +336,7 @@ describe('the hold gate: CronDelete waits on an ARMED hold, and on nothing else'
       ]))
       expect(r.decision).toBe('allow')
     }
-  })
+  }, 960_000)
 
   // VERSION SKEW. A session whose Stop registration predates a rename of hooks/work-hold.ts arms a
   // hold nothing evaluates, while THIS hook — whose path never changed — goes on enforcing it. The

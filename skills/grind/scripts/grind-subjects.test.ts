@@ -210,7 +210,7 @@ describe('grind.sh — a subject with nothing to show is retired from the prompt
     // progress= is the LIFETIME count on the subject, which is what tells a reader the subject has
     // ever paid out; attempts= is the count since the reset.
     expect(f.progress).toBe('1')
-  })
+  }, 210_000)
 
   test('attempts after a progress record count from that record, not from the start', () => {
     const d = workdir('grind-subj-after-progress')
@@ -225,7 +225,7 @@ describe('grind.sh — a subject with nothing to show is retired from the prompt
     const f = fieldsOf(subjectLine(prompt(1), 'S'))
     expect(f.attempts).toBe('1')
     expect(f.state).toBe('open')
-  })
+  }, 210_000)
 
   test('--exhaust-after 0 disables the feature: nothing is ever EXHAUSTED', () => {
     const d = workdir('grind-subj-off')
@@ -239,7 +239,7 @@ describe('grind.sh — a subject with nothing to show is retired from the prompt
     expect(block.length).toBeGreaterThan(1)
     expect(block.join('\n')).not.toContain('EXHAUSTED')
     expect(fieldsOf(subjectLine(prompt(1), 'S')).attempts).toBe('8')
-  })
+  }, 300_000)
 
   test('--exhaust-after 2 retires a subject the default would still offer', () => {
     const d = workdir('grind-subj-flag')
@@ -273,7 +273,7 @@ describe('grind.sh — reopen is the only way back, and it must say what changed
     const f = fieldsOf(subjectLine(prompt(1), 'S'))
     expect(f.attempts).toBe('0')
     expect(f.state).toBe('open')
-  })
+  }, 180_000)
 
   test('attempts after a reopen count from the reopen', () => {
     const d = workdir('grind-subj-reopen-then-attempt')
@@ -291,7 +291,7 @@ describe('grind.sh — reopen is the only way back, and it must say what changed
     const f = fieldsOf(subjectLine(prompt(1), 'S'))
     expect(f.attempts).toBe('2')
     expect(f.state).toBe('open')
-  }, 180_000)
+  }, 240_000)
 
   test('the later of progress and reopen is the reset point', () => {
     const d = workdir('grind-subj-reset-latest')
@@ -380,7 +380,7 @@ describe('grind.sh — recording is always allowed, even on an exhausted subject
 
     expect(records(journal).filter(x => x.kind === 'attempt').length).toBe(EXHAUST_DEFAULT + 1)
     expect(records(journal).filter(x => x.kind === 'progress').length).toBe(1)
-  })
+  }, 210_000)
 })
 
 describe('grind.sh — the shape of the GRIND_SUBJECTS block', () => {
@@ -502,7 +502,7 @@ describe('grind.sh — the shape of the GRIND_SUBJECTS block', () => {
     expect(subjects.at(-1)).toBe('s32')
     expect(subjects).not.toContain('s1')
     expect(subjects).not.toContain('s2')
-  })
+  }, 1_020_000)
 
   test('a subject recorded BETWEEN iterations reaches the next one', () => {
     // The same read-at-the-top-of-the-pass property the floors and notes have: a subject an

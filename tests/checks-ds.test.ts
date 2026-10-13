@@ -142,7 +142,7 @@ test('a checker is given the path and checks it: scratch/, worktrees/ and hidden
     expect([0, 1], `${d}\n${chart.stdout}${chart.stderr}`).toContain(chart.status)
     expect(first(chart.stdout), `${d}: ds-chart-color must have examined the chart`).toMatch(/: [1-9]\d* \S.*examined/)
   }
-})
+}, 780_000)
 
 // ---- the runner ------------------------------------------------------------------------------------------
 

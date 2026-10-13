@@ -14,8 +14,9 @@ const mkTmp = useTmp();
 // the test's timeout must cover the spawn timeouts it can reach: bun's 5 s default, the file's
 // `setDefaultTimeout`, or the test's own third argument. Literal timeouts, numeric constants (file
 // level or imported from a relative file), helper-parameter defaults and file-level options objects
-// are summed; one call site counts once, so a loop is a lower bound. A sync spawn with no timeout
-// key at all stays unresolved (and `unresolvedCauses` says so); see the last test.
+// are summed; a spawn in a `for` / `for-of` loop with a literal trip count is multiplied by it, any other
+// loop counts once and is named `loop-unknown-count`; `test.each` bodies are read once per row. A sync
+// spawn with no timeout key at all stays unresolved (and `unresolvedCauses` says so).
 
 const ROOT = dirname(import.meta.dir);
 
@@ -109,4 +110,80 @@ test("the scanner leaves the undecidable unresolved, names why, and does not cha
   expect(costs.map((t) => unresolvedCauses(t))).toEqual([
     ["computed"], ["unresolved-identifier"], ["unresolved-identifier"], ["unresolved-identifier"], ["sync-no-timeout"], ["sync-no-timeout"], [],
   ]);
+});
+
+test("a spawn inside a loop with a literal trip count is multiplied by it", () => {
+  const src = [
+    "import { test } from 'bun:test'",
+    "const NAMES = ['p', 'q']",
+    "function run() { return spawnSync('x', [], { timeout: 2_000 }) }",
+    "function inner() { for (let k = 0; k < 3; k++) { spawnSync('y', [], { timeout: 1_000 }) } }",
+    "test('for', () => { for (let i = 0; i < 4; i++) spawnSync('x', [], { timeout: 10_000 }) }, 300_000)",
+    "test('for <=, step', () => { for (let i = 1; i <= 6; i += 2) { spawnSync('x', [], { timeout: 1_000 }) } }, 300_000)",
+    "test('for-of literal', () => { for (const a of ['a', 'b', 'c']) { spawnSync('x', [a], { timeout: 5_000 }) } }, 300_000)",
+    "test('for-of const array', () => { for (const n of NAMES) { spawnSync('x', [n], { timeout: 7_000 }) } }, 300_000)",
+    "test('nested', () => { for (let i = 0; i < 3; i++) { for (const b of [1, 2]) { spawnSync('x', [], { timeout: 1_000 }) } } }, 300_000)",
+    "test('helper in loop', () => { for (let i = 0; i < 5; i++) { run() } }, 300_000)",
+    "test('loop in helper, called twice', () => { inner(); inner() }, 300_000)",
+    "test('loop outside the spawn', () => { for (let i = 0; i < 9; i++) { void i } spawnSync('x', [], { timeout: 3_000 }) }, 300_000)",
+  ].join("\n");
+  expect(scanTestCosts(src).map((t) => [t.name, t.spawnMs, t.unresolved])).toEqual([
+    ["for", 40_000, 0],
+    ["for <=, step", 3_000, 0],
+    ["for-of literal", 15_000, 0],
+    ["for-of const array", 14_000, 0],
+    ["nested", 6_000, 0],
+    ["helper in loop", 10_000, 0],
+    ["loop in helper, called twice", 6_000, 0],
+    ["loop outside the spawn", 3_000, 0],
+  ]);
+});
+
+test("a loop with an unknown trip count counts once and is named", () => {
+  const src = [
+    "import { test } from 'bun:test'",
+    "function run() { return spawnSync('x', [], { timeout: 2_000 }) }",
+    "test('for-of variable', () => { for (const a of files) { spawnSync('x', [a], { timeout: 5_000 }) } })",
+    "test('for-of spread', () => { for (const a of [...more, 1]) { spawnSync('x', [a], { timeout: 5_000 }) } })",
+    "test('while', () => { while (more()) { spawnSync('x', [], { timeout: 5_000 }) } })",
+    "test('bound is a call', () => { for (let i = 0; i < n(); i++) { spawnSync('x', [], { timeout: 5_000 }) } })",
+    "test('helper in unknown loop', () => { for (const a of files) { run() } })",
+    "test('unknown loop around an async spawn', () => { for (const a of files) { Bun.spawn(['x']) } })",
+  ].join("\n");
+  const costs = scanTestCosts(src);
+  expect(costs.map((t) => [t.name, t.spawnMs, t.unresolved])).toEqual([
+    ["for-of variable", 5_000, 1], ["for-of spread", 5_000, 1], ["while", 5_000, 1], ["bound is a call", 5_000, 1],
+    ["helper in unknown loop", 2_000, 1], ["unknown loop around an async spawn", 0, 0],
+  ]);
+  expect(costs.map((t) => unresolvedCauses(t))).toEqual([
+    ["loop-unknown-count"], ["loop-unknown-count"], ["loop-unknown-count"], ["loop-unknown-count"], ["loop-unknown-count"], [],
+  ]);
+});
+
+test("test.each and describe.each are read, each row invocation against its own timeout", () => {
+  const src = [
+    "import { test, it, describe, setDefaultTimeout } from 'bun:test'",
+    "const ROWS = [[1], [2], [3]]",
+    "test.each([[1], [2]])('per-test %i', (n) => { spawnSync('x', [], { timeout: 10_000 }) }, 20_000)",
+    "test.each(ROWS)('file default', (n) => { spawnSync('x', [], { timeout: 10_000 }); spawnSync('y', [], { timeout: 5_000 }) })",
+    "it.each(['a', 'b'])('bun default %s', (s) => { spawnSync('x', [], { timeout: 10_000 }) })",
+    "test.each([1, 2])('loop in body', (n) => { for (let i = 0; i < 3; i++) spawnSync('x', [], { timeout: 1_000 }) }, 10_000)",
+    "test.each([1])('unresolved', (n) => { spawnSync('x', [], { timeout: n * 1000 }) })",
+    "describe.each([['a'], ['b']])('suite %s', (s) => {",
+    "  test('inner', () => { spawnSync('x', [], { timeout: 8_000 }) })",
+    "  test('inner, own timeout', () => { spawnSync('x', [], { timeout: 8_000 }) }, 30_000)",
+    "})",
+  ].join("\n");
+  const costs = scanTestCosts(src);
+  expect(costs.map((t) => [t.name, t.source, t.effectiveMs, t.spawnMs, t.unresolved])).toEqual([
+    ["per-test %i", "test", 20_000, 10_000, 0],
+    ["file default", "bun", 5_000, 15_000, 0],
+    ["bun default %s", "bun", 5_000, 10_000, 0],
+    ["loop in body", "test", 10_000, 3_000, 0],
+    ["unresolved", "bun", 5_000, 0, 1],
+    ["inner", "bun", 5_000, 8_000, 0],
+    ["inner, own timeout", "test", 30_000, 8_000, 0],
+  ]);
+  const withDefault = "setDefaultTimeout(60_000)\ntest.each([1, 2])('d', () => { spawnSync('x', [], { timeout: 50_000 }) })";
+  expect(scanTestCosts(withDefault).map((t) => [t.source, t.effectiveMs, t.spawnMs])).toEqual([["file", 60_000, 50_000]]);
 });
