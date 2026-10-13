@@ -640,3 +640,61 @@ test('A1: a touched file alone in its directory sees exactly the state it saw be
   const { state } = await a1Run([join(pkg, 'build.py')]);
   expect(Object.keys(state).filter(k => k.includes('sibling'))).toEqual([]);
 });
+
+// ---- A1 wider scope: the parent package and its sibling packages, never above the project root -----
+// A git repo makes the project root (evidence.py's root_dir); the layout under it is the package tree.
+
+function a1Project(layout: Record<string, string>, under = '') {
+  const outer = mkTmp('rule-check-a1-wide-');
+  const root = join(outer, under);
+  fs.mkdirSync(root, { recursive: true });
+  spawnSync('git', ['-C', root, 'init', '-q'], { timeout: 120_000 });
+  for (const [rel, body] of Object.entries(layout)) {
+    const p = join(outer, rel);
+    fs.mkdirSync(join(p, '..'), { recursive: true });
+    fs.writeFileSync(p, body);
+  }
+  return { outer, root };
+}
+
+test('A1: a leave-one-out check in the parent package satisfies it', async () => {
+  const { root } = a1Project({ 'src/models/curve.py': BUILD, 'src/verify.py': VERIFY });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(res.exitCode).toBe(0);
+  expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/verify.py']);
+  expect(state.specification_curve_sites.every((c: any) => c.file === 'src/models/curve.py')).toBe(true);
+});
+
+test('A1: a leave-one-out check in a sibling package satisfies it', async () => {
+  const { root } = a1Project({ 'src/models/curve.py': BUILD, 'src/robustness/loo.py': VERIFY });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(res.exitCode).toBe(0);
+  expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/robustness/loo.py']);
+});
+
+test('A1: a check above the project root does not count', async () => {
+  // root is outer/proj; outer/verify.py is its parent's file and outer/robustness/ its sibling package
+  const { root } = a1Project({ 'proj/models/curve.py': BUILD, 'verify.py': VERIFY, 'robustness/loo.py': VERIFY }, 'proj');
+  const { res, a1, state } = await a1Run([join(root, 'models/curve.py')]);
+  expect(a1.verdict).toBe('VIOLATED');
+  expect(res.exitCode).toBe(2);
+  expect(state.robustness_check_sites).toEqual([]);
+});
+
+test('A1: no check anywhere in the package tree still fires, filed against the touched file only', async () => {
+  // checks under scratch/ and data/ are noise, never evidence; a sibling's own curve is never filed against
+  const { root } = a1Project({
+    'src/models/curve.py': BUILD,
+    'src/models/pooled.py': BUILD.replace('def build', 'def pooled'),
+    'src/helpers.py': 'def helper():\n    return 1\n',
+    'src/io/load.py': 'def load(p):\n    return p\n',
+    'src/scratch/loo.py': VERIFY,
+    'src/data/loo.py': VERIFY,
+  });
+  const { res, a1 } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('VIOLATED');
+  expect(a1.spans).toEqual(['src/models/curve.py:7']);
+  expect(res.exitCode).toBe(2);
+});
