@@ -369,6 +369,17 @@ describe('WORK_REDISPATCH_DRYRUN writes nothing', () => {
     expect(existsSync(join(f.dir, 'result-round1.json'))).toBe(true)
     expect(existsSync(f.result)).toBe(false)
   })
+
+  // Readers (work-hold, watcher) take a present loop.exit as THIS round's; work-dispatch.sh clears it
+  // before launch, and a redispatch must too.
+  test('a real dispatch clears the run\'s stale loop.exit', () => {
+    const f = gateFixture()
+    priorResult(f.dir)
+    writeFileSync(join(f.dir, 'loop.exit'), '0\n')
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(existsSync(join(f.dir, 'loop.exit'))).toBe(false)
+  })
 })
 
 describe('the tier-1 plan gate on re-dispatch', () => {

@@ -837,6 +837,10 @@ if [ -e "$RESULT" ]; then
     printf 'rotated:  result.json -> result-round%s.json\n' "$n"
 fi
 
+# A previous round's loop.exit would be read as THIS round's by work-hold and the watcher; clear it
+# before launch, as work-dispatch.sh does.
+rm -f -- "$RUN_DIR/loop.exit"
+
 LOG="$RUN_DIR/run-$(date +%H%M%S).log"
 
 # setsid detaches the SESSION, not the resource domain: rounds 2..N would otherwise stay in the
