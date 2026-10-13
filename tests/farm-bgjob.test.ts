@@ -20,7 +20,7 @@ function alive(pid: number): boolean {
   try { return readFileSync(`/proc/${pid}/stat`, 'utf8').split(') ')[1]?.[0] !== 'Z' } catch { return false }
 }
 
-function runFarm(stubBody: string) {
+function runFarm(stubBody: string, rows: object[] = [{ label: 'bg', workflow: 'none', prompt: 'p' }]) {
   const root = mkdtempSync(join(tmpdir(), 'farmbg-'))
   const agentCwd = join(root, 'agentcwd')
   const bin = join(root, 'bin')
@@ -29,15 +29,16 @@ function runFarm(stubBody: string) {
   chmodSync(join(bin, 'claude-code'), 0o755)
   const tasks = join(root, 'tasks.json')
   const outcomes = join(root, 'farm-outcomes.jsonl')
-  writeFileSync(tasks, JSON.stringify([{ label: 'bg', workflow: 'none', prompt: 'p' }]))
+  writeFileSync(tasks, JSON.stringify(rows))
   const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
     timeout: 120_000, encoding: 'utf8', cwd: root,
     env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', FARM_OUTCOMES: outcomes,
            TMPDIR: root, CLAUDE_CODE_SESSION_ID: 'farm-bgjob-test', FARM_BG_GRACE: '0.5' },
   })
-  const row = (JSON.parse(res.stdout || '[]')[0] ?? {}) as Record<string, any>
+  const all = JSON.parse(res.stdout || '[]') as Record<string, any>[]
+  const row = (all[0] ?? {}) as Record<string, any>
   const outcomeLines = existsSync(outcomes) ? readFileSync(outcomes, 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l)) : []
-  return { row, res, root, outcomeLines, pidFile: join(root, 'bg.pid') }
+  return { row, all, res, root, outcomeLines, pidFile: join(root, 'bg.pid') }
 }
 
 test('a child that backgrounds `sleep 60` and ends fails its row, naming the job, and the job does not outlive the row', () => {
@@ -53,11 +54,57 @@ test('a child that backgrounds `sleep 60` and ends fails its row, naming the job
     const verdict = outcomeLines.find(l => l.type === 'verdict')
     expect(verdict?.checks).toContain('background-orphaned')
     expect(verdict?.why).toContain('ended with background job running: sleep 60')
+    // The row record itself names the failure: ok=false with no reason left a reader guessing.
+    const rec = outcomeLines.find(l => l.type === 'row')
+    expect(rec?.failure).toContain('ended with background job running: sleep 60')
     expect(alive(pid)).toBe(false)
   } finally {
     try { process.kill(pid, 'SIGKILL') } catch {}
     rmSync(root, { recursive: true, force: true })
   }
+}, 120_000)
+
+test('rows of one --tasks run are reaped apart: a sibling still running a background job does not fail a row that ended clean', () => {
+  // Row A backgrounds a job and is still running when row B ends; B must not be charged with A's job.
+  const stub = `prompt=$(cat)
+if [ "$prompt" != "\${prompt#A}" ]; then
+  setsid sleep 61 </dev/null >/dev/null 2>&1 & echo $! > "$TMPDIR/bg.pid"
+  sleep 4
+  printf '{"type":"result","result":"A waiting."}\\n'
+else
+  sleep 1
+  printf '{"type":"result","result":"B done."}\\n'
+fi`
+  const { all, root, outcomeLines, pidFile } = runFarm(stub, [
+    { label: 'A', workflow: 'none', prompt: 'A' }, { label: 'B', workflow: 'none', prompt: 'B' }])
+  const pid = Number(readFileSync(pidFile, 'utf8').trim())
+  try {
+    const a = all.find(r => r.label === 'A')!, b = all.find(r => r.label === 'B')!
+    expect(b.orphaned).toEqual([])
+    expect(b.ok).toBe(true)
+    expect(a.ok).toBe(false)
+    expect(a.orphaned.map((o: any) => o.cmd)).toEqual(['sleep 61'])
+    expect(outcomeLines.filter(l => l.type === 'verdict').map(l => l.why).join('\n')).not.toContain('[B')
+    expect(alive(pid)).toBe(false)
+  } finally {
+    try { process.kill(pid, 'SIGKILL') } catch {}
+    rmSync(root, { recursive: true, force: true })
+  }
+}, 120_000)
+
+test("an MCP server's detached telemetry watchdog outliving the session is not the child's orphan", () => {
+  // 2026-10-13 teaching-ff-canary-green: chrome-devtools-mcp spawns its telemetry watchdog with
+  // detached:true, and on parent death it posts a shutdown event over the network before exiting --
+  // routinely longer than the reap grace. It carries FARM_ROW_ID, so the row failed orphaned=1.
+  const stub = `wd="$TMPDIR/node_modules/chrome-devtools-mcp/build/src/telemetry/watchdog"
+mkdir -p "$wd" && printf '#!/usr/bin/env bash\\nsleep 3\\n' > "$wd/main.js"
+setsid bash "$wd/main.js" --parent-pid=$$ </dev/null >/dev/null 2>&1 &
+printf '{"type":"result","result":"done"}\\n'`
+  const { row, root } = runFarm(stub)
+  try {
+    expect(row.orphaned).toEqual([])
+    expect(row.ok).toBe(true)
+  } finally { rmSync(root, { recursive: true, force: true }) }
 }, 120_000)
 
 // What a real `claude -p` child writes when its turn ends with a run_in_background Bash live

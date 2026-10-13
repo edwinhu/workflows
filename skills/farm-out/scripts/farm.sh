@@ -581,7 +581,8 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
     if ! line=$(printf '%s' "$result" | jq -c --argjson m "$meta" --arg ts "$(now_iso)" --arg cwd "$CWD_ABS" \
         '. as $r | {type: "row", rowId: $m.rowId, ts: $ts, cwd: $cwd, label: $m.label, kind: $m.kind,
                     route: $m.route, promptSha256: $m.promptSha256, promptLength: $m.promptLength,
-                    exit: $r.exit, ok: $r.ok, missing: $r.missing, orphaned: $r.orphaned, toolCalls: $r.toolCalls, models: $r.models}') \
+                    exit: $r.exit, ok: $r.ok, missing: $r.missing, orphaned: $r.orphaned, toolCalls: $r.toolCalls, models: $r.models}
+                   + (if $r.failure then {failure: $r.failure} else {} end)') \
        || ! append_outcome "$line"; then
       printf 'farm: could not record the outcome of row %s in %s\n' "$(printf '%s' "$meta" | jq -r '.rowId')" "$OUTCOMES" >&2
     # An undelivered artifact or a child that never finished is wrong by observation, not judgement,

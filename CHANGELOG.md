@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **A farmed row is no longer failed `orphaned=1` by chrome-devtools-mcp's telemetry watchdog, and the row outcome names its failure:** (2026-10-13, row `teaching-ff-canary-green`, 21 s, two tool calls: `DONE ... fail rc=0 missing=0 orphaned=1`, labelled wrong.) The orphan was not the sibling row's job: `bgjobs.py reap` matches on the row's own `FARM_ROW_ID`, which differs per row, and a new test with two rows in one `--tasks` run (A backgrounds `setsid sleep 61` and is still running when B ends) passed on unmodified code. The recorded orphan was `node .../chrome-devtools-mcp/build/src/telemetry/watchdog/main.js --parent-pid=...`: the row's own MCP server spawns it `detached: true`, and on parent death it posts a shutdown event over the network before exiting, often past the 2 s reap grace. The default `FARM_BG_IGNORE` regex now exempts it (the reap still kills it). The `type: "row"` outcome record now carries `failure` whenever the row has one (orphan, sandbox or constraint gate); before, `ok: false` with no reason was left on the row line and the text appeared only in the auto `verdict` record, which is a separate line by design (the row line never has a `verdict` field). Two tests in `tests/farm-bgjob.test.ts` and an assertion on the row record.
+
 ## [6.45.0] - 2026-10-13
 
 ### Added
