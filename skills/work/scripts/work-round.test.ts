@@ -550,7 +550,7 @@ describe('work-checks.sh runs ruleChecks.cmd and records {name, exitCode, stdout
 
   test('the real runner with nothing in scope records an explicit empty scope, not a silent pass and not -1', () => {
     const dir = repo({ 'a.txt': 'a' })
-    const cmd = `python3 ${join(HERE, '..', '..', '..', 'bin', 'workflow-check')} dev --rules-only --project-dir ${dir}`
+    const cmd = `python3 ${join(HERE, '..', '..', '..', 'bin', 'workflow-check')} dev --rules-only --project-dir ${dir} --changed`
     const r = checks({ projectDir: dir, tasks: [] }, { rules: [{ name: 'rules', cmd }] })
     expect(r.checks.rules[0].exitCode).toBe(0)
     const rec = JSON.parse(r.checks.rules[0].stdout)
