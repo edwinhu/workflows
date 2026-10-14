@@ -218,9 +218,13 @@ added.
 <!-- wc-probe: ignore-serial-loop -->
 
 ```js
-{
+const addendum = /* /home/eh/areas/secreg/addenda/NN-addendum.typ with the addendum's number */
+const pdf = /* /home/eh/areas/secreg/output/addenda/NN-addendum.pdf, same number */
+const planPath = /* the approved plan, /home/eh/areas/secreg/.claude/plans/<slug>.md */
+const goal = /* one sentence */
+const args = {
   projectDir: "/home/eh/areas/secreg",          // the COURSE directory — the tree being edited
-  goal: "<one sentence>",
+  goal,
 
   // ── The deterministic floor: ONE entry point, whose exit code IS the mechanical verdict. ──
   // Seven legs — the plan's interview answers (check-plan.py), typst compile, check-quotes.py per derived caption,
@@ -247,7 +251,7 @@ added.
   mechanicalChecks: [
     {
       name: "elide-check",
-      cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh --addendum /home/eh/areas/secreg/addenda/NN-addendum.typ --pdf /home/eh/areas/secreg/output/addenda/NN-addendum.pdf --plan /home/eh/areas/secreg/.claude/plans/<slug>.md",
+      cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh --addendum ${addendum} --pdf ${pdf} --plan ${planPath}`,
     },
   ],
 
@@ -256,9 +260,10 @@ added.
   // marking it, editors' voice set as the court's, stress inside a quotation with no emphasis
   // notation, and a reading's note that is only mechanical boilerplate. p >= 0.85 lands in
   // rulesThatFailed and blocks; lower ones reach the lens ranked. It scores the assembled
-  // addendum by --files, not --project-dir: the course tree carries earlier addenda untracked,
-  // and every untracked file is "changed", so a project-dir run would grade old readings too.
-  ruleChecks: { name: "jev-elide-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow elide --files /home/eh/areas/secreg/addenda/NN-addendum.typ --plan /home/eh/areas/secreg/.claude/plans/<slug>.md --project secreg" },
+  // addendum by --files and names no --project-dir, so it scores that one file WHOLE: the run's
+  // baseline scoping (--since) is appended only to a cmd that names --project-dir. Earlier
+  // readings already in the same file are therefore graded too; earlier addenda are other files.
+  ruleChecks: { name: "jev-elide-rules", cmd: `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow elide --files ${addendum} --plan ${planPath} --project secreg` },
 
   tasks: [
     // ── WAVE 1: ONE row, whatever the reading count. It is the only row that writes `docs/`,
@@ -540,10 +545,3 @@ command that makes X true — and if there is none, say so plainly where the cla
 | Re-create a `.westlaw.txt` for a case whose docx is in `docs/` | The six that existed were deleted on 2026-09-10 and both gates re-ran green against the docx, so nothing needs one. A `.txt` naming survives only where the fallback route produced it, and `// elide-source: X.westlaw.txt` resolves to the `.docx` rather than failing |
 | Read a CourtListener/RECAP `.txt` and assume its typography | That route is a court PDF with **no formatting layer** — italics are unrecoverable there, not merely unchecked. The gate prints ITALICS NOT CHECKED for it; the route stays, because Westlaw does not carry every case |
 | Hand-edit a table range so the checker passes | Fix the source and recompile |
-
-## Not invocable yet — read this file by path
-
-`skills/elide-case/` is **untracked in git**, so the plugin does not carry it: `Skill(workflows:elide-case)`
-returns *Unknown skill*. Until the user commits the skill and reinstalls the plugin, this file is read
-by path — `${CLAUDE_PLUGIN_ROOT}/skills/elide-case/SKILL.md`. **Do not commit or install it to
-fix that.** It is the user's call, and it is recorded here rather than worked around.

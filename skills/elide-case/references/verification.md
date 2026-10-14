@@ -97,9 +97,8 @@ match. The checker is reporting the truth about the PDF.
 - **The arity check is the one that catches a dead run.** A run that dies mid-write leaves a
   table describing readings the body does not contain — four rows over a two-reading body.
   Nothing about the compiled PDF looks wrong; it just lies.
-- **Page targets are missed in both directions and by a lot.** Hand runs on 2026-09-09
-  produced an 11-page excerpt against a 4–6 target and a 2-page one. Eleven pages is not a
-  generous reading assignment, it is a reading nobody finishes. On a `--plan` run the plan supplies each reading's target and `--target` is ignored; `--target` is the `--no-plan` override only.
+- **Page targets are missed in both directions and by a lot.** An 11-page excerpt against a 4–6 target
+  is not a generous reading assignment, it is a reading nobody finishes. On a `--plan` run the plan supplies each reading's target and `--target` is ignored; `--target` is the `--no-plan` override only.
 - **The length check fails closed too.** Passing neither `--target MIN-MAX` nor
   `--no-target` is a FAIL naming the missing flag. `--no-target` is the explicit escape: arity
   and the table still run, the leg prints `LENGTH NOT CHECKED`, and its PASS line then reads
@@ -122,8 +121,7 @@ case holds.
 ### Decimation, not interleave
 
 A wrecked excerpt of alternating, fused lines is usually **line decimation** — the cut dropped
-lines of a double-spaced source and joined the remainders with no ellipsis (Mutual Benefits, 9 of
-21 found) — not a two-column read. Interleave means re-extract the source differently;
+lines of a double-spaced source and joined the remainders with no ellipsis — not a two-column read. Interleave means re-extract the source differently;
 decimation means re-cut from the same good source.
 
 ### The general rule this produced
@@ -143,7 +141,8 @@ Cheap discriminators, in order:
 # the docx projection, so run the same greps on its text (the westlaw extractor's output).
 grep -c '[^[:space:]]' docs/<name>.txt                    # source line count
 awk 'length>0{print length}' docs/<name>.txt | sort -n    # median line length
-grep -cE '\b(W e|I f|T he)\b' docs/<name>.txt addenda/NN-addendum.typ  # in BOTH
+grep -cE '\b(W e|I f|T he)\b' docs/<name>.txt addenda/NN-addendum.typ  # Route 2: in BOTH
+# Westlaw route: the same grep on the docx projection's text and on addenda/NN-addendum.typ
 ```
 
 If the source measures clean and the excerpt is broken anyway, the damage is in the **cut**,
