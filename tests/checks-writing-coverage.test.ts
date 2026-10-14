@@ -76,20 +76,32 @@ test('writing-shortjournal: an @article with no or blank shortjournal fails, one
   for (const f of ['good.bib', 'ssrn.bib']) expect(constraint('constraints/writing-shortjournal.py', p, f).status, f).toBe(0)
 })
 
-test('writing-outline-sync: a draft ## subsection the OUTLINE does not list fails; a matching draft passes', () => {
-  const outline = '### Part I\n- **A. Setup** plan\n'
+test('writing-outline-sync: a draft ## subsection its outlines/<Section>.md never planned fails; the clean fixture passes', () => {
   const rel = 'constraints/writing-outline-sync.py'
-  const bad = project({ '.planning/OUTLINE.md': outline, 'drafts/Part_I.md': '# Part I\n\n## A. Setup\n\ntext\n\n## B. Extra\n\ntext\n' })
-  const hit = constraint(rel, bad, 'drafts/Part_I.md')
+  const fixture = join(ROOT, 'skills/writing/fixtures/clean')
+  const copy = () => {
+    const d = mkTmp('wsync-')
+    expect(run('cp', ['-a', `${fixture}/.`, d]).status).toBe(0)
+    return d
+  }
+  const clean = copy()
+  const ok = constraint(rel, clean, 'drafts/Part I. The Gap (Draft).md')
+  expect(ok.status, ok.stdout + ok.stderr).toBe(0)
+  expect(ok.stdout).toMatch(/^writing-outline-sync: [1-9]\d* /m)
+  const bad = copy()
+  const draft = join(bad, 'drafts/Part I. The Gap (Draft).md')
+  writeFileSync(draft, readFileSync(draft, 'utf8') + '\n## C. Unplanned Remedy\n\nText.\n')
+  const hit = constraint(rel, bad, 'drafts/Part I. The Gap (Draft).md')
   expect(hit.status, hit.stdout + hit.stderr).toBe(1)
-  expect(hit.stdout).toMatch(/^drafts\/Part_I\.md:1: \S+ .*## B\. exists in draft but is not listed in OUTLINE/m)
-  const orphan = project({ '.planning/OUTLINE.md': outline, 'drafts/Part_II.md': '# Part II\n\ntext\n' })
-  const o = constraint(rel, orphan, 'drafts/Part_II.md')
-  expect(o.status, o.stdout + o.stderr).toBe(1)
-  expect(o.stdout).toContain("part 'part ii'")
-  const ok = project({ '.planning/OUTLINE.md': outline, 'drafts/Part_I.md': '# Part I\n\n## A. Setup\n\ntext\n' })
-  const g = constraint(rel, ok, 'drafts/Part_I.md')
-  expect(g.status, g.stdout + g.stderr).toBe(0)
+  expect(hit.stdout).toMatch(/Part I\. The Gap \(Draft\)\.md:1: \S+ .*## C\. Unplanned Remedy.*outlines\/Part I\. The Gap\.md/m)
+  // a subsection the outline does plan passes
+  const planned = copy()
+  const out = join(planned, 'outlines/Part I. The Gap.md')
+  writeFileSync(out, readFileSync(out, 'utf8') + '- **C. Unplanned Remedy** the repair\n')
+  const pd = join(planned, 'drafts/Part I. The Gap (Draft).md')
+  writeFileSync(pd, readFileSync(pd, 'utf8') + '\n## C. Unplanned Remedy\n\nText.\n')
+  const pr = constraint(rel, planned, 'drafts/Part I. The Gap (Draft).md')
+  expect(pr.status, pr.stdout + pr.stderr).toBe(0)
 })
 
 // ---- Jev rules --------------------------------------------------------------------------------------------------
