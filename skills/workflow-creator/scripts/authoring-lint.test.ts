@@ -4,7 +4,7 @@ import { afterAll, expect, setDefaultTimeout, test } from 'bun:test'
 
 setDefaultTimeout(240_000)
 import { spawnSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { chmodSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { lint, lintLine } from './authoring-lint.ts'
@@ -110,6 +110,19 @@ test('outside git every line counts; exit codes are 0, 1 and 2', () => {
   expect(run('--target', d)).toBe(1)
   expect(run('--target', join(d, 'missing'))).toBe(2)
   expect(run()).toBe(2)
+})
+
+test('an internal failure exits 2 (could not look), never 1', () => {
+  const d = mkdtempSync(join(tmpdir(), 'authoring-lint-crash-'))
+  trash.push(d)
+  mkdirSync(join(d, 'locked'))
+  chmodSync(join(d, 'locked'), 0o000)
+  try {
+    const r = spawnSync('bun', [LINT, '--target', d], { timeout: 120_000, encoding: 'utf8' })
+    if (process.getuid?.() !== 0) expect(r.status).toBe(2)
+  } finally {
+    chmodSync(join(d, 'locked'), 0o755)
+  }
 })
 
 // ---- L5 / L6: a workflow's constraints are reached by a check.sh, its Jev rules named by a skill ----------

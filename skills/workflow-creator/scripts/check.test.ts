@@ -35,7 +35,7 @@ afterAll(() => {
 // probes where check.sh's upward walk expects them. Omitting it would make the harness exercise
 // only the could-not-look branch, which is the one case that must not stand in for the others.
 // `noSiblings` omits exactly that, so the refusal itself is under test.
-function harness(opts: { parityStub?: string; noSiblings?: boolean } = {}): string {
+function harness(opts: { parityStub?: string; noSiblings?: boolean; wcStub?: string } = {}): string {
   const d = tmp('wc-check-harness-')
   const s = join(d, 'scripts')
   mkdirSync(s)
@@ -56,7 +56,8 @@ function harness(opts: { parityStub?: string; noSiblings?: boolean } = {}): stri
     symlinkSync(join(SCRIPTS, '..', '..', '..', 'bin', 'workflow-check'), join(d, 'bin', 'workflow-check'))
   }
   copyFileSync(CHECK, join(s, 'check.sh'))
-  symlinkSync(join(SCRIPTS, 'wc-probe.ts'), join(s, 'wc-probe.ts'))
+  if (opts.wcStub === undefined) symlinkSync(join(SCRIPTS, 'wc-probe.ts'), join(s, 'wc-probe.ts'))
+  else writeFileSync(join(s, 'wc-probe.ts'), opts.wcStub)
   symlinkSync(join(SCRIPTS, 'validate-skill-write.ts'), join(s, 'validate-skill-write.ts'))
   symlinkSync(join(SCRIPTS, 'authoring-lint.ts'), join(s, 'authoring-lint.ts'))
   if (opts.parityStub === undefined) {
@@ -188,6 +189,17 @@ test('both structure legs REFUSE with exit 2 when the probes are unreachable', (
   expect(legStatus(r.stdout, 'pc-probe')).toContain('exit=2')
   expect(legStatus(r.stdout, 'wc-probe')).toContain('exit=0')
   expect(r.code).toBe(2)
+})
+
+test('a probe that could not run (exit 3) or crashed raises the verdict to 2, never 1', () => {
+  const t = target({ tests: { 'fixture.test.ts': PASSING_TEST } })
+  for (const code of [3, 2]) {
+    const r = run(harness({ wcStub: `process.exit(${code})\n` }), ['--target', t])
+    expect(legStatus(r.stdout, 'wc-probe')).toContain(`exit=${code}`)
+    expect(r.code).toBe(2)
+  }
+  // a plain failure (exit 1) stays 1, and a later exit-1 leg never lowers a 2
+  expect(run(harness({ wcStub: 'process.exit(1)\n' }), ['--target', t]).code).toBe(1)
 })
 
 test('a forced failure in the wc-probe leg propagates', () => {
