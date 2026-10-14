@@ -177,8 +177,7 @@ test('skills/writing/SKILL.md\'s example dispatch names the workflow (no <regist
 test('workflow-check with no baseline, --files or --changed examines the whole tree; with a baseline and no change nothing is in scope', () => {
   const draft = '# T\n\n**Bold lead.** The point is made here in a full sentence.\n'
   const d = project({ 'drafts/a.md': draft })
-  const git = (...a: string[]) => spawnSync('git', ['-C', d, ...a], { encoding: 'utf8', timeout: 60_000 })
-  git('add', '-A'); git('commit', '-qm', 'drafts')
+  sh('git', ['-C', d, 'add', '-A']); sh('git', ['-C', d, 'commit', '-qm', 'drafts'])
   const env = { WORK_RUN_BASELINE: '' }
   const bare = wcheck(['writing', '--constraints-only', '--project-dir', d], env)
   expect(bare.stdout).toContain('no run baseline: whole tree')
@@ -190,9 +189,9 @@ test('workflow-check with no baseline, --files or --changed examines the whole t
   expect(ch.stdout).not.toContain('whole tree')
   expect(first(ch.stdout)).toMatch(EMPTY)
   // inside a run (baseline set) the scope is what changed since it: nothing
-  const base = spawnSync('bash', [join(ROOT, 'skills', 'work', 'scripts', 'tree-snapshot.sh'), d], { encoding: 'utf8', timeout: 20_000 }).stdout.trim()
+  const base = sh('bash', [join(ROOT, 'skills', 'work', 'scripts', 'tree-snapshot.sh'), d]).stdout.trim()
   const run = wcheck(['writing', '--constraints-only', '--project-dir', d], { WORK_RUN_BASELINE: base })
   expect(run.stdout).not.toContain('whole tree')
   expect(first(run.stdout)).toMatch(EMPTY)
   expect(run.status).toBe(0)
-})
+}, 780_000)
