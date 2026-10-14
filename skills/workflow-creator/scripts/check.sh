@@ -37,8 +37,11 @@
 # `<leg>: 0 <unit> examined — nothing in scope (<why>)`. wc-probe and pc-probe print their own.
 #
 # Exit 0 = every leg passed. 1 = some leg failed. 2 = refusal (bad usage, missing target, or a leg
-# that COULD NOT LOOK — an unresolvable plugin root, an unreachable probe. A leg that cannot look is
-# not a leg that passed, so it never reports 0.)
+# that COULD NOT LOOK — an unresolvable plugin root, an unreachable probe, a suite file that ran no
+# test. A leg that cannot look is not a leg that passed, so it never reports 0.) A leg with nothing
+# in scope BY CONSTRUCTION (no .js for authoring-gate, an unchanged tree for authoring-lint, no
+# scripts/) did look and found nothing to judge: it prints `0 … examined — nothing in scope` and
+# NOT CHECKED, and exits 0 — visible, not gating.
 set -uo pipefail  # deliberately not -e: every leg must run so every leg reports.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -235,29 +238,27 @@ else
     report probe-tests 1 "no suite under scripts/"
   else
     rc=0
-    # SHARDED. bun runs the files handed to one process one after another, so a suite whose cases
-    # spawn subprocesses adds up: `work` is 23 files and 136s, of which five dispatcher files are
-    # 121s. The files are independent, so they go to SHARDS run concurrently. Measured 2026-09-18
-    # on `work`: 136s sequential, 80s across four shards — the floor is its longest single file.
-    # Scheduling only. A shard's non-zero exit is rc=1 exactly as one process's was, because
-    # changing a verdict while changing a schedule is how a speedup quietly becomes a weakening.
+    # CONCURRENT. A suite whose cases spawn subprocesses adds up serially (`work`: 23 files, 136s,
+    # five dispatcher files 121s); the files are independent, so SHARDS run at once and the floor is
+    # the longest single file. Scheduling only: a non-zero exit is rc=1 as it was serially.
     SHARDS="${CHECK_SHARDS:-4}"
     pids=(); pyp=()
     # Each runner's output lands in a file so its own summary can be counted after the wait.
     tdir="$(mktemp -d)"
     if [ "${#suite[@]}" -gt 0 ]; then
-      n=${#suite[@]}
-      [ "$SHARDS" -gt "$n" ] && SHARDS=$n
-      i=0
-      while [ "$i" -lt "$SHARDS" ]; do
-        shard=(); j=$i
-        while [ "$j" -lt "$n" ]; do shard+=("${suite[$j]}"); j=$(( j + SHARDS )); done
-        # A target's tests spawn its own check.sh (7 legs); bun's 5 s default kills one at load and
-        # strands that leg's leg-o/leg-e temp files. The budget is a ceiling, not a delay.
-        bun test --timeout "${CHECK_TEST_TIMEOUT_MS:-30000}" "${shard[@]}" >"$tdir/bun$i.out" 2>&1 &
-        pids+=($!)
-        i=$(( i + 1 ))
+      # One bun process PER FILE, at most SHARDS at once: bun reports only `Ran N tests across M
+      # files`, so a file that ran nothing is visible only if no sibling shares its process.
+      # A target's tests spawn its own check.sh (7 legs); bun's 5 s default kills one at load and
+      # strands that leg's leg-o/leg-e temp files. The budget is a ceiling, not a delay.
+      # The exit status lands in <out>.rc: `wait -n` below reaps the job, so `wait $pid` cannot.
+      bi=0
+      for f in "${suite[@]}"; do
+        while [ "$(jobs -rp | wc -l)" -ge "$SHARDS" ]; do wait -n 2>/dev/null; done
+        ( bun test --timeout "${CHECK_TEST_TIMEOUT_MS:-30000}" "$f" >"$tdir/bun$bi.out" 2>&1; echo $? >"$tdir/bun$bi.rc" ) &
+        bi=$(( bi + 1 ))
       done
+      wait
+      for f in "$tdir"/bun*.rc; do [ "$(cat "$f")" -eq 0 ] || rc=1; done
     fi
     if [ "${#pysuite[@]}" -gt 0 ]; then
       # --with-requirements reads each file's own PEP 723 dependency block (a generic gate cannot
@@ -294,7 +295,13 @@ else
     # file: a python file that collected nothing must not hide behind another file's sum.
     tally() { { grep -hoE '^Ran [0-9]+ tests?|^[0-9]+ (passed|failed)|[0-9]+ (passed|failed)(,| in )' "$@" || true; } | grep -oE '[0-9]+' | awk '{ n += $1 } END { print n + 0 }'; }
     test_n=0; empty=()
-    [ "${#suite[@]}" -gt 0 ] && test_n="$(tally "$tdir"/bun*.out)"
+    bi=0
+    for f in "${suite[@]}"; do
+      bn="$(tally "$tdir/bun$bi.out")"
+      test_n=$(( test_n + bn ))
+      [ "$bn" -gt 0 ] || empty+=("$(basename "$f")")
+      bi=$(( bi + 1 ))
+    done
     for pf in "${pysuite[@]}"; do
       case " ${scriptpy[*]:-} " in *" $pf "*) pn=1 ;; *) pn="$(tally "$tdir/py$(basename "$pf").out")" ;; esac
       test_n=$(( test_n + pn ))

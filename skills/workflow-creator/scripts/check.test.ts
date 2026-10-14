@@ -416,6 +416,19 @@ test('python suite: one empty file is reported even when another file ran tests'
   expect(r.stderr).toContain('empty_test.py')
 })
 
+test('bun suite: a .test.ts that runs 0 tests is exit 2 even when its shard-mate ran tests', () => {
+  const prev = process.env.CHECK_SHARDS
+  process.env.CHECK_SHARDS = '1' // one shard: the files share a bun process, which is where the empty one hid
+  try {
+    const r = run(harness(), ['--target', target({ tests: { 'good.test.ts': PASSING_TEST, 'empty.test.ts': "import { test } from 'bun:test'\n// cases deleted\n" } })])
+    expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=2')
+    expect(r.stderr).toMatch(/^probe-tests: 1 test\(s\) examined.*empty\.test\.ts/m)
+  } finally {
+    if (prev === undefined) delete process.env.CHECK_SHARDS
+    else process.env.CHECK_SHARDS = prev
+  }
+})
+
 test('python suite: a PEP 723 dependency is installed and the tests are counted', () => {
   const r = run(harness(), ['--target', pyTarget({ 'dep_test.py': PY_DEP })])
   expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=0')
