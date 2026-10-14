@@ -82,7 +82,7 @@ assert_run() {
 import glob, json, os, re, sys
 
 sys.path.insert(0, os.environ["LEG_COUNTS_DIR"])
-from leg_counts import audit as leg_audit
+from leg_counts import audit as leg_audit, audit_records
 
 run, events, expect = sys.argv[1], sys.argv[2], sys.argv[3].split(",")
 counts = sys.argv[4:]
@@ -146,8 +146,9 @@ for p in logs:
 
 # 3. Every mechanical and rule leg examined a non-zero amount: leg_counts.audit, the one parser of the
 # `<leg>: N <unit> examined` convention that work-checks.sh and every check.sh leg also use. The output
-# is checks.json's 60-line tail, so a leg whose header was cut is not looked for here — work-checks.sh
-# audited the full output and left its COULD-NOT-CHECK lines in that tail (assertion 2 reports them).
+# is checks.json's 60-line tail, so each entry's `legs` (leg_records over the full output) is audited when
+# present; the tail is the fallback for an entry without it. work-checks.sh also left COULD-NOT-CHECK
+# lines in the tail (assertion 2 reports them).
 try:
     c = json.load(open(os.path.join(run, "checks.json")))
 except Exception:
@@ -157,7 +158,8 @@ if not mech:
     fail("checks.json has no mechanical check — the round gated on nothing")
 for m in mech:
     out = (m.get("output") or "") + "\n" + (m.get("stdout") or "")
-    for f in leg_audit(out):
+    # `legs` is read from the full output; the tail can hold a header whose count line was cut.
+    for f in (audit_records(m["legs"]) if m.get("legs") else leg_audit(out)):
         fail(f"mechanical {m.get('name')}: {f}")
     for rx in counts:
         hits = [int(x) for x in re.findall(rx, out)]

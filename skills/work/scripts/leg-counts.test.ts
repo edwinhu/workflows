@@ -33,6 +33,28 @@ function checks(mechanical: { name: string; cmd: string }[]) {
 }
 const mech = (r: ReturnType<typeof checks>, name: string) => r.checks.mechanical.find((m: any) => m.name === name)
 
+describe('work-checks.sh records every leg from the full output, not the tail', () => {
+  test('a 200-line output with its leg lines at the top keeps every leg verdict and count in `legs`', () => {
+    const r = checks([{ name: 'gate', cmd:
+      `printf 'leg wc-probe exit=0\\nwc-probe: 4 file(s) examined\\nleg sc-probe exit=1\\nsc-probe: 7 line(s) examined\\n'; seq 1 200` }])
+    const m = mech(r, 'gate')
+    expect(m.output).not.toContain('wc-probe')
+    expect(m.legs).toEqual([
+      { name: 'wc-probe', exit: 0, examined: 4, unit: 'file(s)', text: expect.stringContaining('wc-probe: 4 file(s) examined') },
+      { name: 'sc-probe', exit: 1, examined: 7, unit: 'line(s)', text: expect.stringContaining('sc-probe: 7 line(s) examined') },
+    ])
+  })
+
+  test('a header-only leg records examined null; the array is capped and says how many it dropped', () => {
+    const many = Array.from({ length: 70 }, (_, i) => `leg l${i} exit=0\\nl${i}: 1 line(s) examined`).join('\\n')
+    const r = checks([{ name: 'gate', cmd: `printf '${many}\\n'` }, { name: 'bare', cmd: `printf '=== leg: solo\\n'` }])
+    expect(mech(r, 'gate').legs).toHaveLength(64)
+    expect(mech(r, 'gate').legsOmitted).toBe(6)
+    expect(mech(r, 'bare').legs).toEqual([{ name: 'solo', exit: null, examined: null, unit: null, text: '=== leg: solo' }])
+    expect(mech(r, 'bare').legsOmitted).toBeUndefined()
+  })
+})
+
 describe('work-checks.sh fails a leg that examined nothing', () => {
   test('a leg with no count line turns exit 0 into 2, named in the output tail and the summary', () => {
     const r = checks([{ name: 'gate', cmd: `printf '=== leg: a\\na: 3 line(s) examined\\n=== leg: b\\nall clean\\n'` }])

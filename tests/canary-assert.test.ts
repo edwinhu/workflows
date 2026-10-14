@@ -17,7 +17,7 @@ const CANARY = join(import.meta.dir, '..', 'scripts', 'canary.sh')
 const root = mkdtempSync(join(tmpdir(), 'canary-assert-'))
 afterAll(() => rmSync(root, { recursive: true, force: true }))
 
-type Fx = { exit: string; mechOut: string; ruleStdout: string; ruleExit: number; loopLog: string; events: string[]; lensesReported: number }
+type Fx = { exit: string; mechOut: string; ruleStdout: string; ruleExit: number; mechLegs?: unknown[]; loopLog: string; events: string[]; lensesReported: number }
 
 const good: Fx = {
   exit: '8',
@@ -50,7 +50,7 @@ function build(name: string, fx: Fx): { run: string; events: string } {
   writeFileSync(join(run, 'result.json'), JSON.stringify({ overallPass: false, scoreTable: { lensesReported: fx.lensesReported, mechanicalRun: 1, ruleVerdicts: 1 } }))
   writeFileSync(join(run, 'checks.json'), JSON.stringify({
     red: [], acceptance: [],
-    mechanical: [{ name: 'slides-mech', exitCode: 0, output: fx.mechOut }],
+    mechanical: [{ name: 'slides-mech', exitCode: 0, output: fx.mechOut, ...(fx.mechLegs ? { legs: fx.mechLegs } : {}) }],
     rules: [{ name: 'jev-slides-rules', exitCode: fx.ruleExit, stdout: fx.ruleStdout, output: '' }],
   }))
   // Two event files, as two pids would write them; RUN is the run dir.
@@ -101,6 +101,29 @@ describe('canary --assert', () => {
     expect(r.out).toContain('E2BIG in loop.log')
     expect(r.out).toContain('Python traceback in loop.log')
     expect(r.out).toContain('0 verdicts — examined nothing')
+  })
+
+  const tailOnly = 'leg late exit=0\namerican-english: 1 file(s), 947 line(s) read (whole file), clean'
+  test('a recorded leg that examined 0 fails though the tail shows no such leg', () => {
+    const zero = assertRun('legs-zero', { ...good, mechOut: tailOnly, mechLegs: [
+      { name: 'wc-probe', exit: 0, examined: 0, unit: 'line(s)', text: 'wc-probe: 0 line(s) examined' }] })
+    expect(zero.status).toBe(1)
+    expect(zero.out).toContain('leg wc-probe examined 0 — vacuous')
+  })
+
+  test('a recorded leg with no count line fails', () => {
+    const none = assertRun('legs-none', { ...good, mechLegs: [
+      { name: 'sc-probe', exit: 1, examined: null, unit: null, text: 'leg sc-probe exit=1' }] })
+    expect(none.status).toBe(1)
+    expect(none.out).toContain('leg sc-probe printed no count line')
+  })
+
+  test('a tail header whose count line was cut is not a failure when `legs` has the count', () => {
+    // the tail holds a header whose count line was cut: the recorded legs say it examined 3, so no failure
+    const ok = assertRun('legs-ok', { ...good, mechOut: good.mechOut + '\nleg cut exit=0', mechLegs: [
+      { name: 'cut', exit: 0, examined: 3, unit: 'line(s)', text: 'leg cut exit=0\ncut: 3 line(s) examined' }] })
+    expect(ok.out).not.toContain('leg cut')
+    expect(ok.status).toBe(0)
   })
 
   test('a run with no DONE in the watcher stream fails', () => {

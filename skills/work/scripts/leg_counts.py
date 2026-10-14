@@ -25,6 +25,9 @@ COUNT = re.compile(r"^(?!COULD-NOT-CHECK:)(?P<leg>[\w-]+): .*?\b(?P<n>\d+) (?P<u
 NOTHING_IN_SCOPE = 'nothing in scope ('
 # A leg's header: the teaching check.sh `=== leg: NAME` and the workflows check.sh `leg NAME exit=N`.
 LEG = re.compile(r"^(?:=== leg: (?P<a>[\w-]+)[ \t]*$|leg (?P<b>[\w-]+) exit=)", re.M)
+LEG_EXIT = re.compile(r"^leg [\w-]+ exit=(\d+)", re.M)
+LEG_CAP = 64        # legs kept per command in checks.json; the rest are counted, not listed
+LEG_TEXT_CAP = 240  # chars of a leg's header + count lines kept
 
 
 def counts(text):
@@ -40,6 +43,32 @@ def legs(text):
     return seen
 
 
+def leg_records(text, cap=LEG_CAP):
+    """([{name, exit, examined, unit, text}], omitted): one record per leg from the FULL output, in order.
+
+    exit is the `leg NAME exit=N` verdict (None for a `=== leg:` header); examined/unit total the leg's
+    count lines (None when it printed none); text is its header and count lines, clipped. Past `cap`
+    legs the rest are only counted in `omitted`.
+    """
+    recs = {}
+    events = [(m.start(), 'leg', m) for m in LEG.finditer(text)] + [(m.start(), 'count', m) for m in COUNT.finditer(text)]
+    for _, kind, m in sorted(events, key=lambda e: e[0]):
+        if kind == 'leg':
+            name = m['a'] or m['b']
+            r = recs.setdefault(name, {'name': name, 'exit': None, 'examined': None, 'unit': None, 'lines': []})
+            e = LEG_EXIT.match(m.group(0) + text[m.end():m.end() + 20]) if m['b'] else None
+            if e and r['exit'] is None:
+                r['exit'] = int(e.group(1))
+            r['lines'].append(text[m.start():text.find('\n', m.start()) if text.find('\n', m.start()) >= 0 else len(text)].strip())
+        else:
+            r = recs.setdefault(m['leg'], {'name': m['leg'], 'exit': None, 'examined': None, 'unit': None, 'lines': []})
+            r['examined'] = (r['examined'] or 0) + int(m['n'])
+            r['unit'] = r['unit'] or m['unit']
+            r['lines'].append(m.group(0).strip())
+    out = [{**{k: v for k, v in r.items() if k != 'lines'}, 'text': '\n'.join(r['lines'])[:LEG_TEXT_CAP]} for r in recs.values()]
+    return out[:cap], max(0, len(out) - cap)
+
+
 def audit(text, only=None):
     """One failure per leg that printed no count line, and per count line that is a bare zero."""
     fails, have = [], set()
@@ -52,6 +81,17 @@ def audit(text, only=None):
     for leg in ([only] if only else legs(text)):
         if leg not in have:
             fails.append(f'leg {leg} printed no count line (`{leg}: N <unit> examined`) — what it examined is unknown')
+    return fails
+
+
+def audit_records(recs):
+    """audit() over the leg records work-checks.sh stored from the full output (checks.json `legs`)."""
+    fails = []
+    for r in recs:
+        if r.get('examined') is None:
+            fails.append(f"leg {r['name']} printed no count line (`{r['name']}: N <unit> examined`) — what it examined is unknown")
+        elif r['examined'] == 0 and NOTHING_IN_SCOPE not in (r.get('text') or ''):
+            fails.append(f"leg {r['name']} examined 0 — vacuous: {(r.get('text') or '').strip()[:200]}")
     return fails
 
 
