@@ -4,9 +4,7 @@
 
 **Pick one elision mark and use it everywhere in the addendum.**
 
-02-addendum mixes `[. . .]` in the Ripple section with `[...]` in the Life Partners section.
-A student reading straight through sees two conventions and cannot tell whether they mean
-different things.
+Mixing `[. . .]` and `[...]` shows a student reading straight through two conventions, and they cannot tell whether the two mean different things.
 
 When adding a reading, match whatever mark the addendum already uses. If the addendum is
 already inconsistent, fix it rather than adding a third.

@@ -7,9 +7,7 @@
 procedure is a second source of truth nothing diffs.
 
 **The `.westlaw.docx` is the ONLY stored source, and its text is a projection read IN MEMORY.**
-Write no `.txt` beside it. The twins that used to sit there discarded the docx's italic runs, and
-a cut that reads such a projection sets every case name in roman, the typography thrown away. Persisting
-it makes the loss invisible; `check-quotes.py` now takes the docx and projects it itself,
+Write no `.txt` beside it: a stored projection can drop the docx's italic runs, a cut that reads it sets every case name in roman, and persisting it hides the loss; `check-quotes.py` now takes the docx and projects it itself,
 preserving italic runs as Typst emphasis.
 
 Westlaw's `XMLMIND_DOCX` export is **publisher-keyed text**, not OCR: the characters are the
@@ -116,9 +114,7 @@ sed -n '50,70p' "$F"                        # read a real passage
 ```
 
 - **A clean single-column source** has a stable median line length in the 70–90 range and
-  reads as connected prose when you print twenty consecutive lines. The Mutual Benefits
-  `.txt` in `docs/` is exactly this: ~375 non-empty lines (374 by `grep -c`), median line
-  length 81.
+  reads as connected prose when you print twenty consecutive lines.
 - **Double-spacing is normal and is not damage.** Many retrieved `.txt` files put prose on
   alternating lines with blank lines between. That is a formatting property of the file, not
   a corruption — but it is the property that makes *line decimation* possible downstream.
@@ -127,8 +123,7 @@ sed -n '50,70p' "$F"                        # read a real passage
   and stray punctuation: `'rue` for `true`, `Junctions` for `Functions`, `and .the`. A grep
   against the `.txt` proves fidelity to the file, not to the reporter — and **the tell in
   *A scanned source is a Gemini job* below is what predicts when that gap matters.** An
-  OCR-damaged `.txt` matches its own damage perfectly: `check-quotes.py` verified all three
-  Life Partners errors as verbatim, because against that file they are.
+  OCR-damaged `.txt` matches its own damage perfectly: `check-quotes.py` verifies OCR errors as verbatim, because against that file they are.
 - **Prefer the slip opinion (single column) when both are available.** If only a two-column
   source exists, `pdftotext` WITHOUT `-layout` often de-interleaves it — check the output
   before cutting.
@@ -168,8 +163,7 @@ opinion-object separators — lines beginning `=== `, e.g.
 `=== majority | GINSBURG, Circuit Judge: ===`. Those are not `pdftotext` output; they mark
 corpus text. Classic OCR signatures confirm it: `is 'rue` for `is true`,
 `Entrepreneurial Junctions` for `Functions`, `{per curiam)` for `(per curiam)`, `and .the`
-for `and the`. All four are in the Life Partners `.txt` today and all four reached print in
-`02-addendum`.
+for `and the`. Each passes a grep against the file and reaches print.
 
 **WHAT TO DO.** Do not accept OCR text as the source of record for a retained quotation. Try
 Route 1 first — a Westlaw export of the same case ends the problem instead of correcting it, and
@@ -225,10 +219,9 @@ and flag it.
 ### Reason 2 — content-filter failure and recovery
 
 Sensitive-but-ordinary legal subject matter — terminal illness, sexual offences, violence,
-self-harm, the ordinary facts of reported cases — can trip the provider content filter. Two
-attempts at the viatical-settlement cases (Life Partners / Mutual Benefits) died on the
+self-harm, the ordinary facts of reported cases — can trip the provider content filter. Such a task can die on the
 proxy's Claude path with `API Error: Output blocked by content filtering policy`; the same
-task succeeded on `--provider gemini`. The subject matter is not the problem, the filter is;
+task succeeds on `--provider gemini`. The subject matter is not the problem, the filter is;
 do not narrow the excerpt to appease it.
 
 **The failure leaves PARTIAL STATE.** Each death was mid-write: no finished artifact and a
