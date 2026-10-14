@@ -182,7 +182,7 @@ if a version site is ever added, add it there and `--check` will keep everyone h
 
 ```bash
 git commit -am "chore: release vX.Y.Z"
-scripts/canary.sh --run    # CANARY GATE on the committed HEAD: the full suite in a clean worktree (so no separate scripts/test.sh) + BOTH repos' suites + a teaching template lint + a real diagnose and dev round, run concurrently; a FAIL leaves an unpushed commit
+scripts/canary.sh --run    # CANARY GATE on the committed HEAD: the full suite in a clean worktree (so no separate scripts/test.sh) + BOTH repos' suites + a teaching template lint + one real read-only diagnose (the dev round runs in the suite, tests/e2e-work-path.test.ts), run concurrently; a FAIL leaves an unpushed commit
 git push origin main
 git tag -a workflows--vX.Y.Z -m "workflows vX.Y.Z" && git push origin workflows--vX.Y.Z
 ```

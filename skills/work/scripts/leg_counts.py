@@ -19,7 +19,8 @@ import argparse
 import re
 import sys
 
-COUNT = re.compile(r"^(?P<leg>[\w-]+): .*?\b(?P<n>\d+) (?P<unit>[^\d,:\n]+?) "
+# A COULD-NOT-CHECK line is the audit's own report (it reaches checks.json's tail), never a leg's count line.
+COUNT = re.compile(r"^(?!COULD-NOT-CHECK:)(?P<leg>[\w-]+): .*?\b(?P<n>\d+) (?P<unit>[^\d,:\n]+?) "
                    r"(?P<verb>read|checked|examined|scanned)\b(?P<rest>[^\n]*)$", re.M)
 NOTHING_IN_SCOPE = 'nothing in scope ('
 # A leg's header: the teaching check.sh `=== leg: NAME` and the workflows check.sh `leg NAME exit=N`.
