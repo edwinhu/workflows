@@ -5,6 +5,8 @@ description: "Use when the user wants to search SEC filings or exhibits on Bloom
 
 # Bloomberg Law EDGAR search
 
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
 A Bloomberg-specific profile of `ui-json-capture`: drive the logged-in browser at human pace and
 keep the JSON the page already receives. Load `browser-automation` (port 9222,
 `mcp__chrome-devtools__*`) and read `ui-json-capture` for the procedure and its Red Flags.
