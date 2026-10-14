@@ -35,10 +35,8 @@ fidelity to the reporter is a question about where the file came from.
   page-image comparison is required. The docx is projected to text in memory, italic runs
   preserved; nothing writes that projection to disk.
 - **OCR source (CourtListener opinions corpus, Caselaw Access Project).** A match proves only
-  fidelity to the file: an OCR-damaged `.txt` matches its own damage perfectly. The Life
-  Partners corpus `.txt` contains `quite the opposite is 'rue`, `Entrepreneurial Junctions`
-  (for *Functions*) and `and .the question`, and 02-addendum carried all three into print
-  because they were grepped against and matched. **Any passage you retain from an OCR source
+  fidelity to the file: an OCR-damaged `.txt` matches its own damage perfectly. Forms such as `quite the opposite is 'rue`, `Entrepreneurial Junctions` (for *Functions*) and
+  `and .the question` pass a grep against the file and reach print. **Any passage you retain from an OCR source
   must also be eyeballed against the page image.** See `retrieval.md`.
 
 ## Iron Law 2 — The Iron Law of Compile-Before-Table
@@ -64,9 +62,7 @@ Verbatim matching cannot see misrepresentation. An excerpt can be word-perfect a
 lie about the opinion:
 
 - A passage the court **quotes from another case** presented as the court's own reasoning.
-  02-addendum did exactly this: a *Life Partners* block quote rendered as running text
-  inside the *Mutual Benefits* excerpt, where the Eleventh Circuit quotes it in order to
-  **reject** it.
+  A block quote the court cites only to **reject** it, rendered as running text, reverses its meaning.
 - A holding stated without the qualifier or limiting clause that confines it.
 - An omitted alternative holding that changes what the case stands for.
 - A dissent's language read as the majority's.
