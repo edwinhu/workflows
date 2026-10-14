@@ -118,11 +118,26 @@ test('workflow-check dev --rules-only scores the dev rules: a VIOLATED verdict i
 test('dev check.sh reaches workflow-check dev: a constraint dropped into the layout fails the gate with no edit to check.sh', () => {
   const dropped = plug({ 'checks/dev/constraints/zzdev.py': FIRES('zzdev') })
   const p = project({ 'src/a.ts': 'export const a = 1\n' })
-  const r = sh('bash', [join(ROOT, 'skills', 'dev', 'scripts', 'check.sh'), '--project-dir', p, '--test-cmd', "echo 'Ran 1 test across 1 file.'", '--no-plan', '--lint-cmd', 'echo lint-ok'], { WORKFLOW_CHECKS_PATH: dropped })
+  const r = sh('bash', [join(ROOT, 'skills', 'dev', 'scripts', 'check.sh'), '--project-dir', p, '--test-cmd', "echo 'Ran 1 test across 1 file.'", '--no-plan', '--lint-cmd', 'echo lint-ok', '--no-build-cmd'], { WORKFLOW_CHECKS_PATH: dropped })
   expect(r.status, r.stdout + r.stderr).toBe(1)
   expect(r.stdout + r.stderr).toContain('ZZDEV fired')
   expect(read('skills/dev/scripts/check.sh')).toMatch(/workflow-check[^\n]*\bdev\b[^\n]*--constraints-only/)
   expect(read('skills/dev/scripts/check.sh')).not.toContain('domain-gate.py')
+})
+
+test('dev check.sh refuses (exit 2) an omitted --lint-cmd / --build-cmd unless --no-lint-cmd / --no-build-cmd declares the skip', () => {
+  const p = project({ 'src/a.ts': 'export const a = 1\n' })
+  const base = [join(ROOT, 'skills', 'dev', 'scripts', 'check.sh'), '--project-dir', p, '--test-cmd', "echo 'Ran 1 test across 1 file.'", '--no-plan']
+  const none = sh('bash', base)
+  expect(none.status, none.stdout + none.stderr).toBe(2)
+  expect(none.stderr).toMatch(/--lint-cmd or --no-lint-cmd/)
+  const lintOnly = sh('bash', [...base, '--no-lint-cmd'])
+  expect(lintOnly.status, lintOnly.stdout + lintOnly.stderr).toBe(2)
+  expect(lintOnly.stderr).toMatch(/--build-cmd or --no-build-cmd/)
+  const both = sh('bash', [...base, '--no-lint-cmd', '--no-build-cmd'])
+  expect(both.status, both.stdout + both.stderr).toBe(0)
+  expect(both.stdout).toMatch(/leg lint exit=0 \(declined\)/)
+  expect(both.stdout).toMatch(/leg build exit=0 \(declined\)/)
 })
 
 test('skills/dev/SKILL.md\'s example dispatch names the workflow instead of a rules directory', () => {

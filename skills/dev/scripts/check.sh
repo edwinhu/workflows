@@ -6,9 +6,9 @@
 # which is the whole of P10 — three separate mechanicalChecks entries lose one silently,
 # and work re-runs a claimed mechanical pass in a shell, affordable for one and not three.
 #
-# A lint or build command not passed reports "not declared" and passes. That is deliberate and visible:
-# a project with no build step should say so once, here, rather than have the plan quietly
-# omit a row that nobody can tell from a forgotten one. --test-cmd is not optional: exit 2 without it.
+# --test-cmd, --lint-cmd and --build-cmd are each required or declined: omitting one is exit 2, and
+# --no-lint-cmd / --no-build-cmd report the leg "declined" and pass. A project with no build step says so once, here,
+# rather than have a forgotten flag read the same as a project with nothing to run.
 #
 # Every leg prints `<leg>: N <unit> examined` (work/scripts/leg-counts.sh). The tests leg counts the
 # tests the runner reports; a runner whose summary is not recognised needs --test-count-re, a regex
@@ -17,14 +17,14 @@
 # The scope leg (work/scripts/scope-check.sh) fails a changed path under no task's writablePaths or scaffoldPaths in --plan.
 # Omitting --plan is exit 2; --no-plan declines the leg ("declined", exit 0).
 #
-# Usage: check.sh --project-dir <dir> --test-cmd <cmd> [--test-count-re <re>] [--lint-cmd <cmd>] [--build-cmd <cmd>] (--plan <plan.md> | --no-plan)
+# Usage: check.sh --project-dir <dir> --test-cmd <cmd> [--test-count-re <re>] (--lint-cmd <cmd> | --no-lint-cmd) (--build-cmd <cmd> | --no-build-cmd) (--plan <plan.md> | --no-plan)
 # Exit 0 = every declared leg passed. 1 = some leg failed. 2 = refusal, or a leg that examined nothing.
 set -uo pipefail   # deliberately not -e: every leg must run so every leg reports.
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/../../work/scripts/leg-counts.sh"
 
-PROJ="."; TESTCMD=""; TESTRE=""; LINTCMD=""; BUILDCMD=""; PLAN=""; NOPLAN=0
+PROJ="."; TESTCMD=""; TESTRE=""; LINTCMD=""; BUILDCMD=""; PLAN=""; NOPLAN=0; NOLINT=0; NOBUILD=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --project-dir) PROJ="${2:-}"; shift 2 ;;
@@ -34,10 +34,14 @@ while [ $# -gt 0 ]; do
     --build-cmd) BUILDCMD="${2:-}"; shift 2 ;;
     --plan) PLAN="${2:-}"; shift 2 ;;
     --no-plan) NOPLAN=1; shift ;;
+    --no-lint-cmd) NOLINT=1; shift ;;
+    --no-build-cmd) NOBUILD=1; shift ;;
     *) echo "check.sh: unknown argument $1" >&2; exit 2 ;;
   esac
 done
 [ -n "$PLAN" ] || [ "$NOPLAN" = 1 ] || { echo "check.sh: pass --plan or --no-plan — an undeclared scope leg would pass having checked no path" >&2; exit 2; }
+[ -n "$LINTCMD" ] || [ "$NOLINT" = 1 ] || { echo "check.sh: pass --lint-cmd or --no-lint-cmd — an undeclared lint leg would pass having run nothing" >&2; exit 2; }
+[ -n "$BUILDCMD" ] || [ "$NOBUILD" = 1 ] || { echo "check.sh: pass --build-cmd or --no-build-cmd — an undeclared build leg would pass having run nothing" >&2; exit 2; }
 [ -d "$PROJ" ] || { echo "check.sh: --project-dir $PROJ is not a directory" >&2; exit 2; }
 
 RC=0
@@ -45,8 +49,8 @@ report() { printf 'leg %s exit=%s%s\n' "$1" "$2" "${3:+ ($3)}"; [ "$2" -le "$RC"
 leg() {
   local name="$1" cmd="$2"
   if [ -z "$cmd" ]; then
-    count_line "$name" 0 "command(s)" "— nothing in scope (not declared)" >&2
-    report "$name" 0 "not declared"; return
+    count_line "$name" 0 "command(s)" "— nothing in scope (declined)" >&2
+    report "$name" 0 "declined"; return
   fi
   legcount_run "$name" legcount_cmd "$name" "$PROJ" "$cmd" "$([ "$name" = tests ] && printf '%s' "$TESTRE")"
   report "$name" "$LEG_STATUS"
