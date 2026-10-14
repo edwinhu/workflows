@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The ONE mechanical entry point for the dev workflow. Its exit code IS the verdict.
 #
-# Every leg but dev-gate (bin/workflow-check dev) is the PROJECT's own command, which is why they are
+# Every leg but dev-gate (bin/workflow-check dev) and scope (work's scope-check.sh) is the PROJECT's own command, which is why they are
 # arguments: this skill cannot know what a given project runs. It can still be the single command `work` reads,
 # which is the whole of P10 — three separate mechanicalChecks entries lose one silently,
 # and work re-runs a claimed mechanical pass in a shell, affordable for one and not three.
