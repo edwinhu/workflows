@@ -1173,17 +1173,20 @@ test('a lens `dispositions` entry is reported and never gates', async () => {
   expect(result.findings).toEqual([])
 })
 
-test('defect:false routes an entry that carries no severity to dispositions, preserving the reason', async () => {
+// RETIRED BEHAVIOUR (round-3 N1, deliberate): a severity-less entry used to leave the gate on the
+// lens's own defect:false flag or on a self-labelling title. gate-laws L5: the gate must not read a
+// lens-authored flag on a claim that carries no severity. `dispositions` is the only non-defect channel;
+// a severity-less entry in `findings` is malformed and fails closed, whatever it says about itself.
+test('defect:false on a severity-less finding does NOT leave the gate — it is malformed and gates', async () => {
   const { result } = await run(
     lensOnly(),
-    reports({ findings: [{ title: 'looks like a defect claim', detail: 'd', ownerTask: 'plan', defect: false }] }))
-  expect(result.overallPass).toBe(true)
-  expect(result.scoreTable.survivingBlocking).toBe(0)
-  expect(result.dispositions).toHaveLength(1)
-  expect(result.dispositions[0].routedFromFinding).toBe(true)
-  expect(result.dispositions[0].routedBecause).toMatch(/defect:false/)
-  expect(result.scoreTable.dispositionsRoutedFromFindings).toBe(1)
-  expect(result.planFindings).toEqual([])
+    reports({ findings: [{ title: 'parseRow throws on empty input', detail: 'd', ownerTask: 'plan', defect: false }] }))
+  expect(result.overallPass).toBe(false)
+  expect(result.dispositions).toEqual([])
+  expect(result.lensesThatFlagged).toEqual(['lens'])
+  expect(result.findings).toHaveLength(1)
+  expect(result.findings[0].detail).toMatch(/malformed finding/)
+  expect(result.findings[0].detail).toContain('parseRow throws on empty input')
 })
 
 test('defect:false on a finding that carries a severity does NOT leave the gate — the lens cannot self-clear a critical', async () => {
@@ -1252,16 +1255,15 @@ const DIRECTION_A = [
   },
 ]
 
-test('the text backstop routes all five direction-A texts out of the gate when the entry carries no severity', async () => {
+// Retired with the text backstop (round-3 N1): a severity-less entry gates whatever its wording.
+test('a severity-less finding with a satisfied-check wording gates — all five direction-A texts', async () => {
   for (const ex of DIRECTION_A) {
     const { result } = await run(
       lensOnly(),
       reports({ findings: [{ title: ex.title, detail: ex.detail, ownerTask: 'plan' }] }))
-    expect(result.dispositions, `${ex.id} should route`).toHaveLength(1)
-    expect(result.dispositions[0].routedFromFinding).toBe(true)
-    expect(result.findings, `${ex.id} must not reach the gate`).toEqual([])
-    expect(result.planFindings, `${ex.id} must reach no selector`).toEqual([])
-    expect(result.overallPass).toBe(true)
+    expect(result.dispositions, `${ex.id} must not route`).toEqual([])
+    expect(result.findings, `${ex.id} must gate as malformed`).toHaveLength(1)
+    expect(result.overallPass, ex.id).toBe(false)
   }
 })
 
@@ -1339,16 +1341,13 @@ test('dispositions are absent-as-empty, and the gate log stays silent, when no l
   expect(logs.join('\n')).not.toMatch(/disposition/)
 })
 
-test('the gate log names the routed count, so a mis-filing lens is visible behind a PASS', async () => {
+test('the gate log names the disposition count and no routed-out-of-findings clause', async () => {
   const { logs } = await run(
     lensOnly(),
-    reports({
-      findings: [{ title: 'E1/E4 determinism in the reviewed scripts — satisfied', detail: 'd', ownerTask: 'plan' }],
-      dispositions: [{ title: 'A2 holds', detail: 'e' }],
-    }))
+    reports({ dispositions: [{ title: 'A2 holds', detail: 'e' }] }))
   const gate = logs.find(l => l.startsWith('gate:')) || ''
-  expect(gate).toContain('2 positive disposition(s) reported, not gated')
-  expect(gate).toContain('1 routed out of findings')
+  expect(gate).toContain('1 positive disposition(s) reported, not gated')
+  expect(gate).not.toContain('routed out of findings')
 })
 
 test('a dead lens still reports dispositions as [] — an empty list is honest, not clean', async () => {

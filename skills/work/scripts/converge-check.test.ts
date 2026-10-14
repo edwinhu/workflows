@@ -262,7 +262,7 @@ test('--json emits the whole diagnosis and the verdict, and prints nothing else'
 test('the new scoreTable keys are tolerated and the sequence still reads', async () => {
   const extra = {
     lensMode: 'GREEN', routes: 0, carriedSubmitted: 3, carriedOpen: 1, planFindings: 0,
-    dispositions: 4, dispositionsRoutedFromFindings: 0, lensesRun: 1, lensesReported: 1,
+    dispositions: 4, lensesRun: 1, lensesReported: 1,
   }
   const r = await json(mkRun([
     { blocking: 3, scoreTableExtra: extra },
