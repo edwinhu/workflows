@@ -355,3 +355,13 @@ test('non-vacuity: the audit names exactly the legs that print no count line', (
   expect(fails.length).toBe(COUNTED_LEGS.length)
   for (const l of COUNTED_LEGS) expect(fails.join('\n')).toContain(`leg ${l} printed no count line`)
 })
+
+test('an unchanged committed target reports the diff-scoped authoring-lint as NOT CHECKED, not a clean 0', () => {
+  const t = target({ js: 'export const x = 1\n', tests: { 'a.test.ts': PASSING_TEST } })
+  const git = (...a: string[]) => spawnSync('git', ['-C', t, '-c', 'user.name=t', '-c', 'user.email=t@t', ...a], { encoding: 'utf8' })
+  git('init', '-q'); git('add', '-A'); git('commit', '-q', '-m', 'fixture')
+  const out = combined(run(harness(), ['--target', t]))
+  expect(out).toMatch(/^authoring-lint: NOT CHECKED — .*unchanged/m)
+  const dirty = target({ js: 'export const x = 1\n', tests: { 'a.test.ts': PASSING_TEST } })
+  expect(combined(run(harness(), ['--target', dirty]))).not.toContain('authoring-lint: NOT CHECKED')
+})
