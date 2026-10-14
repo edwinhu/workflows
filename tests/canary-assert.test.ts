@@ -6,7 +6,7 @@
  * Run: bun test tests/canary-assert.test.ts
  */
 import { afterAll, describe, expect, test, setDefaultTimeout } from 'bun:test'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -215,4 +215,32 @@ describe('canary suites and template steps', () => {
     expect(dirty.out).toContain('M notes.typ')
     expect(dirty.out).not.toContain('.work/')
   }, 170_000)
+})
+
+/**
+ * Wall time: the live runs are model-bound and the suites CPU-bound, so the run section dispatches both
+ * runs FIRST and executes the suites and template while they are in flight. Static order check over the
+ * script text; the wait deadline must be computed right after dispatch so the suites' minutes are not
+ * added to the cap.
+ */
+describe('canary run section order', () => {
+  const src = readFileSync(CANARY, 'utf8')
+  const run = src.slice(src.indexOf('# ------------------------------------------------------------------ run\n'))
+  const at = (needle: string) => { const i = run.indexOf(needle); expect(i).toBeGreaterThan(-1); return i }
+
+  test('diag and dev are dispatched before the suites and template run', () => {
+    const lastDispatch = Math.max(at('dispatch diag '), at('dispatch dev '))
+    expect(lastDispatch).toBeLessThan(at('step suites && run_suites'))
+    expect(lastDispatch).toBeLessThan(at('step template && run_template'))
+  })
+
+  test('the wait deadline is computed after dispatch and before the suites run', () => {
+    expect(at('deadline=$(')).toBeGreaterThan(at('dispatch dev '))
+    expect(at('deadline=$(')).toBeLessThan(at('step suites && run_suites'))
+  })
+
+  test('the suites finish before the wait loop and the dry-run summary', () => {
+    expect(at('step template && run_template')).toBeLessThan(at('if [ "$DRY" = 1 ]'))
+    expect(at('step template && run_template')).toBeLessThan(at('while [ ! -s "$rdir/loop.exit" ]'))
+  })
 })
