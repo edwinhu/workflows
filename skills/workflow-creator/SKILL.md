@@ -103,7 +103,8 @@ An item that flags the same shape twice is a lint rule nobody has written yet: w
 through the entry point, remove the item. The former `path-resolution` dimension is now P1/P2/P4/P6.
 
 **ONE mechanical entry point.** All of a workflow's mechanical checks are reachable from a single
-command whose exit code is the whole mechanical verdict —
+command whose exit code is the whole mechanical verdict (a leg with nothing in scope by
+construction prints `NOT CHECKED` and exits 0 — read the line, not only the code) —
 [`scripts/check.sh`](${CLAUDE_SKILL_DIR}/scripts/check.sh) here, one leg per check, none
 short-circuiting. A list of N commands drops one silently and nothing reports a check it never knew
 about; and work re-runs a claimed mechanical pass in a shell (`work-result.sh`), which is
@@ -778,10 +779,11 @@ passes either because the fix works or because it never exercised the defect, an
 identical. The failing run is the only thing that distinguishes them.
 
 ```sh
-cd <repo>/.claude/skills/workflow-creator/scripts
-cp wc-probe.ts /tmp/fixed.ts && git show HEAD:.claude/skills/workflow-creator/scripts/wc-probe.ts > wc-probe.ts
+cd <repo>/skills/workflow-creator/scripts
+fixed=$(mktemp) && old=$(mktemp) && git show HEAD:skills/workflow-creator/scripts/wc-probe.ts > "$old" \
+  && cp wc-probe.ts "$fixed" && cp "$old" wc-probe.ts
 bun test ./wc-probe.test.ts -t '<new test name>'   # READ THE COUNTS, not the exit code
-cp /tmp/fixed.ts wc-probe.ts
+cp "$fixed" wc-probe.ts; rm -f "$fixed" "$old"
 ```
 
 **Read `N fail`, never the exit status.** `bun test -t` exits **1 when the filter matches nothing**,
