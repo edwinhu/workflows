@@ -3,7 +3,7 @@
 
     uv run python3 writing_prose_gate_test.py
 
-Five cases, each exercising the gate end to end as a subprocess against a temporary
+Six cases, each exercising the gate end to end as a subprocess against a temporary
 project it builds itself (it never writes into `fixtures/`, which other checks are
 demonstrated against):
 
@@ -12,9 +12,11 @@ demonstrated against):
   3. a missing engine exits non-zero
   4. unparseable engine output exits non-zero
   5. a planned draft that is absent exits non-zero
+  6. a plan the section index cannot read (tampered hash) is a defect, not three clean drafts
 """
 from __future__ import annotations
 
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -22,13 +24,9 @@ from pathlib import Path
 
 GATE = Path(__file__).resolve().parent / "writing_prose_gate.py"
 
-PLAN = """# Fixture Article
-
-## Section Outputs
-| Section | Outline | Draft | Depends On |
-|---|---|---|---|
-| Introduction | outlines/Introduction.md | drafts/Introduction.md | - |
-"""
+FIXTURE = Path(__file__).resolve().parent.parent / "fixtures" / "clean"
+INTRO = "drafts/Introduction (Draft).md"
+CONCLUSION = "drafts/Conclusion (Draft).md"
 
 # `stands as a testament to` is `ai-tic·sev4·stands-as-testament`; prose-audit rates a
 # corpus-gated scored tic at sev>=4 as `hard`.
@@ -45,11 +43,10 @@ STUB_UNPARSEABLE = "import sys\nprint('this is not JSON')\nsys.exit(1)\n"
 
 
 def build_project(root: Path, draft: str) -> Path:
+    """The clean fixture (plan, receipt, four drafts) with its Introduction draft replaced."""
     project = root / "project"
-    (project / ".planning").mkdir(parents=True)
-    (project / "drafts").mkdir()
-    (project / ".planning" / "fixture-plan.md").write_text(PLAN)
-    (project / "drafts" / "Introduction.md").write_text(draft)
+    shutil.copytree(FIXTURE, project)
+    (project / INTRO).write_text(draft)
     return project
 
 
@@ -111,15 +108,25 @@ def main() -> int:
             f"exit={proc.returncode} defect={'GATE DEFECT' in proc.stdout}",
         )
 
-        # 5 — a planned draft that is absent fails the gate; the present one cannot carry it.
+        # 5 — a planned draft that is absent fails the gate; the present ones cannot carry it.
         gap_project = build_project(root / "gap", SOFT_DRAFT)
-        plan = gap_project / ".planning" / "fixture-plan.md"
-        plan.write_text(PLAN + "| Conclusion | outlines/Conclusion.md | drafts/Conclusion.md | Introduction |\n")
+        (gap_project / CONCLUSION).unlink()
         proc = run_gate(gap_project)
         check(
             "a planned draft that is absent exits non-zero",
-            proc.returncode != 0 and "drafts/Conclusion.md" in proc.stdout,
-            f"exit={proc.returncode} named={'drafts/Conclusion.md' in proc.stdout}",
+            proc.returncode != 0 and CONCLUSION in proc.stdout,
+            f"exit={proc.returncode} named={CONCLUSION in proc.stdout}",
+        )
+
+        # 6 — the draft set is the section index's: a plan it rejects yields no sections, which is a defect.
+        bad_project = build_project(root / "badplan", SOFT_DRAFT)
+        plan = bad_project / ".planning" / "writing-fixture-plan.md"
+        plan.write_text(plan.read_text().replace("# ", "# Tampered ", 1))
+        proc = run_gate(bad_project)
+        check(
+            "a plan the section index rejects exits non-zero",
+            proc.returncode != 0 and "GATE DEFECT" in proc.stdout,
+            f"exit={proc.returncode} defect={'GATE DEFECT' in proc.stdout}",
         )
 
     passed = sum(1 for _, ok, _ in results if ok)
