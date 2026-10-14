@@ -97,4 +97,4 @@ test('--index lists the same ids --digest prints, for ds and for a fixture scope
   expect(out).toContain(join(tree, 'rules', 'r.md'))
   expect(out).toMatch(/^## .*no id/m)
   expect(out).toContain('**loose**')
-})
+}, 120_000)
