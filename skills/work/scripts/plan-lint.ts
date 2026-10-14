@@ -294,6 +294,8 @@ const parseArgs = (j: any): Plan => ({
     ['verifierAgentType', j.verifierAgentType],
     ['lens.agentType', j.lens?.agentType],
     ...(j.tasks ?? []).map((t: any) => [`tasks[${t.id ?? ''}].agentType`, t.agentType]),
+    ...(Array.isArray(j.scoredChecks) ? j.scoredChecks : []).map((s: any) => [`scoredChecks[${s?.key ?? ''}].agentType`, s?.agentType]),
+    ...(Array.isArray(j.attempts) ? j.attempts : []).map((a: any) => [`attempts[${a?.key ?? ''}].agentType`, a?.agentType]),
   ]
     .filter(([, v]) => typeof v === 'string')
     .map(([field, value]) => ({ field, value })),
@@ -990,10 +992,14 @@ const lint = (p: Plan, agentExists: (name: string) => boolean = agentResolves): 
     if (/[<>|]/.test(value))
       add('agent-type-placeholder', 'critical', field,
         `${field} still holds a template placeholder, so it names no agent and the plan cannot dispatch; substitute one agent name`, value)
-  for (const t of p.tasks)
-    if (t.agentType && !/[<>|]/.test(t.agentType) && !BUILTIN_AGENTS.has(t.agentType) && !agentExists(t.agentType))
-      add('agent-type-unresolvable', 'critical', `task ${t.id} agentType`,
-        `agentType "${t.agentType}" names no agent file (built-in, plugin user-agents/agents, or ~/.claude/agents), so the harness would fall back to the default agent and drop the restriction`, t.agentType)
+  const resolvable = [
+    ...(p.agentFields ?? []).filter(x => !x.field.startsWith('tasks[')),
+    ...p.tasks.flatMap(t => (t.agentType ? [{ field: `tasks[${t.id}].agentType`, value: t.agentType }] : [])),
+  ]
+  for (const { field, value } of resolvable)
+    if (value && !/[<>|]/.test(value) && !BUILTIN_AGENTS.has(value) && !agentExists(value))
+      add('agent-type-unresolvable', 'critical', field,
+        `${field} "${value}" names no agent file (built-in, plugin user-agents/agents, or ~/.claude/agents), so the harness would fall back to the default agent and drop the restriction`, value)
 
   return f
 }
