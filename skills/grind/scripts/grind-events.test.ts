@@ -14,6 +14,7 @@
  */
 import { describe, expect, test, afterAll, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
+import { spawnAsync } from '../../../tests/helpers/async-spawn.ts'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, readdirSync, existsSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -54,7 +55,7 @@ function sandbox(prefix: string) {
 }
 
 function run(args: string[], env: Record<string, string>) {
-  return spawnSync('bash', [GRIND, 'run', '--runner', 'claude-code', ...args], { encoding: 'utf8', timeout: 60_000, env })
+  return spawnAsync('bash', [GRIND, 'run', '--runner', 'claude-code', ...args], { timeout: 60_000, env })
 }
 
 /** The only event file in the directory, and the pid its NAME carries — which is what both readers
@@ -108,11 +109,11 @@ function watchPass(eventDir: string): View[] {
 }
 
 describe('grind.sh — the loop files itself in the launching session\'s event stream', () => {
-  test('a run writes one event file under the launching session\'s directory, keyed on the loop pid', () => {
+  test('a run writes one event file under the launching session\'s directory, keyed on the loop pid', async () => {
     const { d, env, eventDir } = sandbox('grind-ev-basic')
     const { journal, args } = budgetRun(d)
 
-    const r = run(args, env)
+    const r = await run(args, env)
 
     expect(r.status).toBe(4)
     const ev = eventFile(eventDir)
@@ -122,25 +123,25 @@ describe('grind.sh — the loop files itself in the launching session\'s event s
     expect(ev.pid).toBe(start.pid)
   })
 
-  test('START names the loop, its cwd and its journal; DONE carries the terminal state and exit code', () => {
+  test('START names the loop, its cwd and its journal; DONE carries the terminal state and exit code', async () => {
     const { d, env, eventDir } = sandbox('grind-ev-lines')
     const { args } = budgetRun(d)
 
-    run(args, env)
+    await run(args, env)
 
     const { lines } = eventFile(eventDir)
     expect(lines[0]).toMatch(/^grind: START grind%20journal\.jsonl cwd=\S+ journal=\S+ $/)
     expect(lines.at(-1)).toBe('grind: DONE budget rc=4')
   })
 
-  test('values are percent-encoded exactly as farm.sh encodes them — one protocol, not two', () => {
+  test('values are percent-encoded exactly as farm.sh encodes them — one protocol, not two', async () => {
     // A journal path carrying a space or an `=` would otherwise spell a second field inside an
     // otherwise well-formed line, which is the case enc() exists for.
     const { d, env, eventDir } = sandbox('grind-ev-enc')
     const journal = join(d, 'a b=c.jsonl')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    run([
+    await run([
       '--journal', journal,
       '--check', script(d, 'check.sh', 'exit 1'),
       '--runner', script(d, 'runner.sh', 'exit 0'),
@@ -154,12 +155,12 @@ describe('grind.sh — the loop files itself in the launching session\'s event s
     expect(lines[0].split(' ').length).toBe(6)
   })
 
-  test('each iteration boundary is one line, and the volume stays at that', () => {
+  test('each iteration boundary is one line, and the volume stays at that', async () => {
     const { d, env, eventDir } = sandbox('grind-ev-iter')
     const { args } = budgetRun(d, [])
     args[args.indexOf('1', args.indexOf('--max-iters'))] = '3'
 
-    run(args, env)
+    await run(args, env)
 
     const { lines } = eventFile(eventDir)
     expect(lines.filter(l => l.startsWith('grind: ITER '))).toEqual([
@@ -169,12 +170,12 @@ describe('grind.sh — the loop files itself in the launching session\'s event s
     ])
   })
 
-  test('a shut gate announces on the --wait-alert cadence, not once per wait', () => {
+  test('a shut gate announces on the --wait-alert cadence, not once per wait', async () => {
     const { d, env, eventDir } = sandbox('grind-ev-wait')
     writeFileSync(join(d, 'prompt.txt'), 'work')
     const journal = join(d, 'journal.jsonl')
 
-    run([
+    await run([
       '--journal', journal,
       '--check', script(d, 'check.sh', 'exit 1'),
       '--gate', script(d, 'gate.sh', "printf 'grid busy: 3 jobs\\n'; exit 1"),
@@ -195,12 +196,12 @@ describe('grind.sh — the loop files itself in the launching session\'s event s
     ])
   })
 
-  test('every terminal state writes a DONE — stalled, budget and stopped are endings, not deaths', () => {
+  test('every terminal state writes a DONE — stalled, budget and stopped are endings, not deaths', async () => {
     const { d, env, eventDir } = sandbox('grind-ev-stalled')
     writeFileSync(join(d, 'prompt.txt'), 'work')
     const journal = join(d, 'journal.jsonl')
 
-    const r = run([
+    const r = await run([
       '--journal', journal,
       '--check', script(d, 'check.sh', 'exit 1'),
       '--runner', script(d, 'runner.sh', 'exit 0'),
@@ -212,12 +213,12 @@ describe('grind.sh — the loop files itself in the launching session\'s event s
     expect(eventFile(eventDir).lines.at(-1)).toBe('grind: DONE stalled rc=3')
   })
 
-  test('a green check ends with DONE done rc=0', () => {
+  test('a green check ends with DONE done rc=0', async () => {
     const { d, env, eventDir } = sandbox('grind-ev-done')
     writeFileSync(join(d, 'prompt.txt'), 'work')
     const journal = join(d, 'journal.jsonl')
 
-    const r = run([
+    const r = await run([
       '--journal', journal,
       '--check', script(d, 'check.sh', 'exit 0'),
       '--runner', script(d, 'runner.sh', 'exit 0'),
@@ -229,11 +230,11 @@ describe('grind.sh — the loop files itself in the launching session\'s event s
     expect(eventFile(eventDir).lines.at(-1)).toBe('grind: DONE done rc=0')
   })
 
-  test('--no-events writes nothing at all — not an empty file, not the directory', () => {
+  test('--no-events writes nothing at all — not an empty file, not the directory', async () => {
     const { d, env, eventDir } = sandbox('grind-ev-off')
     const { args } = budgetRun(d, ['--no-events'])
 
-    const r = run(args, env)
+    const r = await run(args, env)
 
     expect(r.status).toBe(4)
     expect(existsSync(eventDir)).toBe(false)
@@ -241,11 +242,11 @@ describe('grind.sh — the loop files itself in the launching session\'s event s
 })
 
 describe('grind.sh — the watcher mod reads the stream without being taught a second protocol', () => {
-  test('a finished loop is done with its terminal state, and is NOT reported gone', () => {
+  test('a finished loop is done with its terminal state, and is NOT reported gone', async () => {
     const { d, env, eventDir } = sandbox('grind-ev-monitor')
     const { args } = budgetRun(d)
 
-    run(args, env)
+    await run(args, env)
     const views = watchPass(eventDir)
 
     expect(views.length).toBe(1)
@@ -256,7 +257,7 @@ describe('grind.sh — the watcher mod reads the stream without being taught a s
     expect(views[0]!.done).toEqual({ status: 'budget', detail: 'budget rc=4' })
   }, 120_000)
 
-  test('a SIGKILLed loop leaves START with no DONE, and the watcher reports it GONE', () => {
+  test('a SIGKILLed loop leaves START with no DONE, and the watcher reports it GONE', async () => {
     const { d, env, eventDir } = sandbox('grind-ev-kill')
     writeFileSync(join(d, 'prompt.txt'), 'work')
     const journal = join(d, 'journal.jsonl')
@@ -310,7 +311,7 @@ describe('grind.sh — the watcher mod reads the stream without being taught a s
     expect(wakeText(views[0]!, Date.now())).toContain(`grind loop grind journal.jsonl is GONE: pid ${pid}`)
   }, 1_080_000)
 
-  test('a grind file in the directory leaves the farm run\'s classification unchanged', () => {
+  test('a grind file in the directory leaves the farm run\'s classification unchanged', async () => {
     // The watcher reads every file in the directory. A grind loop parked beside a farm dispatch must
     // not change how the farm run is read, nor be paired with its lines.
     const { d, env, eventDir } = sandbox('grind-ev-farm')
@@ -326,7 +327,7 @@ describe('grind.sh — the watcher mod reads the stream without being taught a s
     const farmOnly = (vs: View[]) => vs.filter(v => v.kind === 'farm').map(v => [v.label, v.state, v.done])
     const before = watchPass(eventDir)
     const { args } = budgetRun(d)
-    run(args, env)
+    await run(args, env)
     const after = watchPass(eventDir)
 
     expect(farmOnly(before)).toEqual([['review', 'done', { status: 'ok', detail: 'ok toolCalls=7' }]])
