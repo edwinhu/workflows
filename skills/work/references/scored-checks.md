@@ -111,25 +111,19 @@ average taken over a `null` item is exactly the vacuous number S4 forbids.
 A `penalties` key naming a count field the schema does not declare **throws**: it would contribute
 zero silently, and a penalty that never fires is indistinguishable from one that never applied.
 
-### Worked example — `slides-diagnose`
+### Worked example — the teaching `slides` SKILL.md block
 
-The teaching workflow `slides-diagnose.js` computes, per lecture:
-
-```js
-s1 = clamp0(10 - missing * 1.0 - collapsed * 0.5)   // coverage
-s2 = clamp0(10 - redundant * 0.5)                   // redundancy
-x1 = clamp0(10 - mismatches * 1.5)                  // fidelity
-composite = 0.5 * s1 + 0.3 * s2 + 0.2 * x1
-```
-
-Declared rather than coded, with every constant in the args:
+The `slides` workflow declares, per lecture, in its `scoredChecks` (teaching `skills/slides/SKILL.md`):
 
 ```js
 scoredChecks: [{
-  key: 'slides-audit',
-  items: lectures,
-  prompt: '…audit this lecture against its inventory and report counts…',
-  refs: [INVENTORY_RULES],
+  key: 'slides-audit', agentType: 'slide-auditor',
+  items: [   // one {text, inputs} item per lecture in scope; inputs feed the S8 fingerprint
+    {text: 'L1 | deck=<deck> | inventory=<inv> | source=<tm> | pptx=<pptx>',
+     inputs: ['<deck>', '<inv>', '<tm>', '<pptx>', '<master>']},
+  ],
+  prompt: '…audit ONE lecture against its inventory and report counts…',
+  refs: [VERIFICATION_CHECKS, SLIDES_CHECKS],
   schema: {
     type: 'object', additionalProperties: false,
     required: ['itemsChecked', 'missing', 'collapsed', 'redundant', 'mismatches'],
@@ -139,25 +133,27 @@ scoredChecks: [{
       collapsed:    {type: 'integer'},
       redundant:    {type: 'integer'},
       mismatches:   {type: 'integer'},
+      // evidence no score reads (covered, missingItems, …) rides in `passthrough`
     },
   },
   components: [
-    {name: 'coverage',   weight: 0.5, base: 10, penalties: {missing: 1.0, collapsed: 0.5}},  // s1
-    {name: 'redundancy', weight: 0.3, base: 10, penalties: {redundant: 0.5}},                // s2
-    {name: 'fidelity',   weight: 0.2, base: 10, penalties: {mismatches: 1.5}},               // x1
+    {name: 's1', weight: 0.5, base: 10, penalties: {missing: 1.0, collapsed: 0.5}},  // coverage
+    {name: 's2', weight: 0.3, base: 10, penalties: {redundant: 0.5}},                // redundancy
+    {name: 'x1', weight: 0.2, base: 10, penalties: {mismatches: 1.5}},               // fidelity
   ],
+  passthrough: ['covered', 'totalDQ', 'spotChecks', 'missingItems', 'collapsedItems', 'redundantItems', 'mismatchItems'],
 }]
 ```
 
-Weights are `0.5` / `0.3` / `0.2` on coverage / redundancy / fidelity — the same three components and
-the same weights as the hand-written gate. With an agent returning
+Weights are `0.5` / `0.3` / `0.2` on s1 / s2 / x1. On a later round S8 re-audits only the lectures whose
+`inputs` fingerprint changed or whose deck a task writes. With an agent returning
 `{itemsChecked: 41, missing: 1, collapsed: 2, redundant: 4, mismatches: 0}`:
 
 ```
-coverage   = max(0, 10 − 1·1.0 − 2·0.5) = 8
-redundancy = max(0, 10 − 4·0.5)         = 8
-fidelity   = max(0, 10 − 0·1.5)         = 10
-composite  = 0.5·8 + 0.3·8 + 0.2·10     = 8.4
+s1        = max(0, 10 − 1·1.0 − 2·0.5) = 8
+s2        = max(0, 10 − 4·0.5)         = 8
+x1        = max(0, 10 − 0·1.5)         = 10
+composite = 0.5·8 + 0.3·8 + 0.2·10     = 8.4
 ```
 
 The schema is **flat**: nested count objects are refused by S2, so `coverage.missing` becomes
@@ -184,8 +180,7 @@ When a returned `itemsChecked` is absent or `0`, that item's scores are `null` w
 **never `base`, never `0`**.
 
 A check that measured nothing scoring a perfect 10 by subtracting no penalties is the vacuous pass
-`work` exists to prevent; a `0` is equally wrong, reading as measured-and-terrible. Same discipline as
-`slides-diagnose.js`, which emits `'n/a'` for a dropped lecture.
+`work` exists to prevent; a `0` is equally wrong, reading as measured-and-terrible. The teaching `slides` block follows it: a lecture with `itemsChecked: 0` scores `null`.
 
 ## S5 — Fail closed on a dead agent, but do not gate
 
@@ -245,7 +240,7 @@ never gate.
 ## Why advisory — and why there is no threshold
 
 There is no threshold and no `blockBelow`, and adding one is not a configuration choice this
-parameter left open. From `slides-diagnose.js`, on the gate it deliberately does not build:
+parameter left open. The retired teaching `slides-diagnose.js` recorded, on the gate it deliberately did not build:
 
 > Redundancy is a MINOR style signal and the weighted `composite` is an advisory 0-10 LLM proxy;
 > neither blocks the gate. (Gating on a >= 9.5 composite chased redundancy minors — **the
