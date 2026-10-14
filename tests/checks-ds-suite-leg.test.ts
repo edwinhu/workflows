@@ -53,3 +53,30 @@ test('an explicit --no-test-cmd / --no-lint-cmd is a declared absence the legs r
   expect(r.stdout + r.stderr).toMatch(/leg tests exit=0 \(declined by plan\)/)
   expect(r.stdout + r.stderr).toMatch(/leg lint exit=0 \(declined by plan\)/)
 })
+
+// --- SKILL.md / rule-body contracts of the ds entry point ---
+import { readFileSync, readdirSync } from 'node:fs'
+const ROOT = join(import.meta.dir, '..')
+const SKILL = readFileSync(join(ROOT, 'skills', 'ds', 'SKILL.md'), 'utf8')
+
+test('the single ds entry takes test/lint as arguments: no passage says they become mechanicalChecks entries', () => {
+  expect(SKILL).not.toMatch(/become\s+`mechanicalChecks`\s+verbatim/)
+  expect(SKILL).toMatch(/`--test-cmd` \/ `--lint-cmd` arguments of the single `ds` mechanical entry/)
+})
+
+test('SKILL.md carries no narrated history (dated rewrite, incident percentage)', () => {
+  expect(SKILL).not.toMatch(/until 2026-09-15/)
+  expect(SKILL).not.toMatch(/43\.7%/)
+})
+
+test('a test command containing quotes and $ reaches check.sh intact through the SKILL.md quoting helper', () => {
+  const helper = /^const shq = .*$/m.exec(SKILL)?.[0]
+  expect(helper, 'SKILL.md defines no shq helper').toBeDefined()
+  expect(SKILL).toMatch(/--test-cmd \$\{shq\(testCmd\)\}/)
+  expect(SKILL).toMatch(/--lint-cmd \$\{shq\(lintCmd\)\}/)
+  const shq = new Function(`${helper}; return shq`)() as (s: string) => string
+  for (const cmd of ['pytest -k "fit"', 'echo $HOME && it\'s', 'pytest -k "a or b" -x']) {
+    const r = spawnSync('bash', ['-c', `printf '%s\\n' --test-cmd ${shq(cmd)}`], { encoding: 'utf8' })
+    expect(r.stdout).toBe(`--test-cmd\n${cmd}\n`)
+  }
+})
