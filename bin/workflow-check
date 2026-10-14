@@ -35,6 +35,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
+sys.path.insert(0, str(ROOT / "checks" / "_lib"))
+from changed import baseline, changed_files  # the run's scope: WORK_RUN_BASELINE (or --since), else HEAD
 KINDS = ("constraints", "rules")
 SEGMENT = re.compile(r"^[A-Za-z0-9][\w.-]*$")
 SKIP_PARTS = {".git", ".pixi", "node_modules", "__pycache__", ".venv", "venv", ".cache"}
@@ -151,15 +153,13 @@ def touched(cwd: Path, stamp: Path, log: Path, expects: list[str]) -> list[Path]
     return kept(found)
 
 
-def changed(project: Path) -> tuple[list[Path], bool]:
+def changed(project: Path, since: str | None = None) -> tuple[list[Path], bool]:
     """(the git tree's changed and untracked files, True); (every file, False) when `project` is not a git tree."""
     def git(*a):
         return subprocess.run(["git", "-C", str(project), *a], capture_output=True, text=True, check=False)
     if git("rev-parse", "--show-toplevel").returncode != 0:
         return kept(walk(project)), False
-    names = git("diff", "--name-only", "--relative", "HEAD", "--", ".").stdout.split("\n") + \
-        git("ls-files", "--others", "--exclude-standard").stdout.split("\n")
-    return kept(project / n for n in names if n), True
+    return kept(project / n for n in changed_files(project, since)), True
 
 
 def named(files: list[str]) -> list[Path]:
@@ -244,6 +244,8 @@ def main() -> int:
     ap.add_argument("--rules-only", action="store_true")
     ap.add_argument("--since")
     a = ap.parse_args()
+    if baseline(a.since):  # the constraints it runs scope their added lines by the same tree
+        os.environ["WORK_RUN_BASELINE"] = baseline(a.since)
     try:
         lay = resolve(a.workflow)
     except (ValueError, LookupError) as e:
@@ -271,7 +273,7 @@ def main() -> int:
     if not a.project_dir:
         files = touched(project, Path(a.stamp), Path(a.log), a.expect)
     elif a.files is None:
-        files, by_git = changed(project)
+        files, by_git = changed(project, a.since)
     else:
         files = named(a.files)
         if len(files) < len(a.files) and any(not Path(f).exists() for f in a.files):
