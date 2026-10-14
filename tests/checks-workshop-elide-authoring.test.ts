@@ -66,7 +66,7 @@ const read = (rel: string) => readFileSync(join(ROOT, rel), 'utf8')
 const TYPST_RULES = ['T-CALLOUT', 'T-HOLLOW', 'T-STORY', 'T-TAKEAWAY', 'T-TRANSITION']
 const ELIDE_RULES = ['EL-EMPH', 'EL-GAP', 'EL-HOLDING', 'EL-NOTE', 'EL-VOICE']
 const AUTHORING_RULES = ['A-DESC', 'A-FLAG', 'A-GATE', 'A-PAD', 'A-SOFT', 'A-STATE']
-const ELIDE_CHECKS = ['check-quotes', 'check-addendum', 'check-marks', 'check-stranded-headings'].map(n => `${n}.py`)
+const ELIDE_CHECKS = ['check-quotes', 'check-addendum', 'check-marks', 'check-stranded-headings', 'check-source-identity'].map(n => `${n}.py`)
 const T4_SKILLS = ['workshop', 'elide-case', 'workflow-creator', 'skill-creator', 'plugin-creator']
 
 test('workshop, elide and authoring rules and elide\'s checkers live under checks/<workflow>/ and the old locations hold none of them', () => {

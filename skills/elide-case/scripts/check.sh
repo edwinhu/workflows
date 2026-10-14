@@ -16,7 +16,7 @@
 #   marks     — check-marks.py: one elision mark per addendum, and every retained footnote
 #               renumbered 1..k per reading with each #super[N] marker paired to a body
 #   constraints — `bin/workflow-check elide --constraints-only`: every constraint under
-#               checks/elide/constraints/, where the five checkers above live, over the addendum
+#               checks/elide/constraints/, where the checkers above and check-source-identity.py live, over the addendum
 #               and the plan.
 #               The legs above carry this script's per-reading flags, which the constraint
 #               contract has no place for; this leg is what reaches a constraint added there.

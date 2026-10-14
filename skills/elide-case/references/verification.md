@@ -7,22 +7,22 @@ elide workflow's constraints, in `${CLAUDE_PLUGIN_ROOT}/checks/elide/constraints
 ```bash
 bash skills/elide-case/scripts/check.sh \
   --addendum addenda/NN-addendum.typ --pdf output/addenda/<compiled>.pdf \
-  --plan .claude/plans/<slug>.md --target 4-6
+  --plan .claude/plans/<slug>.md
 ```
 
-Both `--plan | --no-plan` and `--target | --no-target` are required decisions; naming neither
-flag of a pair is a FAIL that names the missing one.
+`--plan | --no-plan` is a required decision, and on a `--no-plan` run so is `--target | --no-target`;
+naming neither flag of a required pair is a FAIL that names the missing one.
 
 | leg | decides |
 |---|---|
 | `--plan` (`check-plan.py`) | the two CLARIFY interview answers and each reading's page target are recorded, and which readings are declared non-court |
 | `typst compile` | the addendum builds at all |
-| `check-quotes.py`, once per caption | every retained sentence is verbatim in `docs/*.txt` |
+| `check-quotes.py`, once per caption | every retained sentence is verbatim in the source docx (or the fallback `.txt`) |
 | `check-addendum.py --target` | arity, table truth against the PDF, per-reading length |
 | `widows.py`, `orphans.py`, `runts.py` --prose | the canonical stray-line checkers, from the typst plugin |
 | `check-stranded-headings.py` | a heading at a page foot with its text overleaf — this skill's own class |
 | `check-marks.py` | one elision mark per addendum; every retained `#super[N]` footnote renumbered 1..k per reading and paired with its body |
-| `bin/workflow-check elide --constraints-only` | every constraint under `checks/elide/constraints/`, on the constraint contract, over the addendum and the plan: the five checkers above with their own defaults (no length target), and any constraint added there |
+| `bin/workflow-check elide --constraints-only` | every constraint under `checks/elide/constraints/`, on the constraint contract, over the addendum and the plan: the five checkers above with their own defaults (no length target), `check-source-identity.py` (the mapped source contains the caption's reporter citation), and any constraint added there |
 
 **The widows leg is the one leg that is ON BY DEFAULT**, and that is its fail-closed form:
 naming no flag RUNS it, so its absence cannot read as a pass. `--no-widows` is the loud
@@ -31,7 +31,7 @@ reporter exactly while Typst sets them badly — and its fix vocabulary is layou
 
 The caption list for the quotes leg is **derived from the `.typ`**, never passed in. A caption
 list supplied as an argument lets a newly added reading go unchecked — the arity bug wearing a
-different costume. A reading whose caption resolves to no `docs/*.txt` is a FAILING leg naming
+different costume. A reading whose caption resolves to no source is a FAILING leg naming
 that reading, never a silent skip.
 
 ## Leg 0 — `--plan`, the interview
@@ -59,7 +59,7 @@ page numbers do not exist until Typst produces them.
 
 ## Leg 2 — `check-quotes.py`
 
-Proves every retained sentence is verbatim in the source `.txt`.
+Proves every retained sentence is verbatim in the source docx (or the fallback `.txt`).
 
 It strips the ECF running header, form feeds, standalone page numbers and inline footnote
 reference markers (`et al.,1`) from the source before matching — `pdftotext -layout`
@@ -99,7 +99,7 @@ match. The checker is reporting the truth about the PDF.
   Nothing about the compiled PDF looks wrong; it just lies.
 - **Page targets are missed in both directions and by a lot.** Hand runs on 2026-09-09
   produced an 11-page excerpt against a 4–6 target and a 2-page one. Eleven pages is not a
-  generous reading assignment, it is a reading nobody finishes. Always pass `--target`.
+  generous reading assignment, it is a reading nobody finishes. On a `--plan` run the plan supplies each reading's target and `--target` is ignored; `--target` is the `--no-plan` override only.
 - **The length check fails closed too.** Passing neither `--target MIN-MAX` nor
   `--no-target` is a FAIL naming the missing flag. `--no-target` is the explicit escape: arity
   and the table still run, the leg prints `LENGTH NOT CHECKED`, and its PASS line then reads
