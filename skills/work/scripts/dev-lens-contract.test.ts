@@ -185,8 +185,11 @@ describe('the args fence is copy-runnable', () => {
     expect(tasksBlock(now)).not.toMatch(/"<[^">]+>"/)
   })
 
-  test('SKILL.md states item 2 is the accepted scope gate', () => {
-    expect(now).toMatch(/item \(2\).*accepted scope gate/s)
+  test('path containment is the scope leg; lens item 2 judges intent only', () => {
+    expect(now).toContain('--plan ${planPath} --test-cmd')
+    expect(now).toMatch(/`scope` leg.*scope-check\.sh/s)
+    expect(now).toMatch(/\(2\) SCOPE intent — path containment is check\.sh's scope leg/)
+    expect(now).not.toMatch(/accepted scope gate/)
   })
 })
 

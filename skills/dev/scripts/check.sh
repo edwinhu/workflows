@@ -14,14 +14,17 @@
 # tests the runner reports; a runner whose summary is not recognised needs --test-count-re, a regex
 # whose groups are summed, or the leg cannot say it ran anything and is COULD-NOT-CHECK.
 #
-# Usage: check.sh --project-dir <dir> --test-cmd <cmd> [--test-count-re <re>] [--lint-cmd <cmd>] [--build-cmd <cmd>]
+# The scope leg (work/scripts/scope-check.sh) fails a changed path under no task's writablePaths or scaffoldPaths in --plan;
+# without --plan it reports "not declared".
+#
+# Usage: check.sh --project-dir <dir> --test-cmd <cmd> [--test-count-re <re>] [--lint-cmd <cmd>] [--build-cmd <cmd>] [--plan <plan.md>]
 # Exit 0 = every declared leg passed. 1 = some leg failed. 2 = refusal, or a leg that examined nothing.
 set -uo pipefail   # deliberately not -e: every leg must run so every leg reports.
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/../../work/scripts/leg-counts.sh"
 
-PROJ="."; TESTCMD=""; TESTRE=""; LINTCMD=""; BUILDCMD=""
+PROJ="."; TESTCMD=""; TESTRE=""; LINTCMD=""; BUILDCMD=""; PLAN=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --project-dir) PROJ="${2:-}"; shift 2 ;;
@@ -29,6 +32,7 @@ while [ $# -gt 0 ]; do
     --test-count-re) TESTRE="${2:-}"; shift 2 ;;
     --lint-cmd) LINTCMD="${2:-}"; shift 2 ;;
     --build-cmd) BUILDCMD="${2:-}"; shift 2 ;;
+    --plan) PLAN="${2:-}"; shift 2 ;;
     *) echo "check.sh: unknown argument $1" >&2; exit 2 ;;
   esac
 done
@@ -55,6 +59,14 @@ leg build "$BUILDCMD"
 # (`rule-check.ts --workflow dev`). Always runs, never counts as declared: it reads the diff, not a project command.
 legcount_run dev-gate python3 "$HERE/../../../bin/workflow-check" dev --project-dir "$PROJ" --constraints-only
 report dev-gate "$LEG_STATUS"
+
+if [ -n "$PLAN" ]; then
+  legcount_run scope bash "$HERE/../../work/scripts/scope-check.sh" --plan "$PLAN" --project-dir "$PROJ"
+  report scope "$LEG_STATUS"
+else
+  count_line scope 0 "path(s)" "— nothing in scope (not declared)" >&2
+  report scope 0 "not declared"
+fi
 
 # A run with no tests leg examined no suite, and must not read as a clean gate.
 if [ -z "$TESTCMD" ]; then
