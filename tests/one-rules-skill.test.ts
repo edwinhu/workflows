@@ -37,6 +37,22 @@ describe("user-agents name one rules skill", () => {
   }
 });
 
+// Per-agent exemption (wc-probe P19): metadata `rule-skills: none` needs a non-empty
+// `rule-skills-reason`. An exempt agent with neither skills: nor initialPrompt is outside the
+// roster above; one that carries either still has to satisfy the one-skill invariant there.
+describe("user-agents exempt from a rules skill say why", () => {
+  const exempt = readdirSync(join(ROOT, "user-agents"))
+    .filter((f) => f.endsWith(".md"))
+    .map((f) => ({ name: f.replace(/\.md$/, ""), data: fm(join(ROOT, "user-agents", f)) }))
+    .filter((a) => String((a.data.metadata as Record<string, unknown> | undefined)?.["rule-skills"] ?? "").trim() === "none");
+  for (const { name, data } of exempt) {
+    test(`${name}: rule-skills: none carries a rule-skills-reason`, () => {
+      const reason = (data.metadata as Record<string, unknown>)["rule-skills-reason"];
+      expect(typeof reason === "string" && reason.trim().length > 0).toBe(true);
+    });
+  }
+});
+
 describe("every rules skill is user-invocable", () => {
   const rules = readdirSync(join(ROOT, "skills")).filter((d) => /(^|-)rules($|-)/.test(d) && existsSync(join(ROOT, "skills", d, "SKILL.md")));
   for (const d of rules) {
