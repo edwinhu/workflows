@@ -64,7 +64,7 @@ Proves every retained sentence is verbatim in the source docx (or the fallback `
 It strips the ECF running header, form feeds, standalone page numbers and inline footnote
 reference markers (`et al.,1`) from the source before matching — `pdftotext -layout`
 interleaves that furniture mid-sentence, so a genuinely verbatim sentence reports as missing
-unless it is removed. Every hand-rolled grep check on the Telegram opinion produced the same
+unless it is removed. A hand-rolled grep check reports the same
 false positives from it. **Do not hand-grep quotations sentence by sentence.**
 
 `--caption` is required once the addendum has more than one reading. `--skip-editorial`

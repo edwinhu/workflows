@@ -234,4 +234,4 @@ Handle the result per `work`'s Phase 4 — including that a `red-not-red`, `red-
 | Task's real test would drive a browser or an app | assert on source or logs | the runtime references are refs on that task; a screenshot with no assertion is not evidence |
 | Adding a domain review dimension | declare a second lens beside this one | `work` takes ONE `lens`; add the dimension to its checklist, or make it a leg of `check.sh` when an exit code can decide it |
 | RED reported by the implementer | accept it | probes execute `redCommand` on both sides; the verdict is the JS's, never the doer's |
-| Something `work` does not obviously do | write a `dev/workflow.js` | ask which `work` parameter is missing — `redCommand` itself came from exactly this question |
+| Something `work` does not obviously do | write a `dev/workflow.js` | ask which `work` parameter is missing |
