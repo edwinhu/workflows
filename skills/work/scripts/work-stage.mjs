@@ -93,9 +93,14 @@ export function buildDigest(args, checks, gate, cwd) {
     const rc = args.ruleChecks
     const rec = (checks.rules || []).find(r => r && r.name === rc.name) || null
     const failed = (gate.digest && gate.digest.rulesThatFailed) || []
-    const output = [...failed, tail(rec ? rec.stdout || rec.output : 'work-checks.sh reported no rule-check record')].filter(Boolean).join('\n')
-    const row = { kind: 'rules', check: `rules:${rc.name}`, command: rc.cmd, exitCode: rec && Number.isInteger(rec.exitCode) ? rec.exitCode : -1, output, owner: failed.length ? ownerFromOutput(tasks, `${output}\n${rec ? rec.output || '' : ''}`) : null }
-    ;(failed.length ? failures : settled).push(row)
+    // Independent of the gate's list: a missing record, or a non-zero exit that carries no verdicts, is a rule leg
+    // that did not run to a verdict, never a settled check.
+    let verdictCount = 0
+    try { const j = JSON.parse(rec && rec.stdout); verdictCount = Array.isArray(j.verdicts) ? j.verdicts.length : 0 } catch {}
+    const legDead = !rec || !Number.isInteger(rec.exitCode) || (rec.exitCode !== 0 && verdictCount === 0)
+    const output = [...failed, tail(rec ? [rec.stdout, rec.output].filter(Boolean).join('\n') : 'work-checks.sh reported no rule-check record')].filter(Boolean).join('\n')
+    const row = { kind: 'rules', check: `rules:${rc.name}`, command: rc.cmd, exitCode: rec && Number.isInteger(rec.exitCode) ? rec.exitCode : -1, output, owner: failed.length || legDead ? ownerFromOutput(tasks, `${output}\n${rec ? rec.output || '' : ''}`) : null }
+    ;(failed.length || legDead ? failures : settled).push(row)
   }
   for (const c of (checks.suite && checks.suite.changed) || []) {
     failures.push({ kind: 'suite', check: `suite:${c.path}`, command: `sha256 ${c.path}`, exitCode: 1, output: `${c.before || 'absent'} -> ${c.after || 'absent'}`, owner: c.owner, severity: 'critical' })
