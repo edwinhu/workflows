@@ -345,8 +345,8 @@ Omitting it silently runs the user's codex request on claude.
   // (signposting, stacked hedges, vague attribution), and for a register its own rules ON TOP of them,
   // never instead. p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens ranked.
   // The workflow is substituted from Domain: when --style is: Domain: legal -> `writing/legal`,
-  // Domain: econ -> `writing/econ`, Domain: general -> bare `writing` (there is no `writing/general`).
-  // Left unsubstituted, or as `writing/general`, it fails loudly.
+  // Domain: econ -> `writing/econ`, Domain: general -> `writing/general` (the same set check.sh's constraints leg runs).
+  // Left unsubstituted, it fails loudly.
   ruleChecks: { name: "jev-writing-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --workflow writing/<domain>" },
 
   // One lens after verification and mechanical checks; its checklist covers all five dimensions.
@@ -379,7 +379,7 @@ Omitting it silently runs the user's codex request on claude.
     "The document is written by dispatched agents. Main chat writes nothing under the project's drafts/, outlines/ or references/, by any tool including Bash heredocs — the sole exception being writing_bench_compile.py, a compiler emitting the user's own accepted outline.",
     "In bench mode the outlines/ files are the USER'S accepted work. A drafting row writes drafts/<Section>.md only; a draft needing a beat the outline does not have is raised, never silently added.",
     "Standing writing doer authority — every drafting task loads ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md plus ${CLAUDE_PLUGIN_ROOT}/skills/writing-general/SKILL.md, which is the base register for every Domain, and — when the plan's Domain: field is legal or econ — ${CLAUDE_PLUGIN_ROOT}/skills/writing-legal/SKILL.md or ${CLAUDE_PLUGIN_ROOT}/skills/writing-econ/SKILL.md alongside it. The domain files carry only what is additional to the base and are useless without it; Domain: general loads the base alone. It loads the raw style guides — volokh-distilled.md, formatting.md, economical-writing-full.md, elements-of-style.md — NOT AT ALL for drafting, because the register is those guides already filtered through 14.29M sentences and it overrides three of their rules as register mistakes, so loading both puts the drafter under contradictory instructions.",
-    "Rules: writing-checks.md defines every check; writing-anchored-numbers.md, writing-citation-tense.md, writing-no-bold-lead.md, writing-outline-sync.md, writing-topic-sentences.md, writing-shortjournal.md and writing-stop-triggers.md are the prose constraints; claim-id-traceability.md and the six cite-fidelity-*.md files govern claim ids and sourcing. All under ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/.",
+    "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md defines every check; the executable prose constraints (anchored numbers, no bold lead, outline sync, topic sentences, shortjournal, style) are the scripts under `${CLAUDE_PLUGIN_ROOT}/checks/writing/constraints/` and the register's `constraints/`; the rule documents (writing-stop-triggers, writing-citation-tense, claim-id-traceability, the cite-fidelity-*) are the files under `${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/`.",
   ].join("\n"),
 
   // The plan's Domain: selects the register, so it selects the doer too — each of these three agents

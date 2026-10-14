@@ -69,6 +69,7 @@ print(int(d.get("citesChecked") or 0))' 2>/dev/null)"; then
       fi
     done
     count_line cite-claim "$n" "section(s)" "of ${#SECTIONS[@]}, $cites cite(s) checked" >&2
+    [ "$n" -eq "${#SECTIONS[@]}" ] || rc=1   # a section whose verdict is missing or unparseable was not checked
     return "$rc"
   }
   legcount_run cite-claim cite_claim_leg
