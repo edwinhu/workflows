@@ -89,7 +89,9 @@ its own `path:line:` findings, and could-not-check (exit 2) when it examined not
 reaches the gate's exit code with no help from the probe.
 
 **The probe emits `N/A`** for `CON`, with a machine-written reason naming those constraints. It runs
-none of them: the deck is judged against each constraint once, in the runner.
+none of them: the deck is judged against each constraint once, in the runner. It emits `FAIL` instead
+when `workflow-check workshop --list` cannot be read or reaches no constraint other than the probe
+itself (the typst plugin is absent), because a deck gate that judges against no typst constraint certifies nothing.
 
 **Evidence:** the same `workflow-check workshop` run — each workshop constraint's count line, and the
 output of any that failed. Like every `N/A`, `CON` is owed a disposition against that evidence, never
