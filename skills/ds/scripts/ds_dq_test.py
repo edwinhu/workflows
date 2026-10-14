@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from datetime import date
@@ -288,9 +289,14 @@ def test_check_sh_ds_dq_leg_passes_when_every_output_passes(clean: Path, tmp_pat
     plan = tmp_path / "plan.md"
     plan.write_text("# Plan\n\n## Data Outputs\n\n| Path | Grain | Key Columns | Required Window |\n"
                     "|---|---|---|---|\n" + rows + "\n## Next\n")
+    # The ds-dq-tests leg runs this very file: pointed at a trivial suite it cannot recurse into this
+    # test (130 s and a pytest-of-<user> leak in TMPDIR when it ran the real one).
+    stub = tmp_path / "stub_suite_test.py"
+    stub.write_text("def test_ok():\n    pass\n")
     proc = subprocess.run(
         ["bash", str(CHECK_SH), "--plan", str(plan), "--project-dir", str(tmp_path)],
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False,
+        env={**os.environ, "DS_DQ_SUITE": str(stub)},
     )
     lines = proc.stdout.splitlines()
     assert "leg ds-gate exit=0" in lines, proc.stdout[-3000:]
