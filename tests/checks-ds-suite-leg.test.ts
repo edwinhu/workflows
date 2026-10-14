@@ -76,7 +76,7 @@ test('a test command containing quotes and $ reaches check.sh intact through the
   expect(SKILL).toMatch(/--lint-cmd \$\{shq\(lintCmd\)\}/)
   const shq = new Function(`${helper}; return shq`)() as (s: string) => string
   for (const cmd of ['pytest -k "fit"', 'echo $HOME && it\'s', 'pytest -k "a or b" -x']) {
-    const r = spawnSync('bash', ['-c', `printf '%s\\n' --test-cmd ${shq(cmd)}`], { encoding: 'utf8' })
+    const r = spawnSync('bash', ['-c', `printf '%s\\n' --test-cmd ${shq(cmd)}`], { encoding: 'utf8', timeout: 20_000 })
     expect(r.stdout).toBe(`--test-cmd\n${cmd}\n`)
   }
 })
