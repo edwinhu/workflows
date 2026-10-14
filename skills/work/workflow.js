@@ -686,8 +686,9 @@ const VERIFY_SCHEMA = {
 // Measured 2026-09-27 over 3,137 findings: 2.8% were lenses filing "satisfied / no violation found /
 // no finding / recorded as a positive check" into `findings`, because `findings` was the only channel
 // there was, and ~47 of those non-defects gated runs. The bug was never the judgement — it was that
-// the schema had nowhere else to put a satisfied check. `dispositions` is that somewhere, and the
-// text backstops below still route a misfiled one rather than gating on a true statement.
+// the schema had nowhere else to put a satisfied check. `dispositions` is that somewhere. A satisfied
+// check filed under `findings` without a severity is malformed and gates (gate-laws L5): the gate never
+// reads a lens-authored flag or wording on a claim that carries no severity.
 //
 // The dispatched schema requires carried rulings and the active mode's channel; the other channel
 // must be empty. An omitted review channel is not evidence of a clean review.
@@ -722,9 +723,6 @@ const LENS_SCHEMA = {
           line: { type: 'number' },
           detail: { type: 'string' },
           ownerTask: { type: 'string', description: OWNER_TASK_DESC },
-          // The structural backstop. A lens that files a satisfied check here anyway can say so, and
-          // the JS routes it to dispositions instead of gating the run on a true statement.
-          defect: { type: 'boolean', description: 'Omit it (or set true) for a real defect. false moves an entry to dispositions only when the entry carries no severity; an entry with a severity always gates, so report a satisfied check in `dispositions`.' },
         },
       },
     },
@@ -756,57 +754,6 @@ const LENS_SCHEMA = {
     },
   },
 }
-// Backstop for a lens that used neither channel correctly: it filed a satisfied check as a finding
-// with no severity and did not set defect:false. Only a severity-less entry is read: a severity is a
-// defect claim, and wording does not withdraw it. Re-measured 2026-10-13 over 3,744 findings: all 11
-// matches predate the dispositions channel, 0 of ~900 filed since. These ROUTE, they never delete — a matched entry lands in
-// `dispositions`, which is reported in full, so a misrouted real defect is visible rather than gone.
-//
-// Deliberately narrow: both patterns require an EXPLICIT self-label ("— satisfied", "no violations
-// found", "MODEL-EVALUATED (… not a defect)", "no finding", "recorded as a positive check"), not a
-// cheerful-sounding title. Measured over all 3,137 findings in the 2026-09-27 corpus: 11 matches, all
-// 11 genuine positive dispositions on manual read, 0 false matches, and all 5 of the study's
-// hand-read direction-A examples caught. Widening these is a change that must be re-measured against
-// that corpus, not an obvious improvement.
-const DISPOSITION_TITLE_RE = new RegExp(
-  // "no <up-to-3-words> violation/finding/drift/... found|detected|identified|observed"
-  '(?:^|[\\s(\\[—:-])no\\s+(?:\\w+[\\s-]){0,3}(?:violation|finding|defect|issue|problem|drift|breach|regression|gap|discrepanc)\\w*\\b[^.]{0,60}?\\b(?:found|detected|identified|observed)\\b' +
-  // a trailing "— satisfied" / ": no finding" / "— disposition supported" verdict clause
-  '|(?:—|–|--|:)\\s*(?:satisfied|compliant|disposition\\s+supported|no\\s+finding|positive\\s+check|not\\s+a\\s+defect)\\s*$' +
-  '|\\b(?:evidence-based|positive)\\s+disposition\\b',
-  'i'
-)
-// A bare leading '^no finding|satisfied|compliant' alternative was tried and DROPPED: it matched the
-// real defect title "No finding is recorded for D19, but the chain does not close" while adding no
-// corpus hit. Removing it left the measurement unchanged at 11/3,137 with all five direction-A rows
-// still caught — a self-label needs its verdict clause ("— satisfied", "found"), not just the word.
-// Anchored to the OPENING of the detail (first ~200 chars), where a lens puts its self-label. Not
-// anywhere in the body: a real defect's detail may well argue "this is not a defect in X, but in Y".
-const DISPOSITION_DETAIL_HEAD_RE = new RegExp(
-  '^[\\s\\S]{0,200}?(?:MODEL-EVALUATED\\s*\\([^)]{0,120}?\\bnot\\s+a\\s+(?:real\\s+)?defect\\b' +
-  '|\\bno\\s+finding\\b|\\brecorded\\s+as\\s+a\\s+positive\\s+check\\b)',
-  'i'
-)
-// Why this entry is not a defect claim, or null if it is one. Only an entry with no severity can leave
-// the gate: a severity-bearing entry gates, so a lens cannot clear a critical it filed by flagging it
-// defect:false or by wording it as satisfied. The boolean the lens set wins over the text patterns.
-const dispositionReason = f => {
-  if (!f || typeof f !== 'object' || f.severity) return null
-  if (f.defect === false) return 'the lens set defect:false on this entry, which carries no severity — its own report says it is not a defect claim'
-  if (DISPOSITION_TITLE_RE.test(f.title || '')) return 'the title self-labels a satisfied check rather than a defect (a gate cannot block on a true statement, so this would have failed the run for nothing)'
-  if (DISPOSITION_DETAIL_HEAD_RE.test(f.detail || '')) return 'the detail opens by self-labelling this as not a defect (a gate cannot block on a true statement, so this would have failed the run for nothing)'
-  return null
-}
-// A severity-less finding routed out of the gate, carried in `dispositions` with the reason it was
-// routed. Nothing is dropped and nothing is rewritten.
-const routedDisposition = (f, why) => ({
-  title: f.title,
-  ...(f.file ? { file: f.file } : {}),
-  detail: f.detail,
-  lens: LENS_KEY,
-  routedFromFinding: true,
-  routedBecause: why,
-})
 const ATTEMPT_SCHEMA = {
   type: 'object',
   required: ['key', 'answer'],
@@ -912,7 +859,7 @@ const lensSpec = digest => {
       : 'Rules: modify nothing; cite files and lines; run read-only commands and quote their output as your evidence.',
     'Put a line number in the `line` field, NOT in `file`. A `file` of "src/a.go:135" matches no path in the plan\'s task table, so the fix loop cannot route it and re-runs everything.',
     'A FINDING IS A DEFECT CLAIM AND NOTHING ELSE. Every entry in `findings` must assert that something is WRONG. "I checked X and it holds", "constraint Y is satisfied", "no violation found", "recorded for completeness" — none of those are findings, and filing one as a finding fails the run on a true statement.',
-    'Put every satisfied check in `dispositions` instead. It is REPORTED to the user in full, so the obligation to show what you examined is discharged there, not by inflating the findings list. Every entry in `findings` carries a severity and gates; `defect: false` does not clear it.',
+    'Put every satisfied check in `dispositions` instead. It is REPORTED to the user in full, so the obligation to show what you examined is discharged there, not by inflating the findings list. Every entry in `findings` must carry a severity and gates; a `findings` entry with no severity is malformed and also gates, so a satisfied check filed there fails the run.',
   ].join('\n')
   return {
     label: LENS_KEY, kind: 'review', mode: digest.mode, prompt, schema,
@@ -933,23 +880,17 @@ const parseLens = review => {
     return { routes: [], findings: [], dispositions: [], carriedRulings: [], reported: false }
   }
 
-  // The two defect channels and the disposition channel, separated here. A lens's own `dispositions`
-  // are taken as given; a satisfied check it filed under `findings` is ROUTED there instead of
-  // gating. Nothing is deleted on either path — every entry is reported.
+  // A lens's own `dispositions` are taken as given and never gate. Every entry in `findings` is a
+  // defect claim: one without a valid severity is malformed and fails closed, whatever it says.
   const dispositions = []
   for (const d of review.dispositions || []) {
     if (d && d.title) dispositions.push({ title: d.title, ...(d.file ? { file: d.file } : {}), detail: d.detail, lens: LENS_KEY })
   }
   const findings = []
   for (const f of review.findings || []) {
-    const why = dispositionReason(f)
-    if (why && f.title) {
-      dispositions.push(routedDisposition(f, why))
-      continue
-    }
     // A malformed entry is not dropped: the lens did report something, and silence would certify it.
     if (!f || typeof f !== 'object' || !f.title || !SEVERITIES.has(f.severity)) {
-      findings.push(deadLensFinding('returned a malformed finding (no title, or a severity outside critical/major/minor): ' + JSON.stringify(f).slice(0, 200)))
+      findings.push(deadLensFinding('returned a malformed finding (no title, or no severity / a severity outside critical/major/minor — a satisfied check belongs in `dispositions`): ' + JSON.stringify(f).slice(0, 200)))
       continue
     }
     findings.push({ ...f, lens: LENS_KEY })
@@ -1397,7 +1338,7 @@ const lensFindings = [
   ...suiteFindings,
 ]
 const routes = lensResult.routes
-// Satisfied checks the lens reported, plus any it filed as a finding and the backstop routed out.
+// Satisfied checks the lens reported in its `dispositions` channel.
 // Deliberately absent from `findings` and from every conjunct in overallPass: a disposition asserts
 // nothing is wrong, so a gate must not block on it.
 const dispositionPool = lensResult.dispositions
@@ -1513,12 +1454,8 @@ const unroutableNote = unroutable.length
 const freezeNote = freezeFindingSet
   ? `; finding set FROZEN — ${carriedOpen.length} of ${carriedFindings.length} carried finding(s) still open, ${residue.length} fresh blocking finding(s) held as residue`
   : carriedFindings.length ? `; ${carriedOpen.length} of ${carriedFindings.length} carried finding(s) still open` : ''
-// Silent when the lens reported no satisfied check. When it did, the routed count is named: a
-// non-zero routed count is a lens whose prompt is not landing, and it would otherwise be invisible
-// behind a PASS.
-const routedCount = dispositionPool.filter(d => d.routedFromFinding).length
 const dispNote = dispositionPool.length
-  ? `; ${dispositionPool.length} positive disposition(s) reported, not gated${routedCount ? ` (${routedCount} routed out of findings — the lens filed a satisfied check as a defect)` : ''}`
+  ? `; ${dispositionPool.length} positive disposition(s) reported, not gated`
   : ''
 log(`gate: ${overallPass ? 'PASS' : 'FAIL'} — ${judged}${redNote}${mechNote}${lensNote}${planNote}${unroutableNote}${dispNote}${freezeNote}`)
 
@@ -1565,10 +1502,8 @@ return {
     planFindings: planFindings.length,
     // Satisfied checks — the lens's other channel. NOT part of any conjunct above: a disposition is
     // the absence of a defect, so gating on one would gate on a true statement, which is the leak this
-    // channel exists to close. `dispositionsRoutedFromFindings` is how many arrived as findings and
-    // were routed out; a non-zero value means the lens prompt is not landing.
+    // channel exists to close.
     dispositions: dispositionPool.length,
-    dispositionsRoutedFromFindings: routedCount,
     // Absent entirely without the flag, so the table is unchanged for every existing caller.
     ...(freezeFindingSet ? { residue: residue.length } : {}),
     // Absent entirely when no task declares redCommand, so the table is unchanged for every existing
@@ -1615,9 +1550,7 @@ return {
   // Blocking items whose owner is the PLAN, not a task: no task's writable paths can reach the fix, so
   // the plan must be amended and re-hashed. A selector channel of its own, because no task owns it.
   planFindings,
-  // The lens's other channel, REPORTED IN FULL and never gated. One routed out of `findings` also
-  // carries routedFromFinding/routedBecause, so a misrouted real defect is visible to
-  // the human reviewer rather than deleted. [] when the lens reported no satisfied check.
+  // The lens's other channel, REPORTED IN FULL and never gated. [] when the lens reported no satisfied check.
   dispositions: dispositionPool,
   // Absent entirely without freezeFindingSet. Blocking-severity lens findings raised THIS round that
   // the freeze excluded from the verdict: real, reported, and the input to a follow-up run's
