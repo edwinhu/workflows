@@ -4,8 +4,9 @@
 #   sandbox.sh hold CWD TMP          exec the holder (farm.sh backgrounds it, bwrap --info-fd on fd 3):
 #                                    / read-only; $HOME, CWD and the external target of every symlink
 #                                    in CWD (data/ -> external storage) as overlays whose writes land in
-#                                    a tmpfs; /tmp a fresh tmpfs with TMP bound through read-write; no
-#                                    network. Killing the holder discards every write.
+#                                    a tmpfs (so is the caller's $TMPDIR when it lies outside /tmp, e.g.
+#                                    /var/tmp/<name>, so a command given that path can write it); /tmp a
+#                                    fresh tmpfs with TMP bound through read-write; no network. Killing the holder discards every write.
 #   sandbox.sh '<command>'           CLAUDE_CODE_SHELL_PREFIX: run the command inside the holder
 #                                    FARM_SANDBOX_PID names. No live sandbox -> exit 126, nothing runs.
 #   sandbox.sh agent NAME FILE OUT   write the --agents JSON for NAME-sandboxed: FILE's prompt and
@@ -26,6 +27,12 @@ case "${1:-}" in
     cwd=$(realpath -e -- "$2") || die "hold: no such directory $2" 2
     tmp=$(realpath -e -- "$3") || die "hold: no such directory $3" 2
     declare -a lowers=("$HOME" "$cwd")
+    # The caller's own TMPDIR, when / is otherwise read-only there: commands that were handed that path
+    # (a suite run with TMPDIR=/var/tmp/<name>) write it. Its siblings stay read-only, and a bare system
+    # directory is never made writable.
+    if [ -n "${TMPDIR:-}" ] && ct=$(realpath -e -- "$TMPDIR" 2>/dev/null) && [ -d "$ct" ]; then
+      case "$ct" in /|/var|/var/tmp|/tmp|/tmp/*|/usr*|/etc*|/bin*|/sbin*|/lib*|/opt|/root|/home|/run*|/proc*|/sys*|/dev*) ;; *) lowers+=("$ct") ;; esac
+    fi
     # The outputs a reviewer verifies live where data/ points, outside the tree and outside git.
     while IFS= read -r -d '' l; do
       t=$(realpath -e -- "$l" 2>/dev/null) || continue

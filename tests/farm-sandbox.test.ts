@@ -9,7 +9,7 @@
  * argument, the whole invocation, ending `pwd -P >| $TMPDIR/claude-<pid>-cwd`.
  */
 import { test, expect, setDefaultTimeout } from 'bun:test'
-import { writeFileSync, readFileSync, mkdirSync, chmodSync, existsSync, symlinkSync, readdirSync } from 'node:fs'
+import { writeFileSync, readFileSync, mkdirSync, chmodSync, existsSync, symlinkSync, readdirSync, mkdtempSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
@@ -139,6 +139,32 @@ test.skipIf(!HAVE_BWRAP)('a sandbox row whose agent has no file (a built-in) kee
   expect(a).not.toContain('--agents')
   expect(a[a.indexOf('--disallowedTools') + 1].split(',')).toContain('Write')
 }, 120_000)
+
+// The caller's TMPDIR outside /tmp (the suite is run with TMPDIR=/var/tmp/<name>) is writable in the
+// sandbox, as an overlay: a command's write there succeeds and is discarded; a sibling is still read-only.
+test.skipIf(!HAVE_BWRAP)('the caller\'s TMPDIR under /var/tmp is a throwaway overlay in the sandbox; its siblings stay read-only', () => {
+  const base = mkdtempSync('/var/tmp/farm-sbx-test-')
+  try {
+    const tmpdir = join(base, 'mine'); const sibling = join(base, 'other')
+    mkdirSync(tmpdir); mkdirSync(sibling)
+    const cwd = mkTmp('farm-sandbox-cwd-')
+    const script = `
+      bash "$1" hold "$2" "$3" 3>"$4/info" 2>"$4/err" & hp=$!
+      for i in $(seq 100); do jq -e '."child-pid"' "$4/info" >/dev/null 2>&1 && break; sleep 0.1; done
+      export FARM_SANDBOX_PID=$(jq -r '."child-pid"' "$4/info")
+      bash "$1" 'mkdir -p "$5/run" && echo in > "$5/run/f" && echo own-write-ok'
+      bash "$1" 'cat "$5/run/f"'
+      bash "$1" 'mkdir "$6/x" 2>&1; echo sibling=$?'
+      kill $hp; wait $hp 2>/dev/null; true`
+    const res = spawnSync('bash', ['-c', script.replace(/"\$5"/g, `"${tmpdir}"`).replace(/\$5/g, tmpdir).replace(/"\$6"/g, `"${sibling}"`).replace(/\$6/g, sibling),
+      'x', SANDBOX, cwd, mkTmp('farm-sandbox-hold-'), base], { encoding: 'utf8', env: { ...process.env, TMPDIR: tmpdir }, timeout: 30_000 })
+    expect(res.stdout, res.stderr).toContain('own-write-ok')
+    expect(res.stdout).toMatch(/\nin\n/)
+    expect(res.stdout).toMatch(/Read-only file system[\s\S]*sibling=1/)
+    expect(existsSync(join(tmpdir, 'run'))).toBe(false)
+    expect(existsSync(join(sibling, 'x'))).toBe(false)
+  } finally { rmSync(base, { recursive: true, force: true }) }
+}, 60_000)
 
 test('a row without "sandbox" runs exactly as before: no prefix, no sandbox flags', () => {
   const r = rig()
