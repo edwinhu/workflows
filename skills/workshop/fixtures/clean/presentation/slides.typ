@@ -4,7 +4,9 @@
 // no package download; the vendored templates/theme.typ declares the same no-op.
 #let inv(..ids) = none
 
-#set page(paper: "presentation-16-9", margin: 2em)
+// Real decks carry the template's "n / N" footer (templates/theme.typ footer-c); the page-break
+// checkers recognise a slide deck by it, so the fixture numbers its pages the same way.
+#set page(paper: "presentation-16-9", margin: 2em, footer: context align(right)[#counter(page).display() / #counter(page).final().first()])
 #set text(size: 20pt)
 
 Ownership and payout: a fixture deck

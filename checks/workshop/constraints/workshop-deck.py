@@ -110,6 +110,8 @@ MODEL_EVALUATED = {
 # here rather than left to the reader: an unstated "short" gives two honest implementations two
 # different checks, and the laxest one never fires.
 WIDOW_MAX_TOKEN_CHARS = 12
+# A trailing "n / N" slide counter (templates/theme.typ footer-c), never body text.
+FOOTER_COUNTER = re.compile(r"\s*\b\d+\s*/\s*\d+\s*$")
 
 SPEC_COLUMNS = ["slide", "section", "takeaway", "bullets", "inventory", "visual", "notes"]
 INVENTORY_COLUMNS = ["id", "kind", "source"]
@@ -1125,6 +1127,12 @@ def check_wid(deck_src: Path, root: Path, spec_rows: list[dict] | None, spec_err
             while lines and not lines[-1].strip():
                 lines.pop()
             lines = [ln for ln in lines if ln.strip()]
+            # The template's "n / N" slide-number footer is chrome: a divider is still one line, and the
+            # last line the widow rule measures is the body's, not the counter.
+            if lines and FOOTER_COUNTER.search(lines[-1]):
+                lines[-1] = FOOTER_COUNTER.sub("", lines[-1])
+                if not lines[-1].strip():
+                    lines.pop()
             if not lines:
                 blank.append(idx)
                 continue
