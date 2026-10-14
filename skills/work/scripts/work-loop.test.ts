@@ -41,7 +41,7 @@ function verdict(pass: boolean, tasksThatFlagged: string[] = [], extra: Record<s
     findings: [],
     tasksThatFlagged,
     mechanicalThatFailed: [],
-    lensesThatFlagged: [],
+    lensesThatFlagged: [], rulesThatFailed: [],
     mechanical: [],
     ...extra,
   }
@@ -306,7 +306,7 @@ describe('a continuation round actually runs', () => {
       'cat > "$out" <<EOF',
       '{"overallPass": $pass, "verdict": "$verdict", "scoreTable": {"tasksTotal": 1},',
       ' "findings": [], "tasksThatFlagged": [$flagged], "mechanicalThatFailed": [],',
-      ' "lensesThatFlagged": [], "mechanical": []}',
+      ' "lensesThatFlagged": [], "rulesThatFailed": [], "mechanical": []}',
       'EOF',
     ].join('\n'))
     chmodSync(p, 0o755)
@@ -416,7 +416,7 @@ describe('a continuation round actually runs', () => {
       'printf "farm: START workflow out=%s expect=1\\n" "$out" > "$d/$$.ndjson"',
       'cat > "$out" <<EOF',
       '{"overallPass": true, "verdict": "PASS", "scoreTable": {"tasksTotal": 1}, "findings": [],',
-      ' "tasksThatFlagged": [], "mechanicalThatFailed": [], "lensesThatFlagged": [], "mechanical": []}',
+      ' "tasksThatFlagged": [], "mechanicalThatFailed": [], "lensesThatFlagged": [], "rulesThatFailed": [], "mechanical": []}',
       'EOF',
     ].join('\n'))
     chmodSync(p, 0o755)

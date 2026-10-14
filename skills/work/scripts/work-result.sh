@@ -35,14 +35,14 @@ CONTRACT='{
   "findings": "array",
   "tasksThatFlagged": "array",
   "mechanicalThatFailed": "array",
-  "lensesThatFlagged": "array"
+  "lensesThatFlagged": "array",
+  "rulesThatFailed": "array"
 }'
 OPTIONAL='{
   "red": "array",
   "residue": "array",
   "routes": "array",
   "planFindings": "array",
-  "rulesThatFailed": "array",
   "ruleVerdicts": "array"
 }'
 
@@ -116,7 +116,15 @@ PROBLEMS=$(printf '%s' "$SLURP" | jq -r --argjson contract "$CONTRACT" --argjson
             elif $claimed != ($r.residue | length)
             then "scoreTable.residue is \($claimed), the residue array holds \($r.residue | length)"
             else empty end
-        else empty end )
+        else empty end ),
+      # overallPass is the exit code, so it must agree with the selectors it was computed from
+      # (workflow.js: overallPass => all four empty); a PASS over a non-empty selector is refused. The reverse is not
+      # checked: a FAIL is the safe direction.
+      ( ( [ "tasksThatFlagged", "mechanicalThatFailed", "lensesThatFlagged", "rulesThatFailed" ]
+          | map(select(. as $k | ($r[$k] | type) == "array" and ($r[$k] | length) > 0)) ) as $nonempty
+        | if $r.overallPass == true and ($nonempty | length) > 0
+          then "overallPass is true but \($nonempty | join(", ")) is non-empty — a PASS needs all four selectors empty"
+          else empty end )
     end
 ')
 

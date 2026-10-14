@@ -390,7 +390,7 @@ describe('work-loop.sh records outcomes once per accepted round (hermetic)', () 
       `<!-- work:dispatch\n${JSON.stringify({ runId: 'loop-run', args }, null, 2)}\n-->\n`)
     writeFileSync(join(R, 'result.json'), JSON.stringify({
       overallPass: pass, verdict: pass ? 'PASS' : 'FAIL', scoreTable: { tasksTotal: 1 }, findings: [],
-      tasksThatFlagged: pass ? [] : ['T1'], mechanicalThatFailed: [], lensesThatFlagged: [], mechanical: [],
+      tasksThatFlagged: pass ? [] : ['T1'], mechanicalThatFailed: [], lensesThatFlagged: [], rulesThatFailed: [], mechanical: [],
       verified: [{ id: 'T1', pass, evidence: 'e', failures: pass ? [] : ['x'] }],
       red: [{ id: 'T1', command: 'bash scripts/check.sh', verdict: 'red-green' }],
     }, null, 2))

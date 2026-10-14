@@ -30,7 +30,7 @@ const result = (legs: string[], survivingBlocking = 0) => ({
   red: [{ id: 'r18-style', command: 'bash check.sh --course . --lecture 18', verdict: 'green-not-green',
           beforeExit: 1, afterExit: 1, afterOutput: CHECK_TAIL(legs) }],
   scoreTable: { survivingBlocking, survivingMinor: 0, lensFindings: survivingBlocking },
-  lensesThatFlagged: [],
+  lensesThatFlagged: [], rulesThatFailed: [],
   rulesThatFailed: ['N-UNCITED'],
   tasksThatFlagged: ['r18-style', 'r18-cover'],
   planFindings: [

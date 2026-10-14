@@ -29,6 +29,7 @@ const REQUIRED = [
   'tasksThatFlagged',
   'mechanicalThatFailed',
   'lensesThatFlagged',
+  'rulesThatFailed',
 ] as const
 
 /** A well-formed work gate return: every required key, every type correct. */
@@ -59,6 +60,7 @@ const valid = () => ({
   tasksThatFlagged: [],
   mechanicalThatFailed: [],
   lensesThatFlagged: [],
+  rulesThatFailed: [],
 })
 
 /** A well-formed FAIL return — non-empty selectors, still a valid shape. */
@@ -139,6 +141,19 @@ describe('work-result.sh accepts a well-formed gate return', () => {
     expect(out).toContain('tasksTotal')
     expect(out).toContain('mechanicalPassed')
     expect(out).toMatch(/tasksTotal\D+2/)
+  })
+
+  // overallPass is the exit code, so a transcription must agree with the selectors it was computed from.
+  for (const k of ['tasksThatFlagged', 'mechanicalThatFailed', 'lensesThatFlagged', 'rulesThatFailed']) {
+    test(`overallPass true beside a non-empty ${k} is REFUSED`, () => {
+      const r = runJson({ ...valid(), [k]: ['x'] })
+      expect(r.code).toBe(2)
+      expect(r.stderr).toContain(k)
+    })
+  }
+
+  test('a rule-only FAIL (rulesThatFailed the only selector) exits 1', () => {
+    expect(runJson({ ...valid(), overallPass: false, verdict: 'FAIL', rulesThatFailed: ['R1'] }).code).toBe(1)
   })
 
   test('work-result counts rulesThatFailed as a selector', () => {
