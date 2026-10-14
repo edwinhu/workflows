@@ -94,7 +94,7 @@ test('writing-outline-sync: a draft ## subsection the OUTLINE does not list fail
 
 // ---- Jev rules --------------------------------------------------------------------------------------------------
 
-const RULE_DIRS: [string, string, string][] = [
+const WRITING_SETS: [string, string, string][] = [
   ['writing', 'checks/writing/rules', 'W-'],
   ['writing', 'checks/writing/rules/uncalibrated', 'W-'],
   ['legal', 'checks/writing/legal/rules', 'L-'],
@@ -108,7 +108,7 @@ const evidence = (dir: string, file: string, root: string) => {
   return JSON.parse(r.stdout)
 }
 
-for (const [set, dir] of RULE_DIRS) {
+for (const [set, dir] of WRITING_SETS) {
   test(`${dir}: every rule reports an explicit zero on prose-free input and a non-zero examined count on its compliant fixture`, () => {
     const ids = ruleIds(dir)
     expect(ids.length, `rules in ${dir}`).toBeGreaterThan(1)
