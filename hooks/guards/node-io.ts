@@ -3,7 +3,7 @@
 import { appendFileSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
-import type { EnvName, GuardIO } from './core.ts'
+import { guardNow, type EnvName, type GuardIO } from './core.ts'
 
 export function nodeIO(): GuardIO {
   return {
@@ -12,7 +12,7 @@ export function nodeIO(): GuardIO {
     pluginRoot: resolve(import.meta.dir, '..', '..'),
     osTmpdir: tmpdir(),
     fallbackKey: String(process.ppid),
-    nowMs: () => Date.now(),
+    nowMs: () => guardNow(process.env.GUARD_NOW_MS),
     stat: async p => {
       try {
         const s = statSync(p)
