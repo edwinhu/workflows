@@ -6,13 +6,14 @@
 // that misses does not throw either -- the subprocess raised, a bare `except` swallowed it, and a
 // SEVERITY="hard" constraint was filed under `passed`. The split is now DERIVED (the layout minus what
 // the audit owns, hooks/lib/structural_constraints.py), so these tests run it rather than read a list.
-import { describe, expect, test } from "bun:test";
+import { describe, expect, setDefaultTimeout, test } from "bun:test";
 import { cpSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { useTmp } from "./helpers/tmp.ts";
 
 const REPO = dirname(import.meta.dir);
 const HELPER = join(REPO, "hooks", "lib", "structural_constraints.py");
+setDefaultTimeout(240_000); // bun's 5 s default killed the test while its python child was still starting under load
 const mkTmp = useTmp();
 
 function split(workflow: string, env: Record<string, string> = {}): { structural: string[]; owned: string[] } {

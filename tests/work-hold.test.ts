@@ -11,7 +11,7 @@ import {
   PASSED_GOAL_MET, PASSED_UNJUDGED, VERDICT_REACHED, unevaluatedNote, UNEVALUATED_AFTER_SECONDS,
 } from '../hooks/work-hold'
 import { useTmp } from './helpers/tmp.ts'
-import { freePort } from './helpers/free-port.ts'
+import { startPyStub } from './helpers/stub-server.ts'
 
 const mkTmp = useTmp()
 
@@ -873,7 +873,7 @@ describe('work-hold.sh and the auto-compact cap', () => {
 // The verb is what carries the difference, and cron-delete-guard.ts is what enforces it.
 
 /** The Decisions API's shape, out of process — spawnSync would block a server in this one. */
-function stubDecisions(port: number, noul: number) {
+function stubDecisions(noul: number) {
   const code = `
 import json, http.server, socketserver
 
@@ -883,10 +883,8 @@ class H(http.server.BaseHTTPRequestHandler):
         self.send_response(200); self.send_header("content-type","application/json")
         self.send_header("content-length", str(len(b))); self.end_headers(); self.wfile.write(b)
     def log_message(self, *a): pass
-socketserver.TCPServer.allow_reuse_address = True
-socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
 `
-  return Bun.spawn(['python3', '-c', code], { stdout: 'ignore', stderr: 'ignore' })
+  return startPyStub(code)
 }
 
 /** A pass-branch run with its own TMPDIR, a transcript for the judge, and the ledger it wrote. */
@@ -933,9 +931,8 @@ describe('the pass branch writes DISTINCT verbs, because a green check is not a 
   })
 
   test('a judge that says MET releases `passed-goal-met`, and only then is CronDelete offered', async () => {
-    const port = freePort()
-    const srv = stubDecisions(port, 0.96)
-    await Bun.sleep(700)
+    const srv = await stubDecisions(0.96)
+    const port = srv.port
     const r = passRun('verb-met', { goal: 'the estimate lands inside the published interval' }, {
       WORK_HOLD_JUDGE_TOKEN: 'test-token',
       WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
@@ -950,9 +947,8 @@ describe('the pass branch writes DISTINCT verbs, because a green check is not a 
   }, 120_000)
 
   test('a judge that says UNMET still blocks — the new verbs did not touch that path', async () => {
-    const port = freePort()
-    const srv = stubDecisions(port, 0.04)
-    await Bun.sleep(700)
+    const srv = await stubDecisions(0.04)
+    const port = srv.port
     const r = passRun('verb-unmet', { goal: 'every suite is green' }, {
       WORK_HOLD_JUDGE_TOKEN: 'test-token',
       WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
@@ -1081,9 +1077,8 @@ describe('the hook allows a stop while the watched run is IN FLIGHT', () => {
  */
 describe('a CHECK-LESS hold: Jev alone on the goal', () => {
   test('MET releases passed-goal-met, with no check named', async () => {
-    const port = freePort()
-    const srv = stubDecisions(port, 0.97)
-    await Bun.sleep(700)
+    const srv = await stubDecisions(0.97)
+    const port = srv.port
     const r = passRun('cl-met', { check: '', goal: 'every suite is green' }, {
       WORK_HOLD_JUDGE_TOKEN: 'test-token',
       WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,
@@ -1095,9 +1090,8 @@ describe('a CHECK-LESS hold: Jev alone on the goal', () => {
   }, 120_000)
 
   test('UNMET blocks, and the message names no check', async () => {
-    const port = freePort()
-    const srv = stubDecisions(port, 0.03)
-    await Bun.sleep(700)
+    const srv = await stubDecisions(0.03)
+    const port = srv.port
     const r = passRun('cl-unmet', { check: '', goal: 'every suite is green' }, {
       WORK_HOLD_JUDGE_TOKEN: 'test-token',
       WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${port}/decisions`,

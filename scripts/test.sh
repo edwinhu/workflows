@@ -34,6 +34,11 @@ export JEV_CALL_LOG=off JEV_CACHE=off
 # The python suites import modules that live in the tree; their bytecode would land in __pycache__/
 # beside them. Ignored by git, but still a write into the tree every run.
 export PYTHONDONTWRITEBYTECODE=1
+# pytest.ini carries `-n auto`, so every pytest a test spawns (checks-python-pins, the ds/workshop
+# check legs) would fork one xdist worker per core on top of bun's own per-core files: 32 files x 32
+# workers, load average 94-145 on 32 cores. xdist reads this variable for `auto`; a bare pytest
+# outside the suite is untouched. tests/pytest-workers-bounded.test.ts pins it.
+export PYTEST_XDIST_AUTO_NUM_WORKERS="${TEST_PYTEST_WORKERS:-2}" WORKFLOWS_SUITE=1
 
 # Skills with their own locked npm deps (cite-check, deep-research: @google/genai). At runtime bun
 # auto-installs them because no node_modules sits above the skill, but `bun test` never auto-installs,
