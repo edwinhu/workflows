@@ -22,3 +22,9 @@ test("the lens receives editing-marks.md, the basis of the verdicts it may rule 
   const lens = s.slice(s.indexOf("lens: {"))
   expect(lens.slice(0, 400)).toContain("references/editing-marks.md")
 })
+
+test("context-loaded files carry no dated incident narrative", () => {
+  for (const f of ["SKILL.md", "references/retrieval.md", "references/editing-marks.md"]) {
+    expect(read(f)).not.toMatch(/\b20\d\d-\d\d-\d\d\b/)
+  }
+})

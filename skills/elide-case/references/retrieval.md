@@ -8,15 +8,13 @@ procedure is a second source of truth nothing diffs.
 
 **The `.westlaw.docx` is the ONLY stored source, and its text is a projection read IN MEMORY.**
 Write no `.txt` beside it. The twins that used to sit there discarded the docx's italic runs, and
-on 2026-09-10 a 27-page casebook excerpt reached a compiled reader with every case name in roman
-because the cut read the projection and the projection had thrown the typography away. Persisting
-it is what made the loss invisible; `check-quotes.py` now takes the docx and projects it itself,
+a cut that reads such a projection sets every case name in roman, the typography thrown away. Persisting
+it makes the loss invisible; `check-quotes.py` now takes the docx and projects it itself,
 preserving italic runs as Typst emphasis.
 
 Westlaw's `XMLMIND_DOCX` export is **publisher-keyed text**, not OCR: the characters are the
-publisher's, star pagination is present, and there is nothing to adjudicate. Measured 2026-09-09:
-the Ripple excerpt reported 69 unverified sentences against OCR-corpus text and **0** against the
-Westlaw extraction; Mutual Benefits verified with 0 misses against both.
+publisher's, star pagination is present, and there is nothing to adjudicate. The Ripple excerpt
+reported 69 unverified sentences against OCR-corpus text and **0** against the Westlaw extraction.
 
 The user is credentialed. Use this route unless one of the two fallback conditions below holds.
 
@@ -56,8 +54,8 @@ provenance record and the tiebreak on any doubtful character.
 court PDF is positioned glyphs with no formatting layer, so `pdftotext` has no italic run to
 report and no later step can recover one. A reading cut from a `.txt` therefore has its emphasis
 verified by nothing, and `check.sh` prints a loud **ITALICS NOT CHECKED** line naming that reading
-rather than passing silently. It is not a failure — Westlaw does not carry every case, and on
-2026-09-10 an expired Westlaw session sent a retrieval down this path — but it is never to be read
+rather than passing silently. It is not a failure — Westlaw does not carry every case, and an
+expired Westlaw session also sends a retrieval down this path — but it is never to be read
 as a clean verdict on the excerpt's typography.
 
 **Gate:** both `docs/<name>.pdf` and `docs/<name>.txt` exist and are non-empty, and the
@@ -72,7 +70,7 @@ as a clean verdict on the excerpt's typography.
 
 **The verified path to a RECAP PDF is `https://storage.courtlistener.com/<filepath_local>`**,
 where `filepath_local` comes from a `type=r` search result's `recap_documents[].filepath_local`
-(verified 2026-09-09; it is what `fetch-opinion.sh` uses). Nothing else in the API response is
+(it is what `fetch-opinion.sh` uses). Nothing else in the API response is
 a usable PDF URL: the opinions-corpus `download_url` points at `bulk.resource.org`, which no
 longer resolves, and `/opinions/{id}/` is token-gated. When a fetch has to be done by hand,
 that is the two-step: search `type=r` for the docket and entry, read `filepath_local`, join it
@@ -83,7 +81,7 @@ to the bucket host.
 **A citation lookup that 404s or returns nothing means "not in the opinion corpus", not
 "the case does not exist."**
 
-Verified 2026-09-09: `682 F. Supp. 3d 308` (Ripple) is absent from the opinions corpus, and
+`682 F. Supp. 3d 308` (Ripple) is absent from the opinions corpus, and
 a bare search on that cite returns *Coinbase v. SEC* — a confident wrong answer. The answer
 is the RECAP docket-entry route.
 
@@ -94,8 +92,7 @@ the first Iron Law (`authenticity.md`).
 
 **`/api/rest/v4/opinions/{id}/` is token-gated.** Unauthenticated it answers
 `401 {"detail":"Authentication credentials were not provided."}`, and the search result's
-`download_url` points at `bulk.resource.org`, which no longer resolves (verified
-2026-09-09). The `search` endpoint itself needs no token.
+`download_url` points at `bulk.resource.org`, which no longer resolves. The `search` endpoint itself needs no token.
 
 So an opinions-corpus hit may be **findable and not fetchable**: set
 `COURTLISTENER_TOKEN`, or use RECAP. The token page sits behind a human-verification
@@ -149,7 +146,7 @@ either route, since the filter reacts to the subject matter, not the source.
 
 ### Reason 1 — a Route 2 source that needs OCR is a Gemini job
 
-Measured 2026-09-09 across the four retrieved sources in `docs/`:
+Across the four retrieved sources in `docs/`:
 
 | case | year | route | PDF? | OCR damage |
 |---|---|---|---|---|
@@ -195,7 +192,7 @@ lists every case in the volume with its `file_name`, which resolves the ordinal 
 cases share a starting page; `<reporter>/VolumesMetadata.json` lists volumes;
 `<reporter>/<volume>/cases/<file_name>.json` is the case record.
 
-**Switching text corpora fixes nothing.** Measured 2026-09-09: CAP's JSON text and
+**Switching text corpora fixes nothing.** CAP's JSON text and
 CourtListener's opinions-corpus text for 87 F.3d 536 carry byte-identical OCR damage —
 `is rue`, `Junctions`, `{per curiam)`, one each, zero clean forms. Both descend from the same
 Harvard scan (the case record says `provenance.source` Harvard, batch 2018). What CAP adds is
