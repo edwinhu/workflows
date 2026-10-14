@@ -361,6 +361,7 @@ export const KNOWN_EXEMPTION_RULES: readonly string[] = [
   'rule-checks',
   'serial-loop',
   'fixed-temp',
+  'leg-count',
 ]
 
 /**
@@ -3243,6 +3244,80 @@ export function checkLoaderEntryPoint(file: string, text: string, exemptions: re
 }
 
 /**
+ * P21 a gate leg may not pass having examined nothing.
+ *
+ * In a shell gate, every `report <leg> <status>` is preceded — since the previous `report` — by a count
+ * line for THAT leg: `legcount_run <leg>`, `legcount_cmd <leg>`, `count_line <leg>`, or a printed
+ * `<leg>: N … examined`. A literal-zero status (`report <leg> 0`) can only pass, so it additionally needs
+ * a `count_line <leg> 0 <unit> "<reason>"` with a non-empty reason (the by-construction "nothing in
+ * scope"). A literal non-zero status cannot pass and needs nothing. Static over the source; nothing runs.
+ * A probe that prints its own scanned count carries `ignore-leg-count` and says so in a comment.
+ */
+export function checkLegCounts(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
+  if (!/\.(sh|bash)$/i.test(file)) return []
+  const findings: Finding[] = []
+  const unq = (t: string) => t.replace(/^["']|["']$/g, '')
+  const lines = text.split('\n')
+  const CALL = /(?:^|[;&|{(]\s*|\b(?:then|else|do)\s+)report\s+("[^"]*"|'[^']*'|[A-Za-z_$][^\s=;]*)\s+("[^"]*"|'[^']*'|[0-9$][^\s;]*)/g
+  // A helper defined in this file whose body prints a count_line is a count emitter too.
+  const emitters = ['legcount_run', 'legcount_cmd', 'count_line']
+  for (let i = 0; i < lines.length; i++) {
+    const d = /^([A-Za-z_][\w-]*)\(\)\s*\{/.exec(lines[i])
+    if (!d || d[1] === 'report') continue
+    for (let j = i; j < lines.length && (j === i || !/^\}/.test(lines[j - 1])); j++) {
+      if (/\bcount_line\b/.test(lines[j]) && !lines[j].trim().startsWith('#')) {
+        emitters.push(d[1])
+        break
+      }
+    }
+  }
+  let from = 0
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim()
+    if (line.startsWith('#')) continue
+    let prevEnd = 0
+    for (const m of line.matchAll(CALL)) {
+    const leg = unq(m[1])
+    const status = unq(m[2])
+    const window = [...lines.slice(from, i).filter(l => !l.trim().startsWith('#')), line.slice(prevEnd, m.index + m[0].length)]
+    from = i + 1
+    prevEnd = m.index + m[0].length
+    if (/^[1-9][0-9]*$/.test(status)) continue
+    if (isExemptAt(exemptions, 'leg-count', i + 1)) continue
+    const esc = leg.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const q = `["']?`
+    const counted = new RegExp(`\\b(?:${emitters.join('|')})\\s+${q}${esc}${q}(?:\\s|$)|${esc}:[^\\n]*examined`)
+    if (status === '0') {
+      const zero = new RegExp(`\\bcount_line\\s+${q}${esc}${q}\\s+0\\s+("[^"]+"|'[^']+'|\\S+)\\s+("[^"]+"|'[^']+')`)
+      if (!window.some(l => zero.test(l))) {
+        findings.push({
+          rule: 'P21 leg count line',
+          severity: 'major',
+          file,
+          line: i + 1,
+          detail: `\`report ${leg} 0\` is a hard-coded zero status and no \`count_line ${leg} 0 <unit> "<reason>"\` states why nothing was in scope`,
+          remedy: 'print `count_line <leg> 0 <unit> "— nothing in scope (<by-construction reason>)"` immediately before it, or compute the status from what ran',
+        })
+      }
+      continue
+    }
+    if (!window.some(l => counted.test(l))) {
+      findings.push({
+        rule: 'P21 leg count line',
+        severity: 'major',
+        file,
+        line: i + 1,
+        detail: `\`report ${leg} ${m[2]}\` has no count line for \`${leg}\` since the previous report, so the leg can pass having examined nothing`,
+        remedy: 'run it through `legcount_run <leg>`, or print `count_line <leg> <n> <unit> "<why n may be 0>"` first; a probe that prints its own `N … examined` declares `# <!-- wc-probe: ignore-leg-count -->` with a reason',
+      })
+      continue
+    }
+    }
+  }
+  return findings
+}
+
+/**
  * P10 one entry point — a work args object declares ONE `mechanicalChecks` entry.
  *
  * A list of N commands loses one silently, and nothing reports a check it never knew about; one
@@ -4494,6 +4569,7 @@ export function runProbe(
     // resolve was gate-CLEAN.
     findings.push(...checkPathResolution(file, text, ctx, fileExemptions, unresolvedRefs))
     findings.push(...checkFixedTempPath(file, text, fileExemptions))
+    findings.push(...checkLegCounts(file, text, fileExemptions))
 
     // Dispatch through the SHARED classifier, so the gate and the write-time hook cannot disagree
     // about which rules a file is subject to.
