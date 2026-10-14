@@ -13,21 +13,23 @@ const refs = [...lens.matchAll(/\$\{typstRules\}\/([\w-]+\.md)/g)].map((m) => m[
 
 function typstRoot(): string {
   try {
-    const r = execFileSync('typst-plugin-root', [], { encoding: 'utf8', timeout: 120_000 }).trim()
+    const r = execFileSync('typst-plugin-root', [], { encoding: 'utf8', timeout: 3_000 }).trim()
     if (r) return r
   } catch { /* fall through */ }
   return join(process.env.HOME!, '.claude/skills/typst')
 }
 
 test('the lens refs carry every rule body the deck-rules index lists', () => {
-  const index = execFileSync('typst-rules', ['slides,notes,workshop'], { encoding: 'utf8' })
+  const index = execFileSync('typst-rules', ['slides,notes,workshop'], { encoding: 'utf8', timeout: 3_000 })
   const names = [...index.matchAll(/`([^`]+\.md)`/g)].map((m) => basename(m[1]))
   expect(names.length).toBeGreaterThan(0)
   for (const n of names) expect(refs).toContain(n)
 })
 
+const TYPST = typstRoot()
+
 test('every lens ref resolves to a corpus file', () => {
-  for (const f of refs) expect(existsSync(join(typstRoot(), 'rules', f))).toBe(true)
+  for (const f of refs) expect(existsSync(join(TYPST, 'rules', f))).toBe(true)
 })
 
 test('item 6 grades against the refs and draws MODULES CONSIDERED from them', () => {
@@ -39,7 +41,7 @@ test('item 6 grades against the refs and draws MODULES CONSIDERED from them', ()
 test('the reviewer example names only real modules, marked illustrative', () => {
   const line = reviewer.match(/MODULES CONSIDERED: (.*)/)![1]
   const ex = line.split(/\s+\(/)[0].split(/,\s*/).map((s) => s.replace(/\W+$/, '').trim()).filter(Boolean)
-  for (const n of ex) expect(existsSync(join(typstRoot(), 'rules', `${n}.md`))).toBe(true)
+  for (const n of ex) expect(existsSync(join(TYPST, 'rules', `${n}.md`))).toBe(true)
   expect(reviewer).toMatch(/illustrative/i)
 })
 
