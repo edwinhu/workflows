@@ -623,18 +623,22 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+POLARS_PIN = "2.0.0"  # check.sh reads this line for its uv --with, so both resolve the same polars
+
+
 def ensure_polars(argv: list[str]) -> None:
-    """polars, or this run re-executed under `uv run --with polars`: the runner calls every constraint
+    """polars, or this run re-executed under `uv run --with polars==POLARS_PIN`: the runner calls every constraint
     with one python, so a constraint supplies its own dependencies."""
     try:
-        import polars  # noqa: F401
+        import polars
+        print(f"ds-dq: polars {polars.__version__}", file=sys.stderr)
         return
     except ImportError:
         pass
     if os.environ.get("DS_DQ_UV") or not shutil.which("uv"):
         raise RuntimeError("polars is not importable and uv cannot supply it")
     os.environ["DS_DQ_UV"] = "1"
-    os.execvp("uv", ["uv", "run", "-q", "--with", "polars", "python3", os.path.abspath(__file__), *argv])
+    os.execvp("uv", ["uv", "run", "-q", "--with", f"polars=={POLARS_PIN}", "python3", os.path.abspath(__file__), *argv])
 
 
 def main(argv: list[str] | None = None) -> int:

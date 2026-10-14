@@ -80,3 +80,16 @@ test('a test command containing quotes and $ reaches check.sh intact through the
     expect(r.stdout).toBe(`--test-cmd\n${cmd}\n`)
   }
 })
+
+test('polars is pinned identically in check.sh and ds-dq.py, and the version is printed', () => {
+  const dq = readFileSync(join(ROOT, 'checks', 'ds', 'constraints', 'ds-dq.py'), 'utf8')
+  const pin = /^POLARS_PIN = "(\d+\.\d+\.\d+)"/m.exec(dq)?.[1]
+  expect(pin, 'ds-dq.py defines no POLARS_PIN').toBeDefined()
+  expect(dq).toContain('"--with", f"polars=={POLARS_PIN}"')
+  expect(dq).toMatch(/polars \{polars\.__version__\}/)
+  const sh = readFileSync(CHECK, 'utf8')
+  expect(sh).toContain('polars==$POLARS_PIN')
+  expect(sh).toMatch(/POLARS_PIN="\$\(sed .*ds-dq\.py/)
+  const r = run()
+  expect(r.stderr).toContain(`ds-dq-tests: polars==${pin}`)
+})
