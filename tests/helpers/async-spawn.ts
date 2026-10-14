@@ -24,7 +24,7 @@ export async function spawnAsync(
   const timer = setTimeout(() => {
     // A timeout is a hang nobody can reproduce on demand; the live process tree is the only evidence
     // of whether the child is running, blocked or gone, so it goes into stderr before the kill.
-    const rows = Bun.spawnSync(['ps', '-eo', 'pid,ppid,stat,etimes,pcpu,args'], { stdout: 'pipe' }).stdout.toString().split('\n').slice(1)
+    const rows = Bun.spawnSync(['ps', '-eo', 'pid,ppid,stat,etimes,pcpu,args'], { stdout: 'pipe', timeout: 10_000 }).stdout.toString().split('\n').slice(1)
     const kin = new Set([proc.pid])
     for (let grew = true; grew;) {
       grew = false
