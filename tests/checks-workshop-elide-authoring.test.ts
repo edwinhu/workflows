@@ -1,7 +1,8 @@
 import { expect, setDefaultTimeout, test } from 'bun:test'
-import { chmodSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { chmodSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { useTmp } from './helpers/tmp.ts'
 
 setDefaultTimeout(120_000)
@@ -147,4 +148,24 @@ test('the example dispatches of the skills this task owns name their workflow in
     expect(lines.some(l => re.test(l)), `${skill}: a dispatch line names its workflow`).toBe(true)
     for (const l of lines) expect(l, `${skill}: no rules directory`).not.toContain('constraints/jev')
   }
+})
+
+// The shipped clean fixture must pass its own gate. The deck probe imports pypdf, which its
+// `uv run --with pypdf` shebang supplies; the runner must honour that, not run it on a bare python.
+// The probe compiles the deck into the project dir, so it runs on a COPY: the tracked PDFs are pinned.
+test('workflow-check workshop on a temp copy of fixtures/clean exits 0, and the tracked fixture is not touched', () => {
+  const fixture = join(ROOT, 'skills', 'workshop', 'fixtures', 'clean')
+  const digest = () => {
+    const h = createHash('sha256')
+    const walk = (d: string) => { for (const f of readdirSync(d).sort()) { const p = join(d, f); statSync(p).isDirectory() ? walk(p) : h.update(p).update(readFileSync(p)) } }
+    walk(fixture)
+    return h.digest('hex')
+  }
+  const before = digest()
+  const proj = join(mkTmp('wfc-clean-'), 'proj')
+  cpSync(fixture, proj, { recursive: true })
+  const r = wcheck(['workshop', '--project-dir', proj, '--plan', join(proj, 'plan.md'), '--constraints-only'])
+  expect(r.status, r.stdout + r.stderr).toBe(0)
+  expect(first(r.stdout)).toMatch(/^workshop-gate: 2 check\(s\) examined/)
+  expect(digest(), 'a check wrote into the tracked fixture tree').toBe(before)
 })
