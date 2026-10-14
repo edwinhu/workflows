@@ -1243,6 +1243,8 @@ const ruleVerdicts = []
 let ruleScope = null
 // A failed rule's candidate spans in the digest: enough to route and start a repair, not the whole list.
 const RULE_SPANS_SHOWN = 12
+// The exit and stderr of a rule leg that failed as a leg (died, unparseable, exited non-zero with nothing scored).
+let ruleLegDetail = ''
 if (ruleChecks) {
   let parsed = null
   let parseFailed = false
@@ -1268,7 +1270,13 @@ if (ruleChecks) {
     }
   }
 
-  if (parseFailed) {
+  const ruleExit = asExit(ruleChecksOut)
+  // A non-zero exit that scored nothing is a runner that failed, not a runner that found nothing to flag,
+  // whatever scope line it printed; a non-zero exit WITH verdicts is the normal blocking shape.
+  const deadLeg = !parseFailed && parsed.verdicts.length === 0 && ruleExit !== 0
+  if (parseFailed || deadLeg) {
+    const err = String((ruleChecksOut && ruleChecksOut.output) || '').trim().split('\n').slice(-6).join(' | ')
+    ruleLegDetail = `exit ${ruleExit}${err ? `: ${err}` : ''}`
     rulesThatFailed.push(`ruleChecks:${ruleChecks.name}`)
   } else {
     if (parsed.verdicts.length === 0 && !(typeof parsed.scope === 'string' && parsed.scope.trim())) {
@@ -1311,7 +1319,7 @@ const digest = {
   mechanicalFailures: mechanicalThatFailed,
   suiteChanges: suiteFindings.map(f => `${f.file} (owner ${f.ownerTask}): ${f.detail}`),
   rulesThatFailed: rulesThatFailed.map(id => {
-    if (id.startsWith('ruleChecks:')) return `${id} (check died, unparseable, or unavailable is non-empty)`
+    if (id.startsWith('ruleChecks:')) return `${id} (check died, unparseable, scored nothing on a non-zero exit, or unavailable is non-empty${ruleLegDetail ? `; ${ruleLegDetail}` : ''})`
     const v = ruleVerdicts.find(x => x.rule === id)
     const at = v.spans ? ` at ${v.spans.slice(0, RULE_SPANS_SHOWN).join(', ')}${v.spans.length > RULE_SPANS_SHOWN ? ` (+${v.spans.length - RULE_SPANS_SHOWN} more)` : ''}` : ''
     return `${v.rule}: p=${v.p} — ${v.verdict}${at}`
