@@ -18,11 +18,12 @@ WHY THIS EXISTS
 WHAT IT DELIBERATELY DOES NOT DO
     CON is not this probe's: the typst plugin's workshop constraints settle it, each one run by
     `bin/workflow-check workshop` beside this probe and reporting its own count line. CON is
-    emitted as N/A naming them, so the deck is judged against them once.
+    emitted as N/A naming them, so the deck is judged against them once -- and FAILs when no
+    constraint other than this probe is reachable.
 
     FID, CONV and VIS are judgements. They are enumerated with the literal status
-    MODEL-EVALUATED -- never PASS -- and settled by the deck-fidelity, deck-convention and
-    visual-integrity lenses. ENUM asserts both that a line was emitted for every matrix ID *and*
+    MODEL-EVALUATED -- never PASS -- and settled by the workshop-reviewer
+    lens (checklist items 3-5). ENUM asserts both that a line was emitted for every matrix ID *and*
     that those three carry MODEL-EVALUATED status, so a later edit cannot route a judgement
     through a computed status unnoticed.
 
@@ -569,7 +570,22 @@ def check_cmp(deck_src: Path, notes_src: Path, deck_pdf: Path, notes_pdf: Path, 
 
 
 def check_con() -> dict:
-    """The typst workshop constraints settle CON, each a member bin/workflow-check runs beside this probe."""
+    """The typst workshop constraints settle CON; FAIL when none is reachable beside this probe."""
+    runner = Path(__file__).resolve().parents[3] / "bin" / "workflow-check"
+    try:
+        proc = subprocess.run([sys.executable, str(runner), "workshop", "--list"],
+                              capture_output=True, text=True, timeout=60, check=False)
+        listed = json.loads(proc.stdout)["constraints"] if proc.returncode == 0 else None
+    except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
+        listed = None
+    if listed is None:
+        return result("FAIL", "could not list the workshop constraints `workflow-check workshop` reaches, "
+                      "so no typst workshop constraint is known to have judged the deck.")
+    own = Path(__file__).resolve()
+    if not [c for c in listed if Path(c).resolve() != own]:
+        return result("FAIL", "no typst workshop constraint is reachable beside this probe (typst plugin "
+                      "absent from ~/.claude/skills or WORKFLOW_CHECKS_PATH), so nothing judged the deck's "
+                      "Typst conventions.")
     return result(
         "N/A",
         "settled by the typst plugin's workshop constraints (checks/workshop/constraints/), which "

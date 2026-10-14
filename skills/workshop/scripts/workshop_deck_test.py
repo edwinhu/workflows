@@ -587,6 +587,17 @@ def test_con_names_the_workshop_constraints_and_never_judges_the_deck(case: str,
     assert not [ln for ln in report.stdout.splitlines() if re.match(r"^\S+:1: CON ", ln)], (case, report.stdout)
 
 
+def test_con_fails_when_no_typst_workshop_constraint_is_reachable(tmp_path: Path):
+    # With only this plugin's root reachable, `workflow-check workshop` runs workshop-deck.py alone and
+    # exits 0 for a deck no typst convention module judged; CON must go red instead of N/A.
+    env = dict(os.environ)
+    env["WORKFLOW_CHECKS_PATH"] = str(RUNNER.parent.parent.parent)
+    report = probe(stage(tmp_path), env=env)
+    assert report.status("CON") == "FAIL", report["CON"]
+    assert "typst" in report["CON"]["detail"], report["CON"]
+    assert report.code == 1, report.stdout
+
+
 def test_ovr_runs_the_driver_typst_plugin_root_names(tmp_path: Path):
     # The overflow driver is ASKED of the typst plugin, never spelled: a probe that walked a fixed
     # list of roots would run another tree's driver, or none, on a machine laid out differently.

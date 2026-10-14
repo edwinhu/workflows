@@ -2,7 +2,7 @@
 
 Canonical definitions for deck verification. The probe at
 `${CLAUDE_PLUGIN_ROOT}/checks/workshop/constraints/workshop-deck.py` OWNS the computed rows; the
-`deck-fidelity`, `deck-convention` and `visual-integrity` lenses OWN the three it cannot settle. Both
+`workshop-reviewer` lens (checklist items (3)–(5)) OWNS the three it cannot settle. Both
 load these definitions by the path
 `${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md`. The plan grammar the probe
 parses, the deck's inventory emission, the title-matching key and the handout build are specified
