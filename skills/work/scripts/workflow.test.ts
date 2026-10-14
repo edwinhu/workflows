@@ -1130,6 +1130,26 @@ test("the lens's agentType reaches the leg, and Explore is the default when it n
   expect(pinned.get('verify:T1').agentType).toBe('ds-reviewer')
 })
 
+test("a task's own agentType overrides implementerAgentType for that task's implement leg only", async () => {
+  const two = [task({ id: 'T1' }), task({ id: 'T2', writablePaths: ['other/'], agentType: 'blind-solver' })]
+  const opts = await dispatchOpts({ ...baseArgs, tasks: two, implementerAgentType: 'writer' })
+  expect(opts.get('implement:T1').agentType).toBe('writer')
+  expect(opts.get('implement:T2').agentType).toBe('blind-solver')
+  // No run-level agentType: a task without its own passes no key at all.
+  const bare = await dispatchOpts({ ...baseArgs, tasks: two })
+  expect('agentType' in bare.get('implement:T1')).toBe(false)
+  expect(bare.get('implement:T2').agentType).toBe('blind-solver')
+  // The verifier is a review leg and is untouched by the task's implement agent.
+  expect(opts.get('verify:T2').agentType).toBe('Explore')
+})
+
+test('a non-string per-task agentType throws before any dispatch', async () => {
+  const r = await runCatching({ ...baseArgs, tasks: [task({ agentType: 7 })] }, replies())
+  expect(r.threw).toBe(true)
+  expect(String(r.error)).toMatch(/agentType/)
+  expect(r.dispatched).toEqual([])
+})
+
 // ---------------------------------------------------------------- positive dispositions (the leak)
 // A gate cannot block on a TRUE statement. So a lens that files "I checked X and it holds" as a
 // FINDING fails the run for nothing. Measured 2026-09-27 over 3,137 findings: 2.8% were positive

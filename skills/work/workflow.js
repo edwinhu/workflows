@@ -98,6 +98,11 @@ for (const t of taskList) {
       throw new Error(`work: task ${t.id}: acceptanceCmd must be a non-empty string: ${JSON.stringify(t.acceptanceCmd)}`)
     }
   }
+  if (t.agentType !== undefined && t.agentType !== null) {
+    if (typeof t.agentType !== 'string' || !t.agentType.trim()) {
+      throw new Error(`work: task ${t.id}: agentType must be a non-empty string: ${JSON.stringify(t.agentType)}`)
+    }
+  }
   if (t.dependsOn !== undefined && t.dependsOn !== null) {
     if (!Array.isArray(t.dependsOn) || t.dependsOn.some(d => typeof d !== 'string' || !d.trim())) {
       throw new Error(`work: task ${t.id}: dependsOn must be an array of task id strings: ${JSON.stringify(t.dependsOn)}`)
@@ -374,6 +379,7 @@ const authorityExtra = typeof args.authorityExtra === 'string' && args.authority
 // dispatcher's default applies exactly as before.
 const implementerAgentType = args.implementerAgentType || null
 const verifierAgentType = args.verifierAgentType || null
+// A task's own `agentType` overrides implementerAgentType for that task's implement leg only.
 // Every call site spreads `...agentTypeOpt(X)`, which contributes no key at all when X is absent.
 //
 // Read-only agents by default. EVERY review leg — the lens row, the per-task verifiers and the scored,
@@ -1017,7 +1023,7 @@ for (const wave of staged ? [] : IMPLEMENT_WAVES) {
         : ['- A separate verifier will judge the files themselves without seeing this report — your report cannot substitute for the work.']),
       '- If blocked, set done=false and list blockers; do not loosen the acceptance to pass.',
     ].join('\n'),
-    { label: `implement:${t.id}`, phase: 'Implement', schema: IMPL_SCHEMA, ...agentTypeOpt(implementerAgentType), ...optIf('model', implementerModelFor(t)), ...optIf('effort', implementerEffort) }
+    { label: `implement:${t.id}`, phase: 'Implement', schema: IMPL_SCHEMA, ...agentTypeOpt(t.agentType || implementerAgentType), ...optIf('model', implementerModelFor(t)), ...optIf('effort', implementerEffort) }
   )
   // The agent's own id is not evidence — this leg was dispatched for a known task, so stamp it.
   const record = r ? { ...r, id: t.id } : { id: t.id, done: false, changedFiles: [], evidence: '', blockers: ['agent died or was skipped'] }
