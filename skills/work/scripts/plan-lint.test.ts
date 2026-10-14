@@ -1142,3 +1142,32 @@ test('a rendered agent name is not a placeholder, and the real args path catches
   const tpl = parseArgs({ tasks: [], implementerAgentType: '<writing|writing-legal|writing-econ>' })
   expect(lint(tpl, () => true).filter(f => f.rule === 'agent-type-placeholder').map(f => f.where)).toEqual(['implementerAgentType'])
 })
+
+// Every agentType field workflow.js reads: implementerAgentType, verifierAgentType, lens.agentType,
+// tasks[].agentType, scoredChecks[].agentType, attempts[].agentType.
+test('parseArgs carries scoredChecks and attempts agentType into agentFields', () => {
+  const p = parseArgs({ tasks: [], scoredChecks: [{ key: 'c1', agentType: 'Explore' }], attempts: [{ key: 'a1', agentType: 'Plan' }] })
+  expect(p.agentFields).toEqual([
+    { field: 'scoredChecks[c1].agentType', value: 'Explore' },
+    { field: 'attempts[a1].agentType', value: 'Plan' },
+  ])
+})
+
+test('a template placeholder in scoredChecks/attempts agentType is a CRITICAL naming the field', () => {
+  const p = parseArgs({ tasks: [], scoredChecks: [{ key: 'c1', agentType: '<a|b>' }], attempts: [{ key: 'a1', agentType: '<agent>' }] })
+  const found = lint(p, () => true).filter(f => f.rule === 'agent-type-placeholder')
+  expect(found.map(f => f.where)).toEqual(['scoredChecks[c1].agentType', 'attempts[a1].agentType'])
+})
+
+test('an unresolvable run-level agentType is a CRITICAL naming the field', () => {
+  const p = parseArgs({
+    tasks: [], implementerAgentType: 'ghost-impl', verifierAgentType: 'ghost-ver', lens: { prompt: 'p', agentType: 'ghost-lens' },
+    scoredChecks: [{ key: 'c1', agentType: 'ghost-sc' }], attempts: [{ key: 'a1', agentType: 'ghost-at' }],
+  })
+  const found = lintAgents(p)
+  expect(found.map(f => f.rule)).toEqual(Array(5).fill('agent-type-unresolvable'))
+  expect(found.map(f => f.where)).toEqual([
+    'implementerAgentType', 'verifierAgentType', 'lens.agentType', 'scoredChecks[c1].agentType', 'attempts[a1].agentType',
+  ])
+  expect(lintAgents(p, 'ghost-impl', 'ghost-ver', 'ghost-lens', 'ghost-sc', 'ghost-at')).toEqual([])
+})
