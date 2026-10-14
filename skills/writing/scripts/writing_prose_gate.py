@@ -211,8 +211,9 @@ def gate(project: Path, style: str, engine: Path = ENGINE, out=sys.stdout) -> in
         plan = find_plan(project)
         drafts = draft_paths(plan)
         present = [d for d in drafts if d.is_file()]
-        for missing in [d for d in drafts if not d.is_file()]:
-            print(f"not yet drafted (skipped): {missing}", file=out)
+        absent = [d for d in drafts if not d.is_file()]
+        if absent:
+            raise GateDefect("planned draft(s) absent: " + ", ".join(str(d) for d in absent))
         if not present:
             raise GateDefect("no draft named by `## Section Outputs` exists on disk")
         stdout, stderr, returncode = run_engine(present, style, engine)
