@@ -113,41 +113,18 @@ the individual sentences.
 
 **A miss rate above roughly a quarter means the wrong source or a corrupted cut — not bad
 sentences.** Do not patch the flagged sentences one at a time. **Re-cut the whole reading
-from the `.txt` in `docs/`.** Patching individual sentences in a section whose provenance is
+from its source (`docs/<name>.westlaw.docx`; the `.txt` only on the Route 2 fallback).** Patching individual sentences in a section whose provenance is
 broken produces a section that passes the checker and still misquotes the court.
 
 Presenting spliced half-sentences as a court's reasoning teaches the opposite of what the
 case holds.
 
-### The Mutual Benefits case — what actually went wrong
+### Decimation, not interleave
 
-Run on 02-addendum's Mutual Benefits section, `check-quotes.py` reports **9 of 21**. The
-conclusion above is right; the diagnosis originally recorded for it was **false**, and the
-way it was false is the lesson.
-
-**The false diagnosis** (recorded, then measured and disproved on 2026-09-09) said the
-section was cut from a two-column source PDF, with tells *spaced capitals at line starts
-(`W e`, `I f`)*, by the mechanism *`pdftotext -layout` reading a two-column page straight
-across*. All three claims are wrong:
-
-- The source `docs/SEC-v-Mutual-Benefits-408-F3d-737-11th-Cir-2005.txt` is **clean
-  single-column** — ~375 non-empty lines (374 by `grep -c '[^[:space:]]'`), median line
-  length 81, and twenty consecutive lines read as connected prose.
-- `grep -c` for the spaced-capital tell returns **0 in BOTH** the source and the corrupt
-  excerpt. That tell never existed in either file. It was **manufactured by the reviewer's
-  own bracket-stripping regex**, which turned `[W]e` into `W e` in the reviewer's working
-  copy and was then reported as a property of the source.
-
-**The real mechanism is LINE DECIMATION.** The `.txt` is double-spaced, so prose sits on
-alternating lines. The excerpt took source lines 57, 59, 65 — dropping 61 and 63 — and 604,
-606, 610 — dropping 608 — and concatenated the surviving remainders into sentences the
-Eleventh Circuit never wrote. Every other line of real text is simply gone, and what is left
-is fused across the deletions with no ellipsis at the join.
-
-Decimation and column-interleave produce a similar-looking wreck — disconnected alternating
-lines, fused sentences — which is why the wrong diagnosis was plausible. They call for
-different fixes: interleave means re-extract the PDF differently, decimation means the cut
-itself dropped lines and the reading must be re-cut from the same good `.txt`.
+A wrecked excerpt of alternating, fused lines is usually **line decimation** — the cut dropped
+lines of a double-spaced source and joined the remainders with no ellipsis (Mutual Benefits, 9 of
+21 found) — not a two-column read. Interleave means re-extract the source differently;
+decimation means re-cut from the same good source.
 
 ### The general rule this produced
 
@@ -162,6 +139,8 @@ and in neither file on disk is a tell you invented.
 Cheap discriminators, in order:
 
 ```bash
+# Route 2 only: the .txt is the source. On the Westlaw route there is no .txt; the source is
+# the docx projection, so run the same greps on its text (the westlaw extractor's output).
 grep -c '[^[:space:]]' docs/<name>.txt                    # source line count
 awk 'length>0{print length}' docs/<name>.txt | sort -n    # median line length
 grep -cE '\b(W e|I f|T he)\b' docs/<name>.txt addenda/NN-addendum.typ  # in BOTH
