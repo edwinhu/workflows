@@ -58,7 +58,7 @@ FAIL.
 **The default is NO editors' note.** A reading gets one only when the student needs
 BACKGROUND in order to read the case. The note is not disclosure boilerplate.
 
-Reversed by the instructor on 2026-09-10: *"we generally do not need editors note except
+Instructor ruling: *"we generally do not need editors note except
 for if we need to provide some additional background like if there was a prior case or
 something, or like with boeings safety issues in the news etc."* The rule this replaced —
 recorded here rather than deleted, so the reversal is legible — read *"Every reading
@@ -124,9 +124,7 @@ the standard, and it is narrower than "enumerate everything dropped."
 - **Internal cross-references** — "see supra Part II.B".
 
 Dropping record citations is standard casebook practice and needs no disclosure when they
-are not critical to the point. The instructor ruled on this on 2026-09-09, after the older,
-stricter formulation — which demanded every silently dropped category be enumerated,
-record citations included — produced a **false finding** against the Ripple excerpt.
+are not critical to the point. Enumerating every silently dropped category, record citations included, produces **false findings**; the instructor ruled it unnecessary.
 
 The test is not "was something removed" but **"could a reader who knew about this removal
 read the case differently."** If yes, disclose it. If a record citation is itself the point
