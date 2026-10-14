@@ -14,17 +14,17 @@
 # tests the runner reports; a runner whose summary is not recognised needs --test-count-re, a regex
 # whose groups are summed, or the leg cannot say it ran anything and is COULD-NOT-CHECK.
 #
-# The scope leg (work/scripts/scope-check.sh) fails a changed path under no task's writablePaths or scaffoldPaths in --plan;
-# without --plan it reports "not declared".
+# The scope leg (work/scripts/scope-check.sh) fails a changed path under no task's writablePaths or scaffoldPaths in --plan.
+# Omitting --plan is exit 2; --no-plan declines the leg ("declined", exit 0).
 #
-# Usage: check.sh --project-dir <dir> --test-cmd <cmd> [--test-count-re <re>] [--lint-cmd <cmd>] [--build-cmd <cmd>] [--plan <plan.md>]
+# Usage: check.sh --project-dir <dir> --test-cmd <cmd> [--test-count-re <re>] [--lint-cmd <cmd>] [--build-cmd <cmd>] (--plan <plan.md> | --no-plan)
 # Exit 0 = every declared leg passed. 1 = some leg failed. 2 = refusal, or a leg that examined nothing.
 set -uo pipefail   # deliberately not -e: every leg must run so every leg reports.
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/../../work/scripts/leg-counts.sh"
 
-PROJ="."; TESTCMD=""; TESTRE=""; LINTCMD=""; BUILDCMD=""; PLAN=""
+PROJ="."; TESTCMD=""; TESTRE=""; LINTCMD=""; BUILDCMD=""; PLAN=""; NOPLAN=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --project-dir) PROJ="${2:-}"; shift 2 ;;
@@ -33,9 +33,11 @@ while [ $# -gt 0 ]; do
     --lint-cmd) LINTCMD="${2:-}"; shift 2 ;;
     --build-cmd) BUILDCMD="${2:-}"; shift 2 ;;
     --plan) PLAN="${2:-}"; shift 2 ;;
+    --no-plan) NOPLAN=1; shift ;;
     *) echo "check.sh: unknown argument $1" >&2; exit 2 ;;
   esac
 done
+[ -n "$PLAN" ] || [ "$NOPLAN" = 1 ] || { echo "check.sh: pass --plan or --no-plan — an undeclared scope leg would pass having checked no path" >&2; exit 2; }
 [ -d "$PROJ" ] || { echo "check.sh: --project-dir $PROJ is not a directory" >&2; exit 2; }
 
 RC=0
@@ -64,8 +66,8 @@ if [ -n "$PLAN" ]; then
   legcount_run scope bash "$HERE/../../work/scripts/scope-check.sh" --plan "$PLAN" --project-dir "$PROJ"
   report scope "$LEG_STATUS"
 else
-  count_line scope 0 "path(s)" "— nothing in scope (not declared)" >&2
-  report scope 0 "not declared"
+  count_line scope 0 "path(s)" "— nothing in scope (declined)" >&2
+  report scope 0 "declined"
 fi
 
 # A run with no tests leg examined no suite, and must not read as a clean gate.
