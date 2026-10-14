@@ -15,7 +15,7 @@ const run = (env: Record<string, string> = {}) => {
   mkdirSync(join(d, 'p'))
   writeFileSync(join(d, 'p', 'plan.md'), '# plan\n')
   return spawnSync('bash', [CHECK, '--plan', join(d, 'p', 'plan.md'), '--project-dir', join(d, 'p')],
-    { encoding: 'utf8', timeout: 280_000, env: { ...process.env, ...env } })
+    { encoding: 'utf8', timeout: 280_000, env: { ...process.env, TMPDIR: mkTmp('ds-suite-tmpdir-'), ...env } }) // pytest's tmp_path root is $TMPDIR/pytest-of-<user>: swept with the fixture
 }
 
 test('a failing ds-dq contract suite fails the ds-dq-tests leg of check.sh', () => {
