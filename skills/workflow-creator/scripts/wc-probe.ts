@@ -3200,7 +3200,7 @@ export function workArgsFences(text: string): WorkArgsFence[] {
 }
 
 /**
- * P13 the constraint loader is called by its ONE name.
+ * P20 the constraint loader is called by its ONE name.
  *
  * Every plugin that ships a constraint corpus exposes exactly one entry point, `scripts/load-
  * constraints`, the same way every workflow gate is `check.sh`. A SKILL.md reaching the corpus by
@@ -3225,7 +3225,7 @@ export function checkLoaderEntryPoint(file: string, text: string, exemptions: re
       if (!re.test(lines[i])) continue
       if (isExemptAt(exemptions, 'loader-entry-point', i + 1)) continue
       findings.push({
-        rule: 'P13 one loader entry point',
+        rule: 'P20 one loader entry point',
         severity: 'major',
         file,
         line: i + 1,

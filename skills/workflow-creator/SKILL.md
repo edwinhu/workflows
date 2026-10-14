@@ -116,11 +116,11 @@ genuine exception is declared with `<!-- wc-probe: ignore-entry-point -->`.
 `scripts/load-constraints <scope>[,<scope>] [--index|--full]` — index by default, because the prose
 for one scope is 38,524 bytes against 1,386 and a load-time bang pays that on every invocation.
 Calling the implementation file (`load-constraints.py`, `load-constraints.ts`) or an older name
-couples every caller to a language choice; `wc-probe`'s P13 refuses those. Cross-plugin, the corpus
+couples every caller to a language choice; `wc-probe`'s P20 refuses those. Cross-plugin, the corpus
 is reached through `bin/` on PATH (`typst-rules`), never through a hand-rolled `$HOME` resolver.
 
 **A generated workflow declares its own check entry point.** `check.sh` gates workflow *artifacts* —
-probe, parity, the authoring constraints, probe suite — and is not a generated workflow's domain gate. A workflow
+seven legs, listed in its header (pc-probe is plugin-scoped, so a sibling skill's structure can fail it) — and is not a generated workflow's domain gate. A workflow
 whose domain has a toolchain (build, test, lint, render) ships one entry point of its own, collects
 those legs behind it, and names *that* in its `mechanicalChecks`. The law binds the workflow being
 generated, not only its generator.
@@ -144,7 +144,7 @@ whether it is a skill that already exists.
 **ONE FRONTMATTER KEY: `applies-to:`. Nothing else.** Scope is the only fact about a rule that no path already holds — the name is the filename, whether it is mechanised is whether `checkers/<name>.py` exists, and what it says is the body. Any other key is either a copy of one of those or metadata nothing reads, and both rot silently: measured 2026-09-14 in the typst corpus, `type:` sat in 17 of 21 files and `testable:` in 3, read by no code on any path, while `description:` had drifted from the rule beside it (a rule described as "table inset minimum 10pt" whose body leads with source-grounding) with no check able to see it. Lint the key set — a convention nothing computes is how `type:` got into 17 files and stayed.
 
 - **Mechanical** — rule `X.md` is checked by `checkers/X.py`, by CONVENTION: no field declares the mapping, so nothing can name a script that moved. The workflow's check entry point runs it, and the set is DERIVED from `applies-to:`, never listed per consumer.
-- **Judgement** — no checker exists at the rule's conventional name, and a grader agent judges it. Nothing declares that: the runner asks the filesystem, so a rule cannot claim to be mechanised while its checker is absent. **Getting the corpus INTO that grader is the hard part, and two of the three obvious routes do not work.** A `` <bang>`cmd` `` in an agent definition is dead text. And `skills:` frontmatter is documented to preload the skill's full content but did **not** on 2.1.257 — four probes, both name forms, under `claude -p --agent` and the farm-out proxy, all NOT PRESENT (`${CLAUDE_PLUGIN_ROOT}/references/bang-reach.md`). Treat a preload as unproven until you have asked that agent, in your own dispatch path, whether the content is there. So a grader reaches the corpus by exactly one of:
+- **Judgement** — no checker exists at the rule's conventional name, and a grader agent judges it. Nothing declares that: the runner asks the filesystem, so a rule cannot claim to be mechanised while its checker is absent. **Getting the corpus INTO that grader is the hard part, and one obvious route does not work.** A `` <bang>`cmd` `` in an agent definition is dead text. `skills:` frontmatter, by contrast, preloads the skill's full content (measured 2.1.293, `--agent` and Agent-tool spawn; `${CLAUDE_PLUGIN_ROOT}/references/bang-reach.md`). So a grader reaches the corpus by that preload or by one of:
   - **invoking the skill**, if it holds the `Skill` tool — available, never automatic, so its prompt must say so;
   - **reading the corpus itself** with Read/Glob, which is all a read-only grader can do;
   - **the orchestrator inlining a computed index into the lens prompt**, since the orchestrator is a skill and a bang works there.
@@ -385,8 +385,7 @@ const args = {
 
   tasks: [ /* the plan's table verbatim: {id, name, work, writablePaths, acceptance, refs, agentType?} */ ],
 
-  // ONE entry, always: check.sh runs every leg (wc-probe, parity, the authoring constraints over genDir, and
-  // genDir's OWN probe suite) and its exit code is the whole mechanical verdict. A new deterministic
+  // ONE entry, always: check.sh runs every leg (the seven in its header, probe suite over genDir included) and its exit code is the whole mechanical verdict. A new deterministic
   // check becomes a LEG of check.sh, never a second entry here — P10 refuses that.
   // `--agent` whenever the workflow ships a guard agent: the file sits outside genDir and the probe
   // walks genDir alone, so without it nothing scans the guard. Never a second `--target` at the
@@ -487,9 +486,9 @@ single path: `work` grew a read-only branch, so there is one domain note per bra
 
 Four audiences need a generated workflow's REFERENCE DOCUMENTS, and each has its own delivery
 point. Constraints are not on this table — they reach an agent through the index skill it names in
-its own `skills:` frontmatter, never through `refs`. That preload is UNPROVEN on 2.1.257 (see the
+its own `skills:` frontmatter, never through `refs`. That preload landed on 2.1.293 (see the
 Judgement bullet above and `${CLAUDE_PLUGIN_ROOT}/references/bang-reach.md`); an agent with no `Skill` tool has no
-fallback when it does not land, so probe your own dispatch path before relying on it:
+fallback when a skill is skipped silently, so ask the agent in your dispatch path whether the content is there:
 
 | audience | delivery |
 |---|---|
@@ -914,7 +913,7 @@ out of a prompt, which is not an enumeration.
 A fence whose `tasks[]` is empty or absent is skipped entirely — that is what a `readOnly` charter
 declares, and flagging it would fire on every audit block. Marker: `task-coverage`.
 
-### P14-P19 round-shape rules
+### P14-P20 round-shape rules
 
 | rule | fires on | severity | marker |
 |---|---|---|---|
@@ -924,6 +923,7 @@ declares, and flagging it would fire on every audit block. Marker: `task-coverag
 | P17 serial row loop | a task `work`, attempt or farm-row prompt looping over plural independent items with no dependency named | minor, advisory | `serial-loop` |
 | P18 fixed shared temp path | a worktree add/remove or recursive delete at a literal temp path with no per-run part, on the line or through one assignment | major | `fixed-temp` |
 | P19 rule-skill preload | a SKILL.md with a work-args fence that declares no rule skill, or names a non-built-in `implementerAgentType`/`verifierAgentType`/`agentType` whose agent file is missing or whose `skills:` lacks a declared rule skill, or whose `initialPrompt` (its first slash command, plus the skills that command's `load-skills.ts` bangs name) does not cover one, or whose `skills:` is not exactly that one command | major | none — `rule-skills: none` is the opt-out |
+| P20 one loader entry point | a SKILL.md reaching a constraint corpus by the loader's implementation file, an older name or a hand-rolled `$HOME` resolver | major | `ignore-loader-entry-point` |
 
 Advisory rules print as `[advisory <severity>]` in both modes and never move the exit code. P15 gates since its 2026-10-02 baseline (15 findings, ds lens and teaching notes scoredChecks) was cleared.
 

@@ -3574,7 +3574,7 @@ describe('D36 — P13: every enumerated instance has a task row', () => {
 })
 
 // P13 — the constraint loader is called by its ONE name, the way every gate is check.sh.
-describe('P13 one loader entry point', () => {
+describe('P20 one loader entry point', () => {
   const run = (text: string) => probe.checkLoaderEntryPoint('SKILL.md', text, [])
 
   test('the entry-point name is clean', () => {
@@ -3584,6 +3584,7 @@ describe('P13 one loader entry point', () => {
   test('naming the implementation file is a finding', () => {
     const f = run('!`bun ${CLAUDE_PLUGIN_ROOT}/scripts/load-constraints.ts ds`\n')
     expect(f.length).toBe(1)
+    expect(f[0].rule).toStartWith('P20')
     expect(f[0].detail).toContain('implementation file')
   })
 
