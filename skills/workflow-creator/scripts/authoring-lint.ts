@@ -31,7 +31,7 @@
  * Test files and fixtures are skipped: they carry the violating strings on purpose.
  */
 import { spawnSync } from 'node:child_process'
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 import { covers, runnerTargets, scriptReaches } from '../../work/scripts/plan-lint.ts'
 import { changedRanges } from '../../work/scripts/rule-check.ts'
@@ -67,6 +67,7 @@ function walk(dir: string): string[] {
 /** absolute file -> added line numbers (null = every line). With a valid WORK_RUN_BASELINE (the tree work-checks.sh
  *  exports) "added" means added since that tree, so WIP already present at dispatch is not the run's; else over HEAD. */
 export function addedLines(target: string): Map<string, Set<number> | null> {
+  target = realpathSync(target)
   const base = process.env.WORK_RUN_BASELINE
   if (base && /^[0-9a-f]{40,64}$/.test(base)) {
     const ranges = changedRanges(target, base)
@@ -156,6 +157,7 @@ export function gateLaw(target: string): Finding[] {
 }
 
 export function lint(target: string): Finding[] {
+  target = realpathSync(target)
   const findings: Finding[] = [...gateLaw(target)]
   for (const [file, lines] of addedLines(target)) {
     if (!TEXT_EXT.test(file) || TEST_PATH.test(relative(target, file)) || !existsSync(file)) continue
@@ -176,7 +178,7 @@ if (import.meta.main) {
     console.error('usage: authoring-lint.ts --target <dir> [--json]')
     process.exit(2)
   }
-  const findings = lint(resolve(target))
+  const findings = lint(realpathSync(target))
   if (argv.includes('--json')) console.log(JSON.stringify({ findings }))
   else for (const f of findings) console.log(`${f.file}:${f.line}  ${f.rule}\n    ${f.text}`)
   console.error(`authoring-lint: ${findings.length} finding(s) over the added lines under ${target}`)

@@ -68,7 +68,7 @@ if [ -n "$AGENT" ] && [ ! -f "$AGENT" ]; then
   echo "check.sh: --agent is not a file: $AGENT" >&2
   exit 2
 fi
-TARGET="$(cd "$TARGET" && pwd)"
+TARGET="$(cd "$TARGET" && pwd -P)"
 
 FAILED=0
 # Every leg reports through here, so a leg that runs but whose status reaches no verdict is not
