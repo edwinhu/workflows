@@ -62,7 +62,7 @@ const plan = (path: string, workflow: string, runId: string, args: object, goalT
   `---\nworkflow: ${workflow}\n---\n\n# e2e ${runId}\n\n<!-- work:dispatch\n${JSON.stringify({ runId, goalTurns, args }, null, 1)}\n-->\n`)
 
 /** The canary's dev fixture: src/clamp.js returns x unchanged, src/clamp.test.js is red. */
-async function devFixture(dir: string, runId: string) {
+async function devFixture(dir: string, runId: string, filesRule = false) {
   mkdirSync(join(dir, 'src'), { recursive: true })
   writeFileSync(join(dir, 'src/clamp.js'), '// clamp(x, lo, hi): x limited to the closed range [lo, hi].\nexport function clamp(x, lo, hi) {\n  return x\n}\n')
   writeFileSync(join(dir, 'src/clamp.test.js'), `import { expect, test } from 'bun:test'
@@ -93,7 +93,9 @@ test('clamp limits a value to [lo, hi]', () => {
       refs: [join(dev, 'references', 'tdd.md')],
     }],
     mechanicalChecks: [{ name: 'dev', cmd: `bash ${dev}/scripts/check.sh --project-dir ${dir} --test-cmd "bun test"` }],
-    ruleChecks: { name: 'jev-dev-rules', cmd: `bun ${WORK}/rule-check.ts --workflow dev --project-dir ${dir} --plan ${p}` },
+    ruleChecks: { name: 'jev-dev-rules', cmd: filesRule
+      ? `bun ${WORK}/rule-check.ts --workflow dev --files ${dir}/src/clamp.js --plan ${p}`
+      : `bun ${WORK}/rule-check.ts --workflow dev --project-dir ${dir} --plan ${p}` },
     lens: { agentType: 'Explore', refs: [join(dev, 'references', 'lens-security.md')], prompt: 'Judge the change against the plan. Severity MAJOR at minimum.' },
     authorityExtra: 'e2e fixture: the red test already exists; the task is the implementation only.',
     verifierAgentType: 'Explore',
@@ -137,9 +139,11 @@ exit "$rc"
 const CLAMP = 'export function clamp(x, lo, hi) {\n  return Math.min(hi, Math.max(lo, x))\n}\n'
 const NOTES = '# Notes\n\nThe firm discloses its risk factors in Item 1A.\nThe board reviews them annually.\n'
 
-type Scenario = { kind: 'dev' | 'diag'; fault?: string; edits?: Record<string, string>; notes?: string; judgePath?: string; startDelay?: number }
+type Scenario = { kind: 'dev' | 'diag'; filesRule?: boolean; fault?: string; edits?: Record<string, string>; notes?: string; judgePath?: string; startDelay?: number }
 const SCENARIOS: Record<string, Scenario> = {
   'dev': { kind: 'dev', edits: { 'src/clamp.js': CLAMP } },
+  // a --files ruleChecks with no --project-dir (elide-case's shape) under the run baseline a non-readOnly dispatch records
+  'files-rule': { kind: 'dev', filesRule: true, edits: { 'src/clamp.js': CLAMP } },
   'slow-start': { kind: 'dev', edits: { 'src/clamp.js': CLAMP }, startDelay: 8 },
   'diag': { kind: 'diag' },
   'no-edit': { kind: 'dev', edits: {} },
@@ -172,7 +176,7 @@ async function launch(name: string, s: Scenario): Promise<Run> {
   for (const d of [dir, state, tmp, bin]) mkdirSync(d, { recursive: true })
   for (const w of ['claude-code', 'codex-code', 'gemini-code']) symlinkSync(STUB, join(bin, w))
   const runId = `e2e-${name}`
-  const p = s.kind === 'dev' ? await devFixture(dir, runId) : await diagFixture(dir, runId, s.notes ?? NOTES)
+  const p = s.kind === 'dev' ? await devFixture(dir, runId, s.filesRule) : await diagFixture(dir, runId, s.notes ?? NOTES)
   const sid = `e2e-${name}-${process.pid}`
   const env = isolated(tmp, {
     PATH: `${bin}:${process.env.PATH}`,
@@ -220,6 +224,15 @@ describe('the canary assertions hold over a stub-model run of the real path', ()
     expect(r.out).toMatch(/canary: \[e2e-dev\] ok \(loop\.exit=0, verdict=PASS, W=[1-9]\d*/)
     expect(r.code).toBe(0)
     expect(readFileSync(join(runs.dev!.runDir, '..', '..', 'project', 'src', 'clamp.js'), 'utf8')).toBe(CLAMP)
+  })
+
+  test('dev round, ruleChecks by --files with no --project-dir under a runBaseline: the rule leg runs and the round passes', async () => {
+    const args = JSON.parse(readFileSync(join(runs['files-rule']!.runDir, 'args.json'), 'utf8'))
+    expect(args.runBaseline).toMatch(/^[0-9a-f]{40,64}$/)
+    expect(args.ruleChecks.cmd).not.toContain('--project-dir')
+    const r = await canaryAssert('files-rule', '0', [DEV_COUNT])
+    expect(r.out).not.toContain('FAIL [')
+    expect(r.code).toBe(0)
   })
 
   test('dev round, runner slow to register: the loop waits for the runner, not reports it dead', async () => {
