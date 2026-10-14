@@ -20,7 +20,23 @@ export async function spawnAsync(
   const proc = Bun.spawn([cmd, ...args], {
     cwd: opts.cwd, env: opts.env, stdin: 'ignore', stdout: 'pipe', stderr: 'pipe',
   })
-  const timer = setTimeout(() => proc.kill('SIGKILL'), opts.timeout)
+  let tree = ''
+  const timer = setTimeout(() => {
+    // A timeout is a hang nobody can reproduce on demand; the live process tree is the only evidence
+    // of whether the child is running, blocked or gone, so it goes into stderr before the kill.
+    const rows = Bun.spawnSync(['ps', '-eo', 'pid,ppid,stat,etimes,pcpu,args'], { stdout: 'pipe' }).stdout.toString().split('\n').slice(1)
+    const kin = new Set([proc.pid])
+    for (let grew = true; grew;) {
+      grew = false
+      for (const r of rows) {
+        const [pid, ppid] = r.trim().split(/\s+/).map(Number)
+        if (kin.has(ppid) && !kin.has(pid)) { kin.add(pid); grew = true }
+      }
+    }
+    tree = `\n[spawnAsync timeout after ${opts.timeout} ms; pid ${proc.pid} exitCode=${proc.exitCode}; its process tree (pid ppid stat etimes %cpu args):]\n` +
+      rows.filter(r => kin.has(Number(r.trim().split(/\s+/)[0]))).join('\n') + '\n'
+    proc.kill('SIGKILL')
+  }, opts.timeout)
   // Read incrementally: a grandchild that inherited the pipe keeps it open after the child has
   // exited, so EOF is only awaited for a short grace once `exited` has resolved.
   const out: string[] = [], err: string[] = []
@@ -32,7 +48,7 @@ export async function spawnAsync(
   try {
     const status = await proc.exited
     await Promise.race([readers, new Promise(r => setTimeout(r, PIPE_GRACE_MS))])
-    return { status: proc.signalCode ? null : status, stdout: out.join(''), stderr: err.join('') }
+    return { status: proc.signalCode ? null : status, stdout: out.join(''), stderr: err.join('') + tree }
   } finally {
     clearTimeout(timer)
   }

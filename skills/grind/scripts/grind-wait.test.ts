@@ -335,7 +335,8 @@ function stubPath(dir: string, stubs: string[]): { env: Record<string, string>; 
     const real = spawnSync('bash', ['-c', `PATH=/usr/bin:/bin command -v ${tool}`], { timeout: 30_000, encoding: 'utf8' }).stdout.trim()
     if (real && !existsSync(join(bin, tool))) symlinkSync(real, join(bin, tool))
   }
-  return { env: { PATH: bin, HOME: dir }, log }
+  // TMPDIR pinned: without it grind.sh's event stream lands in the machine's real /tmp/farm-events.
+  return { env: { PATH: bin, HOME: dir, TMPDIR: dir }, log }
 }
 
 describe('grind.sh --wait-alert — the default notifier carries the wait', () => {
@@ -352,6 +353,8 @@ describe('grind.sh --wait-alert — the default notifier carries the wait', () =
 
     expect(r.status).toBe(4)
     expect(kinds(journal, 'wait').length).toBe(3)
+    // The run's event stream is the test's own, never the machine's /tmp/farm-events/sess-launch.
+    expect(existsSync(join(d, 'farm-events', 'sess-launch'))).toBe(true)
 
     const calls = readFileSync(log, 'utf8').split('\n').filter(l => l.trim())
     const waitingCalls = calls.filter(l => /waiting/i.test(l))
