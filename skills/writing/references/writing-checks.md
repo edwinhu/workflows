@@ -195,7 +195,8 @@ refusal — no prose under `drafts/`.
 
 ### JEV-RULES: the judged register rules, scored
 
-`ruleChecks` runs `rule-check.ts --workflow writing[/<domain>]`, which scores `checks/writing/rules/`. Each rule's
+`ruleChecks` runs `rule-check.ts --workflow writing[/<domain>]`, which scores `checks/writing/rules/` and, for a register, `checks/writing/legal/rules/` or
+`checks/writing/econ/rules/` on top of them. Each rule's
 extractor pulls bounded candidate sentences (with `file:line` and their neighbours) from the prose
 deliverable, and Jev returns P(VIOLATED) for the rule's proposition; p >= 0.85 blocks, lower verdicts
 reach the lens ranked. Only calibrated rules sit in that directory: a rule is wired when live Jev
