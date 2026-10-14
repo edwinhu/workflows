@@ -29,6 +29,8 @@ type Task = {
   redDisposition: string | null
   dependsOn: string[]
   refs: string[]
+  /** This task's own implement-leg agent; overrides the run-level `implementerAgentType`. */
+  agentType?: string | null
 }
 type Lens = { key: string; text: string }
 type Plan = {
@@ -283,6 +285,7 @@ const parseArgs = (j: any): Plan => ({
     redDisposition: typeof t.redDisposition === 'string' ? t.redDisposition : null,
     dependsOn: t.dependsOn == null ? [] : Array.isArray(t.dependsOn) ? t.dependsOn : [t.dependsOn],
     refs: t.refs ?? [],
+    agentType: typeof t.agentType === 'string' ? t.agentType : null,
   })),
   mechanicalChecks: (j.mechanicalChecks ?? []).map((m: any) => ({
     name: m.name ?? m.key ?? '',
@@ -467,7 +470,21 @@ const RED_COMMAND_OPERATORS = /[;&|`$><(){}\n\r]/
 
 // ---------------------------------------------------------------- rules
 
-const lint = (p: Plan): Finding[] => {
+const BUILTIN_AGENTS = new Set(['Explore', 'Plan', 'general-purpose', 'statusline-setup', 'claude'])
+/** An agent file in this plugin or the user's agents dir; `p:n` reads plugin p's dirs. */
+const agentResolves = (name: string): boolean => {
+  const { existsSync } = require('node:fs')
+  const { join } = require('node:path')
+  const home = require('node:os').homedir()
+  const [pl, n] = name.includes(':') ? name.split(':') : [null, name]
+  const roots = pl ? [join(home, '.claude', 'skills', pl)] : [join(import.meta.dir, '..', '..', '..')]
+  return [
+    ...roots.flatMap(r => [join(r, 'user-agents', `${n}.md`), join(r, 'agents', `${n}.md`)]),
+    ...(pl ? [] : [join(home, '.claude', 'agents', `${n}.md`)]),
+  ].some(c => existsSync(c))
+}
+
+const lint = (p: Plan, agentExists: (name: string) => boolean = agentResolves): Finding[] => {
   const f: Finding[] = []
   const add = (
     rule: string,
@@ -955,6 +972,13 @@ const lint = (p: Plan): Finding[] => {
       )
     else for (const x of holdLintCriticals(gc)) add(x.rule, 'critical', 'args.goalCheck', x.message, gc)
   }
+
+  // R25 — a per-task agentType is the persona the harness dispatches that leg as. A name no agent
+  // file answers to falls back to the default agent, dropping the restriction it was named for.
+  for (const t of p.tasks)
+    if (t.agentType && !/[<>|]/.test(t.agentType) && !BUILTIN_AGENTS.has(t.agentType) && !agentExists(t.agentType))
+      add('agent-type-unresolvable', 'critical', `task ${t.id} agentType`,
+        `agentType "${t.agentType}" names no agent file (built-in, plugin user-agents/agents, or ~/.claude/agents), so the harness would fall back to the default agent and drop the restriction`, t.agentType)
 
   return f
 }

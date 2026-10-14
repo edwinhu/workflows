@@ -3173,6 +3173,7 @@ export function workArgsFences(text: string): WorkArgsFence[] {
       pushAgent(obj, 'implementerAgentType', 'implementerAgentType')
       pushAgent(obj, 'verifierAgentType', 'verifierAgentType')
       pushAgent(lensObj, 'agentType', 'lens.agentType')
+      if (tasksSpan) for (const o of directElements(literals, tasksSpan, 'agentType')) pushAgent(o, 'agentType', 'tasks[].agentType')
       if (scoredSpan) for (const o of directElements(literals, scoredSpan, 'agentType')) pushAgent(o, 'agentType', 'scoredChecks[].agentType')
       if (attemptsSpan) for (const o of directElements(literals, attemptsSpan, 'agentType')) pushAgent(o, 'agentType', 'attempts[].agentType')
       const pdSpan = findKeyValueSpan(body, masked, obj, 'projectDir')

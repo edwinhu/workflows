@@ -1088,3 +1088,26 @@ test('R24 credits a check.sh that reaches workflow-check through a helper functi
     rmSync(root, { recursive: true, force: true })
   }
 })
+
+// ---------------------------------------------------------------- agent-type fields (R25)
+// `agentType` on a task row names the persona agent that task's implement leg runs as. A name no
+// agent file answers to makes the harness fall back to the default agent, silently dropping the
+// restriction the plan named it for — so an unresolvable name refuses dispatch. Resolution is
+// injected here; the default resolver reads the plugin's agent dirs and ~/.claude/agents.
+const agentsKnown = (...names: string[]) => (n: string) => names.includes(n)
+const lintAgents = (p: Plan, ...known: string[]) => lint(p, agentsKnown(...known)).filter(f => f.rule.startsWith('agent-type'))
+
+test('a per-task agentType that names no agent file is a CRITICAL naming the task', () => {
+  const p = base({ tasks: [task({ agentType: 'ghost-solver' })] })
+  const found = lintAgents(p, 'writer')
+  expect(found.map(f => f.rule)).toEqual(['agent-type-unresolvable'])
+  expect(found[0].severity).toBe('critical')
+  expect(found[0].where).toContain('T1')
+  expect(found[0].message).toContain('ghost-solver')
+})
+
+test('a per-task agentType that resolves, a built-in, and an absent one are clean', () => {
+  expect(lintAgents(base({ tasks: [task({ agentType: 'blind-solver' })] }), 'blind-solver')).toEqual([])
+  expect(lintAgents(base({ tasks: [task({ agentType: 'Explore' })] }))).toEqual([])
+  expect(lintAgents(base({ tasks: [task()] }))).toEqual([])
+})

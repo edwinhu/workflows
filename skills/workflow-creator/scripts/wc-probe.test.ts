@@ -3971,6 +3971,23 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
     expect(found[0].detail).toContain('declares no domain rule skill')
   })
 
+  test('a per-task agentType is another persona agent the workflow dispatches, judged like implementerAgentType', () => {
+    const wf = (taskAgent: string) => ['---', 'name: wf', 'description: d', 'metadata:', '  rule-skills: p19-rules', '---', '', '# wf', '', workArgs([
+      `tasks: [{ id: "t1", name: "n", work: "w", writablePaths: ["a/"], acceptance: "test -f x", refs: [], agentType: "${taskAgent}" }]`,
+      'implementerAgentType: "Explore"',
+      'verifierAgentType: "Explore"',
+      'lens: { prompt: "judge", refs: [], agentType: "Explore" }',
+    ]), ''].join('\n')
+    // No agent file for the task's agent: a missing persona falls back to the default agent.
+    const missing = allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-rules'], impl: 'Explore', extra: { 'skills/wf/SKILL.md': wf('p19-ghost') } }), 'P19')
+    expect(missing.some(f => f.detail.includes('"p19-ghost"') && f.detail.includes('no agent file exists'))).toBe(true)
+    // The task's agent exists and lacks the preload: judged exactly as the run-level agent is.
+    const lacking = allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['other'], impl: 'Explore', extra: { 'skills/wf/SKILL.md': wf('p19-impl') } }), 'P19')
+    expect(lacking.some(f => f.detail.includes('"p19-impl"') && f.detail.includes('does not preload'))).toBe(true)
+    // Twin: an existing agent carrying the preload is clean.
+    expect(allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-rules'], impl: 'Explore', extra: { 'skills/wf/SKILL.md': wf('p19-impl') } }), 'P19')).toEqual([])
+  })
+
   test('rule-skills: none is reported NOT CHECKED, never passed silently', () => {
     const dir = plugin({ ruleSkills: 'none', agentSkills: null })
     const r = probe.runProbe(dir)
