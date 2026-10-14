@@ -139,7 +139,7 @@ scans. It is never an equality — see *R10* below.
 
 ## R7c — `## Source Paper`, the two-column field table
 
-`deck-fidelity` reads the paper at the path this section names. The paper is deliberately **not** a
+The workshop-reviewer lens (checklist item (3)) reads the paper at the path this section names. The paper is deliberately **not** a
 lens `ref` — `refs` is a static list of absolute paths in a template, and the paper differs per run —
 so this table is how the lens locates it, and it is load-bearing enough to need a grammar like any
 other operand. A lens told to read a paper the plan never located reads nothing and judges `FID` on
