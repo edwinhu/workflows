@@ -276,6 +276,7 @@ const cleanCmd = (s: string): string | null => {
 }
 
 const parseArgs = (j: any): Plan => ({
+  ...(typeof j.projectDir === 'string' && j.projectDir ? { projectDir: j.projectDir } : {}),
   scaffoldPaths: Array.isArray(j.scaffoldPaths) ? j.scaffoldPaths.filter((x: any) => typeof x === 'string') : [],
   tasks: (j.tasks ?? []).map((t: any) => ({
     id: t.id ?? '',
@@ -483,8 +484,8 @@ const RED_COMMAND_OPERATORS = /[;&|`$><(){}\n\r]/
 // ---------------------------------------------------------------- rules
 
 const BUILTIN_AGENTS = new Set(['Explore', 'Plan', 'general-purpose', 'statusline-setup', 'claude'])
-/** An agent file in this plugin or the user's agents dir; `p:n` reads plugin p's dirs. */
-const agentResolves = (name: string): boolean => {
+/** An agent file in this plugin, the user's agents dir or the project's .claude/agents; `p:n` reads plugin p's dirs. */
+const agentResolves = (name: string, projectDir?: string): boolean => {
   const { existsSync } = require('node:fs')
   const { join } = require('node:path')
   const home = require('node:os').homedir()
@@ -492,11 +493,11 @@ const agentResolves = (name: string): boolean => {
   const roots = pl ? [join(home, '.claude', 'skills', pl)] : [join(import.meta.dir, '..', '..', '..')]
   return [
     ...roots.flatMap(r => [join(r, 'user-agents', `${n}.md`), join(r, 'agents', `${n}.md`)]),
-    ...(pl ? [] : [join(home, '.claude', 'agents', `${n}.md`)]),
+    ...(pl ? [] : [join(home, '.claude', 'agents', `${n}.md`), ...(projectDir ? [join(projectDir, '.claude', 'agents', `${n}.md`)] : [])]),
   ].some(c => existsSync(c))
 }
 
-const lint = (p: Plan, agentExists: (name: string) => boolean = agentResolves): Finding[] => {
+const lint = (p: Plan, agentExists: (name: string) => boolean = n => agentResolves(n, p.projectDir)): Finding[] => {
   const f: Finding[] = []
   const add = (
     rule: string,
@@ -999,7 +1000,7 @@ const lint = (p: Plan, agentExists: (name: string) => boolean = agentResolves): 
   for (const { field, value } of resolvable)
     if (value && !/[<>|]/.test(value) && !BUILTIN_AGENTS.has(value) && !agentExists(value))
       add('agent-type-unresolvable', 'critical', field,
-        `${field} "${value}" names no agent file (built-in, plugin user-agents/agents, or ~/.claude/agents), so the harness would fall back to the default agent and drop the restriction`, value)
+        `${field} "${value}" names no agent file (built-in, plugin user-agents/agents, ~/.claude/agents, or <projectDir>/.claude/agents), so the harness would fall back to the default agent and drop the restriction`, value)
 
   return f
 }
