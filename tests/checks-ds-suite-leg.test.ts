@@ -33,11 +33,15 @@ test('the real ds-dq contract suite runs as a leg and passes', () => {
   expect(out).toMatch(/ds-dq-tests: [1-9]\d* test\(s\) examined/)
 })
 
+// The refusal fires before any leg runs, so it needs no pytest-sized timeout.
+const refuse = (extra: string[]) => spawnSync('bash', [CHECK, '--plan', '/nonexistent/plan.md', '--project-dir', '.', ...extra],
+  { encoding: 'utf8', timeout: 20_000 })
+
 test('an undeclared --test-cmd or --lint-cmd refuses with exit 2 rather than passing a leg that ran nothing', () => {
-  const none = run({}, [])
+  const none = refuse([])
   expect(none.status).toBe(2)
   expect(none.stderr).toMatch(/--no-test-cmd/)
-  const lintOnly = run({}, ['--no-test-cmd'])
+  const lintOnly = refuse(['--no-test-cmd'])
   expect(lintOnly.status).toBe(2)
   expect(lintOnly.stderr).toMatch(/--lint-cmd or --no-lint-cmd/)
   expect(lintOnly.stderr).not.toMatch(/--test-cmd or --no-test-cmd/)
