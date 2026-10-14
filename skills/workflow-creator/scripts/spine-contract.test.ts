@@ -155,3 +155,11 @@ test('no args-fence cmd string carries a <placeholder> — bash reads < and > as
   expect(cmds.length).toBeGreaterThan(3)
   expect(cmds.filter(c => /<[A-Za-z][\w-]*>/.test(c))).toEqual([])
 })
+
+test('no args-fence goal or authorityExtra string carries a <placeholder> — work would consume it verbatim', () => {
+  const vals = [...skill.matchAll(/^\s*(?:goal|authorityExtra): ("[^"\n]*"|`[^`\n]*`)/gm)].map(m => m[1])
+  expect(vals.filter(v => /<[^>\n]*>/.test(v))).toEqual([])
+  // the slots are named constants filled from a comment, like planPath, not string templates
+  expect(skill).toMatch(/^const goal = \/\*/m)
+  expect(skill).toMatch(/^const phase4Authority = \/\*/m)
+})
