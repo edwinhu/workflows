@@ -58,7 +58,7 @@ test('WORK_RUN_BASELINE scopes the lint to the run: WIP present at dispatch is o
   const sk = join(d, 'skills', 'a')
   const md = (...extra: string[]) => `---\nname: a\ndescription: d\n---\n\nLegacy: ${CLIMB}\n${extra.join('\n')}\n`
   writeFileSync(join(sk, 'SKILL.md'), md(`WIP: ${CLIMB}`))
-  const base = spawnSync('bash', [join(import.meta.dir, '..', '..', 'work', 'scripts', 'tree-snapshot.sh'), d], { encoding: 'utf8' }).stdout.trim()
+  const base = spawnSync('bash', [join(import.meta.dir, '..', '..', 'work', 'scripts', 'tree-snapshot.sh'), d], { timeout: 60_000, encoding: 'utf8' }).stdout.trim()
   expect(base).toMatch(/^[0-9a-f]{40,64}$/)
   writeFileSync(join(sk, 'SKILL.md'), md(`WIP: ${CLIMB}`, 'Run: compliant'))
   const prev = process.env.WORK_RUN_BASELINE
