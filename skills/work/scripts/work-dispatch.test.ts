@@ -632,6 +632,41 @@ describe('--spec-hash hashes the authored spec, not the bytes around it', () => 
   })
 })
 
+describe('dispatch records the run baseline tree in args.json (runBaseline)', () => {
+  const git = (d: string, ...a: string[]) => execFileSync('git', ['-C', d, '-c', 'user.email=t@t', '-c', 'user.name=t', ...a], { encoding: 'utf8' })
+
+  test('a git project: runBaseline is the tree of the WIP at dispatch, kept across a re-dispatch', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh' })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    git(f.dir, 'init', '-q'); git(f.dir, 'add', '-A'); git(f.dir, 'commit', '-qm', 'base')
+    writeFileSync(join(f.dir, 'wip.txt'), 'pre-existing work\n')
+    expect(dispatch(f).code).toBe(0)
+    const base = JSON.parse(readFileSync(f.argsPath, 'utf8')).runBaseline
+    expect(base).toMatch(/^[0-9a-f]{40,64}$/)
+    expect(git(f.dir, 'ls-tree', '--name-only', base)).toContain('wip.txt')
+    expect(git(f.dir, 'diff', '--cached', '--name-only')).toBe('')   // the real index was never staged into
+
+    writeFileSync(join(f.dir, 'run-edit.txt'), 'written after dispatch\n')
+    expect(dispatch(f).code).toBe(0)
+    expect(JSON.parse(readFileSync(f.argsPath, 'utf8')).runBaseline).toBe(base)
+  }, 240_000)
+
+  test('a non-git project records none, and a readOnly run records none', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh' })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    expect(dispatch(f).code).toBe(0)
+    expect('runBaseline' in JSON.parse(readFileSync(f.argsPath, 'utf8'))).toBe(false)
+
+    const g = fixture({ redCommand: 'bash scripts/check.sh', extraArgs: { readOnly: true } })
+    script(g.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    git(g.dir, 'init', '-q')
+    dispatch(g, '--run-dir', join(g.dir, 'ro-run'))
+    const ro = join(g.dir, 'ro-run', 'probe-run', 'args.json')
+    expect(existsSync(ro)).toBe(true)
+    expect('runBaseline' in JSON.parse(readFileSync(ro, 'utf8'))).toBe(false)
+  }, 240_000)
+})
+
 describe('dispatch injects specHash, and planHash is gone', () => {
   test('args.json carries a 64-hex specHash matching --spec-hash, and no planHash at all', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })

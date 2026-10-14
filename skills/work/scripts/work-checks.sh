@@ -18,6 +18,8 @@
 # else -1. Its stderr tail (and the runner's report) goes to output.
 # A red-suite file whose sha256 differs from the dispatcher's is a change owned by the task whose
 # writablePaths reach it, else by 'plan'. WORK_CHECK_TIMEOUT (seconds, default 1800) bounds each command.
+# A rules command running rule-check.ts (directly or through workflow-check) gets `--since args.runBaseline`
+# appended: the tree work-dispatch.sh snapshotted, so only lines THIS run changed are scored, not the tree's WIP.
 # Every command sees WORK_READ_ONLY=1 under args.readOnly, else 0: a gate whose scope differs between a
 # diagnose run (nothing edited, so judge the whole file) and a repair run (judge what it added) reads it.
 # NON-VACUITY: a red, acceptance or mechanical command's FULL output (before the tail) goes through
@@ -75,7 +77,16 @@ def json_object(line):
     except ValueError:
         return False
 
+def since_cmd(cmd):
+    # args.runBaseline (the tree work-dispatch.sh snapshotted) scopes a rule runner to what THIS run changed.
+    # Appended here so plan authors never write it; a cmd that already names --since, or is no rule runner, is as written.
+    base = args.get('runBaseline')
+    if base and re.fullmatch(r'[0-9a-f]{40,64}', str(base)) and '--since' not in cmd and ('rule-check.ts' in cmd or 'workflow-check' in cmd):
+        return f'{cmd} --since {base}'
+    return cmd
+
 def run_rules(cmd):
+    cmd = since_cmd(cmd)
     # RULE_CHECK_OUT: rule-check.ts copies its verdict line there. A ruleChecks of
     # `workflow-check <wf> --rules-only` prints the runner's leg report, not that line, so the verdicts
     # are read from the copy; a runner that scored nothing (no rule, or nothing in scope) exits 0 and
