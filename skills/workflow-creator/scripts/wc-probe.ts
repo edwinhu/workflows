@@ -4043,6 +4043,43 @@ export function checkRuleSkillPreload(
     }
     const listedRaw = Array.isArray(fm?.skills) ? (fm!.skills as unknown[]).map(x => String(x)) : []
     const listed = [...listedRaw.map(canon), ...listedRaw.flatMap(bangNames)]
+    // Per-agent exemption: metadata `rule-skills: none` plus a non-empty `rule-skills-reason`.
+    const agentMeta = fm?.metadata && typeof fm.metadata === 'object' ? fm.metadata as Record<string, unknown> : {}
+    const exempt = String(agentMeta['rule-skills'] ?? '').trim() === 'none'
+    const reason = typeof agentMeta['rule-skills-reason'] === 'string' ? agentMeta['rule-skills-reason'].trim() : ''
+    if (exempt && !reason) {
+      findings.push({
+        rule: 'P19 rule-skill preload',
+        severity: 'major',
+        file,
+        line,
+        detail: `agent "${name}" (${agentFile}) declares metadata rule-skills: none with no rule-skills-reason, so nothing says why it runs without the workflow's rules`,
+        remedy: 'add a non-empty metadata rule-skills-reason, or drop the exemption and preload the declared rule skills',
+      })
+      continue
+    }
+    if (exempt) {
+      unresolved.push({
+        rule: 'P19 rule-skill preload',
+        file,
+        line,
+        token: 'none',
+        reason: `agent "${name}" is exempt from ${decl.source} (rule-skills-reason: ${reason})`,
+      })
+      if (listedRaw.length === 0 && !fm?.initialPrompt) continue
+      const exCmd = /^\/(\S+)/.exec(typeof fm?.initialPrompt === 'string' ? fm.initialPrompt.trim() : '')?.[1] ?? null
+      if (!exCmd || listedRaw.length !== 1 || canon(listedRaw[0]) !== canon(exCmd)) {
+        findings.push({
+          rule: 'P19 rule-skill preload',
+          severity: 'major',
+          file,
+          line,
+          detail: `agent "${name}" (${agentFile}) is exempt but has skills: [${listedRaw.join(', ')}] and initialPrompt: ${exCmd ? `/${exCmd}` : 'none'}; the two paths load different rules`,
+          remedy: 'an exempt agent carries neither field, or names one rules skill R as skills: [R] and initialPrompt: /R',
+        })
+      }
+      continue
+    }
     const missing = decl.skills.filter(s => !listed.includes(norm(s)))
     if (missing.length) {
       findings.push({

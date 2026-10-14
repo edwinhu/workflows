@@ -3922,7 +3922,7 @@ describe('D41 — P18: a worktree or recursive delete at a fixed shared /tmp pat
 
 describe('D42 — P19: a workflow\'s persona agents preload its rule skills', () => {
   /** A throwaway plugin: one workflow dispatching `p19-impl`, its rule skill, and the agent file. */
-  const plugin = (o: { ruleSkills?: string | null, agentSkills?: string[] | null, sibling?: boolean, impl?: string, ip?: string | null, extra?: Record<string, string> }) => {
+  const plugin = (o: { ruleSkills?: string | null, agentSkills?: string[] | null, sibling?: boolean, impl?: string, ip?: string | null, agentMeta?: string[], extra?: Record<string, string> }) => {
     const fm = ['---', 'name: wf', 'description: a fixture workflow']
     if (o.ruleSkills != null) fm.push('metadata:', `  rule-skills: ${o.ruleSkills}`)
     fm.push('---', '', '# wf', '', workArgs([
@@ -3933,6 +3933,7 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
     ]), '')
     const agent = ['---', 'name: p19-impl', 'description: d']
     if (o.agentSkills) agent.push('skills:', ...o.agentSkills.map(s => `  - ${s}`))
+    if (o.agentMeta) agent.push('metadata:', ...o.agentMeta.map(l => `  ${l}`))
     const ip = o.ip === undefined ? '/p19-rules' : o.ip
     if (ip !== null) agent.push(`initialPrompt: ${ip}`)
     agent.push('---', '', 'body', '')
@@ -3955,6 +3956,41 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
     expect(found[0].detail).toContain('"p19-impl"')
     expect(found[0].detail).toContain('p19-rules')
     expect(cli(['--target', dir]).code).toBe(1)
+  })
+
+  describe('per-agent exemption: metadata rule-skills: none + rule-skills-reason', () => {
+    const exempt = ['rule-skills: none', 'rule-skills-reason: "a read-only judge that carries no domain rules"']
+
+    test('an exempt agent with a reason is NOT CHECKED, with the reason, and yields no finding', () => {
+      const dir = plugin({ ruleSkills: 'p19-rules', agentSkills: null, ip: null, agentMeta: exempt })
+      expect(allOf(dir, 'P19')).toEqual([])
+      const r = JSON.parse(cli(['--target', dir, '--json']).out)
+      const note = r.unresolvedRefs.filter((u: any) => u.rule.startsWith('P19'))
+      expect(note.length).toBe(1)
+      expect(note[0].reason).toContain('a read-only judge that carries no domain rules')
+      expect(note[0].reason).toContain('p19-impl')
+    })
+
+    test('an exempt agent without a reason is a MAJOR', () => {
+      for (const meta of [['rule-skills: none'], ['rule-skills: none', 'rule-skills-reason: "  "']]) {
+        const found = allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: null, ip: null, agentMeta: meta }), 'P19')
+        expect(found.length).toBe(1)
+        expect(found[0].severity).toBe('major')
+        expect(found[0].detail).toContain('rule-skills-reason')
+      }
+    })
+
+    test('a non-exempt agent missing the preload is still a MAJOR', () => {
+      const found = allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: null, ip: null, agentMeta: ['rule-skills-reason: "orphan reason"'] }), 'P19')
+      expect(found.some(f => f.severity === 'major' && f.detail.includes('does not preload'))).toBe(true)
+    })
+
+    test('an exempt agent that still lists skills:/initialPrompt must satisfy the one-skill invariant', () => {
+      const bad = allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['other'], ip: '/p19-rules', agentMeta: exempt }), 'P19')
+      expect(bad.length).toBe(1)
+      expect(bad[0].detail).toContain('the two paths load different rules')
+      expect(allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-rules'], ip: '/p19-rules', agentMeta: exempt }), 'P19')).toEqual([])
+    })
   })
 
   test('its fixed twin, preloading the skill (plugin-qualified or bare), is clean', () => {
