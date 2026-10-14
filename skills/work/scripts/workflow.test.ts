@@ -1232,15 +1232,45 @@ const DIRECTION_A = [
   },
 ]
 
-test('the text backstop routes all five direction-A examples out of the gate, with no defect flag set', async () => {
+test('the text backstop routes all five direction-A texts out of the gate when the entry carries no severity', async () => {
   for (const ex of DIRECTION_A) {
     const { result } = await run(
       lensOnly(),
-      reports({ findings: [{ title: ex.title, severity: ex.severity, detail: ex.detail, ownerTask: 'plan' }] }))
+      reports({ findings: [{ title: ex.title, detail: ex.detail, ownerTask: 'plan' }] }))
     expect(result.dispositions, `${ex.id} should route`).toHaveLength(1)
     expect(result.dispositions[0].routedFromFinding).toBe(true)
     expect(result.findings, `${ex.id} must not reach the gate`).toEqual([])
     expect(result.planFindings, `${ex.id} must reach no selector`).toEqual([])
+    expect(result.overallPass).toBe(true)
+  }
+})
+
+// The same five texts as the lenses actually filed them, WITH a severity. A severity is a defect claim
+// the lens made, and the dispositions channel is where a satisfied check goes; wording does not
+// withdraw the claim. Re-measured 2026-10-13 over 3,744 findings: all 11 regex matches predate that
+// channel, and none of the ~900 filed since match.
+test('a severity-bearing finding stays in the gate whatever its wording — all five direction-A texts as filed', async () => {
+  for (const ex of DIRECTION_A) {
+    const { result } = await run(
+      lensOnly(),
+      reports({ findings: [{ title: ex.title, severity: ex.severity, detail: ex.detail, ownerTask: 'plan' }] }))
+    expect(result.dispositions, `${ex.id} must not route`).toEqual([])
+    expect(result.findings, `${ex.id} must stay a finding`).toHaveLength(1)
+    expect(result.overallPass, ex.id).toBe(ex.severity === 'minor')
+  }
+})
+
+test('a critical whose title and detail both self-label as satisfied still gates', async () => {
+  for (const severity of ['critical', 'major']) {
+    const { result } = await run(
+      lensOnly(),
+      reports({ findings: [{
+        title: 'No violations found in the parser — satisfied', severity, ownerTask: 'plan',
+        detail: 'MODEL-EVALUATED (not a defect). But parseRow at src/x.py:10 throws on empty input.',
+      }] }))
+    expect(result.dispositions).toEqual([])
+    expect(result.overallPass).toBe(false)
+    expect(result.scoreTable.survivingBlocking).toBe(1)
   }
 })
 
@@ -1293,7 +1323,7 @@ test('the gate log names the routed count, so a mis-filing lens is visible behin
   const { logs } = await run(
     lensOnly(),
     reports({
-      findings: [{ title: 'E1/E4 determinism in the reviewed scripts — satisfied', severity: 'major', detail: 'd', ownerTask: 'plan' }],
+      findings: [{ title: 'E1/E4 determinism in the reviewed scripts — satisfied', detail: 'd', ownerTask: 'plan' }],
       dispositions: [{ title: 'A2 holds', detail: 'e' }],
     }))
   const gate = logs.find(l => l.startsWith('gate:')) || ''

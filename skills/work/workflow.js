@@ -751,7 +751,9 @@ const LENS_SCHEMA = {
   },
 }
 // Backstop for a lens that used neither channel correctly: it filed a satisfied check as a finding
-// and did not set defect:false. These ROUTE, they never delete — a matched entry lands in
+// with no severity and did not set defect:false. Only a severity-less entry is read: a severity is a
+// defect claim, and wording does not withdraw it. Re-measured 2026-10-13 over 3,744 findings: all 11
+// matches predate the dispositions channel, 0 of ~900 filed since. These ROUTE, they never delete — a matched entry lands in
 // `dispositions`, which is reported in full, so a misrouted real defect is visible rather than gone.
 //
 // Deliberately narrow: both patterns require an EXPLICIT self-label ("— satisfied", "no violations
@@ -779,26 +781,24 @@ const DISPOSITION_DETAIL_HEAD_RE = new RegExp(
   '|\\bno\\s+finding\\b|\\brecorded\\s+as\\s+a\\s+positive\\s+check\\b)',
   'i'
 )
-// Why this entry is not a defect claim, or null if it is one. The boolean the lens set wins over the
-// text patterns: a structural signal beats a guess about wording.
+// Why this entry is not a defect claim, or null if it is one. Only an entry with no severity can leave
+// the gate: a severity-bearing entry gates, so a lens cannot clear a critical it filed by flagging it
+// defect:false or by wording it as satisfied. The boolean the lens set wins over the text patterns.
 const dispositionReason = f => {
-  if (!f) return null
-  // Only an entry with no severity can leave the gate on the lens's own say-so: a severity-bearing entry
-  // gates, so a lens cannot clear a critical it filed by flagging it defect:false.
-  if (f.defect === false && !f.severity) return 'the lens set defect:false on this entry, which carries no severity — its own report says it is not a defect claim'
+  if (!f || typeof f !== 'object' || f.severity) return null
+  if (f.defect === false) return 'the lens set defect:false on this entry, which carries no severity — its own report says it is not a defect claim'
   if (DISPOSITION_TITLE_RE.test(f.title || '')) return 'the title self-labels a satisfied check rather than a defect (a gate cannot block on a true statement, so this would have failed the run for nothing)'
   if (DISPOSITION_DETAIL_HEAD_RE.test(f.detail || '')) return 'the detail opens by self-labelling this as not a defect (a gate cannot block on a true statement, so this would have failed the run for nothing)'
   return null
 }
-// A finding routed out of the gate, carried in `dispositions` with the severity it CLAIMED and the
-// reason it was routed. Nothing is dropped and nothing is rewritten.
+// A severity-less finding routed out of the gate, carried in `dispositions` with the reason it was
+// routed. Nothing is dropped and nothing is rewritten.
 const routedDisposition = (f, why) => ({
   title: f.title,
   ...(f.file ? { file: f.file } : {}),
   detail: f.detail,
   lens: LENS_KEY,
   routedFromFinding: true,
-  claimedSeverity: f.severity,
   routedBecause: why,
 })
 const ATTEMPT_SCHEMA = {
@@ -936,16 +936,17 @@ const parseLens = review => {
   }
   const findings = []
   for (const f of review.findings || []) {
+    const why = dispositionReason(f)
+    if (why && f.title) {
+      dispositions.push(routedDisposition(f, why))
+      continue
+    }
     // A malformed entry is not dropped: the lens did report something, and silence would certify it.
-    const selfCleared = !!f && f.defect === false && !f.severity
-    if (!f || typeof f !== 'object' || (!selfCleared && (!f.title || !SEVERITIES.has(f.severity)))) {
+    if (!f || typeof f !== 'object' || !f.title || !SEVERITIES.has(f.severity)) {
       findings.push(deadLensFinding('returned a malformed finding (no title, or a severity outside critical/major/minor): ' + JSON.stringify(f).slice(0, 200)))
       continue
     }
-    if (!f.title) continue
-    const why = dispositionReason(f)
-    if (why) dispositions.push(routedDisposition(f, why))
-    else findings.push({ ...f, lens: LENS_KEY })
+    findings.push({ ...f, lens: LENS_KEY })
   }
   const routes = (review.routes || []).filter(r => r && r.failure && r.ownerTask)
   const carriedRulings = (review.carried || []).filter(c => c && typeof c.id === 'string')
@@ -1609,7 +1610,7 @@ return {
   // the plan must be amended and re-hashed. A selector channel of its own, because no task owns it.
   planFindings,
   // The lens's other channel, REPORTED IN FULL and never gated. One routed out of `findings` also
-  // carries routedFromFinding/claimedSeverity/routedBecause, so a misrouted real defect is visible to
+  // carries routedFromFinding/routedBecause, so a misrouted real defect is visible to
   // the human reviewer rather than deleted. [] when the lens reported no satisfied check.
   dispositions: dispositionPool,
   // Absent entirely without freezeFindingSet. Blocking-severity lens findings raised THIS round that
