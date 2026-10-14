@@ -175,6 +175,21 @@ describe('WORK_RUN_BASELINE reaches a wrapper cmd, and rule-check.ts reads it', 
     expect(seen({ projectDir: dir, tasks: [], runBaseline: 'x; rm -rf /' })).toBe('');
   });
 
+  test('a mechanicalChecks cmd sees the baseline too; red and acceptance cmds do not', () => {
+    const dir = mkTmp('rule-since-mech-');
+    const a = join(dir, 'args.json'), raw = join(dir, 'raw.json'), out = join(dir, 'checks.json');
+    writeFileSync(a, JSON.stringify({ projectDir: dir, tasks: [], runBaseline: BASE }));
+    const probe = 'echo "baseline=${WORK_RUN_BASELINE-unset}"';
+    writeFileSync(raw, JSON.stringify({ stage: 'agents', agents: {}, checkPlan: { red: [{ id: 'r', command: probe }], acceptance: [{ id: 'a', command: probe }], mechanical: [{ name: 'm', cmd: probe }], rules: [] } }));
+    const r = spawnSync('bash', [CHECKS, a, raw, out], { encoding: 'utf8', timeout: 20_000, env: { ...process.env, WORK_CHECK_TIMEOUT: '30', WORK_RUN_BASELINE: '' } });
+    expect(r.status).toBe(0);
+    const res = JSON.parse(readFileSync(out, 'utf8'));
+    expect(JSON.stringify(res.mechanical)).toContain(`baseline=${BASE}`);
+    expect(JSON.stringify(res.red)).toContain('baseline=');
+    expect(JSON.stringify(res.red)).not.toContain(BASE);
+    expect(JSON.stringify(res.acceptance)).not.toContain(BASE);
+  });
+
   const run = (args: string[], env: Record<string, string> = {}) =>
     spawnSync('bun', ['run', join(HERE, 'rule-check.ts'), '--workflow', 'ds', ...args], { encoding: 'utf8', timeout: 20_000, env: { ...process.env, WORK_RUN_BASELINE: '', ...env } });
 

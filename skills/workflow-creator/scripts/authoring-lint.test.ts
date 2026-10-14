@@ -53,6 +53,30 @@ test('diff scope: a committed climb is not reported; an added one is, with its l
   expect(f.map(x => `${x.file}:${x.line} ${x.rule.slice(0, 2)}`).sort()).toEqual(['SKILL.md:7 L1', 'notes.md:1 L2'])
 })
 
+test('WORK_RUN_BASELINE scopes the lint to the run: WIP present at dispatch is out, the run\'s own line is in; unset keeps HEAD scope', () => {
+  const d = repo()
+  const sk = join(d, 'skills', 'a')
+  const md = (...extra: string[]) => `---\nname: a\ndescription: d\n---\n\nLegacy: ${CLIMB}\n${extra.join('\n')}\n`
+  writeFileSync(join(sk, 'SKILL.md'), md(`WIP: ${CLIMB}`))
+  const base = spawnSync('bash', [join(import.meta.dir, '..', '..', 'work', 'scripts', 'tree-snapshot.sh'), d], { encoding: 'utf8' }).stdout.trim()
+  expect(base).toMatch(/^[0-9a-f]{40,64}$/)
+  writeFileSync(join(sk, 'SKILL.md'), md(`WIP: ${CLIMB}`, 'Run: compliant'))
+  const prev = process.env.WORK_RUN_BASELINE
+  try {
+    process.env.WORK_RUN_BASELINE = base
+    expect(lint(sk)).toEqual([])
+    writeFileSync(join(sk, 'SKILL.md'), md(`WIP: ${CLIMB}`, `Run: ${CLIMB}`))
+    expect(lint(sk).map(x => `${x.file}:${x.line}`)).toEqual(['SKILL.md:8'])
+    delete process.env.WORK_RUN_BASELINE
+    expect(lint(sk).map(x => `${x.file}:${x.line}`)).toEqual(['SKILL.md:7', 'SKILL.md:8'])
+    process.env.WORK_RUN_BASELINE = 'not-a-tree'
+    expect(lint(sk).map(x => `${x.file}:${x.line}`)).toEqual(['SKILL.md:7', 'SKILL.md:8'])
+  } finally {
+    if (prev === undefined) delete process.env.WORK_RUN_BASELINE
+    else process.env.WORK_RUN_BASELINE = prev
+  }
+})
+
 test('outside git every line counts; exit codes are 0, 1 and 2', () => {
   const d = mkdtempSync(join(tmpdir(), 'authoring-lint-nogit-'))
   trash.push(d)
