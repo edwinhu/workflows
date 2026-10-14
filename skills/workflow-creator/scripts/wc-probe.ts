@@ -363,6 +363,7 @@ export const KNOWN_EXEMPTION_RULES: readonly string[] = [
   'fixed-temp',
   'leg-count',
   'inputs-readable',
+  'flag-leg',
 ]
 
 /**
@@ -3433,6 +3434,109 @@ export function checkLegCounts(file: string, text: string, exemptions: readonly 
 }
 
 /**
+ * P23 a flag that gates a leg is refused when absent.
+ *
+ * A check script that reads `if [ -n "$X" ]; then <leg>; else report <leg> 0 …; fi` turns a flag
+ * nobody passed into a leg that passed having run nothing. Fires, in a `check.sh` / `*-check.sh`,
+ * on a variable set from a CLI flag (`--f) X="${2:-}"`, empty by default) whose absence skips a
+ * leg — an `if [ -n|-z "$X" ]` or `[ -n "$X" ] &&` whose span runs or reports a leg, or a helper
+ * that skips an empty parameter and is called with `"$X"` — unless the script refuses the absence
+ * (`exit 2` / `die` / `report … 2` in that span, or a guard anywhere on the same variable) or
+ * offers the explicit `--no-<f>` opt-out. Models: ds `--no-test-cmd`, dev `--no-plan`.
+ */
+export function checkMissingFlagRefused(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
+  if (!/(?:^|\/)(?:[\w.]+-)?check\.sh$/.test(file)) return []
+  const lines = text.split('\n')
+  const code = lines.map(l => (/^\s*#/.test(l) ? '' : l))
+  const flagOf = new Map<string, string>()
+  const armNames = new Set<string>()
+  for (const l of code) {
+    const m = /^\s*([^()]*?)\)\s*(.*)$/.exec(l)
+    if (!m || !/^-/.test(m[1].trim())) continue
+    for (const n of m[1].split('|')) armNames.add(n.trim())
+    const v = /^\s*(--[a-z][a-z0-9-]*)\b.*?\)\s*([A-Z][A-Z0-9_]*)="\$\{2(?::?-[^}]*)?\}"/.exec(l)
+    if (v) flagOf.set(v[2], v[1])
+  }
+  const emptyDefault = (v: string): boolean => {
+    for (const l of code) {
+      const m = new RegExp(`(?:^|[\\s;])${v}=("[^"]*"|'[^']*'|[^\\s;]*)`).exec(l)
+      if (m) return m[1] === '""' || m[1] === "''" || m[1] === ''
+    }
+    return true
+  }
+  const vars = [...flagOf.keys()].filter(v => emptyDefault(v) && !armNames.has(`--no-${flagOf.get(v)!.slice(2)}`))
+  if (!vars.length) return []
+
+  const gateRe = (v: string) => new RegExp(`\\[\\[?\\s+-[nz]\\s+"?\\$\\{?${v}(?::-)?\\}?"?\\s+\\]\\]?`)
+  const LEG = /\b(report|legcount_run|legcount_cmd|count_line|leg)\b/
+  const REFUSE = /\bexit\s+2\b|\bdie\b|\breport\s+\S+\s+2\b/
+  // The span a gate governs: an `if` to its `fi`, otherwise the line.
+  const spanOf = (i: number): string => {
+    if (!/^\s*if\b/.test(code[i])) return code[i]
+    let j = i
+    while (j < code.length && !/(?:^|[;\s])fi\b/.test(code[j])) j++
+    return code.slice(i, Math.min(j, code.length - 1) + 1).join('\n')
+  }
+  // Helpers that skip an empty parameter: name → positional index of the skipped parameter.
+  const helpers = new Map<string, number>()
+  for (let i = 0; i < code.length; i++) {
+    const h = /^\s*(\w+)\s*\(\)\s*\{/.exec(code[i])
+    if (!h) continue
+    let j = i
+    while (j < code.length && !/^\}/.test(code[j])) j++
+    const body = code.slice(i, j + 1).join('\n')
+    const binds = [...body.matchAll(/\b(\w+)="\$(\d)"/g)]
+    for (const [, name, pos] of binds) {
+      const g = new RegExp(`\\[\\[?\\s+-[nz]\\s+"?\\$\\{?${name}\\}?"?\\s+\\]\\]?`).exec(body)
+      if (!g) continue
+      const around = body.slice(g.index)
+      if (LEG.test(around) && !REFUSE.test(around)) helpers.set(h[1], Number(pos))
+    }
+  }
+
+  const gates = new Map<string, number[]>()
+  const refused = new Set<string>()
+  for (let i = 0; i < code.length; i++) {
+    for (const v of vars) {
+      if (gateRe(v).test(code[i])) {
+        const span = spanOf(i)
+        // A gate counts as a leg skip only when it runs or reports a leg; a bare guard or a
+        // pass-through argument is neither.
+        // `-z` runs the leg on absence unless its branch reports a pass: a selector
+        // (`[ -z "$ONLY" ] || [ "$ONLY" = x ]`) is not a skip.
+        const skips = /-n\s/.test(gateRe(v).exec(code[i])![0]) || /\breport\s+\S+\s+0\b/.test(span)
+        if (REFUSE.test(span)) refused.add(v)
+        else if (skips && LEG.test(span)) gates.set(v, [...(gates.get(v) ?? []), i])
+      }
+      for (const [fn, pos] of helpers) {
+        const m = new RegExp(`^\\s*${fn}\\s+(.*)$`).exec(code[i])
+        if (!m) continue
+        const args = m[1].trim().split(/\s+/)
+        if (args[pos - 1] === `"$${v}"` || args[pos - 1] === `"\${${v}}"`) {
+          if (!REFUSE.test(code[i])) gates.set(v, [...(gates.get(v) ?? []), i])
+        }
+      }
+    }
+  }
+  const findings: Finding[] = []
+  for (const v of vars) {
+    if (refused.has(v)) continue
+    const at = (gates.get(v) ?? []).find(i => !isExemptAt(exemptions, 'flag-leg', i + 1))
+    if (at === undefined) continue
+    const flag = flagOf.get(v)!
+    findings.push({
+      rule: 'P23 missing flag refused',
+      severity: 'major',
+      file,
+      line: at + 1,
+      detail: `${flag} (${v}) gates a leg here, and omitting it skips the leg and still passes — the script has no exit 2 for its absence and no --no-${flag.slice(2)} opt-out`,
+      remedy: `refuse the absence (\`[ -n "$${v}" ] || [ "$NO_X" = 1 ] || { echo "pass ${flag} or --no-${flag.slice(2)}" >&2; exit 2; }\`) and add the --no-${flag.slice(2)} flag that declares the skip, or declare the exception with <!-- wc-probe: ignore-flag-leg --> and say why`,
+    })
+  }
+  return findings
+}
+
+/**
  * P10 one entry point — a work args object declares ONE `mechanicalChecks` entry.
  *
  * A list of N commands loses one silently, and nothing reports a check it never knew about; one
@@ -4728,6 +4832,7 @@ export function runProbe(
     } else {
       findings.push(...checkReturnShapeDrift(file, text, { exemptions: fileExemptions, ctx }))
       findings.push(...checkShellOnlyAgentLegs(file, text, fileExemptions))
+      findings.push(...checkMissingFlagRefused(file, text, fileExemptions))
       findings.push(...checkBareWorkflowRefs(file, text, fileExemptions))
       findings.push(...checkRefsDeclaration(file, text, root, fileExemptions, ctx, unresolvedRefs))
       findings.push(...checkInputsReadable(file, text, root, fileExemptions, ctx))

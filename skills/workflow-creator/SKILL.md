@@ -915,7 +915,7 @@ out of a prompt, which is not an enumeration.
 A fence whose `tasks[]` is empty or absent is skipped entirely — that is what a `readOnly` charter
 declares, and flagging it would fire on every audit block. Marker: `task-coverage`.
 
-### P14-P22 round-shape rules
+### P14-P23 round-shape rules
 
 | rule | fires on | severity | marker |
 |---|---|---|---|
@@ -928,6 +928,7 @@ declares, and flagging it would fire on every audit block. Marker: `task-coverag
 | P20 one loader entry point | a SKILL.md reaching a constraint corpus by the loader's implementation file, an older name or a hand-rolled `$HOME` resolver | major | `ignore-loader-entry-point` |
 | P21 leg count line | in a shell gate, a `report <leg> <status>` with no `legcount_run`/`legcount_cmd`/`count_line <leg>` (or a helper that prints one) since the previous `report`; or a literal `report <leg> 0` with no `count_line <leg> 0 <unit> "<reason>"` before it | major | `leg-count` |
 | P22 inputs readable | in a work-args fence, a `refs` entry, scoredChecks item `inputs` or `authorityExtra` path that is `.docx .xlsx .pptx .doc .xls .ppt .zip .db .sqlite` with no projection command (pandoc, xlsx2csv, sqlite3, docx-render …) in the same prompt; an existing ref over 256 KB where the prompt says "in full"; a `{{NAME}}` placeholder ref under a "search-only" prompt (`{{…}}` and `$VAR` paths are otherwise skipped) | major | `inputs-readable` |
+| P23 missing flag refused | a `check.sh` / `*-check.sh` whose empty-default CLI flag gates a leg (`if [ -n "$X" ]`, `[ -n "$X" ] &&`, or a helper that skips an empty parameter) with no `exit 2` for its absence and no `--no-<flag>` opt-out | major | `flag-leg` |
 
 Advisory rules print as `[advisory <severity>]` in both modes and never move the exit code. P15 gates since its 2026-10-02 baseline (15 findings, ds lens and teaching notes scoredChecks) was cleared.
 
