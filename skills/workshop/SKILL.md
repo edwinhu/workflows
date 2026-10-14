@@ -114,9 +114,10 @@ resolves them against no particular directory; `writablePaths` and every `mechan
 **project-relative**, because `work` spawns each leg with its working directory at `projectDir`.
 
 ```js
-{
-  projectDir, planPath: "<the path $PLAN resolved to in Phase 2>", planHash: "<64-hex>",
-  goal: "<one sentence>",
+const planPath = /* the path $PLAN resolved to in Phase 2 */
+const goal = /* one sentence */
+const args = {
+  projectDir, planPath, goal,   // specHash is injected by work-dispatch.sh from the plan, never written here
 
   // One row per distinct `Section` value in the plan's ## Slide Spec, plus one assembler.
   // Every task carries refs, empty or not.
@@ -128,7 +129,8 @@ resolves them against no particular directory; `writablePaths` and every `mechan
       work: "Write the Typst fragments for every ## Slide Spec row whose Section is <Section>. Each slide's `=== ` title line carries that row's Slide cell; SPEC and NOTE join on the normalized title key defined in references/slide-spec-grammar.md, so a retitled slide fails the gate rather than silently passing. IMMEDIATELY AFTER each `=== ` title line, emit `#inv(\"F1\", \"T2\")` listing EXACTLY that row's Inventory IDs as quoted string literals, one argument per ID — no extra ID, none omitted. INV is a per-slide SET EQUALITY between the IDs a built slide emits and its own row's Inventory cell, and it FAILs on a difference in either direction; deck-wide membership in ## Source Inventory is the second half of the check, not the whole of it, so identical boilerplate on every slide FAILs. A slide carrying no `#inv(` call is a FAIL, not an untraced slide, and a call sitting inside a `//` or `/* … */` comment is not an emission. `inv` is the no-op declared in the vendored templates/theme.typ, so it renders nothing. Every emitted ID must also be declared in ## Source Inventory, matched whole-token. Write the matching `== <title>` notes section for each slide under the same title.",
       writablePaths: ["presentation/fragments/section-1.typ",
                       "presentation/fragments/notes-section-1.typ"],
-      acceptance: "Each of this section's Slide Spec rows has one slide whose `=== ` line matches its Slide cell under the normalized key, an uncommented `#inv(...)` call immediately after that line whose ID set EQUALS that row's Inventory cell in both directions, and one notes section under the same key; every emitted ID is declared whole-token in ## Source Inventory.",
+      acceptance: "Each of this section's Slide Spec rows has one slide whose `=== ` line matches its Slide cell under the normalized key, and each slide is followed by an uncommented `#inv(...)` call whose ID set EQUALS that row's Inventory cell in both directions: `grep -c '^=== ' presentation/fragments/section-1.typ` equals `grep -c '^[[:space:]]*#inv(' presentation/fragments/section-1.typ`; the deck gate's SPEC, INV and NOTE rows compute the title join, the ID sets and the notes section once assemble builds the deck.",
+      acceptanceCmd: "test -s presentation/fragments/section-1.typ && test -s presentation/fragments/notes-section-1.typ && [ \"$(grep -c '^=== ' presentation/fragments/section-1.typ)\" = \"$(grep -c '^[[:space:]]*#inv(' presentation/fragments/section-1.typ)\" ]",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/theme.typ"] },
@@ -142,7 +144,8 @@ resolves them against no particular directory; `writablePaths` and every `mechan
                       "presentation/templates/custom-outline.typ",
                       "presentation/slides.typ", "presentation/notes.typ",
                       "presentation/slides.pdf", "presentation/notes.pdf"],
-      acceptance: "Both templates exist under the project's presentation/templates/ and the deck imports theme.typ project-relative; both sources compile with no stderr diagnostic; the deck's slide set and the Slide Spec's body rows correspond one-to-one under the normalized title key.",
+      acceptance: "Both templates exist under the project's presentation/templates/ and the deck imports theme.typ project-relative, both sources compile with no stderr diagnostic, and the deck's slide set and the Slide Spec's body rows correspond one-to-one under the normalized title key: `test -f presentation/templates/theme.typ`, `test -f presentation/templates/custom-outline.typ` and the deck gate (`bash ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/check.sh --leg workshop-gate`, its SPEC and INV rows) exit 0.",
+      acceptanceCmd: `test -f presentation/templates/theme.typ && test -f presentation/templates/custom-outline.typ && bash ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/check.sh --plan ${planPath} --project-dir ${projectDir} --leg workshop-gate`,
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md",
              "${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/theme.typ",
@@ -153,17 +156,14 @@ resolves them against no particular directory; `writablePaths` and every `mechan
   // every constraint under checks/workshop/constraints/ in every plugin root it reaches — this plugin's
   // workshop-deck.py, which owns the ten computed rows and is never conditional, and the typst
   // plugin's modules — run over --project-dir, so a constraint added there runs with no edit here.
-  // The deck probe needs the run's approved plan — the only per-run value in any cmd. It is a
-  // TEMPLATE SLOT in the `<...>` convention this whole object already uses (see planPath above),
-  // substituted by the orchestrator when it writes args.json. It is NOT `${planPath}`: that is a
-  // property of this same object literal, not a lexical binding, so a template literal ships the
-  // characters unresolved into a cmd `work` runs VERBATIM.
+  // The deck probe needs the run's approved plan, the only per-run value in any cmd; planPath and
+  // projectDir are the constants above, interpolated into a template literal so no placeholder reaches `work`.
   // probe-tests is the probe's own contract suite: a gate whose runner is untested is untested.
   // ONE entry point: a list of N independent commands loses one silently. check.sh runs both
   // legs, none short-circuiting, and its exit code IS the mechanical verdict.
   mechanicalChecks: [
     { name: "deck",
-      cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/check.sh --plan <the planPath above, substituted when args.json is written> --project-dir <projectDir>" },
+      cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/check.sh --plan ${planPath} --project-dir ${projectDir}` },
   ],
   // Jev scores the calibrated deck/notes rules under checks/workshop/rules/ (T-HOLLOW: a notes bullet
   // announcing content the notes never write out; T-CALLOUT: a callout quoting source text; T-STORY: a
@@ -171,7 +171,7 @@ resolves them against no particular directory; `writablePaths` and every `mechan
   // subtitle; T-TRANSITION: a notes `==` section whose first bullet does not pick up the previous
   // section's last sentence), on the round's changed lines only; p >= 0.85 lands in rulesThatFailed and blocks, lower
   // ones reach the lens ranked. The rules in checks/workshop/rules/uncalibrated/ are not scored.
-  ruleChecks: { name: "jev-typst-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow workshop --project-dir <projectDir> --plan <planPath>" },
+  ruleChecks: { name: "jev-typst-rules", cmd: `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow workshop --project-dir ${projectDir} --plan ${planPath}` },
 
   // One lens after verification and mechanical checks; its checklist covers all six dimensions.
   // FID, CONV and VIS are checklist items of this one lens, not separate lenses. workshop-deck.py
