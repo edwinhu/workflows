@@ -18,7 +18,7 @@ the mechanical checks, the refs, the authority text. It ships no `workflow.js` a
 `work`'s mechanics.
 
 What makes a run `dev` rather than plain `work` is one thing: **every implementation task carries a
-`redCommand`**, so `work`'s probes execute the failing test before the implementer and the passing
+`redCommand`** (the one exception: `redDisposition` — see below), so `work`'s probes execute the failing test before the implementer and the passing
 test after it, and the JS reads both exit codes. A task whose acceptance cannot be expressed as one
 command that fails now and passes later is not ready to plan.
 
@@ -104,6 +104,9 @@ Three domain requirements on the table:
 - **`redCommand` per implementation task** — one invocation, no shell operators, failing now for the
   intended missing behaviour and passing once the task is done. It goes in the plan's Run sizing
   `Test-first:` block too, because it costs 2 agents against the fan-out ceiling.
+- **`redDisposition`** — the only substitute for `redCommand`, and plan-lint (`dev-red-disposition`) refuses any other
+  text: `no-behaviour: <reason>` (docs, config, rename — nothing to pin) or `already-covered: <test that pins it>`.
+  A task carrying one is judged on its `acceptanceCmd`/verification, not on a test that went RED.
 - **`refs` on every task row and on the lens** — required, may be empty. `work`'s spine does not validate it;
   `wc-probe` P7 refuses an absent key in THIS file, so a live run assembled from an approved plan is
   unchecked. Write `refs: []` to state "no domain rules" rather than omitting the key.
@@ -182,8 +185,9 @@ const args = {
   lens: {
     agentType: "Explore",
     refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-security.md",
-           "${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-performance.md"],
-    prompt: "Judge the change in the working tree against the approved plan and the goal. CHECKLIST, every item in scope on every run: (1) CRITERIA vs ARTIFACTS — for each success criterion in the plan and goal, is there an artifact in the tree that satisfies it? Missing or partial satisfaction is a finding, CRITICAL where the deliverable cannot stand without it. (2) SCOPE intent — path containment is check.sh's scope leg, so do not re-derive it; judge only unrequested features and silently skipped plan items (a plan task with no artifact), CRITICAL where a plan task the goal depends on was skipped. (3) SECURITY of the changed code, against the finding classes in the first ref — read it in full first. A finding names a file and line and states the concrete attack vector: the input an attacker controls, the path it travels, and what it reaches. Pre-existing defects this change did not introduce are out of scope. CRITICAL where the vector reaches attacker-controlled input on a production path. (4) PERFORMANCE — the runtime cost of the changed code, against the finding classes in the second ref, read in full first. A finding names a file and line, sits on a path that runs often enough to matter, and states the cost as Big-O over the input that actually grows or as concrete latency/memory; speculation without a growing input is not a finding. CRITICAL where the growth makes a production path unusable at realistic input size. (5) TEST PINS BEHAVIOUR: for each task, does the test that went RED assert the behaviour its acceptance names, not an incidental property (exit status only, a log line)? A test that would stay green with the behaviour removed is a MAJOR finding. Severity is MAJOR at minimum for all five. MODE — RED (a task was flagged or a mechanical check failed): diagnose EVERY failure in the digest and route it, naming cause and fix, to the task id whose writablePaths own the file, or to 'plan' when no task can own the fix. MODE — GREEN (everything passed): make one open-ended pass over the whole checklist and report each finding with an ownerTask. In both modes, rule every carried finding open or closed against evidence you actually read; silence leaves it open.",
+           "${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-performance.md",
+           "${CLAUDE_PLUGIN_ROOT}/skills/dev/references/writing-good-tests.md"],
+    prompt: "Judge the change in the working tree against the approved plan and the goal. CHECKLIST, every item in scope on every run: (1) CRITERIA vs ARTIFACTS — for each success criterion in the plan and goal, is there an artifact in the tree that satisfies it? Missing or partial satisfaction is a finding, CRITICAL where the deliverable cannot stand without it. (2) SCOPE intent — path containment is check.sh's scope leg, so do not re-derive it; judge only unrequested features and silently skipped plan items (a plan task with no artifact), CRITICAL where a plan task the goal depends on was skipped. (3) SECURITY of the changed code, against the finding classes in the first ref — read it in full first. A finding names a file and line and states the concrete attack vector: the input an attacker controls, the path it travels, and what it reaches. Pre-existing defects this change did not introduce are out of scope. CRITICAL where the vector reaches attacker-controlled input on a production path. (4) PERFORMANCE — the runtime cost of the changed code, against the finding classes in the second ref, read in full first. A finding names a file and line, sits on a path that runs often enough to matter, and states the cost as Big-O over the input that actually grows or as concrete latency/memory; speculation without a growing input is not a finding. CRITICAL where the growth makes a production path unusable at realistic input size. (5) TEST PINS BEHAVIOUR: for each task, does the test that went RED (for a task with `redDisposition`, its acceptanceCmd/verification instead) assert the behaviour its acceptance names, not an incidental property (exit status only, a log line)? A test that would stay green with the behaviour removed is a MAJOR finding. Severity is MAJOR at minimum for all five. MODE — RED (a task was flagged or a mechanical check failed): diagnose EVERY failure in the digest and route it, naming cause and fix, to the task id whose writablePaths own the file, or to 'plan' when no task can own the fix. MODE — GREEN (everything passed): make one open-ended pass over the whole checklist and report each finding with an ownerTask. In both modes, rule every carried finding open or closed against evidence you actually read; silence leaves it open.",
   },
 
   authorityExtra: [
@@ -204,13 +208,7 @@ under no task's `writablePaths` or `scaffoldPaths`, naming each. Lens item (2) j
 `verifierAgentType` and the lens `agentType` pin `Explore` because it has no Edit and no Write: a
 judge that structurally cannot modify the tree beats a prompt asking it not to.
 
-**`implementerAgentType` is deliberately unset here, and that is not the oversight it is in a prose
-workflow.** A custom agent is justified only by a custom prompt, hooks or preloaded skills, and its
-body REPLACES Claude Code's software-engineering system prompt. This workflow's output is code under
-TDD, so that prompt is the correct framing rather than a defect — replacing it would cost the
-implementer the tool discipline the tasks depend on and buy nothing back. The sibling prose
-workflows (`ds`, `writing`, `workshop`) override for the opposite reason: their deliverable is not
-code.
+**`implementerAgentType` is deliberately unset:** the output is code under TDD, and a custom agent body would replace the software-engineering prompt the tasks depend on.
 
 Add `${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-web.md` or
 `${CLAUDE_PLUGIN_ROOT}/skills/dev/references/testing-desktop.md` to a task's `refs` when that

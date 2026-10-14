@@ -639,6 +639,15 @@ const lint = (p: Plan, agentExists: (name: string) => boolean = n => agentResolv
         'task declares no redCommand and no redDisposition, so it is neither red-gated nor accounted for',
       )
 
+    if (!t.redCommand && disposition && workflowOf(p.planText) === 'dev' && !/^(no-behaviour|already-covered):\s*\S/.test(disposition))
+      add(
+        'dev-red-disposition',
+        'major',
+        where,
+        'a dev task carries a redCommand; its one sanctioned exception is redDisposition starting `no-behaviour:` (docs/config/rename, nothing to pin) or `already-covered:` (name the test that already pins it), each with a reason',
+        disposition,
+      )
+
     if (t.redCommand) {
       const rc = t.redCommand
 

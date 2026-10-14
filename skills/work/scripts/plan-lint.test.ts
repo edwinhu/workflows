@@ -668,6 +668,25 @@ test('neither redCommand nor redDisposition is still redcommand-missing — REGR
   expect(rules(p)).not.toContain('red-both-declared')
 })
 
+const devText = '---\nworkflow: dev\n---\n\n# P\n'
+
+test('dev refuses a free-text redDisposition on an implementation task', () => {
+  const p = base({ planText: devText, tasks: [task({ redCommand: null, redDisposition: 'already implemented' })] })
+  const f = lint(p).find(x => x.rule === 'dev-red-disposition')
+  expect(f).toBeDefined()
+  expect(f!.severity).toBe('major')
+})
+
+test('dev accepts redDisposition only as no-behaviour: or already-covered: with a reason', () => {
+  for (const d of ['no-behaviour: docs-only rename', 'already-covered: tests/foo.test.ts pins it'])
+    expect(rules(base({ planText: devText, tasks: [task({ redCommand: null, redDisposition: d })] }))).not.toContain('dev-red-disposition')
+  expect(rules(base({ planText: devText, tasks: [task({ redCommand: null, redDisposition: 'no-behaviour:' })] }))).toContain('dev-red-disposition')
+})
+
+test('non-dev plans keep free-text redDisposition — REGRESSION GUARD', () => {
+  expect(rules(base({ tasks: [task({ redCommand: null, redDisposition: 'already implemented' })] }))).not.toContain('dev-red-disposition')
+})
+
 test('a redCommand with no disposition is unchanged — REGRESSION GUARD', () => {
   const p = base({ tasks: [task({ redCommand: 'bash scripts/check.sh', redDisposition: null })] })
   expect(rules(p)).not.toContain('redcommand-missing')
