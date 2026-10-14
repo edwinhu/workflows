@@ -37,6 +37,7 @@
 #                                      refused (same reuse)
 #   work-dispatch.sh --spec-hash PLAN print the plan's spec hash and nothing else
 #   work-dispatch.sh --scaffold PLAN PATH is PATH declared in scaffoldPaths? 0 yes, 1 no, 2 undecidable
+#   work-dispatch.sh --stray PLAN      NUL-separated abs paths on stdin; prints those under no writable/scaffold path
 #   work-dispatch.sh --covers PLAN PATH  is PATH inside some task's writablePaths? 0 yes, 1 no,
 #                                      2 undecidable (read by main-thread-guard.sh, which fails closed)
 #   WORK_DISPATCH_DRYRUN=1            build + lint + probe + size, stop before dispatching
@@ -225,6 +226,37 @@ SCAFFOLD_PY
 if [ "${1:-}" = "--scaffold" ]; then
   [ -f "${2:-}" ] && [ -n "${3:-}" ] || { echo "--scaffold needs <plan> <path>" >&2; exit 2; }
   scaffolds "$2" "$3"
+  exit $?
+fi
+
+# --stray PLAN: absolute paths NUL-separated on stdin; prints those under no writablePath and no scaffoldPath,
+# one per line (same containment as --covers/--scaffold, one process for the lot). 0 = decided, 2 = undecidable.
+if [ "${1:-}" = "--stray" ]; then
+  [ -f "${2:-}" ] || { echo "--stray needs <plan>" >&2; exit 2; }
+  python3 -c "$(cat <<'STRAY_PY'
+import json, os, re, sys
+plan = sys.argv[1]
+try:
+    m = re.search(r'<!--\s*work:dispatch\s*(.*?)-->', open(plan).read(), re.S)
+    block = json.loads(m.group(1))
+except (OSError, AttributeError, json.JSONDecodeError):
+    raise SystemExit(2)
+args = block.get("args") if isinstance(block.get("args"), dict) else block
+if not isinstance(args, dict):
+    raise SystemExit(2)
+root = args.get("projectDir") or os.path.dirname(os.path.abspath(plan))
+def norm(vals):
+    return [os.path.normpath(os.path.join(root, v.strip())) for v in vals if isinstance(v, str) and v.strip()]
+writable = norm(w for t in (args.get("tasks") or []) if isinstance(t, dict) for w in (t.get("writablePaths") or []))
+if not writable:
+    raise SystemExit(2)
+declared = writable + norm(args.get("scaffoldPaths") or [])
+for p in filter(None, sys.stdin.buffer.read().decode(errors="surrogateescape").split("\0")):
+    t = os.path.normpath(os.path.abspath(p))
+    if not any(t == d or t.startswith(d + os.sep) for d in declared):
+        print(p)
+STRAY_PY
+)" "$2"
   exit $?
 fi
 
