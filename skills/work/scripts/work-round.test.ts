@@ -587,6 +587,22 @@ describe('work-checks.sh runs ruleChecks.cmd and records {name, exitCode, stdout
     expect(r.result.rulesThatFailed.length).toBeGreaterThan(0)
     expect(r.result.rulesThatFailed.join(' ')).toMatch(/R1/)
   })
+  test('the digest files a non-zero, verdict-less rule record under failures even when the gate list is empty', () => {
+    const tasks = [{ id: 'T1', writablePaths: ['src/'] }]
+    const rc = { name: 'rules', cmd: 'bun rule-check.ts', blockAt: 0.85 }
+    const gate = { mode: 'GREEN', digest: { rulesThatFailed: [] }, agents: { implemented: [], verified: [] } }
+    const dir = repo({ 'a.txt': 'a' })
+    for (const rec of [
+      { name: 'rules', cmd: rc.cmd, exitCode: -1, stdout: 'x', output: 'rule-check: --since scopes --project-dir; name it' },
+      { name: 'rules', cmd: rc.cmd, exitCode: 1, stdout: '{"verdicts":[],"unavailable":[],"scope":"nothing in scope (x)"}', output: '' },
+    ]) {
+      const d = buildDigest({ tasks, ruleChecks: rc }, { rules: [rec] }, gate, dir)
+      expect(d.failures.map((f: any) => f.check)).toEqual(['rules:rules'])
+      expect(d.settled).toEqual([])
+    }
+    const none = buildDigest({ tasks, ruleChecks: rc }, { rules: [] }, gate, dir)
+    expect(none.failures.map((f: any) => f.check)).toEqual(['rules:rules'])
+  })
   test('the digest lists a failed rule with its owner; a clean rule check is settled', () => {
     const tasks = [{ id: 'T1', writablePaths: ['src/'] }, { id: 'T2', writablePaths: ['lib/'] }]
     const rc = { name: 'rules', cmd: 'bun rule-check.ts', blockAt: 0.85 }
