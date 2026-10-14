@@ -159,7 +159,11 @@ describe('the one prompt asks for all five checklist dimensions', () => {
   })
 
   test('the fifth item is a major-finding check on what the RED test asserts', () => {
-    expect(lens.prompt).toMatch(/TEST PINS BEHAVIOUR.*went RED assert the behaviour.*MAJOR finding/)
+    expect(lens.prompt).toMatch(/TEST PINS BEHAVIOUR.*went RED.*assert the behaviour.*MAJOR finding/)
+  })
+
+  test('item 5 judges a redDisposition task on its acceptanceCmd/verification', () => {
+    expect(lens.prompt).toMatch(/redDisposition.*acceptanceCmd\/verification/)
   })
 
   test('item 5 does not re-grade the shape the MOCK rule decides (P15)', () => {
