@@ -569,6 +569,21 @@ function implementWaves(list) {
   }
   return waves
 }
+// "Already satisfied" holds only for a carried dependency that PASSED: a carried failing or unverified
+// one would hand the active task its unfixed output, and the active task would take the blame.
+if (onlyTasks && HAS_DEPS && !readOnly) {
+  for (const t of activeTasks) {
+    for (const d of depsOf(t)) {
+      if (activeIds.has(d) || !taskList.some(x => x.id === d)) continue
+      if (!priorVerified.some(r => r.id === d && r.pass === true)) {
+        throw new Error(
+          `work: onlyTasks: ${t.id} depends on carried task ${d}, whose prior verdict is not pass. ` +
+          `Add ${d} to onlyTasks, or carry a passing verified record for it.`
+        )
+      }
+    }
+  }
+}
 const IMPLEMENT_WAVES = readOnly ? [] : implementWaves(activeTasks)
 
 // Concurrent implementers are safe ONLY because their writable paths cannot overlap, so this is
