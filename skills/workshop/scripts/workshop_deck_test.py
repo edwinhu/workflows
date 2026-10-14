@@ -179,7 +179,7 @@ def break_note_missing_section(root: Path) -> None:
     substitute(
         notes_src(root),
         "\n== Blockholders raise dividends by four points.\n\n"
-        "- Give the point estimate once.\n\n"
+        "- Now that the table is left unread, turn to the result: give the point estimate once.\n\n"
         "- Then move to the event study.\n",
         "",
     )
@@ -888,7 +888,7 @@ def test_note_fails_when_a_matched_notes_section_carries_no_spoken_line(tmp_path
     root = stage(tmp_path)
     substitute(
         notes_src(root),
-        "- Give the point estimate once.\n\n- Then move to the event study.\n",
+        "- Now that the table is left unread, turn to the result: give the point estimate once.\n\n- Then move to the event study.\n",
         "// TODO: write this slide's notes\n#v(1em)\n",
     )
     report = probe(root)
@@ -905,7 +905,7 @@ def test_note_fails_when_a_matched_notes_section_carries_no_spoken_line(tmp_path
 
 def test_nar_fails_when_a_bullet_narrates_the_slide(tmp_path: Path):
     root = stage(tmp_path)
-    substitute(notes_src(root), "- Give the point estimate once.",
+    substitute(notes_src(root), "- Now that the table is left unread, turn to the result: give the point estimate once.",
                "- The slide shows the point estimate once.")
     report = probe(root)
     assert "'The slide shows'" in report["NAR"]["detail"], report["NAR"]
@@ -938,7 +938,7 @@ def test_nar_passes_subject_matter_stage_directions_and_poll_codes(tmp_path: Pat
 def test_nar_judges_only_lines_added_against_head(tmp_path: Path):
     # Accepted notes on HEAD that narrate are legacy; the round is judged on the bullets it adds.
     root = stage(tmp_path)
-    substitute(notes_src(root), "- Give the point estimate once.",
+    substitute(notes_src(root), "- Now that the table is left unread, turn to the result: give the point estimate once.",
                "- Here is the question the slide asks: is four points large?")
     git = ["git", "-C", str(root), "-c", "user.name=t", "-c", "user.email=t@t"]
     subprocess.run([*git, "init", "-q"], check=True)
