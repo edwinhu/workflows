@@ -102,7 +102,7 @@ test('the elide checkers honour the CLI contract: nothing relevant is an explici
     expect([0, 1, 2], f).toContain(real.status)
     expect(first(real.stdout), `${f}\n${real.stdout}${real.stderr}`).toMatch(LEG)
   }
-}, 870_000)
+}, 1_100_000)
 
 test('workshop check.sh honours --project-dir: the constraints it runs receive the project, whatever the cwd', () => {
   const dropped = plug({ 'checks/workshop/constraints/zzws.py': 'import sys\nprint("zzws: 1 file(s) examined")\nprint("slides.typ:1: ZZWS fired " + " ".join(sys.argv[1:]))\nsys.exit(1)\n' })

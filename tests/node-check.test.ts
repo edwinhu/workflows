@@ -1,12 +1,13 @@
 // node-check.py syntax-checks a Workflow script (a .js opening with `export const meta`) the way the
 // harness compiles it — as an AsyncFunction body, where a top-level `return` is legal — and keeps
 // plain .js on `node --check`.
-import { afterAll, expect, test } from 'bun:test'
+import { afterAll, expect, setDefaultTimeout, test } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
+setDefaultTimeout(90_000) // each case spawns python3 + node (60 s cap)
 const SCRIPT = join(import.meta.dir, '..', 'checks', 'authoring', 'constraints', 'node-check.py')
 const dir = mkdtempSync(join(tmpdir(), 'node-check-'))
 afterAll(() => rmSync(dir, { recursive: true, force: true }))
@@ -14,7 +15,7 @@ afterAll(() => rmSync(dir, { recursive: true, force: true }))
 function run(name: string, src: string) {
   const f = join(dir, name)
   writeFileSync(f, src)
-  const r = spawnSync('python3', [SCRIPT, '--project-dir', dir, '--files', f], { encoding: 'utf8' })
+  const r = spawnSync('python3', [SCRIPT, '--project-dir', dir, '--files', f], { encoding: 'utf8', timeout: 60_000 })
   return { code: r.status, out: r.stdout + r.stderr }
 }
 
