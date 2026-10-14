@@ -19,12 +19,12 @@
  * Run: bun test /home/eh/projects/workflows/skills/grind/scripts/grind-subjects.test.ts
  */
 import { describe, expect, test, afterAll, setDefaultTimeout } from 'bun:test'
-import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { grindEnv } from './grind-test-env'
 import { useTmp } from '../../../tests/helpers/tmp.ts'
+import { spawnAsync } from '../../../tests/helpers/async-spawn.ts'
 
 setDefaultTimeout(150_000)
 
@@ -59,14 +59,14 @@ function script(dir: string, name: string, bodyText: string): string {
 
 /** Append through the agent's own channel, returning the raw result so a refusal can be asserted. */
 function appendRaw(journal: string, rec: Record<string, unknown>) {
-  return spawnSync('bash', [GRIND, 'append', '--journal', journal, JSON.stringify(rec)], {
-    encoding: 'utf8', timeout: 30_000, env: grindEnv(),
+  return spawnAsync('bash', [GRIND, 'append', '--journal', journal, JSON.stringify(rec)], {
+    timeout: 30_000, env: grindEnv(),
   })
 }
 
 /** Append and insist it landed — for the records a test treats as setup rather than as subject. */
-function append(journal: string, rec: Record<string, unknown>) {
-  const r = appendRaw(journal, rec)
+async function append(journal: string, rec: Record<string, unknown>) {
+  const r = await appendRaw(journal, rec)
   if (r.status !== 0) throw new Error(`append refused: ${r.stderr}`)
 }
 
@@ -120,7 +120,7 @@ function loop(d: string, iters: number, extraRunner = '', extraArgs: string[] = 
 }
 
 function run(args: string[]) {
-  return spawnSync('bash', [GRIND, 'run', '--runner', 'claude-code', ...args], { encoding: 'utf8', timeout: 60_000, env: grindEnv() })
+  return spawnAsync('bash', [GRIND, 'run', '--runner', 'claude-code', ...args], { timeout: 60_000, env: grindEnv() })
 }
 
 /** The GRIND_SUBJECTS block: its header line plus the indented subject lines that follow it. */
@@ -161,14 +161,14 @@ function fieldsOf(line: string): Record<string, string> {
 }
 
 describe('grind.sh — a subject with nothing to show is retired from the prompt', () => {
-  test('three attempts and no progress mark the subject EXHAUSTED', () => {
+  test('three attempts and no progress mark the subject EXHAUSTED', async () => {
     const d = workdir('grind-subj-exhaust')
     const { journal, args, prompt } = loop(d, 1)
     for (let n = 1; n <= EXHAUST_DEFAULT; n++) {
-      append(journal, { kind: 'attempt', subject: '810573', note: `tried route ${n}` })
+      await append(journal, { kind: 'attempt', subject: '810573', note: `tried route ${n}` })
     }
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const f = fieldsOf(subjectLine(prompt(1), '810573'))
@@ -178,13 +178,13 @@ describe('grind.sh — a subject with nothing to show is retired from the prompt
     expect(subjectsBlock(prompt(1))[0]).toMatch(/reopen/i)
   })
 
-  test('two attempts are still open — the threshold is >= N, not > 0', () => {
+  test('two attempts are still open — the threshold is >= N, not > 0', async () => {
     const d = workdir('grind-subj-under')
     const { journal, args, prompt } = loop(d, 1)
-    append(journal, { kind: 'attempt', subject: '810573', note: 'first' })
-    append(journal, { kind: 'attempt', subject: '810573', note: 'second' })
+    await append(journal, { kind: 'attempt', subject: '810573', note: 'first' })
+    await append(journal, { kind: 'attempt', subject: '810573', note: 'second' })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const f = fieldsOf(subjectLine(prompt(1), '810573'))
@@ -193,15 +193,15 @@ describe('grind.sh — a subject with nothing to show is retired from the prompt
     expect(subjectsBlock(prompt(1)).join('\n')).not.toContain('EXHAUSTED')
   })
 
-  test('a progress record on the subject resets the count to zero', () => {
+  test('a progress record on the subject resets the count to zero', async () => {
     const d = workdir('grind-subj-progress-reset')
     const { journal, args, prompt } = loop(d, 1)
     for (let n = 1; n <= 4; n++) {
-      append(journal, { kind: 'attempt', subject: '810573', note: `tried ${n}` })
+      await append(journal, { kind: 'attempt', subject: '810573', note: `tried ${n}` })
     }
-    append(journal, { kind: 'progress', subject: '810573', key: 'K1', note: 'linked 4k rows' })
+    await append(journal, { kind: 'progress', subject: '810573', key: 'K1', note: 'linked 4k rows' })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const f = fieldsOf(subjectLine(prompt(1), '810573'))
@@ -212,14 +212,14 @@ describe('grind.sh — a subject with nothing to show is retired from the prompt
     expect(f.progress).toBe('1')
   }, 210_000)
 
-  test('attempts after a progress record count from that record, not from the start', () => {
+  test('attempts after a progress record count from that record, not from the start', async () => {
     const d = workdir('grind-subj-after-progress')
     const { journal, args, prompt } = loop(d, 1)
-    for (let n = 1; n <= 3; n++) append(journal, { kind: 'attempt', subject: 'S', note: `a${n}` })
-    append(journal, { kind: 'progress', subject: 'S', key: 'K1', note: 'moved' })
-    append(journal, { kind: 'attempt', subject: 'S', note: 'a4' })
+    for (let n = 1; n <= 3; n++) await append(journal, { kind: 'attempt', subject: 'S', note: `a${n}` })
+    await append(journal, { kind: 'progress', subject: 'S', key: 'K1', note: 'moved' })
+    await append(journal, { kind: 'attempt', subject: 'S', note: 'a4' })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const f = fieldsOf(subjectLine(prompt(1), 'S'))
@@ -227,12 +227,12 @@ describe('grind.sh — a subject with nothing to show is retired from the prompt
     expect(f.state).toBe('open')
   }, 210_000)
 
-  test('--exhaust-after 0 disables the feature: nothing is ever EXHAUSTED', () => {
+  test('--exhaust-after 0 disables the feature: nothing is ever EXHAUSTED', async () => {
     const d = workdir('grind-subj-off')
     const { journal, args, prompt } = loop(d, 1, '', ['--exhaust-after', '0'])
-    for (let n = 1; n <= 8; n++) append(journal, { kind: 'attempt', subject: 'S', note: `a${n}` })
+    for (let n = 1; n <= 8; n++) await append(journal, { kind: 'attempt', subject: 'S', note: `a${n}` })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const block = subjectsBlock(prompt(1))
@@ -241,13 +241,13 @@ describe('grind.sh — a subject with nothing to show is retired from the prompt
     expect(fieldsOf(subjectLine(prompt(1), 'S')).attempts).toBe('8')
   }, 300_000)
 
-  test('--exhaust-after 2 retires a subject the default would still offer', () => {
+  test('--exhaust-after 2 retires a subject the default would still offer', async () => {
     const d = workdir('grind-subj-flag')
     const { journal, args, prompt } = loop(d, 1, '', ['--exhaust-after', '2'])
-    append(journal, { kind: 'attempt', subject: 'S', note: 'a1' })
-    append(journal, { kind: 'attempt', subject: 'S', note: 'a2' })
+    await append(journal, { kind: 'attempt', subject: 'S', note: 'a1' })
+    await append(journal, { kind: 'attempt', subject: 'S', note: 'a2' })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     expect(fieldsOf(subjectLine(prompt(1), 'S')).state).toBe('EXHAUSTED')
@@ -255,19 +255,19 @@ describe('grind.sh — a subject with nothing to show is retired from the prompt
 })
 
 describe('grind.sh — reopen is the only way back, and it must say what changed', () => {
-  test('a valid reopen is written and resets the subject to open', () => {
+  test('a valid reopen is written and resets the subject to open', async () => {
     const d = workdir('grind-subj-reopen-ok')
     const { journal, args, prompt } = loop(d, 1)
     for (let n = 1; n <= EXHAUST_DEFAULT; n++) {
-      append(journal, { kind: 'attempt', subject: 'S', note: `a${n}` })
+      await append(journal, { kind: 'attempt', subject: 'S', note: `a${n}` })
     }
-    const ok = appendRaw(journal, {
+    const ok = await appendRaw(journal, {
       kind: 'reopen', subject: 'S', rerunReason: 'the 2004 filings finished re-parsing',
     })
     expect(ok.status, `reopen refused: ${ok.stderr}`).toBe(0)
     expect(records(journal).filter(x => x.kind === 'reopen').length).toBe(1)
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const f = fieldsOf(subjectLine(prompt(1), 'S'))
@@ -275,17 +275,17 @@ describe('grind.sh — reopen is the only way back, and it must say what changed
     expect(f.state).toBe('open')
   }, 180_000)
 
-  test('attempts after a reopen count from the reopen', () => {
+  test('attempts after a reopen count from the reopen', async () => {
     const d = workdir('grind-subj-reopen-then-attempt')
     const { journal, args, prompt } = loop(d, 1)
     for (let n = 1; n <= EXHAUST_DEFAULT; n++) {
-      append(journal, { kind: 'attempt', subject: 'S', note: `a${n}` })
+      await append(journal, { kind: 'attempt', subject: 'S', note: `a${n}` })
     }
-    append(journal, { kind: 'reopen', subject: 'S', rerunReason: 'new dictionary landed' })
-    append(journal, { kind: 'attempt', subject: 'S', note: 'a4' })
-    append(journal, { kind: 'attempt', subject: 'S', note: 'a5' })
+    await append(journal, { kind: 'reopen', subject: 'S', rerunReason: 'new dictionary landed' })
+    await append(journal, { kind: 'attempt', subject: 'S', note: 'a4' })
+    await append(journal, { kind: 'attempt', subject: 'S', note: 'a5' })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const f = fieldsOf(subjectLine(prompt(1), 'S'))
@@ -293,89 +293,89 @@ describe('grind.sh — reopen is the only way back, and it must say what changed
     expect(f.state).toBe('open')
   }, 240_000)
 
-  test('the later of progress and reopen is the reset point', () => {
+  test('the later of progress and reopen is the reset point', async () => {
     const d = workdir('grind-subj-reset-latest')
     const { journal, args, prompt } = loop(d, 1)
-    append(journal, { kind: 'reopen', subject: 'S', rerunReason: 'first reopen' })
-    append(journal, { kind: 'attempt', subject: 'S', note: 'a1' })
-    append(journal, { kind: 'progress', subject: 'S', key: 'K1', note: 'moved' })
-    append(journal, { kind: 'attempt', subject: 'S', note: 'a2' })
-    append(journal, { kind: 'attempt', subject: 'S', note: 'a3' })
+    await append(journal, { kind: 'reopen', subject: 'S', rerunReason: 'first reopen' })
+    await append(journal, { kind: 'attempt', subject: 'S', note: 'a1' })
+    await append(journal, { kind: 'progress', subject: 'S', key: 'K1', note: 'moved' })
+    await append(journal, { kind: 'attempt', subject: 'S', note: 'a2' })
+    await append(journal, { kind: 'attempt', subject: 'S', note: 'a3' })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     expect(fieldsOf(subjectLine(prompt(1), 'S')).attempts).toBe('2')
   }, 210_000)
 
-  test('a reopen without rerunReason is refused with exit 2 and writes nothing', () => {
+  test('a reopen without rerunReason is refused with exit 2 and writes nothing', async () => {
     const d = workdir('grind-subj-reopen-noreason')
     const journal = join(d, 'journal.jsonl')
     // A valid reopen first, so this test fails when the kind is missing rather than when it is
     // merely unimplemented-and-therefore-refused-for-the-wrong-reason.
-    const ok = appendRaw(journal, { kind: 'reopen', subject: 'S', rerunReason: 'the blocker cleared' })
+    const ok = await appendRaw(journal, { kind: 'reopen', subject: 'S', rerunReason: 'the blocker cleared' })
     expect(ok.status, `a valid reopen must be accepted: ${ok.stderr}`).toBe(0)
     const before = records(journal).length
 
-    const bad = appendRaw(journal, { kind: 'reopen', subject: 'S' })
+    const bad = await appendRaw(journal, { kind: 'reopen', subject: 'S' })
 
     expect(bad.status).toBe(2)
     expect(bad.stderr).toContain('rerunReason')
     expect(records(journal).length, 'a refused record must be absent, not present-and-ignored').toBe(before)
   })
 
-  test('a reopen with an empty or whitespace rerunReason is refused too', () => {
+  test('a reopen with an empty or whitespace rerunReason is refused too', async () => {
     const d = workdir('grind-subj-reopen-blankreason')
     const journal = join(d, 'journal.jsonl')
-    const ok = appendRaw(journal, { kind: 'reopen', subject: 'S', rerunReason: 'real reason' })
+    const ok = await appendRaw(journal, { kind: 'reopen', subject: 'S', rerunReason: 'real reason' })
     expect(ok.status, `a valid reopen must be accepted: ${ok.stderr}`).toBe(0)
     const before = records(journal).length
 
     for (const reason of ['', '   ']) {
-      const bad = appendRaw(journal, { kind: 'reopen', subject: 'S', rerunReason: reason })
+      const bad = await appendRaw(journal, { kind: 'reopen', subject: 'S', rerunReason: reason })
       expect(bad.status).toBe(2)
       expect(bad.stderr).toContain('rerunReason')
     }
     expect(records(journal).length).toBe(before)
   })
 
-  test('a reopen without a subject is refused with exit 2 and writes nothing', () => {
+  test('a reopen without a subject is refused with exit 2 and writes nothing', async () => {
     const d = workdir('grind-subj-reopen-nosubject')
     const journal = join(d, 'journal.jsonl')
-    const ok = appendRaw(journal, { kind: 'reopen', subject: 'S', rerunReason: 'the blocker cleared' })
+    const ok = await appendRaw(journal, { kind: 'reopen', subject: 'S', rerunReason: 'the blocker cleared' })
     expect(ok.status, `a valid reopen must be accepted: ${ok.stderr}`).toBe(0)
     const before = records(journal).length
 
-    const noSubject = appendRaw(journal, { kind: 'reopen', rerunReason: 'the blocker cleared' })
+    const noSubject = await appendRaw(journal, { kind: 'reopen', rerunReason: 'the blocker cleared' })
     expect(noSubject.status).toBe(2)
     expect(records(journal).length).toBe(before)
 
-    const blankSubject = appendRaw(journal, { kind: 'reopen', subject: '  ', rerunReason: 'cleared' })
+    const blankSubject = await appendRaw(journal, { kind: 'reopen', subject: '  ', rerunReason: 'cleared' })
     expect(blankSubject.status).toBe(2)
     expect(records(journal).length).toBe(before)
   })
 })
 
 describe('grind.sh — recording is always allowed, even on an exhausted subject', () => {
-  test('an attempt on an exhausted subject is still accepted by append', () => {
+  test('an attempt on an exhausted subject is still accepted by append', async () => {
     // Spec item 5. The loop discourages PICKING an exhausted subject through the prompt; refusing to
     // RECORD what happened would make the journal lie about the work that was done, and the journal
     // is the loop's only memory.
     const d = workdir('grind-subj-record-allowed')
     const { journal, args, prompt } = loop(d, 1)
     for (let n = 1; n <= EXHAUST_DEFAULT; n++) {
-      append(journal, { kind: 'attempt', subject: 'S', note: `a${n}` })
+      await append(journal, { kind: 'attempt', subject: 'S', note: `a${n}` })
     }
     // The subject IS exhausted at this point — asserted through the prompt, so this test is about a
     // record landing on an exhausted subject rather than on any subject at all.
-    expect(run(args).status).toBe(4)
+    expect((await run(args)).status).toBe(4)
     expect(fieldsOf(subjectLine(prompt(1), 'S')).state, 'the subject must be EXHAUSTED first')
       .toBe('EXHAUSTED')
 
-    const another = appendRaw(journal, { kind: 'attempt', subject: 'S', note: 'a4 anyway' })
+    const another = await appendRaw(journal, { kind: 'attempt', subject: 'S', note: 'a4 anyway' })
     expect(another.status, `an attempt on an exhausted subject must be recorded: ${another.stderr}`).toBe(0)
 
-    const progress = appendRaw(journal, { kind: 'progress', subject: 'S', key: 'K1', note: 'it moved' })
+    const progress = await appendRaw(journal, { kind: 'progress', subject: 'S', key: 'K1', note: 'it moved' })
     expect(progress.status, `progress on an exhausted subject must be recorded: ${progress.stderr}`).toBe(0)
 
     expect(records(journal).filter(x => x.kind === 'attempt').length).toBe(EXHAUST_DEFAULT + 1)
@@ -384,24 +384,24 @@ describe('grind.sh — recording is always allowed, even on an exhausted subject
 })
 
 describe('grind.sh — the shape of the GRIND_SUBJECTS block', () => {
-  test('with no subjects the prompt says so rather than omitting the block', () => {
+  test('with no subjects the prompt says so rather than omitting the block', async () => {
     const d = workdir('grind-subj-none')
     const { args, prompt } = loop(d, 1)
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     expect(subjectsBlock(prompt(1))).toEqual(['GRIND_SUBJECTS: none.'])
   })
 
-  test('the block sits after GRIND_FLOORS and before GRIND_NOTES', () => {
+  test('the block sits after GRIND_FLOORS and before GRIND_NOTES', async () => {
     const d = workdir('grind-subj-order')
     const { journal, args, prompt } = loop(d, 1)
-    append(journal, { kind: 'floor', key: 'DEAD', why: 'no data exists' })
-    append(journal, { kind: 'note', key: 'scope', note: 'rank by row count' })
-    append(journal, { kind: 'attempt', subject: 'S', note: 'a1' })
+    await append(journal, { kind: 'floor', key: 'DEAD', why: 'no data exists' })
+    await append(journal, { kind: 'note', key: 'scope', note: 'rank by row count' })
+    await append(journal, { kind: 'attempt', subject: 'S', note: 'a1' })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const lines = prompt(1).split('\n')
@@ -413,14 +413,14 @@ describe('grind.sh — the shape of the GRIND_SUBJECTS block', () => {
     expect(notes).toBeGreaterThan(subjects)
   })
 
-  test('a line carries subject, attempts, progress, state and the newest attempt excerpt', () => {
+  test('a line carries subject, attempts, progress, state and the newest attempt excerpt', async () => {
     const d = workdir('grind-subj-fields')
     const { journal, args, prompt } = loop(d, 1)
-    append(journal, { kind: 'attempt', subject: '810573', note: 'older attempt' })
-    append(journal, { kind: 'progress', subject: '810573', key: 'K1', note: 'moved once' })
-    append(journal, { kind: 'attempt', subject: '810573', note: 'newest attempt text' })
+    await append(journal, { kind: 'attempt', subject: '810573', note: 'older attempt' })
+    await append(journal, { kind: 'progress', subject: '810573', key: 'K1', note: 'moved once' })
+    await append(journal, { kind: 'attempt', subject: '810573', note: 'newest attempt text' })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const line = subjectLine(prompt(1), '810573')
@@ -434,23 +434,23 @@ describe('grind.sh — the shape of the GRIND_SUBJECTS block', () => {
     expect(line).not.toContain('older attempt')
   })
 
-  test('the excerpt falls back to `why` when an attempt carries no note', () => {
+  test('the excerpt falls back to `why` when an attempt carries no note', async () => {
     const d = workdir('grind-subj-why')
     const { journal, args, prompt } = loop(d, 1)
-    append(journal, { kind: 'attempt', subject: 'S', why: 'the grid job died' })
+    await append(journal, { kind: 'attempt', subject: 'S', why: 'the grid job died' })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     expect(fieldsOf(subjectLine(prompt(1), 'S')).last).toBe('the grid job died')
   })
 
-  test('the excerpt is cut to 200 characters', () => {
+  test('the excerpt is cut to 200 characters', async () => {
     const d = workdir('grind-subj-cut')
     const { journal, args, prompt } = loop(d, 1)
-    append(journal, { kind: 'attempt', subject: 'S', note: 'x'.repeat(250) })
+    await append(journal, { kind: 'attempt', subject: 'S', note: 'x'.repeat(250) })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const last = fieldsOf(subjectLine(prompt(1), 'S')).last
@@ -458,14 +458,14 @@ describe('grind.sh — the shape of the GRIND_SUBJECTS block', () => {
     expect(last).toBe('x'.repeat(LAST_MAX))
   })
 
-  test('a record with no subject, or a whitespace one, is not listed', () => {
+  test('a record with no subject, or a whitespace one, is not listed', async () => {
     const d = workdir('grind-subj-blank')
     const { journal, args, prompt } = loop(d, 1)
-    append(journal, { kind: 'attempt', note: 'no subject at all' })
-    append(journal, { kind: 'attempt', subject: '   ', note: 'whitespace subject' })
-    append(journal, { kind: 'attempt', subject: 'S', note: 'a real one' })
+    await append(journal, { kind: 'attempt', note: 'no subject at all' })
+    await append(journal, { kind: 'attempt', subject: '   ', note: 'whitespace subject' })
+    await append(journal, { kind: 'attempt', subject: 'S', note: 'a real one' })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const lines = subjectsBlock(prompt(1)).slice(1)
@@ -473,27 +473,27 @@ describe('grind.sh — the shape of the GRIND_SUBJECTS block', () => {
     expect(lines[0].slice(2).split('\t')[0]).toBe('S')
   })
 
-  test('a subject with only a note record is not listed', () => {
+  test('a subject with only a note record is not listed', async () => {
     // Only subjects with at least one attempt or progress record are listed; a note is steering,
     // not work done on the subject.
     const d = workdir('grind-subj-noteonly')
     const { journal, args, prompt } = loop(d, 1)
-    append(journal, { kind: 'note', subject: 'N', key: 'scope', note: 'mentioned only' })
-    append(journal, { kind: 'attempt', subject: 'S', note: 'a1' })
+    await append(journal, { kind: 'note', subject: 'N', key: 'scope', note: 'mentioned only' })
+    await append(journal, { kind: 'attempt', subject: 'S', note: 'a1' })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const lines = subjectsBlock(prompt(1)).slice(1).map(l => l.slice(2).split('\t')[0])
     expect(lines).toEqual(['S'])
   })
 
-  test('only the newest 30 subjects appear, most recently touched last', () => {
+  test('only the newest 30 subjects appear, most recently touched last', async () => {
     const d = workdir('grind-subj-cap')
     const { journal, args, prompt } = loop(d, 1)
-    for (let n = 1; n <= 32; n++) append(journal, { kind: 'attempt', subject: `s${n}`, note: `a${n}` })
+    for (let n = 1; n <= 32; n++) await append(journal, { kind: 'attempt', subject: `s${n}`, note: `a${n}` })
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const subjects = subjectsBlock(prompt(1)).slice(1).map(l => l.slice(2).split('\t')[0])
@@ -504,7 +504,7 @@ describe('grind.sh — the shape of the GRIND_SUBJECTS block', () => {
     expect(subjects).not.toContain('s2')
   }, 1_020_000)
 
-  test('a subject recorded BETWEEN iterations reaches the next one', () => {
+  test('a subject recorded BETWEEN iterations reaches the next one', async () => {
     // The same read-at-the-top-of-the-pass property the floors and notes have: a subject an
     // iteration files is in hand for the next prompt, or the block is memory nobody keeps.
     const d = workdir('grind-subj-midrun')
@@ -514,7 +514,7 @@ describe('grind.sh — the shape of the GRIND_SUBJECTS block', () => {
       `[ "$GRIND_ITERATION" = "1" ] && bash "$sh" append --journal "$j" '{"kind":"attempt","subject":"810573","note":"tried the sibling CIK"}'`,
     )
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     expect(subjectsBlock(prompt(1))).toEqual(['GRIND_SUBJECTS: none.'])
@@ -527,14 +527,14 @@ describe('grind.sh — the shape of the GRIND_SUBJECTS block', () => {
 describe('skills/grind/SKILL.md documents the subject machinery', () => {
   const md = () => readFileSync(SKILL_MD, 'utf8')
 
-  test('names subject, --exhaust-after and GRIND_SUBJECTS', () => {
+  test('names subject, --exhaust-after and GRIND_SUBJECTS', async () => {
     const body = md()
     expect(body).toContain('subject')
     expect(body).toContain('--exhaust-after')
     expect(body).toContain('GRIND_SUBJECTS')
   })
 
-  test('documents reopen as the way back, and that it needs rerunReason', () => {
+  test('documents reopen as the way back, and that it needs rerunReason', async () => {
     // An agent reconstructs the record shape from its prompt and this file. A reopen documented
     // without its required field is a record the next iteration writes, gets refused, and cannot
     // explain.
@@ -548,7 +548,7 @@ describe('skills/grind/SKILL.md documents the subject machinery', () => {
     ).toBe(true)
   })
 
-  test('says exhaustion excludes a subject the way a floor excludes a key', () => {
+  test('says exhaustion excludes a subject the way a floor excludes a key', async () => {
     const body = md()
     const sentences = body.split(/(?<=[.!?])\s+|\n/).filter(s => /exhaust/i.test(s))
     expect(sentences.length).toBeGreaterThan(0)
