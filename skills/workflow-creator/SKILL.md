@@ -9,7 +9,7 @@ hooks:
     # so the matcher alone would fire and validate nothing; the gate re-derives every check here.
     #
     # SKILL-SCOPED ON PURPOSE — do not "fix" this to agent scope. A skill hook reaches the main
-    # session's writes only (hook-reach.md Cell A, re-measured 2.1.257 2026-09-17), and
+    # session's writes only (hook-reach.md Cell A), and
     # farmOutOnly denies the main thread everything BUT `*.md` (main-thread-guard.sh fo_exempt,
     # measured). SKILL.md and agent `.md` — this checker's primary targets — are exactly the class
     # still written here, so the reach farmOutOnly removes is the reach this hook never needed.
@@ -142,7 +142,7 @@ whether it is a skill that already exists.
 
 **A constraint is enforced by a SCRIPT or by an AGENT WITH THE SKILL. There is no third shape.** Its one canonical home is `checks/<wf>/constraints/` at the plugin root; a copy per consumer is the vendoring defect, and a consumer in another plugin reaches it through `bin/`, never through a path.
 
-**ONE FRONTMATTER KEY: `applies-to:`. Nothing else.** Scope is the only fact about a rule that no path already holds — the name is the filename, whether it is mechanised is whether `checkers/<name>.py` exists, and what it says is the body. Any other key is either a copy of one of those or metadata nothing reads, and both rot silently: measured 2026-09-14 in the typst corpus, `type:` sat in 17 of 21 files and `testable:` in 3, read by no code on any path, while `description:` had drifted from the rule beside it (a rule described as "table inset minimum 10pt" whose body leads with source-grounding) with no check able to see it. Lint the key set — a convention nothing computes is how `type:` got into 17 files and stayed.
+**ONE FRONTMATTER KEY: `applies-to:`. Nothing else.** Scope is the only fact about a rule that no path already holds — the name is the filename, whether it is mechanised is whether `checkers/<name>.py` exists, and what it says is the body. Any other key is either a copy of one of those or metadata nothing reads, and both rot silently, and a `description:` drifts from the rule beside it with no check able to see it. Lint the key set.
 
 - **Mechanical** — rule `X.md` is checked by `checkers/X.py`, by CONVENTION: no field declares the mapping, so nothing can name a script that moved. The workflow's check entry point runs it, and the set is DERIVED from `applies-to:`, never listed per consumer.
 - **Judgement** — no checker exists at the rule's conventional name, and a grader agent judges it. Nothing declares that: the runner asks the filesystem, so a rule cannot claim to be mechanised while its checker is absent. **Getting the corpus INTO that grader is the hard part, and one obvious route does not work.** A `` <bang>`cmd` `` in an agent definition is dead text. `skills:` frontmatter, by contrast, preloads the skill's full content (measured 2.1.293, `--agent` and Agent-tool spawn; `${CLAUDE_PLUGIN_ROOT}/references/bang-reach.md`). So a grader reaches the corpus by that preload or by one of:
@@ -156,10 +156,10 @@ whether it is a skill that already exists.
 
 A vendored `<domain>-constraints` skill is the same error made eagerly. It looks like determinism — every module guaranteed in the agent's context, no partial read possible — and pays for it with a second source of truth that nothing diffs. The copy is what agents actually read, so the day it drifts the canonical file is the one that is wrong in practice, and the workflow grades against prose its authors think they deleted.
 
-- A consumer that hand-lists which shared checkers it runs has the same defect later. Measured 2026-09-14: the list was the set of files in a directory, so deleting vendored copies deleted the SELECTION with them and every runner silently fell back to the whole corpus — lecture notes graded by slide rules. Derive the set from frontmatter; never write it down twice.
-- A grader that names its rules in prose drifts the same way. Measured 2026-09-14: `workshop-reviewer` says "the fifteen canonical Typst constraint modules" where the corpus declares 21 for `workshop`, so six rules had no grader and nothing could see it. An agent states the DOMAIN it grades, never the count or the list — and it cannot compute the list in its own file, so the skill it names is what has to carry the computed index.
+- A consumer that hand-lists which shared checkers it runs has the same defect later: a list derived from a directory's files falls back to the whole corpus when a copy is deleted. Derive the set from frontmatter; never write it down twice.
+- A grader that names its rules in prose drifts the same way: a stated count goes stale and the ungraded rules are invisible. An agent states the DOMAIN it grades, never the count or the list — and it cannot compute the list in its own file, so the skill it names is what has to carry the computed index.
 
-- Measured 2026-09-01: `workshop-constraints` and `ds-constraints` carried byte-identical copies of 19 canonical modules — 15 typst, 4 DS — preloaded into four agents. No test in the repo could see them, because duplication across files is invisible to a per-file check. `tests/constraints-no-duplication.test.ts` now fails on any file under `skills/` reproducing a canonical body; it found 17 offenders the day it was written.
+- A per-file check cannot see duplication across files; `tests/constraints-no-duplication.test.ts` fails any file under `skills/` reproducing a canonical body.
 
 ## Round shape
 
@@ -179,10 +179,10 @@ A vendored `<domain>-constraints` skill is the same error made eagerly. It looks
 | 213223f6 unwired 9 ds rules that did not separate (A1 stayed); 8 came back only after two live runs at violating >= 0.93, compliant < 0.5 (e9c530ea) | calibrated rules only |
 | 615d9baf: accepted decks breaking T-CALLOUT became legacy calibration bases, and the rule gates only changed lines | changed lines only |
 | EX-ORPHAN failed `rule-calibrate` and sat in teaching's `uncalibrated/` (97eb24d), gating nothing, until a firmer extractor earned it `--wire` (c76dc78) | parked rules never gate |
-| be1722a2: L-SUPRA allows agency releases and bars bills per the user's 2026-10-02 rulings, written into its PROPOSITION | the user's call, recorded |
+| be1722a2: L-SUPRA allows agency releases and bars bills per the user's rulings, written into its PROPOSITION | the user's call, recorded |
 | A 9-rule recalibration handed to one row took 45+ min serially | one row per item |
 | f65da574: the full suite took 661-881 s serially and 63-67 s under `bun test --parallel` | fast tests before fan-out |
-| 2026-10-02: a fixed `/tmp` baseline-worktree name let one row's cleanup delete a sibling row's checkout | a temp path per run |
+| A fixed `/tmp` baseline-worktree name let one row's cleanup delete a sibling row's checkout | a temp path per run |
 
 ## Branch first
 
@@ -192,8 +192,7 @@ A vendored `<domain>-constraints` skill is the same error made eagerly. It looks
 | an existing workflow fixed, redesigned, migrated, or given feedback | **improve** | the full work loop, seeded by a probe run as planning evidence |
 | to know what is wrong with an existing workflow, changing nothing | **audit-only** | the same work loop with `readOnly: true` and `tasks: []`, seeded by a charter plan |
 
-**Audit-only is a `readOnly` work run, not a second lifecycle.** `work` grew `readOnly` on
-2026-08-07: under it no Implement phase is opened, no implementer and no per-task verifier is
+**Audit-only is a `readOnly` work run, not a second lifecycle.** Under `work`'s `readOnly`: no Implement phase is opened, no implementer and no per-task verifier is
 dispatched, `tasks[]` may be empty, and **every dispatched leg defaults to `Explore`** — the lens
 and the mechanical probes alike. `Explore` has no Edit and no Write, so no agent on a `readOnly` run
 can write *of its own volition*.
@@ -500,8 +499,7 @@ fallback when a skill is skipped silently, so ask the agent in your dispatch pat
 
 **`<bang>` in this file means a literal `!` followed by a backtick.** Written out, it would RUN:
 the parser fires on that sequence at line start or after whitespace, and a fenced code block does
-not protect it — nor does inline code. Both creator skills were taken offline on 2026-09-15 by
-their own examples, one of which executed a placeholder named `cmd`.
+not protect it — nor does inline code. An example in a creator skill that executes a placeholder named `cmd` takes the skill offline.
 
 ### The plugin root a generated workflow writes into
 
@@ -607,8 +605,7 @@ reference is checkable rather than hoped-for.
 **A fence is code because of what it holds, not how it is labelled.** The deliverable is a SKILL.md,
 so the work args object, its task rows and its lens live inside a fenced block. P6/P7 read the
 interior of any fence labelled `js`/`ts` **or containing a `Workflow(` call** — whatever its info
-string. The rule used to be "label it `js`, or the gate cannot see it", enforced by a `P8 fence
-labelling`; that rule was authored against a corpus that does not follow it. Of the real `Workflow(`
+string. A rule "label it `js`, or the gate cannot see it" fails against the real corpus: of the real `Workflow(`
 call sites in the spine skills, most sit in a **bare** fence and several in a ```` ```text ```` one,
 so a label rule left the gate reading a small minority of the call sites it exists to judge and
 flagged the majority as defective for rendering the way everything else does. **P8 is gone**; label
@@ -664,7 +661,7 @@ the workflow via `implementerAgentType` — that is a large part of why the over
 location that also DELIVERS hooks (`.claude/agents/` or `~/.claude/agents/`), **not** under the
 generated skill's own directory, where nothing registers it. Two separate things are measured here:
 the hook **fires** on a dispatched agent's write (cells C and D), and a **blocking** guard —
-`exit 2` with the reason on stderr — reaches the implementer verbatim (2026-08-08). What is still
+`exit 2` with the reason on stderr — reaches the implementer verbatim. What is still
 unmeasured is ADVISORY output: anything the hook prints while exiting 0. So make the guard's effect
 structural — a blocking decision, or a finding a `mechanicalCheck` re-derives at gate time — rather
 than assuming the implementer reads what a non-blocking hook prints. By contrast, a guard declared in the generated SKILL.md's frontmatter was observed firing
@@ -691,7 +688,7 @@ directory, so an agent outside a plugin has none — and a plugin-shipped agent 
 ignored entirely. Nothing the harness supplies can make it resolve there. Resolving it anyway is
 what let one unchanged agent read CLEAN under one probe target and CRITICAL under another.
 
-**Measured 2026-08-08 on 2.1.226** (`references/hook-reach.md`): `PreToolUse` and `PostToolUse` both
+**Measured** (`references/hook-reach.md`): `PreToolUse` and `PostToolUse` both
 fire under `claude -p`, from `settings.local.json` and from a `~/.claude/agents/` agent's own
 `hooks:`, for `Bash` as well as `Write`; settings hooks fire inside subagents; and a **blocking**
 guard (`exit 2` + stderr) stops the write and reaches the writing model verbatim. An earlier claim
@@ -915,7 +912,7 @@ out of a prompt, which is not an enumeration.
 A fence whose `tasks[]` is empty or absent is skipped entirely — that is what a `readOnly` charter
 declares, and flagging it would fire on every audit block. Marker: `task-coverage`.
 
-### P14-P23 round-shape rules
+### P14-P24 round-shape rules
 
 | rule | fires on | severity | marker |
 |---|---|---|---|
@@ -929,8 +926,9 @@ declares, and flagging it would fire on every audit block. Marker: `task-coverag
 | P21 leg count line | in a shell gate, a `report <leg> <status>` with no `legcount_run`/`legcount_cmd`/`count_line <leg>` (or a helper that prints one) since the previous `report`; or a literal `report <leg> 0` with no `count_line <leg> 0 <unit> "<reason>"` before it | major | `leg-count` |
 | P22 inputs readable | in a work-args fence, a `refs` entry, scoredChecks item `inputs` or `authorityExtra` path that is `.docx .xlsx .pptx .doc .xls .ppt .zip .db .sqlite` with no projection command (pandoc, xlsx2csv, sqlite3, docx-render …) in the same prompt; an existing ref over 256 KB where the prompt says "in full"; a `{{NAME}}` placeholder ref under a "search-only" prompt (`{{…}}` and `$VAR` paths are otherwise skipped) | major | `inputs-readable` |
 | P23 missing flag refused | a `check.sh` / `*-check.sh` whose empty-default CLI flag gates a leg (`if [ -n "$X" ]`, `[ -n "$X" ] &&`, or a helper that skips an empty parameter) with no `exit 2` for its absence and no `--no-<flag>` opt-out | major | `flag-leg` |
+| P24 narrated history | a SKILL.md or agent line outside fenced code holding an ISO date (not a `..` range) or `used to be`/`was broken`/`incident`/`we found`/`last time we`/`until 20YY`; `references/` is not read | major | `narrated-history` |
 
-Advisory rules print as `[advisory <severity>]` in both modes and never move the exit code. P15 gates since its 2026-10-02 baseline (15 findings, ds lens and teaching notes scoredChecks) was cleared.
+Advisory rules print as `[advisory <severity>]` in both modes and never move the exit code. P15 gates.
 
 ### Declared exemptions
 
@@ -991,7 +989,7 @@ run, alongside `SKILL.md`'s `lens-set-differs prompt` declaration, which is not 
 | Task or lens has no domain rules | omit `refs` | `refs: []` — absent is refused, empty is a statement |
 | About to name an implementer or reviewer agent without preloading the rule skill | trust the dispatch `refs` to carry the rules | **STOP**: it runs rule-less outside a dispatch. Add the declared `rule-skills` to the agent's `skills:` AND name them in its `initialPrompt` (P19) |
 | A documented return shape drifts from the script | assume P5 caught it because the suite is green | P5 compares a SKILL.md's shape against the **script its `scriptPath` names** — check the `crossFileTargets` note to see which file the verdict was actually about |
-| A check needs suppressing | invent a rule name for the marker | only `all`/`hooks`/`paths`/`returns`/`workflow-refs`/`refs`/`entry-point`/`dispatch`/`task-coverage`/`shell-leg`/`duplicate-grading`/`rule-checks`/`serial-loop`/`fixed-temp`/`leg-count` are honoured; anything else is a `P9` finding, not a suppression. P11 has no `ignore-` form at all — declare the intended difference with `lens-set-differs <field>` |
+| A check needs suppressing | invent a rule name for the marker | only `all`/`hooks`/`paths`/`returns`/`workflow-refs`/`refs`/`entry-point`/`dispatch`/`task-coverage`/`shell-leg`/`duplicate-grading`/`rule-checks`/`serial-loop`/`fixed-temp`/`leg-count`/`narrated-history` are honoured; anything else is a `P9` finding, not a suppression. P11 has no `ignore-` form at all — declare the intended difference with `lens-set-differs <field>` |
 | A skill dispatches `work` with its own hand-rolled runner line | copy the invocation into the SKILL.md | that skips the gates `work-dispatch.sh` owns on the way in, and P12 refuses it |
 | Gate says PASS and the probe was skipped | read `mechanicalRun: 0` as clean | nothing was checked; re-run with the checks present |
 | FAIL with an empty `tasksThatFlagged` | conclude there is nothing to fix | read `mechanicalThatFailed`, `rulesThatFailed`, `lensesThatFlagged` **and** `planFindings` too — only `tasksThatFlagged` owns tasks. A blocking lens finding the lens could route to no task lands in `planFindings` and is fixed by amending the plan. Only when every channel is empty does an empty selector on a failing run mean re-run everything |

@@ -172,11 +172,8 @@ For each paragraph in the draft (excluding frontmatter, headings, footnotes):
 
 **The domain rules are the ones inlined in Step 2, with the full text in the preloaded
 `writing-general` base plus the `writing-legal` or `writing-econ` skill for the draft's domain.**
-They used to be restated
-here as a three-row summary of Volokh / S&W / McCloskey, and that summary was written before the
-guides were run through the corpora — so it told you to cut hedges from law review prose (`may` /
-`might`: 3.56% of law sentences, register-appropriate) and to prefer active voice on principle
-(passive: 7.91% law vs 8.55% finance, not a register marker at all). Grade against the register
+Do not grade from a summary of the style guides: hedges (`may` / `might`: 3.56% of law sentences)
+are register-appropriate and passive voice (7.91% law vs 8.55% finance) is not a register marker. Grade against the register
 files' *Ship* tables for the draft's domain, and against their *Advisory* and *Dropped* tables for
 what not to report — the shared tables live in `writing-general`, the domain-specific ones in
 `writing-legal` or `writing-econ`. Id. antecedents, footnotes carrying the argument and

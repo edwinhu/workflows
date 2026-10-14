@@ -345,7 +345,7 @@ standing authority with it — what the session may decide alone, unasked — be
 open becomes a question asked into an empty room.
 
 A round verdict is not the hold's business in either direction — it goes green on a FAIL the loop was
-going to fix, and it outlives a run the user abandons (AGK 2026-09-27). For a long loop whose target is
+going to fix, and it outlives a run the user abandons. For a long loop whose target is
 a computable command and needs no session, use grind instead.
 
 **`work-dispatch.sh` does Phase 3 and Phase 4 in one call** — it reads the armed plan's dispatch
@@ -411,7 +411,7 @@ on the loop's exit (the round's verdict when no loop runs) and on a run that die
 `/farm` prints the table.
 
 **Nothing wakes a session that is not running.** A run that finishes while no session is open is
-reported when the session next starts, and on 2026-09-27 a restarted loop sat at 23:14 with nothing
+reported only when the session next starts, so a restarted loop can sit with nothing
 to wake. So the cron is the **backstop, on by default**: the dispatch
 prints an hourly `CronCreate` call (`WORK_LOOP_INTERVAL_MINUTES` sets the period) whose prompt is a
 nudge (`and? (work run <runid>)`) — a few words, and a tick mid-round is allowed through uncounted by
@@ -834,8 +834,8 @@ found, but they are the audit's report, not a work queue — fixing what they na
 
 **Phase 5 runs AFTER the goal clears, and is no part of it.** The goal's terminal clause is `work`'s
 own verdict; a human verdict is not something a session can work toward, so putting one in the goal
-makes every run stoppable only by a person who may have walked away — measured 2026-08-22, a tested
-and reversible bugfix sat behind that clause for ~18 hours while the outage it repaired stayed live.
+makes every run stoppable only by a person who may have walked away — a tested
+and reversible bugfix sits behind that clause while the outage it repaired stays live.
 
 Two consequences, and they are the whole of the change:
 
@@ -932,10 +932,10 @@ descope with the user rather than guessing a third time.
 | About to self-send a `/goal` or `/loop` into this session | any transport — herdr, agent-msg, a drainer | none of them land: a typed send needs the pane IDLE and a dispatching session never is. `work-hold.sh` writes a file and `CronCreate` is a tool call; both land inside the turn |
 | Session opens on `Implement the following plan:` | implement it in the main thread | the context was cleared at approval — this is Phase 4, not the work. The plan's frontmatter `workflow:` names the skill to invoke first; then dispatch. `work-dispatch.sh` needs nothing you lost. Same answer when an Edit is denied for an armed run |
 | A stopping condition is a claim, not a command | "the tests in the plan pass" | a check is RUN — give it a command whose exit code is the verdict |
-| Treat a stopping condition you WROTE DOWN as binding on yourself | prose you can re-adjudicate away | only the hook blocks a stop. Measured 2026-09-02: a session wrote "I'm treating that as binding regardless" and idled three hours later. Arm it, confirm with `--status` |
+| Treat a stopping condition you WROTE DOWN as binding on yourself | prose you can re-adjudicate away | only the hook blocks a stop. A session that writes "I'm treating that as binding regardless" idles later. Arm it, confirm with `--status` |
 | Arm a check that already exits 0 | it holds nothing, and teaches the session the hold is noise | `work-hold.sh` refuses it; pick the check that is red now |
 | Disarm your own hold because the gate looks wrong | "this gate measures the wrong property" | that is the same sentence a session uses when the gate is merely hard. `--disarm` prompts the USER on every transport (tty, or the `permissions.ask` rule) and the hook restores a deleted state file — arm the RIGHT check, or ask the user to confirm |
-| Arm a hold while a grind loop works the same objective | two drivers on one objective | the hold blocks this session's stop while grind's gate waits for no round in flight: each waits for the other (AGK 2026-09-27). Pick one — grind for a long loop, the hold for short work this session drives |
+| Arm a hold while a grind loop works the same objective | two drivers on one objective | the hold blocks this session's stop while grind's gate waits for no round in flight: each waits for the other. Pick one — grind for a long loop, the hold for short work this session drives |
 | Arm a hold on YOUR OWN session to try the hook out | it then blocks your own stop until the check passes | read `tests/work-hold.test.ts`, or arm a check you can satisfy on demand |
 | End a turn with a question mark under an armed hold | offer the user a menu | at 02:00 that is a five-hour pause — answer it in one line and act. Same for "when done or blocked, notify and stop": enumerate the terminal blockers; the rest is the next task |
 | Finish the hunt with a report and stop, or stop at N of M rounds | "the check went green" / "the budget says N" | the hold self-cleared, so nothing gates stopping — arm the next red check before the turn ends. The budget was the authorization, not a ceiling on ambition: spend it, or say why the remainder is unusable |
@@ -948,7 +948,7 @@ descope with the user rather than guessing a third time.
 | Consume only `tasksThatFlagged` | treat an empty list on FAIL as nothing to fix | Consume `mechanicalThatFailed`, `rulesThatFailed`, `lensesThatFlagged` and `planFindings` too. An audit with `tasks: []` has no task owner channel. |
 | A mechanical check failed | guess the nearest task, drop the check or force FULL | Follow the lens's route to its owner; checks always re-run. An unattributed failure falls back to FULL. |
 | A blocking lens finding stands | scope by file before reading its owner | Prefer `ownerTask`: a task id enters `tasksThatFlagged`, `"plan"` enters `planFindings`. Redispatch supplies `taskFixes` to the selected implementer. |
-| Pass an array of lenses | retain parallel readers and their refuters | Pass one `lens` object; merge the dimensions into its prompt. Arrays and the retired argument throw. Measurement: `references/convergence.md`'s 2026-09-30 postscript. |
+| Pass an array of lenses | retain parallel readers and their refuters | Pass one `lens` object; merge the dimensions into its prompt. Arrays and the retired argument throw. Measurement: `references/convergence.md`. |
 | A finding's `file` reads `src/a.go:135` | map the location as a path | Prefer `ownerTask`; separate `file` and `line`. Redispatch strips a trailing `:135`/`:135-140`/`:135:8` before its fallback path map. |
 | `planFindings` is non-empty | redispatch the unchanged brief | Unchanged hash exits 3. Amend the dispatch spec's writable paths or requirement, re-hash, then redispatch; all-plan routing with carried task records permits a zero-implementer round. |
 | A FULL fix round has proven RED records | re-probe an unchanged command, or trust an old proof for an amended command | Redispatch carries proven `red-green` adjudications from round 2 only when `record.command === task.redCommand`. Matching proofs skip both probe gates; changed or missing commands are re-probed. |

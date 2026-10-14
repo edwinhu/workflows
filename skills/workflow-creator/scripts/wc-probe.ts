@@ -364,6 +364,7 @@ export const KNOWN_EXEMPTION_RULES: readonly string[] = [
   'leg-count',
   'inputs-readable',
   'flag-leg',
+  'narrated-history',
 ]
 
 /**
@@ -3434,6 +3435,48 @@ export function checkLegCounts(file: string, text: string, exemptions: readonly 
 }
 
 /**
+ * P24 a context-loaded file states the rule, not the story behind it.
+ *
+ * A SKILL.md or agent file is re-read on every invocation, so a dated incident or a "used to be"
+ * is a recurring token cost that changes no behaviour. The predicate is a date or a narrated-
+ * incident phrase on a line outside fenced code; a date range (`..`) is a data example, not
+ * history. Measurements belong in `references/`, which this rule does not read.
+ */
+export function checkNarratedHistory(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
+  const findings: Finding[] = []
+  const TELLS: RegExp[] = [
+    /(?<![.\d])\b20\d\d-\d\d-\d\d\b(?!\.\.)/,
+    /(?<!\b(?:is|are|be|being|was|were|been|get|gets)\s)\bused to (?:be|have|do|run|fail|carry|read|write|take|call|allow|need|treat|miss|list)\b/i,
+    /\bwas broken\b/i,
+    /\b(?:the|that|this)\s+(?:[\w-]+\s+){0,3}incident\b(?![-\w])/i,
+    /\bwe found\b/i,
+    /\blast time (?:we|i|it|this|that)\b/i,
+    /\buntil 20\d\d\b/i,
+  ]
+  const lines = text.split('\n')
+  let fenced = false
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\s*(```|~~~)/.test(lines[i])) { fenced = !fenced; continue }
+    if (fenced) continue
+    for (const re of TELLS) {
+      const m = re.exec(lines[i])
+      if (!m) continue
+      if (isExemptAt(exemptions, 'narrated-history', i + 1)) break
+      findings.push({
+        rule: 'P24 narrated history',
+        severity: 'major',
+        file,
+        line: i + 1,
+        detail: `narrates history ("${m[0]}") in a file the harness re-reads on every invocation — state the rule, drop the story`,
+        remedy: 'delete the date or phrase and keep the rule; move a measurement to references/, or declare <!-- wc-probe: ignore-narrated-history --> with the reason',
+      })
+      break
+    }
+  }
+  return findings
+}
+
+/**
  * P23 a flag that gates a leg is refused when absent.
  *
  * A check script that reads `if [ -n "$X" ]; then <leg>; else report <leg> 0 …; fi` turns a flag
@@ -4811,6 +4854,7 @@ export function runProbe(
       // P10/P11 read RAW text: both are per-FENCE rules, and the code view keeps no fence boundary.
       findings.push(...checkSingleEntryPoint(file, text, fileExemptions))
       findings.push(...checkLoaderEntryPoint(file, text, fileExemptions))
+      if (kind === 'skill' || kind === 'agent') findings.push(...checkNarratedHistory(file, text, fileExemptions))
       findings.push(...checkLensSetParity(file, text))
       // P12 reads RAW text too: its fence half is per-fence, and its runner half is a claim the
       // file's PROSE makes, which the code view blanks.
