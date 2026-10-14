@@ -16,6 +16,8 @@
  * depends on whether the tree has been committed is not a contract. (That sentence is cited by
  * line number in docs/investigations/2026-08-27_suite-lint-false-positives.md, so it stays put.)
  *
+ * The user restored ONE dimension, TEST PINS BEHAVIOUR, as a fifth checklist item (does the RED test
+ * assert the behaviour the acceptance names?). That is a lens item, not the retired reference file.
  * The tests LENS stays retired: four mechanical shapes it used to catch late are computed before
  * dispatch, and the eleven Warning Signs it cannot mechanise are better spent shaping tests as they
  * are written than judging them after they exist. So the vendored writing-good-tests.md lives in the
@@ -45,7 +47,7 @@ const DOC = 'writing-good-tests.md'
  * The checklist dimensions the four retired lenses judged. Each must be asked for BY NAME in the one
  * prompt — the words are the contract, because a dimension that is not named is not judged.
  */
-const DIMENSIONS = ['CRITERIA', 'SCOPE', 'SECURITY', 'PERFORMANCE'] as const
+const DIMENSIONS = ['CRITERIA', 'SCOPE', 'SECURITY', 'PERFORMANCE', 'TEST PINS BEHAVIOUR'] as const
 
 /**
  * The template was 232 lines when the tests lens came out, 233 when that landed, and 223 once four
@@ -127,7 +129,7 @@ describe('dev declares exactly ONE lens', () => {
   })
 })
 
-describe('the one prompt still asks for all four retired dimensions', () => {
+describe('the one prompt asks for all five checklist dimensions', () => {
   const lens = declaredLenses(now)[0]!
 
   for (const dim of DIMENSIONS) {
@@ -156,7 +158,11 @@ describe('the one prompt still asks for all four retired dimensions', () => {
     expect(lens.prompt).toMatch(/carried finding open or closed.*evidence/)
   })
 
-  test('no `tests` dimension came back with the merge', () => {
+  test('the fifth item is a major-finding check on what the RED test asserts', () => {
+    expect(lens.prompt).toMatch(/TEST PINS BEHAVIOUR.*went RED assert the behaviour.*MAJOR finding/)
+  })
+
+  test('no retired `tests` lens came back: still no TESTS dimension', () => {
     expect(lens.prompt).not.toMatch(/\bTESTS\b/)
   })
 })
