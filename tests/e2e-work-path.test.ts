@@ -158,12 +158,6 @@ const AMBIENT = /^(FARM_|GRIND_|WORK_|JEV_|HERDR_|STUB_|CANARY_)|^(OPENAI_API_KE
 const isolated = (tmp: string, pinned: Record<string, string>) => Object.fromEntries(
   Object.entries(hermeticEnv(tmp, pinned)).filter(([k]) => k in pinned || !AMBIENT.test(k)))
 
-// The loop reports a dispatch dead when the round runner has not registered in farm-events within
-// dispatch's 2 s sleep plus this many seconds. On a loaded machine (8 runs at once, or the full suite)
-// the runner's start-up outlasts a 1 s grace; the grace is spent only while nothing is registered,
-// so a large one costs a passing run nothing.
-const SETTLE = 15
-
 /** work-round.sh behind a delay: a runner that is slow to register, as on a loaded machine. */
 function slowRound(bin: string, seconds: number): string {
   const wrapper = join(bin, 'slow-round.sh')
@@ -184,7 +178,7 @@ async function launch(name: string, s: Scenario): Promise<Run> {
     PATH: `${bin}:${process.env.PATH}`,
     CLAUDE_CODE_SESSION_ID: sid, CLAUDE_PROJECT_DIR: dir, WORKFLOW_CHECKS_PATH: ROOT,
     XDG_STATE_HOME: join(root, 'xdg-state'), XDG_CACHE_HOME: join(root, 'xdg-cache'),
-    WORK_NO_SCOPE: '1', WORK_LOOP_POLL: '1', WORK_LOOP_SETTLE: String(SETTLE),
+    WORK_NO_SCOPE: '1', WORK_LOOP_POLL: '1',
     ...(s.startDelay ? { WORK_ROUND: slowRound(bin, s.startDelay) } : {}),
     WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${judge.port}${s.judgePath ?? '/'}`, WORK_HOLD_JUDGE_TOKEN: 'stub',
     STUB_EDITS: JSON.stringify(s.edits ?? {}), STUB_FAULT: s.fault ?? '',
