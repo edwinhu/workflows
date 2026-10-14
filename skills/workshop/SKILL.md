@@ -18,7 +18,7 @@ lists them; a rule reaches this skill because its own `applies-to:` names a kind
 nothing else. (Absence of the plugin degrades this index but does not bypass a gate: the deck
 probe's `CON` row FAILs when no typst workshop constraint is reachable beside it.)
 
-!`k=slides,notes,workshop; command -v typst-rules >/dev/null 2>&1 && exec typst-rules "$k"; r=$HOME/.claude/skills/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" "$k"; r=$HOME/projects/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" "$k"; echo "(typst corpus unavailable: NO Typst rule is listed here — a deck graded against no corpus is not a deck that passed. Install the typst plugin, or start a new session so its bin/ reaches PATH)"`
+!`k=slides,notes,workshop; command -v typst-rules >/dev/null 2>&1 && exec typst-rules "$k"; echo "(typst corpus unavailable: NO Typst rule is listed here — a deck graded against no corpus is not a deck that passed. Install the typst plugin, or start a new session so its bin/ reaches PATH)"`
 
 The lifecycle is [`work`](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lens,
