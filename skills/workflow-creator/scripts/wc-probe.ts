@@ -2953,7 +2953,7 @@ export interface WorkArgsFence {
   instanceIds: InstanceId[]
   /** The agent legs and work rows P14-P17 read. Each `prompt`/`work` is the FIRST string literal of
    *  the value, the same reading `lens.prompt` gets. */
-  taskRows: { taskId: string | null, line: number, brief: string | null, paths: string[] }[]
+  taskRows: { taskId: string | null, line: number, brief: string | null, paths: string[], acceptance: string | null, hasAcceptanceCmd: boolean }[]
   scored: { key: string | null, line: number, prompt: string | null, countKeys: string[] }[]
   attemptLegs: { key: string | null, line: number, prompt: string | null }[]
   /** 1-based file line of the `lens` value, or null when the fence declares none. */
@@ -3134,11 +3134,14 @@ export function workArgsFences(text: string): WorkArgsFence[] {
       if (tasksSpan) {
         for (const o of directElements(literals, tasksSpan, 'work')) {
           const wp = findKeyValueSpan(body, masked, o, 'writablePaths')
+          const acc = findKeyValueSpan(body, masked, o, 'acceptance')
           taskRows.push({
             taskId: firstLit(o, 'id'),
             line: fileLine(o.start),
             brief: firstLit(o, 'work'),
             paths: wp ? stringLiteralsIn(body, wp.start, wp.end) : [],
+            acceptance: acc ? stringLiteralsIn(body, acc.start, acc.end).join('') : null,
+            hasAcceptanceCmd: findKeyValueSpan(body, masked, o, 'acceptanceCmd') !== null,
           })
         }
       }
@@ -3527,6 +3530,9 @@ const WORKFLOWS_ROOT = resolve(import.meta.dir, '..', '..', '..')
 const RUNS_COMMAND = /\b(?:run|execute)\b[^\n.]{0,80}?\b(?:verbatim|exactly as (?:written|given))\b|\b(?:run|execute)\s+(?:this|the following)\s+(?:command|cmd|check)\b/i
 const REPORTS_EXIT = /\b(?:report|return|record|give)\b[^\n.]{0,80}?\b(?:exit ?code|exitCode|exit status)\b|\bexitCode\s*=/i
 
+// A backticked command a verifier agent would run and transcribe the exit code of.
+const BACKTICKED_COMMAND = /`\s*(?:bash|sh|python3?|bun|node|uv run)\s[^`]+`/
+
 /** P14's text predicate: the prompt's ask is to run a command and report its exit code. */
 export function isShellOnlyPrompt(prompt: string): boolean {
   return RUNS_COMMAND.test(prompt) && REPORTS_EXIT.test(prompt)
@@ -3559,8 +3565,9 @@ export function agentCalls(src: string): { line: number, text: string }[] {
  * A model transcribing an exit code is slower than the shell, costs an agent, and is self-report
  * where the shell is evidence: work moved mechanicalChecks, red probes, acceptance and ruleChecks into
  * work-checks.sh (523d42cd, 0f41d3c6) for exactly this. Read in a work-args fence (scoredChecks,
- * attempts, lens prompts) and in a code file's `agent(` calls. Task rows are implementers and are
- * never read: running a suite is part of their job, not all of it.
+ * attempts, lens prompts) and in a code file's `agent(` calls. A task row's `work` is never read (running
+ * a suite is part of an implementer's job), but its `acceptance` is: a backticked command there with
+ * no `acceptanceCmd` leaves the exit code to a verifier agent.
  */
 export function checkShellOnlyAgentLegs(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
   const legs: { line: number, label: string, prompt: string }[] = []
@@ -3569,18 +3576,25 @@ export function checkShellOnlyAgentLegs(file: string, text: string, exemptions: 
       for (const s of f.scored) if (s.prompt) legs.push({ line: s.line, label: `scoredChecks "${s.key ?? '?'}"`, prompt: s.prompt })
       for (const a of f.attemptLegs) if (a.prompt) legs.push({ line: a.line, label: `attempt "${a.key ?? '?'}"`, prompt: a.prompt })
       if (f.lens.prompt && f.lensLine) legs.push({ line: f.lensLine, label: 'the lens', prompt: f.lens.prompt })
+      for (const t of f.taskRows) {
+        if (t.acceptance && !t.hasAcceptanceCmd && BACKTICKED_COMMAND.test(t.acceptance)) {
+          legs.push({ line: t.line, label: `task "${t.taskId ?? '?'}" acceptance (a backticked command, no acceptanceCmd)`, prompt: t.acceptance })
+        }
+      }
     }
   } else if (LEXABLE_EXT_RE.test(file)) {
     for (const c of agentCalls(text)) legs.push({ line: c.line, label: 'an agent() call', prompt: c.text })
   }
   return legs
-    .filter(l => isShellOnlyPrompt(l.prompt) && !isExemptAt(exemptions, 'shell-leg', l.line))
+    .filter(l => (isShellOnlyPrompt(l.prompt) || l.label.startsWith('task ')) && !isExemptAt(exemptions, 'shell-leg', l.line))
     .map(l => ({
       rule: 'P14 shell-only agent leg',
       severity: 'major' as const,
       file,
       line: l.line,
-      detail: `${l.label} is told to run a command as written and report its exit code — a shell step dispatched as an agent`,
+      detail: l.label.startsWith('task ')
+        ? `${l.label}: the verifier agent would run the command and transcribe its exit code`
+        : `${l.label} is told to run a command as written and report its exit code — a shell step dispatched as an agent`,
       remedy: 'make it a mechanicalChecks entry (a leg of the one entry point) or a ruleChecks command: work-checks.sh runs it in the shell and the JS reads the exit code. Declare a genuine exception with <!-- wc-probe: ignore-shell-leg -->',
     }))
 }

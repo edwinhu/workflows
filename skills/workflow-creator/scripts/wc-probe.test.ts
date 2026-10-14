@@ -3724,6 +3724,27 @@ describe('D37 — P14: an agent leg that only runs a command and reports its exi
     expect(allOf(dir, 'P14')).toEqual([])
   })
 
+  test('a task row whose acceptance holds a backticked command and no acceptanceCmd is a MAJOR', () => {
+    const row = (extra: string) => `tasks: [{ id: "t1", work: "do it", writablePaths: ["a"], ${extra} }]`
+    const dir = fixture({
+      'SKILL.md': skillMd('p14-task', workArgs([
+        row('acceptance: "`bash scripts/check.sh --only x` exits 0"'),
+        'lens: { prompt: "Judge the deliverable.", refs: [] }',
+      ])),
+    })
+    const found = allOf(dir, 'P14')
+    expect(found.length).toBe(1)
+    expect(found[0].severity).toBe('major')
+    expect(found[0].detail).toContain('task "t1"')
+    for (const clean of [
+      row('acceptanceCmd: "bash scripts/check.sh --only x", acceptance: "check.sh exits 0"'),
+      row('acceptance: "the draft names every issue in coverage.md"'),
+    ]) {
+      const d2 = fixture({ 'SKILL.md': skillMd('p14-task-ok', workArgs([clean, 'lens: { prompt: "Judge.", refs: [] }'])) })
+      expect(allOf(d2, 'P14')).toEqual([])
+    }
+  })
+
   test('a declared exemption silences it', () => {
     const dir = fixture({
       'SKILL.md': skillMd('p14-exempt', ['<!-- wc-probe: ignore-shell-leg -->', workArgs([
