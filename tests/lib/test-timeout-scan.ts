@@ -488,3 +488,16 @@ export function scanTestCosts(src: string, opts: { dir?: string } = {}): TestCos
   }
   return out.sort((a, b) => a.at - b.at).map((x) => x.cost);
 }
+
+/** Line of a `setDefaultTimeout(` call that follows the first top-level `test(` / `describe(` call, else null. */
+export function lateDefaultTimeout(src: string): number | null {
+  const mask = codeMask(src);
+  const at = (re: RegExp): number | null => {
+    for (const m of src.matchAll(re)) if (mask[m.index!]) return m.index!;
+    return null;
+  };
+  const dt = at(/\bsetDefaultTimeout\s*\(/g);
+  const first = at(/^[ \t]*(?:test|describe|it)(?:\.\w+)*\s*\(/gm);
+  if (dt === null || first === null || dt < first) return null;
+  return src.slice(0, dt).split("\n").length;
+}

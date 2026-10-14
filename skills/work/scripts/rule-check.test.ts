@@ -4,6 +4,7 @@ import { join, basename } from "path";
 import { spawnSync } from "child_process";
 import * as fs from "fs";
 import { useTmp } from "../../../tests/helpers/tmp.ts";
+setDefaultTimeout(720_000)
 
 const mkTmp = useTmp();
 
@@ -301,8 +302,6 @@ test('an oversized state is truncated at 60000 chars', async () => {
 // ---- DQ4/DQ6 diff scope: only transforms on lines the round added or changed --------------------
 
 import { changedRanges } from './rule-check.ts';
-
-setDefaultTimeout(720_000)
 
 const LEGACY = [
   'import polars as pl',

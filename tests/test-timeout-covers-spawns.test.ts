@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
-import { scanTestCosts, unresolvedCauses } from "./lib/test-timeout-scan.ts";
+import { lateDefaultTimeout, scanTestCosts, unresolvedCauses } from "./lib/test-timeout-scan.ts";
 import { useTmp } from "./helpers/tmp.ts";
 
 const mkTmp = useTmp();
@@ -187,3 +187,25 @@ test("test.each and describe.each are read, each row invocation against its own 
   const withDefault = "setDefaultTimeout(60_000)\ntest.each([1, 2])('d', () => { spawnSync('x', [], { timeout: 50_000 }) })";
   expect(scanTestCosts(withDefault).map((t) => [t.source, t.effectiveMs, t.spawnMs])).toEqual([["file", 60_000, 50_000]]);
 });
+
+// bun applies setDefaultTimeout only to tests registered after the call; an earlier test keeps the 5 s default.
+test("setDefaultTimeout precedes the first test in every file, in both repos", () => {
+  const late = (src: string) => lateDefaultTimeout(src);
+  expect(late("import { test, setDefaultTimeout } from 'bun:test'\nsetDefaultTimeout(9)\ntest('a', () => {})")).toBeNull();
+  expect(late("test('a', () => {})\n// test('b'\nsetDefaultTimeout(9)\ntest('c', () => {})")).toBe(3);
+  expect(late("describe('d', () => { test('a', () => {}) })\nsetDefaultTimeout(9)")).toBe(2);
+  expect(late("test('a', () => {})")).toBeNull();
+
+  const roots = [ROOT, process.env.TEACHING_ROOT ?? join(dirname(ROOT), "teaching")];
+  const bad: string[] = [];
+  for (const root of roots) {
+    const r = spawnSync("git", ["ls-files", "--cached", "--others", "--exclude-standard", "*.test.ts"],
+                        { cwd: root, encoding: "utf8", timeout: 30_000 });
+    if (r.status !== 0) continue;
+    for (const f of r.stdout.split("\n").filter((x) => x && !x.includes("/fixtures/"))) {
+      const n = lateDefaultTimeout(readFileSync(join(root, f), "utf8"));
+      if (n !== null) bad.push(`${root}/${f}:${n}`);
+    }
+  }
+  expect(bad).toEqual([]);
+}, 70_000);
