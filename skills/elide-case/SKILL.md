@@ -276,7 +276,6 @@ const args = {
         "${CLAUDE_PLUGIN_ROOT}/skills/elide-case/references/retrieval.md",
       ],
     },
-    // <!-- wc-probe: ignore-serial-loop:end -->
     // ── WAVE 2: ONE ROW PER READING. Copy this row for each `## Readings In Scope` line,
     // substituting the slug, caption, source basename and page target. Each row cuts its own
     // reading, so `tasksThatFlagged` on a FAIL names exactly the readings to re-cut. Each writes
@@ -392,6 +391,7 @@ const args = {
   maxAgents: 50,
 }
 ```
+<!-- wc-probe: ignore-serial-loop:end -->
 
 ## Phase 5 — HUMAN REVIEW
 
