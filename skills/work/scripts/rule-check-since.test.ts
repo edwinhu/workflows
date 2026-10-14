@@ -2,10 +2,10 @@
 import { describe, expect, test, setDefaultTimeout } from 'bun:test';
 import { spawnSync } from 'child_process';
 import { createHash } from 'crypto';
-import { mkdirSync, readFileSync, realpathSync, writeFileSync } from 'fs';
+import { chmodSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { useTmp } from '../../../tests/helpers/tmp.ts';
-import { changedFiles, changedRanges } from './rule-check.ts';
+import { changedFiles, changedRanges, scopeNamed } from './rule-check.ts';
 
 setDefaultTimeout(300_000);
 const mkTmp = useTmp();
@@ -148,5 +148,87 @@ describe('work-checks.sh appends --since from args.runBaseline', () => {
     const dir = mkTmp('rule-since-proj-');
     expect(JSON.parse(checks({ projectDir: dir, tasks: [] }, echo('rule-check.ts')).stdout).cmdline).toBe('rule-check.ts');
     expect(JSON.parse(checks({ projectDir: dir, tasks: [], runBaseline: 'x; rm -rf /' }, echo('rule-check.ts')).stdout).cmdline).toBe('rule-check.ts');
+  });
+});
+
+describe('WORK_RUN_BASELINE reaches a wrapper cmd, and rule-check.ts reads it', () => {
+  const BASE = 'b'.repeat(40);
+  const runChecks = (args: any, cmd: string) => {
+    const dir = mkTmp('rule-since-wrap-');
+    const a = join(dir, 'args.json'), raw = join(dir, 'raw.json'), out = join(dir, 'checks.json');
+    writeFileSync(a, JSON.stringify(args));
+    writeFileSync(raw, JSON.stringify({ stage: 'agents', agents: {}, checkPlan: { red: [], acceptance: [], mechanical: [], rules: [{ name: 'rules', cmd }] } }));
+    const r = spawnSync('bash', [CHECKS, a, raw, out], { encoding: 'utf8', timeout: 20_000, env: { ...process.env, WORK_CHECK_TIMEOUT: '30', WORK_RUN_BASELINE: '' } });
+    expect(r.status).toBe(0);
+    return JSON.parse(readFileSync(out, 'utf8')).rules[0];
+  };
+
+  test('a wrapper script that names neither runner still sees the baseline in its env', () => {
+    const dir = mkTmp('rule-since-wrapper-');
+    const wrapper = join(dir, 'review-rules.sh');
+    writeFileSync(wrapper, '#!/usr/bin/env bash\necho "{\\"baseline\\":\\"${WORK_RUN_BASELINE-unset}\\"}"\n');
+    chmodSync(wrapper, 0o755);
+    const seen = (args: any) => JSON.parse(runChecks(args, `bash ${wrapper}`).stdout).baseline;
+    expect(seen({ projectDir: dir, tasks: [], runBaseline: BASE })).toBe(BASE);
+    // absent or non-hex: nothing is exported (the harness env here carries it empty)
+    expect(seen({ projectDir: dir, tasks: [] })).toBe('');
+    expect(seen({ projectDir: dir, tasks: [], runBaseline: 'x; rm -rf /' })).toBe('');
+  });
+
+  const run = (args: string[], env: Record<string, string> = {}) =>
+    spawnSync('bun', ['run', join(HERE, 'rule-check.ts'), '--workflow', 'ds', ...args], { encoding: 'utf8', timeout: 20_000, env: { ...process.env, WORK_RUN_BASELINE: '', ...env } });
+
+  test('with --since absent the env baseline scopes the run; an explicit --since wins', () => {
+    const d = wipRepo();
+    const snap = snapshot(d).stdout.trim();
+    const viaEnv = run(['--project-dir', d], { WORK_RUN_BASELINE: snap });
+    expect(viaEnv.status).toBe(0);
+    expect(JSON.parse(viaEnv.stdout.trim().split('\n').pop()!).scope).toMatch(/^nothing in scope/);
+    // an env baseline that is no tree is refused, not read as no scope
+    expect(run(['--project-dir', d], { WORK_RUN_BASELINE: '0'.repeat(40) }).status).toBe(1);
+    // the explicit flag wins over a bad env value
+    const explicit = run(['--project-dir', d, '--since', snap], { WORK_RUN_BASELINE: '0'.repeat(40) });
+    expect(explicit.status).toBe(0);
+    expect(JSON.parse(explicit.stdout.trim().split('\n').pop()!).scope).toMatch(/^nothing in scope/);
+  });
+});
+
+describe('--files with a baseline is the intersection', () => {
+  test('scopeNamed keeps only named files the run changed, with only the run\'s lines', () => {
+    const d = wipRepo();
+    writeFileSync(join(d, 'b.py'), 'b = 1\n');
+    git(d, 'add', 'b.py');
+    git(d, 'commit', '-qm', 'b');
+    const snap = snapshot(d).stdout.trim();
+    writeFileSync(join(d, 'a.py'), 'ok = 1\nWIP_VIOLATION = 2\nend = 3\nrun_line = 4\n');
+    writeFileSync(join(d, 'run_new.py'), 'run_new = 1\n');
+    const named = [join(d, 'a.py'), join(d, 'b.py'), join(d, 'wip_new.py')];
+    const s = scopeNamed(named, d, snap)!;
+    expect(s.files).toEqual([join(d, 'a.py')]);              // b.py untouched, wip_new.py predates the run, run_new.py not named
+    expect(s.changed[join(d, 'a.py')]).toEqual([[4, 4]]);    // the WIP line 2 is out
+    // no baseline: whole named files, as before
+    expect(scopeNamed(named, d, undefined)!.files).toEqual(named);
+  });
+});
+
+describe('workflow-check score_rules keeps --since with --files', () => {
+  const CHECK = join(HERE, '..', '..', '..', 'bin', 'workflow-check');
+  const stub = (dir: string) => {
+    const p = join(dir, 'stub.sh');
+    writeFileSync(p, '#!/usr/bin/env bash\nprintf \'{"verdicts":[],"unavailable":[{"rule":"ARGV","reason":"%s"}]}\\n\' "$*"\n');
+    chmodSync(p, 0o755);
+    return p;
+  };
+  const wc = (d: string, extra: string[]) => spawnSync('python3', [CHECK, 'ds', '--project-dir', d, '--rules-only', '--files', join(d, 'a.py'), ...extra],
+    { encoding: 'utf8', timeout: 30_000, env: { ...process.env, DOMAIN_GATE_RULE_CHECK: stub(d) } });
+
+  test('the runner gets the baseline, the project dir and the named files', () => {
+    const d = wipRepo();
+    const snap = snapshot(d).stdout.trim();
+    const withSince = wc(d, ['--since', snap]).stdout;
+    expect(withSince).toContain(`--project-dir ${d} --since ${snap} --files ${join(d, 'a.py')}`);
+    const without = wc(d, []).stdout;
+    expect(without).toContain(`--project ${d.split('/').pop()} --files ${join(d, 'a.py')}`);
+    expect(without).not.toContain('--since');
   });
 });
