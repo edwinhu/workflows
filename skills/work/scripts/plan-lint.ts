@@ -63,6 +63,8 @@ type Plan = {
   planText?: string
   /** Root the `## Data Outputs` paths resolve against (R23). Default: the ds check's `--project-dir`, else cwd. */
   projectDir?: string
+  /** Every agent-type value the args carry, by field name (R25). */
+  agentFields?: { field: string; value: string }[]
   /** Rows whose cell count differs from their header's, recorded at parse where the count exists. */
   tableArity?: { id: string; row: number; got: number; want: number; text: string }[]
 }
@@ -287,6 +289,14 @@ const parseArgs = (j: any): Plan => ({
     refs: t.refs ?? [],
     agentType: typeof t.agentType === 'string' ? t.agentType : null,
   })),
+  agentFields: [
+    ['implementerAgentType', j.implementerAgentType],
+    ['verifierAgentType', j.verifierAgentType],
+    ['lens.agentType', j.lens?.agentType],
+    ...(j.tasks ?? []).map((t: any) => [`tasks[${t.id ?? ''}].agentType`, t.agentType]),
+  ]
+    .filter(([, v]) => typeof v === 'string')
+    .map(([field, value]) => ({ field, value })),
   mechanicalChecks: (j.mechanicalChecks ?? []).map((m: any) => ({
     name: m.name ?? m.key ?? '',
     cmd: m.cmd ?? '',
@@ -973,8 +983,13 @@ const lint = (p: Plan, agentExists: (name: string) => boolean = agentResolves): 
     else for (const x of holdLintCriticals(gc)) add(x.rule, 'critical', 'args.goalCheck', x.message, gc)
   }
 
-  // R25 — a per-task agentType is the persona the harness dispatches that leg as. A name no agent
-  // file answers to falls back to the default agent, dropping the restriction it was named for.
+  // R25 — an agent-type field is the persona the harness dispatches a leg as. A template
+  // placeholder (`<a|b>`) left in it names no agent, and a per-task name no agent file answers to
+  // falls back to the default agent, dropping the restriction it was named for.
+  for (const { field, value } of p.agentFields ?? [])
+    if (/[<>|]/.test(value))
+      add('agent-type-placeholder', 'critical', field,
+        `${field} still holds a template placeholder, so it names no agent and the plan cannot dispatch; substitute one agent name`, value)
   for (const t of p.tasks)
     if (t.agentType && !/[<>|]/.test(t.agentType) && !BUILTIN_AGENTS.has(t.agentType) && !agentExists(t.agentType))
       add('agent-type-unresolvable', 'critical', `task ${t.id} agentType`,
