@@ -9,6 +9,9 @@
  */
 export interface AsyncSpawnResult { status: number | null; stdout: string; stderr: string }
 
+/** How long after the child exits to keep waiting for its pipes to close. */
+const PIPE_GRACE_MS = 3000
+
 export async function spawnAsync(
   cmd: string,
   args: string[],
@@ -18,11 +21,18 @@ export async function spawnAsync(
     cwd: opts.cwd, env: opts.env, stdin: 'ignore', stdout: 'pipe', stderr: 'pipe',
   })
   const timer = setTimeout(() => proc.kill('SIGKILL'), opts.timeout)
+  // Read incrementally: a grandchild that inherited the pipe keeps it open after the child has
+  // exited, so EOF is only awaited for a short grace once `exited` has resolved.
+  const out: string[] = [], err: string[] = []
+  const drain = async (s: ReadableStream<Uint8Array>, into: string[]) => {
+    const dec = new TextDecoder()
+    for await (const chunk of s) into.push(dec.decode(chunk, { stream: true }))
+  }
+  const readers = Promise.all([drain(proc.stdout, out), drain(proc.stderr, err)]).catch(() => {})
   try {
-    const [stdout, stderr, status] = await Promise.all([
-      new Response(proc.stdout).text(), new Response(proc.stderr).text(), proc.exited,
-    ])
-    return { status: proc.signalCode ? null : status, stdout, stderr }
+    const status = await proc.exited
+    await Promise.race([readers, new Promise(r => setTimeout(r, PIPE_GRACE_MS))])
+    return { status: proc.signalCode ? null : status, stdout: out.join(''), stderr: err.join('') }
   } finally {
     clearTimeout(timer)
   }
