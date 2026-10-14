@@ -1111,3 +1111,34 @@ test('a per-task agentType that resolves, a built-in, and an absent one are clea
   expect(lintAgents(base({ tasks: [task({ agentType: 'Explore' })] }))).toEqual([])
   expect(lintAgents(base({ tasks: [task()] }))).toEqual([])
 })
+
+test('parseArgs carries a task agentType and the run-level agent fields through', () => {
+  const p = parseArgs({ tasks: [{ id: 'T1', agentType: 'blind-solver' }], implementerAgentType: 'writer', verifierAgentType: 'Explore', lens: { prompt: 'p', agentType: 'Explore' } })
+  expect(p.tasks[0].agentType).toBe('blind-solver')
+  expect(p.agentFields).toEqual([
+    { field: 'implementerAgentType', value: 'writer' },
+    { field: 'verifierAgentType', value: 'Explore' },
+    { field: 'lens.agentType', value: 'Explore' },
+    { field: 'tasks[T1].agentType', value: 'blind-solver' },
+  ])
+})
+
+// An unsubstituted template placeholder (`"<writing|writing-legal|writing-econ>"`) names no agent.
+test('an agent-type field still holding a template placeholder is a CRITICAL naming the field', () => {
+  for (const value of ['<writing|writing-legal|writing-econ>', '<agent>', 'a|b', 'x>']) {
+    for (const field of ['implementerAgentType', 'verifierAgentType', 'lens.agentType', 'tasks[T1].agentType']) {
+      const found = lint(base({ agentFields: [{ field, value }] }), () => true).filter(f => f.rule === 'agent-type-placeholder')
+      expect(found.length).toBe(1)
+      expect(found[0].severity).toBe('critical')
+      expect(found[0].where).toBe(field)
+      expect(found[0].evidence).toBe(value)
+    }
+  }
+})
+
+test('a rendered agent name is not a placeholder, and the real args path catches the template', () => {
+  const ok = parseArgs({ tasks: [], implementerAgentType: 'writing-legal', verifierAgentType: 'Explore', lens: { prompt: 'p', agentType: 'plugin:name' } })
+  expect(lint(ok, () => true).filter(f => f.rule === 'agent-type-placeholder')).toEqual([])
+  const tpl = parseArgs({ tasks: [], implementerAgentType: '<writing|writing-legal|writing-econ>' })
+  expect(lint(tpl, () => true).filter(f => f.rule === 'agent-type-placeholder').map(f => f.where)).toEqual(['implementerAgentType'])
+})
