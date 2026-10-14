@@ -38,7 +38,7 @@ window) would cure.
 | DEL | Coverage improved because the base shrank | MODEL-EVALUATED | ✅ | ✅ | ✅ |
 | ENUM | Every applicable check ran or is N/A with a reason | computed | ✅ | ✅ | ✅ |
 
-**`always N/A` is not a third kind of pass.** DQ4 and DQ6 are listed as runner checks because the
+**`always N/A` is not a third kind of pass** (on a present output; an absent one FAILs, as for every check). DQ4 and DQ6 are listed as runner checks because the
 runner emits a line for them — ENUM requires that — but neither can be COMPUTED from a finished
 artifact. DQ4 needs the input → transform → output count chain and DQ6 needs a before/after shape;
 the runner sees only the file that was produced. They were labelled `computed` in the first version
