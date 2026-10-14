@@ -1,11 +1,11 @@
 # Verification — what each gate leg decides
 
-The whole mechanical verdict is the exit code of `scripts/check.sh`. It runs seven legs,
+The whole mechanical verdict is the exit code of `${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh`. It runs seven legs,
 none short-circuiting, and prints one PASS/FAIL line per leg. The checkers it drives are the
 elide workflow's constraints, in `${CLAUDE_PLUGIN_ROOT}/checks/elide/constraints/`.
 
 ```bash
-bash skills/elide-case/scripts/check.sh \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh \
   --addendum addenda/NN-addendum.typ --pdf output/addenda/<compiled>.pdf \
   --plan .claude/plans/<slug>.md
 ```

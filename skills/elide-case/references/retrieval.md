@@ -26,11 +26,11 @@ Two conditions, and only these two:
   **CourtListener opinions corpus** by citation (federal and state), falling back to RECAP.
 
 Route corpus questions through the `workflows:courtlistener` skill; do the fetch with
-`scripts/fetch-opinion.sh`. Everything from here to the end of this file is the fallback path,
+`${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/fetch-opinion.sh`. Everything from here to the end of this file is the fallback path,
 including the OCR-correction apparatus and the Gemini routing rule.
 
 ```bash
-S="${CLAUDE_SKILL_DIR}/scripts"
+S="${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts"
 
 # RECAP docket-entry route (federal only) — the reliable one
 "$S/fetch-opinion.sh" --docket "1:20-cv-10832" --court nysd --entry 874 \
