@@ -48,30 +48,9 @@ Two things, both of which live beside the skill:
 Anything else is better as a normal tool call. A bang is not a way to run work; it is a way to make
 a file's content computed rather than typed.
 
-## `skills:` frontmatter — documented to preload, measured not to
+## `skills:` frontmatter — preloads
 
-`code.claude.com/docs/en/sub-agents` says the field injects "the complete skill content into the
-subagent's context immediately at startup". On 2.1.257 it did not, in four probes:
-
-| dispatch | agent | `skills:` | result |
-|---|---|---|---|
-| `claude -p --agent` | `workshop-reviewer` | `typst:typst` | NOT PRESENT |
-| farm-out proxy | `workshop-reviewer` | `typst:typst` | NOT PRESENT |
-| `claude -p --agent` | throwaway | `typst` (bare) | NOT PRESENT |
-| `claude -p --agent` | throwaway | `typst:typst` | NOT PRESENT |
-
-Neither name form reaches it, so this is not the plugin-qualified spelling. The docs also say a
-missing or policy-disabled skill is "skipped silently", with a warning only in the debug log —
-`--debug` under `-p` emitted nothing, so the skip is not observable from here either way.
-
-**What is NOT established:** every probe went through the CLI `--agent` path, because the
-main-thread guard routes delegation to farm-out and farm-out shells out to the same CLI. The
-in-session `Agent` tool path is untested, and `farm.sh`'s own header already records an SDK-vs-CLI
-divergence in agent preloading. So the honest rule is not "the field does nothing" but: **do not
-assume a preload you have not seen in the dispatch path you actually use.** Ask the agent whether
-the content is present; it is one probe.
-
-An agent with no `Skill` tool has no fallback if the preload does not land.
+`code.claude.com/docs/en/sub-agents`: the field injects "the complete skill content into the subagent's context immediately at startup". Measured 2026-10-14 on 2.1.293: `ds-reviewer` (no `Skill` tool) quoted a `ds-rules` body verbatim, both under `claude -p --agent` and in an Agent-tool spawn. Not measured: a farm-out proxy row; a missing or policy-disabled skill is "skipped silently" (debug log only), so ask the agent in the path you use whether the content is present.
 
 ## The consequence for agents
 
