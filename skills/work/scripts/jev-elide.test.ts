@@ -148,3 +148,46 @@ for (const rule of WIRED) {
     expect(res.exitCode).toBe(0);
   });
 }
+
+// Each rule's declared SPANS and EXAMINED names must be keys of the state it emits, and EXAMINED
+// must read zero over a file with nothing to examine: rule-check.ts turns that zero into
+// UNAVAILABLE, so a renamed counter would let an empty read pass as MET.
+const declared = (rule: string, name: "SPANS" | "EXAMINED") => {
+  const src = fs.readFileSync(join(ELIDE, `${rule}.py`), "utf8");
+  const m = src.match(new RegExp(`^${name}\\s*=\\s*(.+)$`, "m"));
+  expect(m, `${rule} declares ${name}`).not.toBeNull();
+  return [...m![1].matchAll(/'([^']+)'/g)].map(x => x[1]);
+};
+
+for (const rule of WIRED) {
+  test(`${rule}: its declared SPANS and EXAMINED name state the extractor fills, and EXAMINED reads zero over an empty excerpt`, () => {
+    const state = evidence(rule, "vio")[rule].state;
+    const [examined] = declared(rule, "EXAMINED");
+    for (const key of [...declared(rule, "SPANS"), examined]) expect(state, `${rule} state.${key}`).toHaveProperty(key);
+    expect(state[examined]).toBeGreaterThan(0);
+
+    const tmp = fs.mkdtempSync(join(os.tmpdir(), "jev-elide-empty-"));
+    fs.mkdirSync(join(tmp, "addenda"));
+    fs.writeFileSync(join(tmp, TYP), "#set page(margin: 1in)\n");
+    const r = spawnSync("python3", [EVIDENCE, "--files", join(tmp, TYP), "--root", tmp, "--rules-dir", ELIDE], { timeout: 120_000, encoding: "utf8" });
+    fs.rmSync(tmp, { recursive: true, force: true });
+    expect(r.status).toBe(0);
+    expect(JSON.parse(r.stdout)[rule].state[examined]).toBe(0);
+  });
+}
+
+test("calibration.json carries, for each wired rule, a violating and a compliant case whose addendum is committed", () => {
+  const cal = JSON.parse(fs.readFileSync(join(BASE, "tests/fixtures/jev/calibration.json"), "utf8"));
+  const set = cal.sets.elide;
+  expect(set.rulesDir).toBe("checks/elide/rules");
+  expect(Object.keys(set.rules).sort()).toEqual(WIRED);
+  for (const rule of WIRED) {
+    const kinds = set.rules[rule].map((c: any) => c.kind);
+    expect(kinds, rule).toContain("violating");
+    expect(kinds, rule).toContain("compliant");
+    for (const c of set.rules[rule]) {
+      const typs = fs.readdirSync(join(BASE, c.path, "addenda")).filter(f => f.endsWith(".typ"));
+      expect(typs.length, `${rule}: ${c.path}/addenda holds a .typ`).toBeGreaterThan(0);
+    }
+  }
+});
