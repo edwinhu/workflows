@@ -299,7 +299,10 @@ def test_check_sh_ds_dq_leg_passes_when_every_output_passes(clean: Path, tmp_pat
         env={**os.environ, "DS_DQ_SUITE": str(stub)},
     )
     lines = proc.stdout.splitlines()
-    assert "leg ds-gate exit=0" in lines, proc.stdout[-3000:]
+    # The message is the ds-gate leg's own findings (everything before its verdict line), not the tail of the
+    # whole run: a long ds-dq-tests leg pushed them out of the last 3000 characters.
+    gate = proc.stdout.split("leg ds-gate exit=")[0] if "leg ds-gate exit=" in proc.stdout else proc.stdout
+    assert "leg ds-gate exit=0" in lines, f"{gate[-6000:]}\n--- tail ---\n{proc.stdout[-1500:]}"
     assert any(line.startswith("ds-dq: 9 data output(s) examined") for line in lines), proc.stdout[-3000:]
 
 
