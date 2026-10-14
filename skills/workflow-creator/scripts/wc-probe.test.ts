@@ -3777,6 +3777,137 @@ describe('P22 inputs readable', () => {
   })
 })
 
+// P23 — a flag that gates a leg is refused when absent, never read as "this leg passes".
+describe('P23 missing flag refused', () => {
+  const run = (text: string, file = 'skills/x/scripts/check.sh') => probe.checkMissingFlagRefused(file, text, [])
+  const head = (arms: string) =>
+    ['set -uo pipefail', 'LINTCMD=""; NOLINT=0', 'while [ $# -gt 0 ]; do', '  case "$1" in', arms, '  esac', 'done'].join('\n')
+  const ARM = '    --lint-cmd) LINTCMD="${2:-}"; shift 2 ;;'
+  const OPTOUT = '    --no-lint-cmd) NOLINT=1; shift ;;'
+
+  test('an if-leg whose else reports 0 and has no refusal is a finding naming the flag', () => {
+    const text = [
+      head(ARM),
+      'if [ -n "$LINTCMD" ]; then legcount_run lint bash -c "$LINTCMD"; report lint "$LEG_STATUS"',
+      'else count_line lint 0 "command(s)" "— not declared" >&2; report lint 0 "not declared"; fi',
+    ].join('\n')
+    const f = run(text)
+    expect(f.length).toBe(1)
+    expect(f[0].rule).toStartWith('P23')
+    expect(f[0].line).toBe(8)
+    expect(f[0].detail).toContain('--lint-cmd')
+    expect(f[0].detail).toContain('LINTCMD')
+    expect(f[0].remedy).toContain('--no-lint-cmd')
+  })
+
+  test('an if-leg with no else at all is a finding', () => {
+    const text = [head(ARM), 'if [ -n "$LINTCMD" ]; then', '  report lint "$LEG_STATUS"', 'fi'].join('\n')
+    expect(run(text).length).toBe(1)
+  })
+
+  test('a one-line [ -n ] && leg is a finding', () => {
+    const text = [head(ARM), '[ -n "$LINTCMD" ] && report lint 0'].join('\n')
+    expect(run(text).length).toBe(1)
+  })
+
+  test('a leg() helper that skips an empty command with report 0 flags the call that feeds it a flag', () => {
+    const text = [
+      head(ARM),
+      'leg() {',
+      '  local name="$1" cmd="$2"',
+      '  if [ -z "$cmd" ]; then report "$name" 0 "not declared"; return; fi',
+      '  report "$name" "$LEG_STATUS"',
+      '}',
+      'leg lint "$LINTCMD"',
+    ].join('\n')
+    const f = run(text)
+    expect(f.length).toBe(1)
+    expect(f[0].line).toBe(13)
+    expect(f[0].detail).toContain('--lint-cmd')
+  })
+
+  test('a --no-<flag> opt-out makes the skip declared, so it is clean', () => {
+    const text = [
+      head(`${ARM}\n${OPTOUT}`),
+      'if [ -n "$LINTCMD" ]; then report lint "$LEG_STATUS"',
+      'else report lint 0 "declined"; fi',
+    ].join('\n')
+    expect(run(text)).toEqual([])
+  })
+
+  test('an exit-2 refusal in the else branch is clean', () => {
+    const text = [
+      head(ARM),
+      'if [ -n "$LINTCMD" ]; then report lint "$LEG_STATUS"',
+      'else echo "check.sh: --lint-cmd is required" >&2; exit 2; fi',
+    ].join('\n')
+    expect(run(text)).toEqual([])
+  })
+
+  test('an upfront [ -n ] || exit 2 guard is clean', () => {
+    const text = [
+      head(ARM),
+      '[ -n "$LINTCMD" ] || { echo "pass --lint-cmd" >&2; exit 2; }',
+      'if [ -n "$LINTCMD" ]; then report lint "$LEG_STATUS"; fi',
+    ].join('\n')
+    expect(run(text)).toEqual([])
+  })
+
+  test('a flag with a non-empty default is not absent, so it is clean', () => {
+    const text = [
+      'PROJ="."',
+      'case "$1" in',
+      '  --project-dir) PROJ="${2:-}"; shift 2 ;;',
+      'esac',
+      'if [ -n "$PROJ" ]; then report scope "$LEG_STATUS"; fi',
+    ].join('\n')
+    expect(run(text)).toEqual([])
+  })
+
+  test('an optional pass-through that runs no leg is clean', () => {
+    const text = [head(ARM), '[ -n "$LINTCMD" ] && args+=(--lint "$LINTCMD")'].join('\n')
+    expect(run(text)).toEqual([])
+  })
+
+  test('a selector that runs every leg when absent is clean', () => {
+    const text = [
+      'ONLY=""',
+      'case "$1" in',
+      '  --leg) ONLY="${2-}"; shift 2 ;;',
+      'esac',
+      'if [ -z "$ONLY" ] || [ "$ONLY" = gate ]; then',
+      '  legcount_run gate bash g.sh; report gate "$LEG_STATUS"',
+      'fi',
+    ].join('\n')
+    expect(run(text)).toEqual([])
+  })
+
+  test('only check scripts are judged', () => {
+    const text = [head(ARM), 'if [ -n "$LINTCMD" ]; then report lint 0; fi'].join('\n')
+    expect(run(text, 'skills/x/scripts/build.sh')).toEqual([])
+    expect(run(text, 'skills/x/scripts/scope-check.sh').length).toBe(1)
+  })
+
+  test('a declared exemption silences it', () => {
+    const text = [head(ARM), 'if [ -n "$LINTCMD" ]; then report lint 0; fi'].join('\n')
+    const ex = [{ rule: 'flag-leg', file: 'skills/x/scripts/check.sh', scope: 'file', startLine: 1, endLine: 99 }]
+    expect(probe.checkMissingFlagRefused('skills/x/scripts/check.sh', text, ex)).toEqual([])
+  })
+
+  test('the CLI reports P23 on a violating check.sh and stays quiet on the clean one', () => {
+    const bad = fixture({
+      'SKILL.md': skillMd('flagbad'),
+      'scripts/check.sh': [head(ARM), 'if [ -n "$LINTCMD" ]; then report lint 0; fi'].join('\n'),
+    })
+    expect(rulesOf(bad, 'P23').length).toBe(1)
+    const ok = fixture({
+      'SKILL.md': skillMd('flagok'),
+      'scripts/check.sh': [head(`${ARM}\n${OPTOUT}`), 'if [ -n "$LINTCMD" ]; then report lint 0; else report lint 0 "declined"; fi'].join('\n'),
+    })
+    expect(rulesOf(ok, 'P23')).toEqual([])
+  })
+})
+
 
 describe('ruleChecks configuration', () => {
   test('ruleChecks with blockAt out of range is flagged', () => {
