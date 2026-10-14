@@ -1,6 +1,6 @@
 ---
 name: master-datasets
-applies-to: [ds, ds-implement, ds-accept, ds-delegate]
+applies-to: [ds]
 ---
 
 ## Rule

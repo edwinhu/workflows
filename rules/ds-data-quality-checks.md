@@ -1,6 +1,6 @@
 ---
 name: data-quality-checks
-applies-to: [ds-fix, ds-implement, ds-delegate, ds-verify]
+applies-to: [ds]
 ---
 
 ## Rule

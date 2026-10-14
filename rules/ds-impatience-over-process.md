@@ -1,6 +1,6 @@
 ---
 name: impatience-over-process
-applies-to: [ds, ds-fix, ds-implement, ds-accept, ds-delegate]
+applies-to: [ds]
 ---
 
 ## Rule

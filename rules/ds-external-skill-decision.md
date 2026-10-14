@@ -1,6 +1,6 @@
 ---
 name: ds-external-skill-decision
-applies-to: [ds, ds-fix]
+applies-to: [ds]
 ---
 
 **What a script already decides:** `checks/ds/constraints/ds-external-skill-discovery.py` decides whether the approved PLAN.md RECORDS an ADOPT/PATCH/GREENFIELD decision. Which of the three is right is this rule.

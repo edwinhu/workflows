@@ -1,6 +1,6 @@
 ---
 name: deviation-rules-analysis
-applies-to: [ds-delegate]
+applies-to: [ds]
 ---
 
 ## Rule

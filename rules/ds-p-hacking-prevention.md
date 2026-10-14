@@ -1,6 +1,6 @@
 ---
 name: p-hacking-prevention
-applies-to: [ds-delegate]
+applies-to: [ds]
 ---
 
 ## Rule

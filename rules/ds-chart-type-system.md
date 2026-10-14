@@ -1,6 +1,6 @@
 ---
 name: ds-chart-type-system
-applies-to: [ds-delegate]
+applies-to: [ds]
 ---
 
 **What a script already decides:** `checks/ds/constraints/ds-chart-typography.py` decides the registered theme, per-chart styling, the single palette, vector output, a serif face (static, and, unless `--no-render`, the file matplotlib actually draws) and the 300 DPI raster floor; the ds `check.sh` runs it. Which serif matches the host document it cannot see, and that is this rule.

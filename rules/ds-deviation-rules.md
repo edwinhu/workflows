@@ -1,6 +1,6 @@
 ---
 name: deviation-rules
-applies-to: [ds, ds-fix, ds-implement, ds-delegate]
+applies-to: [ds]
 ---
 
 ## Rule

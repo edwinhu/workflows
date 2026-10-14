@@ -93,3 +93,13 @@ test('polars is pinned identically in check.sh and ds-dq.py, and the version is 
   const r = run()
   expect(r.stderr).toContain(`ds-dq-tests: polars==${pin}`)
 })
+
+test('every ds rule body is scoped to the one workflow that runs, [ds]', () => {
+  const dir = join(ROOT, 'rules')
+  const bodies = readdirSync(dir).filter(f => /^ds-.*\.md$/.test(f))
+  expect(bodies.length).toBeGreaterThan(20)
+  for (const f of bodies) {
+    const line = /^applies-to:.*$/m.exec(readFileSync(join(dir, f), 'utf8'))?.[0]
+    expect(`${f}: ${line}`).toBe(`${f}: applies-to: [ds]`)
+  }
+})
