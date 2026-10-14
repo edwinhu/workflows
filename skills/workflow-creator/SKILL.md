@@ -926,7 +926,7 @@ declares, and flagging it would fire on every audit block. Marker: `task-coverag
 | P21 leg count line | in a shell gate, a `report <leg> <status>` with no `legcount_run`/`legcount_cmd`/`count_line <leg>` (or a helper that prints one) since the previous `report`; or a literal `report <leg> 0` with no `count_line <leg> 0 <unit> "<reason>"` before it | major | `leg-count` |
 | P22 inputs readable | in a work-args fence, a `refs` entry, scoredChecks item `inputs` or `authorityExtra` path that is `.docx .xlsx .pptx .doc .xls .ppt .zip .db .sqlite` with no projection command (pandoc, xlsx2csv, sqlite3, docx-render …) in the same prompt; an existing ref over 256 KB where the prompt says "in full"; a `{{NAME}}` placeholder ref under a "search-only" prompt (`{{…}}` and `$VAR` paths are otherwise skipped) | major | `inputs-readable` |
 | P23 missing flag refused | a `check.sh` / `*-check.sh` whose empty-default CLI flag gates a leg (`if [ -n "$X" ]`, `[ -n "$X" ] &&`, or a helper that skips an empty parameter) with no `exit 2` for its absence and no `--no-<flag>` opt-out | major | `flag-leg` |
-| P24 narrated history | a SKILL.md or agent line outside fenced code holding an ISO date (not a `..` range) or `used to be`/`was broken`/`incident`/`we found`/`last time we`/`until 20YY`; `references/` is not read | major | `narrated-history` |
+| P24 narrated history | a SKILL.md or agent line outside fenced code holding an ISO date (not a `..` range) or a narrated-incident phrase (`checkNarratedHistory` lists them); `references/` is not read | major | `narrated-history` |
 
 Advisory rules print as `[advisory <severity>]` in both modes and never move the exit code. P15 gates.
 
