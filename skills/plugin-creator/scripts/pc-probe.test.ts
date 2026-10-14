@@ -166,7 +166,9 @@ describe('I1 — at most one deterministic engine per domain', () => {
               matcher: 'Edit',
               hooks: [
                 { type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/scripts/prose-audit.py' },
+                // <!-- wc-probe: ignore-paths:start -->
                 { type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/scripts/de-ai-audit.py' },
+                // <!-- wc-probe: ignore-paths:end -->
               ],
             },
           ],
@@ -186,7 +188,9 @@ describe('I1 — at most one deterministic engine per domain', () => {
       'hooks/hooks.json': JSON.stringify({
         hooks: {
           PostToolUse: [
+            // <!-- wc-probe: ignore-paths:start -->
             { matcher: 'Edit', hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/scripts/run-constraints.py' }] },
+            // <!-- wc-probe: ignore-paths:end -->
           ],
         },
       }),
@@ -332,7 +336,9 @@ describe('I3 — every engine has at least one live caller', () => {
           PostToolUse: [
             {
               matcher: 'Edit',
+              // <!-- wc-probe: ignore-paths:start -->
               hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/constraints/run-constraints.py' }],
+              // <!-- wc-probe: ignore-paths:end -->
             },
           ],
         },
@@ -381,7 +387,9 @@ describe('I4 — a computed path literal must resolve', () => {
           PostToolUse: [
             {
               matcher: 'Edit',
+              // <!-- wc-probe: ignore-paths:start -->
               hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/no-bold-lead.py' }],
+              // <!-- wc-probe: ignore-paths:end -->
             },
           ],
         },
@@ -414,7 +422,9 @@ describe('I4 — a computed path literal must resolve', () => {
             {
               matcher: 'Edit',
               hooks: [
+                // <!-- wc-probe: ignore-paths:start -->
                 { type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/no-bold-lead.py' },
+                // <!-- wc-probe: ignore-paths:end -->
               ],
             },
           ],
@@ -485,7 +495,9 @@ describe('I6 — a lens prompt may not quote a literal a pattern table already d
           PostToolUse: [
             {
               matcher: 'Edit',
+              // <!-- wc-probe: ignore-paths:start -->
               hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/slides/references/slide-register.py' }],
+              // <!-- wc-probe: ignore-paths:end -->
             },
           ],
         },
@@ -535,7 +547,9 @@ describe('I6 — a lens prompt may not quote a literal a pattern table already d
       'skills/slides/SKILL.md': skillMd(
         'slides',
         '```js\nWorkflow({\n' +
+          // <!-- wc-probe: ignore-paths:start -->
           '  lens: { agentType: "Explore", refs: ["${CLAUDE_PLUGIN_ROOT}/skills/slides/references/slide-register.py"], prompt: "Apply the literal-phrase test in the refs; do not restate it." },\n' +
+          // <!-- wc-probe: ignore-paths:end -->
           '})\n```',
       ),
       'skills/slides/references/slide-register.py': tableModule('slide-register', [
@@ -546,7 +560,9 @@ describe('I6 — a lens prompt may not quote a literal a pattern table already d
           PostToolUse: [
             {
               matcher: 'Edit',
+              // <!-- wc-probe: ignore-paths:start -->
               hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/slides/references/slide-register.py' }],
+              // <!-- wc-probe: ignore-paths:end -->
             },
           ],
         },
@@ -573,7 +589,9 @@ describe('I7 — a shipped pattern may not carry a corpus-rejected phrase (ADVIS
           PostToolUse: [
             {
               matcher: 'Edit',
+              // <!-- wc-probe: ignore-paths:start -->
               hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/promotional.py' }],
+              // <!-- wc-probe: ignore-paths:end -->
             },
           ],
         },
@@ -598,7 +616,9 @@ describe('I7 — a shipped pattern may not carry a corpus-rejected phrase (ADVIS
           PostToolUse: [
             {
               matcher: 'Edit',
+              // <!-- wc-probe: ignore-paths:start -->
               hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/promotional.py' }],
+              // <!-- wc-probe: ignore-paths:end -->
             },
           ],
         },
@@ -1033,9 +1053,11 @@ describe('the clean fixture', () => {
       'skills/writing/SKILL.md': skillMd(
         'writing',
         '```js\nWorkflow({\n' +
+          // <!-- wc-probe: ignore-paths:start -->
           '  lens: { agentType: "Explore", refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/writing-checks.md"], prompt: "Judge only the checks no runner can settle, against the definitions in the refs." },\n' +
           '  mechanicalChecks: [\n' +
           '    { name: "prose", cmd: "python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/prose-gate.py" },\n' +
+          // <!-- wc-probe: ignore-paths:end -->
           '  ],\n})\n```',
       ),
       // Scoped, because I10 judges every .md in a checker directory: an unscoped rule beside a
@@ -1099,7 +1121,9 @@ describe('the documented exit-code contract', () => {
           PostToolUse: [
             {
               matcher: 'Edit',
+              // <!-- wc-probe: ignore-paths:start -->
               hooks: [{ type: 'command', command: 'python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/no-bold-lead.py' }],
+              // <!-- wc-probe: ignore-paths:end -->
             },
           ],
         },
