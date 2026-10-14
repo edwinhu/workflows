@@ -1171,3 +1171,22 @@ test('an unresolvable run-level agentType is a CRITICAL naming the field', () =>
   ])
   expect(lintAgents(p, 'ghost-impl', 'ghost-ver', 'ghost-lens', 'ghost-sc', 'ghost-at')).toEqual([])
 })
+
+// R25 against the real resolver: the project's own .claude/agents/ is a root the harness discovers.
+test('an agent defined only in the project .claude/agents resolves; a missing one still refuses', () => {
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = require('node:fs')
+  const { join } = require('node:path')
+  const proj = mkdtempSync(join(require('node:os').tmpdir(), 'r25-proj-'))
+  try {
+    mkdirSync(join(proj, '.claude', 'agents'), { recursive: true })
+    writeFileSync(join(proj, '.claude', 'agents', 'proj-only-impl.md'), '---\nname: proj-only-impl\n---\n')
+    const resolves = (agentType: string) => {
+      const p = parseArgs({ projectDir: proj, tasks: [{ id: 'T1', agentType }] })
+      return lint(p).filter(f => f.rule === 'agent-type-unresolvable')
+    }
+    expect(resolves('proj-only-impl')).toEqual([])
+    const missing = resolves('proj-ghost-impl')
+    expect(missing).toHaveLength(1)
+    expect(missing[0].message).toContain('.claude/agents')
+  } finally { rmSync(proj, { recursive: true, force: true }) }
+})
