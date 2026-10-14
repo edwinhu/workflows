@@ -35,7 +35,7 @@ In the "Other People's Votes" audit, the Gemini re-scan on fixed footnotes caugh
 <EXTREMELY-IMPORTANT>
 ## Iron Law: Re-Scan Is Not Optional
 
-The verify phase MUST re-run the scanner on the corrected DOCX. Skipping verification was the root cause of missing 41 small caps fixes in the original audit.
+The verify phase MUST re-run the scanner on the corrected DOCX. Skipping verification misses small-caps fixes.
 
 If the re-scan finds issues, go back to Correct phase. Do NOT proceed to Archive with unresolved issues.
 </EXTREMELY-IMPORTANT>

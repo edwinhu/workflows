@@ -11,8 +11,8 @@ Write no `.txt` beside it: a stored projection can drop the docx's italic runs, 
 preserving italic runs as Typst emphasis.
 
 Westlaw's `XMLMIND_DOCX` export is **publisher-keyed text**, not OCR: the characters are the
-publisher's, star pagination is present, and there is nothing to adjudicate. The Ripple excerpt
-reported 69 unverified sentences against OCR-corpus text and **0** against the Westlaw extraction.
+publisher's, star pagination is present, and there is nothing to adjudicate; OCR-corpus text
+reports unverified sentences the Westlaw extraction does not.
 
 The user is credentialed. Use this route unless one of the two fallback conditions below holds.
 
@@ -79,8 +79,8 @@ to the bucket host.
 **A citation lookup that 404s or returns nothing means "not in the opinion corpus", not
 "the case does not exist."**
 
-`682 F. Supp. 3d 308` (Ripple) is absent from the opinions corpus, and
-a bare search on that cite returns *Coinbase v. SEC* — a confident wrong answer. The answer
+A cite can be absent from the opinions corpus while a bare search on it returns a different
+case — a confident wrong answer. The answer
 is the RECAP docket-entry route.
 
 Treating the 404 as a dead end is precisely what sends people back to a TM summary and into
