@@ -60,3 +60,18 @@ test('an unrelated process naming result.json is not a runner', async () => {
   expect(r.code).toBe(1)
   expect(r.err).toContain('dispatch died with no verdict')
 })
+
+test('a runner that files its verdict and exits between the loop\'s checks is never reported dead', async () => {
+  const w = world()
+  // python3 shim: the loop's runner_alive call (python3 - ARGS RESULT) lands the verdict first, as a
+  // runner finishing in the window after the loop's `[ -s result.json ]` and before its liveness read.
+  const bin = join(w.dir, 'bin'); mkdirSync(bin)
+  const real = spawnSync('bash', ['-c', 'command -v python3'], { timeout: 10_000 }).stdout.toString().trim()
+  writeFileSync(join(bin, 'python3'),
+    `#!/usr/bin/env bash\nif [ "$#" = 3 ] && [ "$1" = - ] && [[ "$3" == */result.json ]]; then echo '{}' > "$3"; fi\nexec ${real} "$@"\n`, { mode: 0o755 })
+  const env = { ...w.env, WORK_LOOP_SETTLE: '0', PATH: `${bin}:${process.env.PATH}` }
+  const c = spawn('bash', [LOOP, '--run-dir', w.run, '--plan', join(w.dir, 'plan.md'), '--loops', '1'], { env, stdio: ['ignore', 'pipe', 'pipe'] })
+  const r = await collect(c)
+  expect(r.err).not.toContain('dispatch died with no verdict')
+  expect(r.code).not.toBe(1)
+})
