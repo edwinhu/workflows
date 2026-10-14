@@ -51,7 +51,7 @@ computed pass.
 | WID | Zero widow lines in the handout build of the deck PDF | computed |
 | OVR | Zero frame-overflowing slides | computed |
 | ENUM | A line was emitted for every ID, and FID/CONV/VIS carry MODEL-EVALUATED status | computed |
-| FID | Claim fidelity: every factual claim traces to a Source Inventory item and to the paper | MODEL-EVALUATED |
+| FID | Claim fidelity: every factual claim traces to a Source Inventory item and to the paper (the numeric half is computed by `workshop-numbers.py`) | MODEL-EVALUATED |
 | CONV | Convention: the deck follows the Typst/Touying conventions and the plan's proportions | MODEL-EVALUATED |
 | VIS | Visual integrity: diagrams and figures are legible and say what the slide claims | MODEL-EVALUATED |
 
@@ -324,6 +324,14 @@ severity, not a verdict.
 sizes, holdings, author conclusions) traces to an item in `## Source Inventory` and is faithful to
 the source paper. `INV` computes only that *emitted tokens are declared*; whether the claim beside
 the token is what the source says is a judgement.
+
+**Computed half — `workshop-numbers.py`** (its own constraint beside the probe, run by
+`bin/workflow-check workshop`; its header is the spec): every number the deck states — a decimal, an
+integer of two or more digits, any percentage or currency amount — must occur in the paper or in a
+`## Source Inventory` Source cell, compared on value (`1,234` = `1234`, `12.0%` = `12`). Exempt: slide,
+page and section references, heading section numbers and list markers, and dates in the title block.
+A token it cannot find is a `path:line:` finding; a missing paper or deck is exit 2. The lens does not
+re-derive it. A number that exists in the paper but is the wrong one for the claim is still the lens's.
 
 **Evidence a lens reads:** the built `slides.typ` and `notes.typ`, the approved plan's
 `## Source Inventory` and `## Source Paper`, and the source paper itself. An ungrounded or
