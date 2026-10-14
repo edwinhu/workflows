@@ -135,13 +135,30 @@ describe('work-checks.sh appends --since from args.runBaseline', () => {
   }
   const echo = (word: string) => `f() { echo "{\\"cmdline\\":\\"$*\\"}"; }; f ${word}`;
 
-  test('rule-check.ts and workflow-check commands get it; other commands and an explicit --since do not', () => {
+  test('rule-check.ts and workflow-check commands naming --project-dir get it; other commands and an explicit --since do not', () => {
     const dir = mkTmp('rule-since-proj-');
     const args = { projectDir: dir, tasks: [], runBaseline: BASE };
     expect(JSON.parse(checks(args, echo('rule-check.ts --project-dir x')).stdout).cmdline).toBe(`rule-check.ts --project-dir x --since ${BASE}`);
-    expect(JSON.parse(checks(args, echo('workflow-check dev --rules-only')).stdout).cmdline).toBe(`workflow-check dev --rules-only --since ${BASE}`);
+    expect(JSON.parse(checks(args, echo('workflow-check dev --rules-only --project-dir x')).stdout).cmdline).toBe(`workflow-check dev --rules-only --project-dir x --since ${BASE}`);
     expect(JSON.parse(checks(args, echo('other-linter')).stdout).cmdline).toBe('other-linter');
     expect(JSON.parse(checks(args, echo('rule-check.ts --since beef')).stdout).cmdline).toBe('rule-check.ts --since beef');
+  });
+
+  test('a --files rule runner with no --project-dir gets no --since (rule-check.ts exits 1 on --since without a project dir)', () => {
+    const dir = mkTmp('rule-since-proj-');
+    const args = { projectDir: dir, tasks: [], runBaseline: BASE };
+    expect(JSON.parse(checks(args, echo('rule-check.ts --workflow elide --files a.typ --project secreg')).stdout).cmdline).toBe('rule-check.ts --workflow elide --files a.typ --project secreg');
+    expect(JSON.parse(checks(args, echo('workflow-check dev --rules-only')).stdout).cmdline).toBe('workflow-check dev --rules-only');
+  });
+
+  test('a real --files rule-check with no --project-dir runs under a runBaseline, never dies on --since', () => {
+    const dir = realpathSync(mkTmp('rule-since-real-'));
+    const f = join(dir, 'notes.md');
+    writeFileSync(f, '# Notes\n\nA line.\n');
+    const rec = checks({ projectDir: dir, tasks: [], runBaseline: BASE }, `bun ${join(HERE, 'rule-check.ts')} --workflow writing --files ${f}`);
+    expect(rec.output).not.toContain('--since scopes --project-dir');
+    expect(rec.exitCode).not.toBe(-1);
+    expect(JSON.parse(rec.stdout)).toHaveProperty('verdicts');
   });
 
   test('no runBaseline, or one that is not a hex sha, leaves the command as written', () => {
