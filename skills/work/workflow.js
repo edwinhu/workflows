@@ -295,8 +295,17 @@ for (const s of scoredChecks) {
     throw new Error(`work: scoredCheck missing key/prompt: ${JSON.stringify(s)}`)
   }
   const at = `scoredCheck ${JSON.stringify(s.key)}`
-  if (!Array.isArray(s.items) || !s.items.length || s.items.some(i => typeof i !== 'string' || !i.trim())) {
-    throw new Error(`work: ${at}: items must be a non-empty array of non-empty strings: ${JSON.stringify(s.items)}`)
+  // An item is a non-empty string (never carried) or {text, inputs}: the files its score is a pure
+  // function of, which is what lets a later round reuse the score instead of re-dispatching it.
+  const itemOk = i => (typeof i === 'string' && !!i.trim()) ||
+    (!!i && typeof i === 'object' && !Array.isArray(i) && typeof i.text === 'string' && !!i.text.trim() &&
+      Array.isArray(i.inputs) && i.inputs.length > 0 && i.inputs.every(p => typeof p === 'string' && !!p.trim()))
+  if (!Array.isArray(s.items) || !s.items.length || !s.items.every(itemOk)) {
+    throw new Error(`work: ${at}: items must be a non-empty array of non-empty strings or {text, inputs: [non-empty paths]} objects: ${JSON.stringify(s.items)}`)
+  }
+  const objTexts = s.items.filter(i => typeof i === 'object').map(i => i.text)
+  if (new Set(objTexts).size !== objTexts.length) {
+    throw new Error(`work: ${at}: duplicate item text — one prior score would match two jobs: ${JSON.stringify(objTexts)}`)
   }
   if (!Array.isArray(s.components) || !s.components.length) {
     throw new Error(`work: ${at}: components must be a non-empty array of {name, weight, base, penalties}: ${JSON.stringify(s.components)}`)
@@ -371,7 +380,10 @@ for (const s of scoredChecks) {
 }
 // One job per (check, item), in declaration order — scores are per item and never aggregated across
 // items, so this list is also the order `scores[]` comes back in.
-const scoredJobs = scoredChecks.flatMap(s => s.items.map(item => ({ check: s, item })))
+const scoredJobs = scoredChecks.flatMap(s => s.items.map(raw => {
+  const item = typeof raw === 'string' ? raw : raw.text
+  return { check: s, item, inputs: typeof raw === 'string' ? null : raw.inputs, id: `${s.key}::${item}` }
+}))
 // Optional: text appended to the AUTHORITY block every dispatched agent receives (implementers,
 // verifiers, the lens, the probes). Absent => AUTHORITY is byte-identical to the four-line form.
 const authorityExtra = typeof args.authorityExtra === 'string' && args.authorityExtra.trim() ? args.authorityExtra : null
@@ -487,6 +499,40 @@ const provenRedById = new Map(
 )
 
 const activeTasks = onlyTasks ? taskList.filter(t => onlyTasks.has(t.id)) : taskList
+const normPath = p => String(p).replace(/\/+$/, '')
+const pathsOverlap = (a, b) => a === b || a.startsWith(b + '/') || b.startsWith(a + '/')
+// Scored carry-forward (the M1 pattern, for advisory scores): a prior MEASURED score is reused only
+// when its check, item and input bytes are unchanged. The bytes are hashed by the shell
+// (work-dispatch.sh --scored-fingerprints), because this file has no fs; the engine only compares.
+// Derived, never declared: there is no selector argument that could disagree with the bytes. A fifth
+// condition the shell cannot see: an input an ACTIVE implementer may write was fingerprinted BEFORE
+// this round's edits, so it is re-audited whatever the fingerprint says.
+const priorScores = Array.isArray(prior.scores) ? prior.scores : []
+const scoredFingerprints = isPlainObject(args.scoredFingerprints) ? args.scoredFingerprints : {}
+const relPath = p => {
+  const s = normPath(p).replace(/^\.\//, '')
+  const pd = normPath(args.projectDir || '')
+  return pd && s.startsWith(pd + '/') ? s.slice(pd.length + 1) : s
+}
+// A glob stands for everything under its literal stem; "." and "" stand for the whole tree.
+const writerStems = readOnly ? [] : activeTasks.flatMap(t => (t.writablePaths || []).map(w => {
+  const r = relPath(w)
+  return r.includes('*') ? r.slice(0, r.indexOf('*')).replace(/\/+$/, '') : r
+}))
+const writtenThisRound = path => {
+  const r = relPath(path)
+  return writerStems.some(w => w === '' || w === '.' || pathsOverlap(r, w))
+}
+const carriedScores = new Map()
+for (const j of scoredJobs) {
+  const fp = scoredFingerprints[j.id]
+  if (!j.inputs || typeof fp !== 'string' || !fp) continue
+  const p = priorScores.find(e => e && e.key === j.check.key && e.item === j.item)
+  if (!p || !Number.isFinite(p.composite) || p.fingerprint !== fp) continue
+  if (j.inputs.some(writtenThisRound)) continue
+  carriedScores.set(j.id, p)
+}
+const freshJobs = scoredJobs.filter(j => !carriedScores.has(j.id))
 // Which red-gated tasks still need a probe pair this round. Separate from isRedGated so the fan-out
 // count, the dispatch decision and the carry-forward all read one predicate.
 const needsRedProbe = t => isRedGated(t) && !provenRedById.has(t.id)
@@ -515,10 +561,12 @@ const fanOut = {
   lens: 1,
   // Key omitted entirely without scoredChecks, so an existing caller's sizing error is unchanged.
   // Advisory agents still cost the same budget as gating ones.
-  ...(scoredJobs.length ? { scored: scoredJobs.length } : {}),
+  ...(freshJobs.length ? { scored: freshJobs.length } : {}),
+  // Reported, never counted: a carried job costs no agent.
+  ...(carriedScores.size ? { scoredCarried: carriedScores.size } : {}),
   ...(attempts.length ? { attempts: attempts.length } : {}),
 }
-const fanOutFloor = Object.values(fanOut).reduce((a, b) => a + b, 0)
+const fanOutFloor = Object.entries(fanOut).reduce((a, [k, n]) => a + (k === 'scoredCarried' ? 0 : n), 0)
 if (fanOutFloor > maxAgents) {
   throw new Error(
     `work: fan-out ${fanOutFloor} exceeds maxAgents ${maxAgents} — ${JSON.stringify(fanOut)}. ` +
@@ -590,8 +638,6 @@ const IMPLEMENT_WAVES = readOnly ? [] : implementWaves(activeTasks)
 // checked rather than assumed. Prefix-aware: `src` and `src/lib/x.ts` overlap, and a plan that
 // declares two same-wave tasks over one path is a plan defect, caught before any agent is dispatched
 // instead of surfacing as a torn file the lenses then judge.
-const normPath = p => String(p).replace(/\/+$/, '')
-const pathsOverlap = (a, b) => a === b || a.startsWith(b + '/') || b.startsWith(a + '/')
 for (const wave of IMPLEMENT_WAVES) {
   if (wave.length < 2) continue
   for (let i = 0; i < wave.length; i++) {
@@ -1028,7 +1074,7 @@ const verifyLeg = async () => {
 // ---------------------------------------------------------------- scored checks (counts in, scores computed HERE)
 // One agent per item, one parallel group, fail closed per slot. What it does
 // not mirror is the gate — no value produced below this line is read by overallPass, on any path.
-const NO_SCORES = { scores: [], scoresRun: null, scoresReported: null }
+const NO_SCORES = { scores: [], scoresRun: null, scoresReported: null, scoresCarried: null }
 // An unmeasured item is null WITH A REASON: never the base (a check that subtracted no penalties
 // because it examined nothing would score a perfect base — the vacuous pass), never 0 (which reads
 // as measured-and-terrible).
@@ -1079,7 +1125,7 @@ const scoreItem = (check, item, r) => {
 }
 const scoredLeg = async () => {
   if (!scoredJobs.length) return NO_SCORES
-  const results = await parallel(scoredJobs.map(({ check, item }) => () =>
+  const results = !freshJobs.length ? [] : await parallel(freshJobs.map(({ check, item }) => () =>
     agent(
       [
         AUTHORITY,
@@ -1098,9 +1144,14 @@ const scoredLeg = async () => {
         ...optIf('effort', scoredEffort), ...agentTypeOpt(reviewAgentType(check.agentType)) }
     )
   ))
+  const fresh = new Map(freshJobs.map((j, i) => [j.id, scoreItem(j.check, j.item, results[i])]))
   return {
-    scores: scoredJobs.map(({ check, item }, i) => scoreItem(check, item, results[i])),
-    scoresRun: scoredJobs.length,
+    // Declaration order, carried and fresh interleaved. Only object-form jobs wear carried/fingerprint,
+    // so a caller with string items sees the entry it always saw.
+    scores: scoredJobs.map(j => carriedScores.has(j.id) ? { ...carriedScores.get(j.id), carried: true }
+      : j.inputs ? { ...fresh.get(j.id), carried: false } : fresh.get(j.id)),
+    scoresRun: freshJobs.length,
+    scoresCarried: carriedScores.size,
     // What came back, not what was dispatched. scoresReported < scoresRun is how silence stays
     // legible without being fatal — those are separable, and this channel never gates.
     scoresReported: results.filter(Boolean).length,
@@ -1109,9 +1160,11 @@ const scoredLeg = async () => {
 // Fail closed on the whole leg: every item is unreported rather than clean, and still not a gate.
 const deadScoredLeg = () => (scoredJobs.length
   ? {
-      scores: scoredJobs.map(({ check, item }) => nullScores(check, item, 'the scored leg failed, so it never reported')),
-      scoresRun: scoredJobs.length,
+      scores: scoredJobs.map(j => carriedScores.has(j.id) ? { ...carriedScores.get(j.id), carried: true }
+        : nullScores(j.check, j.item, 'the scored leg failed, so it never reported')),
+      scoresRun: freshJobs.length,
       scoresReported: 0,
+      scoresCarried: carriedScores.size,
     }
   : NO_SCORES)
 
@@ -1151,7 +1204,6 @@ const agentVerified = verifyOut || (readOnly
 // Fail closed on the scored leg too. It is NOT joined into `findings` and no conjunct below reads it:
 // a scored value that reached the verdict would make an advisory channel a gate by the back door.
 const scoredResult = scoredOut || deadScoredLeg()
-const scores = scoredResult.scores
 
 // ---------------------------------------------------------------- the round's stages (no shell in here)
 // Every command a round runs — red after, acceptanceCmd, mechanicalChecks, ruleChecks, the red-suite re-hash — is
@@ -1170,6 +1222,19 @@ if (!round) {
   }
 }
 const checks = isPlainObject(round.checks) ? round.checks : {}
+// Stamp each object-form score with the fingerprint work-checks.sh took AFTER the agents ran: that
+// is what a fresh agent read, so it is what the next round compares against. A carried score whose
+// inputs changed under it is no longer a measurement of them.
+const postFingerprints = isPlainObject(checks.scored) ? checks.scored : {}
+const scores = scoredResult.scores.map((s, i) => {
+  const j = scoredJobs[i]
+  if (!j || !j.inputs) return s
+  const post = typeof postFingerprints[j.id] === 'string' && postFingerprints[j.id] ? postFingerprints[j.id] : null
+  if (!s.carried) return { ...s, fingerprint: post }
+  return post !== null && post !== s.fingerprint
+    ? { ...nullScores(j.check, j.item, "carried score's inputs changed during this round"), carried: true, fingerprint: post }
+    : s
+})
 const checkList = key => (Array.isArray(checks[key]) ? checks[key] : [])
 // A command the script never reported is a command nobody ran: -1, never a pass (gate-laws L4).
 const checkRecord = (key, match) => checkList(key).find(match) || null
@@ -1510,6 +1575,7 @@ return {
     // never 0, which reads as "scored and clean". Neither appears in overallPass.
     scoresRun: scoredResult.scoresRun,
     scoresReported: scoredResult.scoresReported,
+    scoresCarried: scoredResult.scoresCarried,
     // Everything that stands: the lens's fresh findings plus the carried findings still open. The name
     // predates the one-lens change and is kept for the consumers that read it (converge-check.ts).
     lensFindings: findings.length,

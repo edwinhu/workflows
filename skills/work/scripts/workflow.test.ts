@@ -2266,3 +2266,147 @@ test('a non-JSON or non-object args string throws the decode error, naming the s
   await expect(planStage('[1,2]')).rejects.toThrow(/args string did not parse to an object/)
   await expect(planStage('null')).rejects.toThrow(/args string did not parse to an object/)
 })
+
+// ---------------------------------------------------------------- scoredChecks: carry-forward by fingerprint
+// A prior MEASURED score is reused only when its check, item and input bytes are all unchanged. The
+// shell hashes (this sandbox has no fs); the engine compares. Scores still never gate.
+
+const objItems = [{ text: 'L1', inputs: ['d/L1.typ'] }, { text: 'L2', inputs: ['d/L2.typ'] }]
+const priorScore = (item: string, over: any = {}) => ({
+  key: 'slides', item, components: { coverage: 9, redundancy: 10, fidelity: 10 }, composite: 9.5,
+  itemsChecked: 7, fingerprint: `fp-${item}`, ...over,
+})
+const fps = (over: any = {}) => ({ 'slides::L1': 'fp-L1', 'slides::L2': 'fp-L2', ...over })
+const carryArgs = (over: any = {}) => ({
+  ...baseArgs, tasks: one,
+  scoredChecks: [scoredCheck({ items: objItems })],
+  scoredFingerprints: fps(),
+  priorResults: { implemented: [], verified: [], scores: [priorScore('L1'), priorScore('L2')] },
+  ...over,
+})
+const scoredLabels = (d: string[]) => d.filter(l => l.startsWith('scored:'))
+
+test('carry E1: a job whose prior measured entry matches its fingerprint is not dispatched, and returns carried', async () => {
+  const { result, dispatched } = await run(carryArgs({
+    scoredFingerprints: fps({ 'slides::L2': 'fp-L2-NEW' }) }), scoredReplies())
+  expect(scoredLabels(dispatched)).toEqual(['scored:slides:L2'])
+  const a = scoredFor(result, 'L1')
+  expect(a.carried).toBe(true)
+  expect(a.composite).toBe(9.5)
+  expect(a.fingerprint).toBe('fp-L1')
+  expect(scoredFor(result, 'L2').carried).toBe(false)
+  expect(result.scoreTable.scoresRun).toBe(1)
+  expect(result.scoreTable.scoresCarried).toBe(1)
+  // declaration order is kept
+  expect(result.scores.map((s: any) => s.item)).toEqual(['L1', 'L2'])
+})
+
+test('carry E2: a different fingerprint is dispatched', async () => {
+  const { dispatched } = await run(carryArgs({ scoredFingerprints: fps({ 'slides::L1': 'other' }) }), scoredReplies())
+  expect(scoredLabels(dispatched)).toContain('scored:slides:L1')
+})
+
+test('carry E3: an unmeasured prior entry (composite null) is never carried', async () => {
+  const { dispatched } = await run(carryArgs({ priorResults: { implemented: [], verified: [],
+    scores: [priorScore('L1', { composite: null, reason: 'agent died or was skipped' }), priorScore('L2')] } }), scoredReplies())
+  expect(scoredLabels(dispatched)).toEqual(['scored:slides:L1'])
+})
+
+test('carry E4: a missing or null fingerprint is dispatched', async () => {
+  for (const f of [{}, { 'slides::L1': null, 'slides::L2': null }]) {
+    const { dispatched } = await run(carryArgs({ scoredFingerprints: f }), scoredReplies())
+    expect(scoredLabels(dispatched).sort()).toEqual(['scored:slides:L1', 'scored:slides:L2'])
+  }
+  // and a prior entry with no fingerprint of its own
+  const { dispatched } = await run(carryArgs({ priorResults: { implemented: [], verified: [],
+    scores: [priorScore('L1', { fingerprint: null }), priorScore('L2')] } }), scoredReplies())
+  expect(scoredLabels(dispatched)).toEqual(['scored:slides:L1'])
+})
+
+test('carry E5: an input under an ACTIVE task writablePaths is re-audited; under a carried task it stays carried', async () => {
+  const t1 = task({ id: 'T1', writablePaths: ['d/L1.typ'] })
+  const t2 = task({ id: 'T2', writablePaths: ['d/L2.typ'] })
+  const { dispatched } = await run(carryArgs({ tasks: [t1, t2], onlyTasks: ['T1'],
+    priorResults: { implemented: [{ id: 'T2', done: true, changedFiles: ['x'], evidence: 'e' }],
+      verified: [{ id: 'T2', pass: true, evidence: 'e', failures: [] }], scores: [priorScore('L1'), priorScore('L2')] } }),
+  scoredReplies())
+  expect(scoredLabels(dispatched)).toEqual(['scored:slides:L1'])
+  // a directory writable path covers files under it
+  const { dispatched: d2 } = await run(carryArgs({ tasks: [task({ writablePaths: ['d'] })] }), scoredReplies())
+  expect(scoredLabels(d2).sort()).toEqual(['scored:slides:L1', 'scored:slides:L2'])
+})
+
+test('carry E6: readOnly with every fingerprint equal dispatches zero scored agents', async () => {
+  const { result, dispatched } = await run(carryArgs({ readOnly: true, tasks: [] }), scoredReplies())
+  expect(scoredLabels(dispatched)).toEqual([])
+  expect(result.scoreTable.scoresRun).toBe(0)
+  expect(result.scoreTable.scoresCarried).toBe(2)
+  expect(result.scores.every((s: any) => s.carried === true)).toBe(true)
+})
+
+test('carry E7: string items are never carried, even with a matching fingerprint', async () => {
+  const { dispatched } = await run(carryArgs({ scoredChecks: [scoredCheck()] }), scoredReplies())
+  expect(scoredLabels(dispatched).sort()).toEqual(['scored:slides:L1', 'scored:slides:L2'])
+})
+
+test('carry E8: a carried entry whose post-agents fingerprint differs becomes null with the reason, and the verdict is unchanged', async () => {
+  const clean = await run(carryArgs({ readOnly: true, tasks: [] }), scoredReplies())
+  const { result } = await run(carryArgs({ readOnly: true, tasks: [] }), scoredReplies(), undefined,
+    { checks: { scored: { 'slides::L1': 'changed-during-round', 'slides::L2': 'fp-L2' } } })
+  const a = scoredFor(result, 'L1')
+  expect(a.composite).toBeNull()
+  expect(a.reason).toContain("carried score's inputs changed during this round")
+  expect(scoredFor(result, 'L2').composite).toBe(9.5)
+  expect(result.overallPass).toBe(clean.result.overallPass)
+  expect(result.findings).toEqual(clean.result.findings)
+})
+
+test('carry E9: carried and fresh scores never change overallPass', async () => {
+  const awful = { itemsChecked: 40, missing: 99, collapsed: 99, redundant: 99, mismatches: 99 }
+  const a = await run(carryArgs(), scoredReplies())
+  const b = await run(carryArgs({ scoredFingerprints: {} }), scoredReplies({ dflt: awful }))
+  expect(a.result.overallPass).toBe(true)
+  expect(b.result.overallPass).toBe(true)
+  expect(b.result.scoreTable.tasksJudgedThisRun).toEqual(a.result.scoreTable.tasksJudgedThisRun)
+})
+
+test('carry E10: 40 items with 2 changed fit maxAgents 10; 40 uncarried do not', async () => {
+  const items = Array.from({ length: 40 }, (_, i) => ({ text: `L${i}`, inputs: [`d/L${i}.typ`] }))
+  const scores = items.map(i => priorScore(i.text))
+  const f = Object.fromEntries(items.map(i => [`slides::${i.text}`, `fp-${i.text}`]))
+  f['slides::L3'] = 'new'; f['slides::L9'] = 'new'
+  const args = carryArgs({ maxAgents: 10, scoredChecks: [scoredCheck({ items })], scoredFingerprints: f,
+    priorResults: { implemented: [], verified: [], scores } })
+  const r = await runCatching(args, scoredReplies())
+  expect(r.threw).toBe(false)
+  expect(scoredLabels(r.dispatched).sort()).toEqual(['scored:slides:L3', 'scored:slides:L9'])
+  const over = await runCatching({ ...args, scoredFingerprints: {} }, scoredReplies())
+  expect(over.threw).toBe(true)
+  expect(String(over.error)).toContain('fan-out')
+})
+
+test('carry E11: malformed object items throw at arg time', async () => {
+  const bad = [
+    [{ text: 'L1', inputs: 'd/L1.typ' }], [{ text: 'L1', inputs: [] }], [{ text: 'L1', inputs: [3] }],
+    [{ text: '  ', inputs: ['a'] }], [{ inputs: ['a'] }],
+    [{ text: 'L1', inputs: ['a'] }, { text: 'L1', inputs: ['b'] }],
+  ]
+  for (const items of bad) {
+    const r = await runCatching(carryArgs({ scoredChecks: [scoredCheck({ items })] }), scoredReplies())
+    expect(r.threw).toBe(true)
+    expect(String(r.error)).toContain('scoredCheck')
+    expect(r.dispatched).toEqual([])
+  }
+  // the well-formed object form is accepted, so the throws above are about the malformation
+  expect((await runCatching(carryArgs(), scoredReplies())).threw).toBe(false)
+})
+
+test('carry E12: a fresh entry fingerprint is the post-agents value from checks.scored, not the dispatch value', async () => {
+  const { result } = await run(carryArgs({ readOnly: true, tasks: [], scoredFingerprints: fps({ 'slides::L2': 'dispatch-time' }) }),
+    scoredReplies(), undefined, { checks: { scored: { 'slides::L1': 'fp-L1', 'slides::L2': 'post-agents' } } })
+  expect(scoredFor(result, 'L2').carried).toBe(false)
+  expect(scoredFor(result, 'L2').fingerprint).toBe('post-agents')
+  // no checks.scored record for a fresh job => no fingerprint, so next round re-audits it
+  const none = await run(carryArgs({ readOnly: true, tasks: [], scoredFingerprints: fps({ 'slides::L2': 'dispatch-time' }) }), scoredReplies())
+  expect(scoredFor(none.result, 'L2').fingerprint).toBeNull()
+})
