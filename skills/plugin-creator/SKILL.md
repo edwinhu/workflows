@@ -95,7 +95,7 @@ Run the authoring judgement rules over the change first — the authoring workfl
 for a plugin change carries this line; by hand, run its command without `--plan`:
 
 ```js
-ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir <projectDir> --plan <planPath>" },
+ruleChecks: { name: "jev-authoring-rules", cmd: `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir ${projectDir} --plan ${planPath}` },
 ```
 
 Exit 2 names each rule at p >= 0.85; exit 1 is Jev unavailable, never a pass. It decides the
