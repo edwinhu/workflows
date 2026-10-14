@@ -116,7 +116,7 @@ export async function run(args, agentReply, path = WORKFLOW, overrides = {}) {
     let r = null
     try { r = await agentReply(`rules:${name}`, cmd, { label: `rules:${name}`, scripted: true }) } catch { r = null }
     checks.rules.push(r && Number.isInteger(r.exitCode)
-      ? { name, cmd, exitCode: r.exitCode, stdout: String(r.stdout ?? ''), output: '' }
+      ? { name, cmd, exitCode: r.exitCode, stdout: String(r.stdout ?? ''), output: String(r.output ?? '') }
       : { name, cmd, exitCode: -1, stdout: '', output: `could not run: ${cmd}` })
   }
   Object.assign(checks, checksOverride || {})

@@ -2128,6 +2128,27 @@ test('a rule check whose verdicts are empty and carry no scope fails closed, nev
   expect(result.rulesThatFailed).toEqual(['ruleChecks:rules'])
 })
 
+test('a rule leg that exited non-zero with no verdicts fails closed even when it printed a scope line', async () => {
+  const stdout = JSON.stringify({ verdicts: [], unavailable: [], scope: 'nothing in scope (x)' })
+  const { result } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 1, stdout, output: 'rule-check: boom' } } })
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed.length).toBe(1)
+  expect(result.rulesThatFailed[0]).toContain('ruleChecks:rules')
+})
+
+test('a dead rule leg names its exit and stderr in the lens digest', async () => {
+  const { result, prompts } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: -1, stdout: '', output: 'rule-check: --since scopes --project-dir; name it' } } })
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed).toEqual(['ruleChecks:rules'])
+  expect(prompts.get('lens')).toContain('exit -1: rule-check: --since scopes --project-dir')
+})
+
 test('a rule check that scored nothing in scope says so in scoreTable and the lens digest, never as silence', async () => {
   // work-checks.sh carries the runner's `nothing in scope (...)` line as `scope` beside an empty verdict set
   const scope = 'nothing in scope (no file changed under /p)'
