@@ -518,8 +518,8 @@ its exit code in `<run-dir>/loop.exit`. It checks liveness, adjudicates each ver
 absent; a non-numeric value is refused with exit 2 naming the flag. `--loops 0` prints the wait loop
 instead and exits 0.
 
-The driver's exit codes: **0** PASS; **exit 1** the dispatch died with no verdict (see the run log it
-names); **exit 2** `work-result.sh` refused the verdict; **exit 3** `work-redispatch.sh` refused the round at its Tier 1 gate (a human-owned plan decision); **exit 5** `converge-check.ts` reported NOT
+The driver's exit codes: **0** PASS; **exit 9** the dispatch died with no verdict (see the run log it
+names; never 1, which is `work-result.sh`'s FAIL); **exit 2** `work-result.sh` refused the verdict; **exit 3** `work-redispatch.sh` refused the round at its Tier 1 gate (a human-owned plan decision); **exit 5** `converge-check.ts` reported NOT
 CONVERGING, which is evidence about the BRIEF — re-plan rather than spend the remaining rounds;
 **exit 6** the round cap was reached; **exit 7** a plan defect needs a scope decision, which is a
 human's to make; **exit 8** a `readOnly` run reached its verdict on its first adjudicated round (an

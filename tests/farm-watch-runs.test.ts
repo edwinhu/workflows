@@ -70,22 +70,22 @@ describe('work-loop.sh files itself in the stream', () => {
     mkdirSync(run)
     writeFileSync(join(run, 'args.json'), '{}')
     writeFileSync(join(run, 'plan.md'), '# plan')
-    // farm-alive.sh finds no live dispatch, so round 1 reports the dispatch dead: exit 1.
+    // farm-alive.sh finds no live dispatch, so round 1 reports the dispatch dead: exit 9.
     const r = spawnSync('bash', [LOOP, '--run-dir', run, '--plan', join(run, 'plan.md'), '--loops', '1'], { timeout: 130_000,
       encoding: 'utf8', env: { ...process.env, TMPDIR: root, CLAUDE_CODE_SESSION_ID: SID, WORK_LOOP_SETTLE: '0' },
     })
     const runs = readDir(join(root, 'farm-events', SID))
     rmSync(root, { recursive: true, force: true })
 
-    expect(r.status).toBe(1)
+    expect(r.status).toBe(9)
     expect(runs.length).toBe(1)
     expect(runs[0]!.label).toBe('work-loop')
     expect(runs[0]!.out).toBe(join(run, 'loop.exit'))
-    expect(runs[0]!.done).toEqual({ status: 'rc=1', detail: 'rc=1' })
+    expect(runs[0]!.done).toEqual({ status: 'rc=9', detail: 'rc=9' })
     const v = classify(runs, facts())[0]!
     expect(v.kind).toBe('work-loop')
     expect(v.runDir).toBe(run)
-    expect(wakeText(v, Date.now())).toContain('loop finished: exit 1 (dispatch died with no verdict)')
+    expect(wakeText(v, Date.now())).toContain('loop finished: exit 9 (dispatch died with no verdict)')
   }, 130_000)
 })
 

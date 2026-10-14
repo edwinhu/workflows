@@ -74,8 +74,8 @@ describe('SKILL.md carries the rule, and only the rule', () => {
 
   test('every exit code the driver can return is documented', () => {
     const md = readFileSync(SKILL_MD, 'utf8')
-    // 0 pass, 1 died with no verdict, 2 refused, 5 not converging, 6 cap reached, 7 escalated.
-    for (const code of [1, 2, 5, 6, 7]) expect(md).toMatch(new RegExp(`exit ${code}\\b`))
+    // 0 pass, 2 refused, 5 not converging, 6 cap reached, 7 escalated, 9 died with no verdict.
+    for (const code of [2, 5, 6, 7, 9]) expect(md).toMatch(new RegExp(`exit ${code}\\b`))
   })
 
   test('SKILL.md grew by fewer than 25 lines — it is re-read into context on every invocation', () => {

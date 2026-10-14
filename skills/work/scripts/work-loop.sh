@@ -8,7 +8,7 @@
 # watcher without one polls forever after the dispatch dies, which is how an OOM kill went silent.
 #
 # exit 0  the gate passed
-# exit 1  the dispatch died with no verdict — the run log is named
+# exit 9  the dispatch died with no verdict — the run log is named (not 1: work-result.sh uses 1 for FAIL)
 # exit 2  bad arguments, or work-result.sh refused the return
 # exit 3  work-redispatch.sh refused the round (its Tier 1 gate)
 # exit 5  converge-check.ts says NOT CONVERGING — halt rather than burn the cap on a broken brief
@@ -256,7 +256,7 @@ while :; do
         continue
       fi
       printf 'work-loop: dispatch died with no verdict — see %s\n' "$(round_log)" >&2
-      exit 1
+      exit 9
     fi
     grace=0
     sleep "$POLL"

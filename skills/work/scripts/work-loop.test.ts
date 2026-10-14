@@ -148,10 +148,10 @@ describe('a readOnly run stops at its first adjudicated verdict', () => {
 })
 
 describe('the liveness leg — the thing the hand-written watcher lacked', () => {
-  test('no verdict and no live dispatch exits 1 and names the run log, instead of polling forever', () => {
+  test('no verdict and no live dispatch exits 9 and names the run log, instead of polling forever', () => {
     const f = runDir({})            // no result.json at all, and no farm-events entry claims it
     const r = loop(f, 3)
-    expect(r.code).toBe(1)
+    expect(r.code).toBe(9)
     expect(r.out).toContain('run.log')
   })
 
@@ -166,7 +166,7 @@ describe('the liveness leg — the thing the hand-written watcher lacked', () =>
     const stale = join(f.R, 'run-121314.log')
     writeFileSync(stale, 'round 2 output\n')
     const r = loop(f, 3)
-    expect(r.code).toBe(1)
+    expect(r.code).toBe(9)
     // Round 1 here, so run.log is correct; the contract is that the named log EXISTS.
     const named = /see (\S+\.log)/.exec(r.out)
     expect(named).not.toBeNull()
@@ -216,7 +216,7 @@ describe('the liveness leg — the thing the hand-written watcher lacked', () =>
     const elapsedMs = performance.now() - startedAt
     try { process.kill(-holder.pid!) } catch { /* already gone */ }
 
-    // It must NOT have exited 1: the dispatch was alive the whole time it was waiting.
+    // It must NOT have exited 9: the dispatch was alive the whole time it was waiting.
     expect(code).toBe(0)
     expect(out).not.toMatch(/died with no verdict/i)
     // ANTI-VACUITY: if the verdict had been on disk before the first poll, the loop would have
@@ -392,7 +392,7 @@ describe('a continuation round actually runs', () => {
       code = e.status ?? -1
       out = (e.stdout ?? '') + (e.stderr ?? '')
     }
-    expect(code).toBe(1)
+    expect(code).toBe(9)
     const named = /see (\S+\.log)/.exec(out)
     expect(named).not.toBeNull()
     // The continuation round's own log, which work-redispatch.sh created — not round 1's.

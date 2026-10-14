@@ -37,7 +37,7 @@ const collect = (c: ReturnType<typeof spawn>) => new Promise<{ code: number | nu
 test('a round whose runner process is gone before START is reported dead quickly', async () => {
   const w = world()
   const r = await collect(w.loop())
-  expect(r.code).toBe(1)
+  expect(r.code).toBe(9)
   expect(r.err).toContain('dispatch died with no verdict')
   expect(r.ms).toBeLessThan(15_000)
 })
@@ -57,7 +57,7 @@ test('an unrelated process naming result.json is not a runner', async () => {
   const other = spawn('sleep', ['30', join(w.run, 'result.json')], { stdio: 'ignore' })
   const r = await collect(w.loop())
   other.kill()
-  expect(r.code).toBe(1)
+  expect(r.code).toBe(9)
   expect(r.err).toContain('dispatch died with no verdict')
 })
 
@@ -73,5 +73,5 @@ test('a runner that files its verdict and exits between the loop\'s checks is ne
   const c = spawn('bash', [LOOP, '--run-dir', w.run, '--plan', join(w.dir, 'plan.md'), '--loops', '1'], { env, stdio: ['ignore', 'pipe', 'pipe'] })
   const r = await collect(c)
   expect(r.err).not.toContain('dispatch died with no verdict')
-  expect(r.code).not.toBe(1)
+  expect(r.code).not.toBe(9)
 })
