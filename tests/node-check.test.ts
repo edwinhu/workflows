@@ -41,3 +41,31 @@ test('a plain .js syntax error still fails', () => {
 test('a plain .mjs module passes', () => {
   expect(run('ok.mjs', 'export const x = 1\n').code).toBe(0)
 })
+
+test('a plain .js that parses passes and is counted as examined', () => {
+  const r = run('ok-plain.js', 'let a = 1\n')
+  expect(r.code).toBe(0)
+  expect(r.out).toContain('1 file(s) examined')
+})
+
+test('a non-.js file is out of scope even when its content would not parse', () => {
+  const r = run('broken.txt', 'const = 1\n')
+  expect(r.code).toBe(0)
+  expect(r.out).toContain('nothing in scope')
+})
+
+test('no files handed in is an explicit empty scope, not a pass over something', () => {
+  const r = spawnSync('python3', [SCRIPT, '--project-dir', dir, '--files'], { encoding: 'utf8', timeout: 60_000 })
+  expect(r.status).toBe(0)
+  expect(r.stdout + r.stderr).toContain('0 file(s) examined')
+})
+
+test('no node on PATH is COULD-NOT-RUN with exit 2, never a silent pass', () => {
+  const f = join(dir, 'nonode.js')
+  writeFileSync(f, 'const = 1\n')
+  const empty = mkdtempSync(join(dir, 'nopath-'))
+  const py = spawnSync('which', ['python3'], { encoding: 'utf8', timeout: 10_000 }).stdout.trim()
+  const r = spawnSync(py, [SCRIPT, '--project-dir', dir, '--files', f], { encoding: 'utf8', timeout: 60_000, env: { ...process.env, PATH: empty } })
+  expect(r.status).toBe(2)
+  expect(r.stderr).toContain('COULD-NOT-RUN: node-check')
+})
