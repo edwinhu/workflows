@@ -3440,40 +3440,115 @@ export function checkLegCounts(file: string, text: string, exemptions: readonly 
  * A SKILL.md or agent file is re-read on every invocation, so a dated incident or a "used to be"
  * is a recurring token cost that changes no behaviour. The predicate is a date or a narrated-
  * incident phrase on a line outside fenced code; a date range (`..`) is a data example, not
- * history. Measurements belong in `references/`, which this rule does not read.
+ * history. Three further surfaces are read, because each reaches an agent's context the same way:
+ * every in-plugin Markdown file a `refs` list names (`checkNarratedHistory` with `reference`, found
+ * by `narratedRefTargets`), and the string lines of a work-args fence (`checkNarratedHistoryInFences`,
+ * phrases only). In a reference file a MEASUREMENT line is exempt from the date tell: the date is
+ * directly preceded by `measured` / `measured on` / `synced:` (a vendored-file stamp), or directly followed by `on <version>`
+ * (`on claude@2.1.257`, `on Claude Code 2.1.257`, `on 2.1.257`). Phrase tells still apply.
  */
-export function checkNarratedHistory(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
+const NARRATED_DATE_RE = /(?<![.\d])\b20\d\d-\d\d-\d\d\b(?!\.\.)/g
+/** A prose-only tell: in a fence prompt "the incident this rule exists for" is an instruction, not history. */
+const NARRATED_INCIDENT_RE = /\b(?:the|that|this)\s+(?:[\w-]+\s+){0,3}incident\b(?![-\w])/i
+const NARRATED_PHRASES: RegExp[] = [
+  /(?<!\b(?:is|are|be|being|was|were|been|get|gets)\s)\bused to (?:be|have|do|run|fail|carry|read|write|take|call|allow|need|treat|miss|list)\b/i,
+  /\bwas broken\b/i,
+  /\bwe found\b/i,
+  /\blast time (?:we|i|it|this|that)\b/i,
+  /\buntil 20\d\d\b/i,
+  /\bwhich is how\b[^.;]{0,80}?\b(?:reached|slipped|shipped|landed|ended up|got (?:through|past|into)|was|were|went|broke|came)\b/i,
+  /\bwas the (?:[\w-]+\s+){0,2}(?:treadmill|culprit|trap|mistake|regression|root cause|origin)\b/i,
+  /\bcame from (?:exactly )?this\b/i,
+]
+
+/** The first narrated tell on `line`, or null. `measured` exempts a date from the date tell. */
+function narratedTell(line: string, measured: boolean): string | null {
+  for (const m of line.matchAll(NARRATED_DATE_RE)) {
+    if (measured) {
+      const before = line.slice(0, m.index!)
+      const after = line.slice(m.index! + m[0].length)
+      if (/\b(?:measured(?:\s+on)?|synced:)\s*$/i.test(before) || /^\s+on\s+(?:claude@|claude code\s+|v)?\d+\.\d+/i.test(after)) continue
+    }
+    return m[0]
+  }
+  for (const re of [NARRATED_INCIDENT_RE, ...NARRATED_PHRASES]) {
+    const m = re.exec(line)
+    if (m) return m[0]
+  }
+  return null
+}
+
+function narratedFinding(file: string, line: number, tell: string): Finding {
+  return {
+    rule: 'P24 narrated history',
+    severity: 'major',
+    file,
+    line,
+    detail: `narrates history ("${tell}") in a file the harness re-reads on every invocation — state the rule, drop the story`,
+    remedy: 'delete the date or phrase and keep the rule; move a measurement to references/, or declare <!-- wc-probe: ignore-narrated-history --> with the reason',
+  }
+}
+
+export function checkNarratedHistory(
+  file: string,
+  text: string,
+  exemptions: readonly Exemption[],
+  opts: { reference?: boolean } = {},
+): Finding[] {
   const findings: Finding[] = []
-  const TELLS: RegExp[] = [
-    /(?<![.\d])\b20\d\d-\d\d-\d\d\b(?!\.\.)/,
-    /(?<!\b(?:is|are|be|being|was|were|been|get|gets)\s)\bused to (?:be|have|do|run|fail|carry|read|write|take|call|allow|need|treat|miss|list)\b/i,
-    /\bwas broken\b/i,
-    /\b(?:the|that|this)\s+(?:[\w-]+\s+){0,3}incident\b(?![-\w])/i,
-    /\bwe found\b/i,
-    /\blast time (?:we|i|it|this|that)\b/i,
-    /\buntil 20\d\d\b/i,
-  ]
   const lines = text.split('\n')
   let fenced = false
   for (let i = 0; i < lines.length; i++) {
     if (/^\s*(```|~~~)/.test(lines[i])) { fenced = !fenced; continue }
     if (fenced) continue
-    for (const re of TELLS) {
-      const m = re.exec(lines[i])
-      if (!m) continue
-      if (isExemptAt(exemptions, 'narrated-history', i + 1)) break
-      findings.push({
-        rule: 'P24 narrated history',
-        severity: 'major',
-        file,
-        line: i + 1,
-        detail: `narrates history ("${m[0]}") in a file the harness re-reads on every invocation — state the rule, drop the story`,
-        remedy: 'delete the date or phrase and keep the rule; move a measurement to references/, or declare <!-- wc-probe: ignore-narrated-history --> with the reason',
-      })
-      break
+    const tell = narratedTell(lines[i], opts.reference === true)
+    if (tell === null || isExemptAt(exemptions, 'narrated-history', i + 1)) continue
+    findings.push(narratedFinding(file, i + 1, tell))
+  }
+  return findings
+}
+
+/** Phrase tells (no dates) on the quoted lines of every work-args fence: prompt text is delivered to an agent. */
+export function checkNarratedHistoryInFences(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
+  const findings: Finding[] = []
+  const lines = text.split('\n')
+  for (const block of fencedBlocks(text)) {
+    if (!isCodeFence(block)) continue
+    if (!findObjectLiterals(block.body).some(o => ['mechanicalChecks', 'lens', 'ruleChecks', 'tasks'].some(k => o.keys.includes(k)))) continue
+    for (let l = block.line + 1; l < block.endLine; l++) {
+      const line = lines[l - 1]
+      if (!/["'`]/.test(line)) continue
+      for (const re of NARRATED_PHRASES) {
+        const m = re.exec(line)
+        if (!m) continue
+        if (!isExemptAt(exemptions, 'narrated-history', l)) findings.push(narratedFinding(file, l, m[0]))
+        break
+      }
     }
   }
   return findings
+}
+
+/**
+ * Markdown files a work-args `refs` list names that lie inside the target plugin: resolved, existing,
+ * `.md`. A `${VAR}`/`{{NAME}}` placeholder, an out-of-tree path and a missing file are skipped.
+ */
+export function narratedRefTargets(file: string, text: string, ctx: SkillContext, root: string): string[] {
+  const code = maskNonFenced(text)
+  const masked = maskLiterals(code)
+  const bound = ctx.pluginRoot ?? root
+  const out = new Set<string>()
+  for (const obj of findObjectLiterals(code)) {
+    if (!obj.keys.includes('refs')) continue
+    const span = findKeyValueSpan(code, masked, obj, 'refs')
+    if (!span) continue
+    for (const raw of stringLiteralsIn(code, span.start, span.end)) {
+      const p = resolveRefPath(raw, dirname(file), ctx)
+      if (p === null || !MARKDOWN_EXT_RE.test(p) || !isAtOrAbove(bound, p) || !existsSync(p)) continue
+      out.add(p)
+    }
+  }
+  return [...out]
 }
 
 /**
@@ -4733,6 +4808,7 @@ export function runProbe(
     })
   }
 
+  const narratedRefsSeen = new Set<string>()
   const filesSkipped: string[] = []
   const exemptions: Exemption[] = []
   const pathCheckExempt: string[] = []
@@ -4855,6 +4931,16 @@ export function runProbe(
       findings.push(...checkSingleEntryPoint(file, text, fileExemptions))
       findings.push(...checkLoaderEntryPoint(file, text, fileExemptions))
       if (kind === 'skill' || kind === 'agent') findings.push(...checkNarratedHistory(file, text, fileExemptions))
+      if (kind === 'skill' || kind === 'agent') {
+        findings.push(...checkNarratedHistoryInFences(file, text, fileExemptions))
+        for (const target of narratedRefTargets(file, text, ctx, root)) {
+          if (narratedRefsSeen.has(target) || ['skill', 'agent'].includes(classifySkillFile(target, root))) continue
+          narratedRefsSeen.add(target)
+          const refText = readTextOrNull(target)
+          if (refText === null) continue
+          findings.push(...checkNarratedHistory(target, refText, parseExemptions(target, refText), { reference: true }))
+        }
+      }
       findings.push(...checkLensSetParity(file, text))
       // P12 reads RAW text too: its fence half is per-fence, and its runner half is a claim the
       // file's PROSE makes, which the code view blanks.

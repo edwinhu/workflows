@@ -3961,6 +3961,96 @@ describe('P24 narrated history', () => {
   })
 })
 
+describe('P24 narrated history — extension', () => {
+  const run = (text: string, file = 'SKILL.md') => probe.checkNarratedHistory(file, text, probe.parseExemptions(file, text))
+  const ref = (text: string, file = 'references/x.md') =>
+    probe.checkNarratedHistory(file, text, probe.parseExemptions(file, text), { reference: true })
+  const fences = (text: string, file = 'SKILL.md') =>
+    probe.checkNarratedHistoryInFences(file, text, probe.parseExemptions(file, text))
+
+  test.each([
+    ['A stored twin drops italics, which is how a case name reached a reader in roman.', 'which is how'],
+    ['The gate passed vacuously, which is how the loop was held for hours.', 'which is how'],
+    ['Do not add the gate; it was the over-enforcement treadmill.', 'was the over-enforcement treadmill'],
+    ['`redCommand` itself came from exactly this question.', 'came from exactly this'],
+    ['The check came from this review.', 'came from this'],
+  ])('a new narrated phrase is a finding: %s', (line, token) => {
+    const f = run(`# T\n\n${line}\n`)
+    expect(f.length).toBe(1)
+    expect(f[0].detail.toLowerCase()).toContain(token.toLowerCase())
+  })
+
+  test('ordinary uses of the new words are silent', () => {
+    expect(run('# T\n\nThe value was the first column. It came from the config. A waived equality test is how a check gets waived, which is how scope creep survives; which is how a re-run reaches onlyTasks.\n')).toEqual([])
+  })
+
+  test('a measurement line in a reference file is exempt from the date tell only', () => {
+    expect(ref('# T\n\nMeasured 2026-09-14 on Claude Code 2.1.257, flag unset.\n')).toEqual([])
+    expect(ref('# T\n\n- measured on 2026-09-14 on a printf format.\n')).toEqual([])
+    expect(ref('# T\n\n2026-09-15 on claude@2.1.257 by loading a probe skill.\n')).toEqual([])
+    expect(ref('# T\n\n<!-- VENDORED\n     synced: 2026-08-27 from b36e0829c6d0\n-->\n')).toEqual([])
+    expect(ref('# T\n\nOn 2026-09-14, 16 reference files were named by no SKILL.md.\n').length).toBe(1)
+    expect(ref('# T\n\nMeasured 2026-09-14 on 2.1.257; which is how it broke.\n').length).toBe(1)
+  })
+
+  test('the measurement exemption does not apply to a SKILL.md', () => {
+    expect(run('# T\n\nMeasured 2026-09-14 on Claude Code 2.1.257.\n').length).toBe(1)
+  })
+
+  const FENCE = (prompt: string) => ['# T', '', '```js', '{', '  tasks: [{ id: "t1", work: "' + prompt + '", refs: [] }],', '  lens: { prompt: "ok", refs: [] },', '}', '```', ''].join('\n')
+
+  test('a narrated phrase inside a work-args fence string is a finding with the fence line', () => {
+    const f = fences(FENCE('Retrieve first, which is how the italics were lost.'))
+    expect(f.length).toBe(1)
+    expect(f[0].rule).toBe('P24 narrated history')
+    expect(f[0].line).toBe(5)
+    expect(f[0].detail).toContain('which is how')
+  })
+
+  test('a clean work-args fence is silent', () => {
+    expect(fences(FENCE('Retrieve the opinion first and write no .txt beside it.'))).toEqual([])
+  })
+
+  test('an instruction naming "the incident this rule exists for" in a fence is silent', () => {
+    expect(fences(FENCE('Fabricating the missing fact is the incident this rule exists for.'))).toEqual([])
+  })
+
+  test('a date inside a work-args fence stays silent (data example)', () => {
+    expect(fences(FENCE('Use --since 2026-10-02 as the cutoff.'))).toEqual([])
+  })
+
+  test('a non-work-args code fence is not read', () => {
+    expect(fences('# T\n\n```bash\necho "which is how it works"\n```\n')).toEqual([])
+  })
+
+  test('the declared exemption silences a fence line', () => {
+    const t = FENCE('Retrieve first, which is how the italics were lost.').replace('```js', '<!-- wc-probe: ignore-narrated-history -->\n```js')
+    expect(fences(t)).toEqual([])
+  })
+
+  describe('refs targets', () => {
+    const plugin = mkTmp('p24refs-')
+    mkdirSync(join(plugin, '.claude-plugin'), { recursive: true })
+    writeFileSync(join(plugin, '.claude-plugin', 'plugin.json'), '{"name":"x"}')
+    mkdirSync(join(plugin, 'skills', 's', 'references'), { recursive: true })
+    writeFileSync(join(plugin, 'skills', 's', 'references', 'a.md'), 'ok\n')
+    writeFileSync(join(plugin, 'skills', 's', 'references', 'b.json'), '{}')
+    mkdirSync(join(plugin, 'references'), { recursive: true })
+    writeFileSync(join(plugin, 'references', 'r.md'), 'ok\n')
+    const skill = join(plugin, 'skills', 's', 'SKILL.md')
+    const doc = (refs: string) => ['# T', '', '```js', '{ tasks: [{ id: "t", work: "w", refs: [' + refs + '] }], lens: { prompt: "p", refs: [] } }', '```', ''].join('\n')
+    const targets = (refs: string) => probe.narratedRefTargets(skill, doc(refs), { skillDir: join(plugin, 'skills', 's'), pluginRoot: plugin }, plugin)
+
+    test('in-tree markdown refs resolve, via skill dir, plugin root and relative', () => {
+      const t = targets('"${CLAUDE_SKILL_DIR}/references/a.md", "${CLAUDE_PLUGIN_ROOT}/references/r.md", "references/a.md"')
+      expect(t.sort()).toEqual([join(plugin, 'references', 'r.md'), join(plugin, 'skills', 's', 'references', 'a.md')])
+    })
+    test('a placeholder, an out-of-tree path, a missing file and a non-markdown file are skipped', () => {
+      expect(targets('"${SOURCE}/x.md", "{{NAME}}", "/etc/hostname", "~/nope.md", "references/missing.md", "references/b.json"')).toEqual([])
+    })
+  })
+})
+
 describe('ruleChecks configuration', () => {
   test('ruleChecks with blockAt out of range is flagged', () => {
     const text = [
