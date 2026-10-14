@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The ONE mechanical entry point for the ds workflow. Its exit code IS the verdict.
 #
-# Three legs, none short-circuiting. ds-gate is this plugin's: `bin/workflow-check ds --constraints-only`, which
+# Four legs, none short-circuiting. ds-gate is this plugin's: `bin/workflow-check ds --constraints-only`, which
 # runs every constraint under checks/ds/constraints/ (ds-dq over the plan's Data Outputs among them), so a new
 # constraint script is reached with no edit here. Its Jev rules are skipped: this plan's ruleChecks already
 # scores them (`rule-check.ts --workflow ds`), and work reads that verdict, so a leg here would pay for it twice. The other two legs are the
@@ -13,6 +13,9 @@
 #
 # Every leg prints `<leg>: N <unit> examined` (work/scripts/leg-counts.sh); see dev/scripts/check.sh
 # for the tests leg's --test-count-re.
+#
+# The ds-dq-tests leg runs the runner's own contract suite (ds_dq_test.py; DS_DQ_SUITE overrides the path), so an edit that
+# breaks ds-dq's parse turns the gate red.
 #
 # Usage: check.sh --plan <planPath> --project-dir <dir> [--test-cmd <cmd>] [--test-count-re <re>] [--lint-cmd <cmd>]
 # Exit 0 = every declared leg passed. 1 = some leg failed. 2 = refusal, or a leg that examined nothing.
@@ -38,6 +41,10 @@ report() { printf 'leg %s exit=%s%s\n' "$1" "$2" "${3:+ ($3)}"; [ "$2" -le "$RC"
 
 legcount_run ds-gate python3 "$HERE/../../../bin/workflow-check" ds --project-dir "$PROJ" --plan "$PLAN" --constraints-only
 report ds-gate "$LEG_STATUS"
+
+SUITE="${DS_DQ_SUITE:-$HERE/ds_dq_test.py}"
+legcount_run ds-dq-tests legcount_cmd ds-dq-tests "$HERE" "uv run --with polars,pytest python3 -m pytest -o addopts= \"$SUITE\" -q"
+report ds-dq-tests "$LEG_STATUS"
 
 if [ -n "$TESTCMD" ]; then legcount_run tests legcount_cmd tests "$PROJ" "$TESTCMD" "$TESTRE"; report tests "$LEG_STATUS"
 else count_line tests 0 "command(s)" "— nothing in scope (not declared)" >&2; report tests 0 "not declared"; fi
