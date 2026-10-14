@@ -85,6 +85,11 @@ def since_cmd(cmd):
         return f'{cmd} --since {base}'
     return cmd
 
+def baseline_env():
+    # The run's baseline tree for any rule command, wrapper or not; rule-check.ts reads it when --since is absent.
+    base = args.get('runBaseline')
+    return {'WORK_RUN_BASELINE': str(base)} if base and re.fullmatch(r'[0-9a-f]{40,64}', str(base)) else {}
+
 def run_rules(cmd):
     cmd = since_cmd(cmd)
     # RULE_CHECK_OUT: rule-check.ts copies its verdict line there. A ruleChecks of
@@ -95,7 +100,7 @@ def run_rules(cmd):
     os.close(fd)
     try:
         try:
-            p = subprocess.run(['bash', '-c', cmd], cwd=cwd, env={**env, 'RULE_CHECK_OUT': side}, capture_output=True,
+            p = subprocess.run(['bash', '-c', cmd], cwd=cwd, env={**env, 'RULE_CHECK_OUT': side, **baseline_env()}, capture_output=True,
                                text=True, errors='replace', timeout=timeout)
         except subprocess.TimeoutExpired:
             return -1, '', f'could not run: timed out after {timeout}s: {cmd}'

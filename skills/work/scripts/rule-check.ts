@@ -106,6 +106,16 @@ export function changedRanges(projectDir: string, since?: string): Record<string
   return out;
 }
 
+// Named files scoped to what a baseline run changed: the intersection of `named` with the files changed
+// since `since`, and only the lines changed since it. Without `since`, the named files whole. Null when git cannot diff.
+export function scopeNamed(named: string[], projectDir: string, since?: string): { files: string[]; changed: Record<string, number[][]> | null } | null {
+  if (!since) return { files: named, changed: null };
+  const changed = changedRanges(projectDir, since);
+  if (!changed) return null;
+  const hit = new Set(changedFiles(projectDir, since).map(f => resolve(f)));
+  return { files: named.filter(f => hit.has(resolve(f))), changed };
+}
+
 // Every rule's {state, proposition, criteria, ...} from the rules directory's extractor; throws on failure.
 // `changed` (from changedRanges) scopes the rules that take it to the lines the round added or changed.
 export function collectEvidence(opts: { files: string[]; plan?: string; root?: string; rulesDir?: string; changed?: Record<string, number[][]> | null }): Record<string, any> {
@@ -407,12 +417,25 @@ function main() {
       process.exit(1);
     }
   }
+  // The dispatcher exports the run's baseline to every rule command, so a wrapper that never names
+  // --since still scopes; an explicit --since wins. Only meaningful with a project dir to diff.
+  if (!since && projectDir && process.env.WORK_RUN_BASELINE) {
+    if (/^[0-9a-f]{40,64}$/.test(process.env.WORK_RUN_BASELINE)) since = process.env.WORK_RUN_BASELINE;
+    else console.error('rule-check: ignoring WORK_RUN_BASELINE (not a 40-64 hex tree id)');
+  }
+  const namedFiles = files.slice();
   if (since) {
     if (!projectDir) { console.error('rule-check: --since scopes --project-dir; name it'); process.exit(1); }
     const ok = spawnSync('git', ['-C', projectDir, 'cat-file', '-e', `${since}^{tree}`]);
     if (ok.status !== 0) { console.error(`rule-check: --since ${since} is not a tree in ${projectDir}'s repo`); process.exit(1); }
   }
-  if (projectDir) {
+  if (projectDir && since && namedFiles.length) {
+    // --files with a baseline: the lines changed since it WITHIN the named files
+    const s = scopeNamed(namedFiles, projectDir, since);
+    if (!s) { console.error("Failed to list files from git:", projectDir); process.exit(1); }
+    files = s.files;
+    changed = s.changed;
+  } else if (projectDir) {
     try {
       files = files.concat(changedFiles(projectDir, since || undefined));
       changed = changedRanges(projectDir, since || undefined);

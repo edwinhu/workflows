@@ -205,7 +205,12 @@ def run_constraint(path: Path, project: Path, plan: Path | None, files: list[Pat
 def score_rules(wf: str, files: list[Path], project: Path, plan: Path | None, by_git: bool, since: str | None = None) -> dict:
     cmd = os.environ.get("DOMAIN_GATE_RULE_CHECK", "").split() or ["bun", str(ROOT / "skills" / "work" / "scripts" / "rule-check.ts")]
     cmd += ["--workflow", wf, *(["--plan", str(plan)] if plan else [])]
-    cmd += ["--project-dir", str(project), *(["--since", since] if since else [])] if by_git else ["--project", project.name, "--files", *map(str, files)]
+    if by_git:
+        cmd += ["--project-dir", str(project), *(["--since", since] if since else [])]
+    elif since:  # named files + a baseline: the runner intersects them with what changed since it
+        cmd += ["--project-dir", str(project), "--since", since, "--files", *map(str, files)]
+    else:
+        cmd += ["--project", project.name, "--files", *map(str, files)]
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=TIMEOUT, check=False)
     except (subprocess.TimeoutExpired, OSError) as e:
