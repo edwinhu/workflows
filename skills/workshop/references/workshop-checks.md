@@ -162,7 +162,7 @@ about the subject matter ("the court's table of factors", "as shown in _Reed_", 
 matches none. A bracketed bullet other than `[Answer …]` is a stage direction, never read aloud; a
 poll instruction to scan a code on the screen is exempt.
 
-**Scope:** inside a git work tree, only bullets touching lines added against `HEAD` (an untracked
+**Scope:** inside a git work tree, only bullets touching lines added since the run baseline (`HEAD` when none; an untracked
 file is all added); accepted notes already on `HEAD` are legacy. Outside one, the whole file.
 
 **Evidence:** bullet count, in-scope spoken bullets, stage directions skipped, the scope, and each
