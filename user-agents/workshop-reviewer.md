@@ -81,12 +81,12 @@ DECK CONSTRAINT REVIEW: [deck]
 
 FINDINGS (most severe first):
 
-- [major] presentation/slides.typ:142 — typst-no-subtitle-echo
+- [major] presentation/slides.typ:142 — heading-semantics
   Quoted: `=== Why fragmentation matters` / `- Fragmentation matters because...`
   The first bullet restates the title rather than advancing it.
   Fix: lead with the mechanism — `- Order flow splits across 16 venues before...`
 
-MODULES CONSIDERED: bullet-spacing, no-subtitle-echo, notes-structure, teleprompter-notes, tables
+MODULES CONSIDERED: slide-format, heading-semantics, notes-structure, teleprompter-style, table-grounding   (illustrative; list the rules you actually read)
 ```
 
 List every module you considered, including those you judged satisfied.

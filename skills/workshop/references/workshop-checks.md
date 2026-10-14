@@ -30,8 +30,7 @@ detector is absent and therefore passes vacuously. **A check that cannot fail is
 **`N/A` is not a third kind of pass.** An `N/A` line carries a machine-generated reason and is still
 owed a disposition by the verifier against task-local evidence, exactly like a `MODEL-EVALUATED` row.
 It is not permission to stop looking. No computed check in this matrix is `always N/A`: each of
-`CMP SPEC NOTE NAR INV VSL WID OVR ENUM` has a fixture that makes it FAIL. `CON` is not computed by
-the probe: it is always `N/A`, naming the workshop constraints that settle it.
+`CMP SPEC NOTE NAR INV VSL WID OVR ENUM` has a fixture that makes it FAIL. `CON` is `N/A` (naming the workshop constraints that settle it) when those constraints are reachable and `FAIL` when they are not.
 
 **A `MODEL-EVALUATED` line is never `PASS`.** Reporting `FID`, `CONV` or `VIS` as PASS — in the
 probe, in a task report, or in a verifier summary — is a defect of the same class as a vacuous
