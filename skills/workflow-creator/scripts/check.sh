@@ -93,6 +93,15 @@ count_line() { # count_line <leg> <n> <unit> <why n may be 0>
   fi
 }
 
+# probe_count <leg> <probe output> — the count line from the probe's own `N of M eligible source files
+# scanned` coverage line; prints a bare zero when there is none, which the caller turns into exit 2.
+probe_count() {
+  local n
+  n="$(printf '%s\n' "$2" | sed -nE 's/.* ([0-9]+) of [0-9]+ eligible source files scanned.*/\1/p' | tail -1)"
+  count_line "$1" "${n:-0}" "source file(s)" "the probe printed no coverage line"
+  [ "${n:-0}" -gt 0 ]
+}
+
 # The plugin root is whatever `.claude-plugin/plugin.json` a walk UPWARD from the start directory
 # first finds — the marker all four plugins in this corpus carry, and the one the harness itself
 # keys on. Walked, never counted: a fixed number of `..` hops is right for exactly the nesting
@@ -122,8 +131,11 @@ fi
 # --- leg: wc-probe -----------------------------------------------------------------------------
 agent_args=()
 for a in "${AGENTS[@]+"${AGENTS[@]}"}"; do agent_args+=(--agent "$a"); done
-bun "$SCRIPT_DIR/wc-probe.ts" --target "$TARGET" "${agent_args[@]+"${agent_args[@]}"}" >&2
-report wc-probe $?
+wc_out="$(bun "$SCRIPT_DIR/wc-probe.ts" --target "$TARGET" "${agent_args[@]+"${agent_args[@]}"}" 2>&1)"
+wc_rc=$?
+printf '%s\n' "$wc_out" >&2
+probe_count wc-probe "$wc_out" || [ "$wc_rc" -ne 0 ] || wc_rc=2
+report wc-probe "$wc_rc"
 
 # --- leg: sc-probe -----------------------------------------------------------------------------
 # SKILL shape over the target skill dir. sc-probe's usage already accepts either a skill dir or a
@@ -160,8 +172,11 @@ elif [ -z "$TARGET_ROOT" ]; then
   echo "check.sh: cannot run pc-probe — no plugin root (a dir holding .claude-plugin/plugin.json) at or above --target $TARGET" >&2
   report pc-probe 2 "no plugin root above target"
 else
-  bun "$PC_PROBE" --target "$TARGET_ROOT" >&2
-  report pc-probe $? "root $TARGET_ROOT"
+  pc_out="$(bun "$PC_PROBE" --target "$TARGET_ROOT" 2>&1)"
+  pc_rc=$?
+  printf '%s\n' "$pc_out" >&2
+  probe_count pc-probe "$pc_out" || [ "$pc_rc" -ne 0 ] || pc_rc=2
+  report pc-probe "$pc_rc" "root $TARGET_ROOT"
 fi
 
 # --- leg: parity -------------------------------------------------------------------------------
