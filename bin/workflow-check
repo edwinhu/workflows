@@ -28,6 +28,8 @@ import argparse
 import json
 import os
 import re
+import shlex
+import shutil
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -172,9 +174,21 @@ def named(files: list[str]) -> list[Path]:
 
 # ---- running --------------------------------------------------------------------------------------
 
+def interpreter(path: Path) -> list[str]:
+    """How to start a constraint: its own `#!/usr/bin/env -S uv run --with PKG python3` line when it declares
+    dependencies (a bare python3 lacks them and the check would report their absence as a finding); else ours."""
+    try:
+        with path.open() as f:
+            head = f.readline().strip()
+    except OSError:
+        return [sys.executable]
+    m = re.match(r"#!\s*/usr/bin/env\s+-S\s+(uv\s+run\b.*--with\b.*)$", head)
+    return shlex.split(m.group(1)) if m and shutil.which("uv") else [sys.executable]
+
+
 def run_constraint(path: Path, project: Path, plan: Path | None, files: list[Path]) -> dict:
     name = path.stem
-    cmd = [sys.executable, str(path), "--project-dir", str(project), *(["--plan", str(plan)] if plan else []),
+    cmd = [*interpreter(path), str(path), "--project-dir", str(project), *(["--plan", str(plan)] if plan else []),
            "--files", *map(str, files)]
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=TIMEOUT, cwd=project, check=False)
