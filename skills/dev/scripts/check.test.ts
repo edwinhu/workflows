@@ -187,3 +187,24 @@ test("the tests leg counts what the runner ran, and --test-count-re counts an un
     expect(c.err).toContain("lint: 0 command(s) examined — nothing in scope (not declared)");
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
+
+// The scope leg: a changed path under no task's writablePaths/scaffoldPaths in --plan fails the gate, named.
+test("scope: --plan makes a stray edit exit 1 with the path; an in-scope edit passes; no --plan says not declared", () => {
+  const d = gitProj({ "src/a.ts": "export {}\n" }, {});
+  try {
+    const plan = join(d, "plan.md");
+    writeFileSync(plan, `<!-- work:dispatch ${JSON.stringify({ args: { projectDir: d, tasks: [{ id: "T1", writablePaths: ["src"], refs: [] }] } })} -->\n`);
+    spawnSync("git", ["-C", d, "add", "-A"], { timeout: 30_000 }); spawnSync("git", ["-C", d, "commit", "-qm", "plan"], { timeout: 30_000 });
+    writeFileSync(join(d, "src/a.ts"), "export const x = 1\n");
+    const ok = run("--project-dir", d, "--test-cmd", PASS, "--plan", plan);
+    expect(ok.code).toBe(0);
+    expect(ok.out).toContain("leg scope exit=0");
+    expect(run("--project-dir", d, "--test-cmd", PASS).out).toContain("leg scope exit=0 (not declared)");
+    writeFileSync(join(d, "stray.txt"), "x\n");
+    const bad = run("--project-dir", d, "--test-cmd", PASS, "--plan", plan);
+    expect(bad.code).toBe(1);
+    expect(bad.out).toContain("leg scope exit=1");
+    expect(bad.out).toContain("stray.txt");
+    expect(run("--project-dir", d, "--test-cmd", PASS, "--plan", join(d, "nope.md")).code).toBe(2);
+  } finally { rmSync(d, { recursive: true, force: true }); }
+}, 600_000);
