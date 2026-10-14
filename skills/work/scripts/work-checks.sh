@@ -10,6 +10,8 @@
 #
 # A command that cannot run — timeout, cannot spawn, exit 126/127 — records exitCode -1, which the
 # gate reads as unproven, never as a pass. Output keeps the LAST 60 lines: the evidence is at the end.
+# `legs` ([{name, exit, examined, unit, text}], first 64 legs, `legsOmitted` counts the rest, text clipped
+# to 240 chars) is read from the FULL output by leg_counts.leg_records, so the head's verdicts survive the tail.
 # A rule check's stdout is its last non-empty stdout line when that parses as a JSON object; else the
 # verdict line rule-check.ts copied to $RULE_CHECK_OUT (a `workflow-check <wf> --rules-only` ruleChecks);
 # else, for a runner that exited 0 saying `nothing in scope`, an empty verdict set carrying that scope;
@@ -30,7 +32,7 @@ import hashlib, json, os, re, subprocess, sys, tempfile
 from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, sys.argv[1])
-from leg_counts import audit
+from leg_counts import audit, leg_records
 
 args_path, raw_path, out_path = sys.argv[2:5]
 args = json.load(open(args_path))
@@ -43,6 +45,7 @@ timeout = int(os.environ.get('WORK_CHECK_TIMEOUT', '1800'))
 env = {**os.environ, 'WORK_READ_ONLY': '1' if args.get('readOnly') is True else '0'}
 TAIL = 60
 VACUOUS = {}   # cmd -> the audit's failures, for the summary line
+LEGS = {}      # cmd -> (leg records, omitted) read from the FULL output
 
 def tail(s):
     return '\n'.join(s.splitlines()[-TAIL:])
@@ -58,6 +61,7 @@ def run(cmd):
     full = (p.stdout or '') + (p.stderr or '')
     if p.returncode in (126, 127):
         return -1, f'could not run (exit {p.returncode}): {cmd}\n{tail(full)}'
+    LEGS[cmd] = leg_records(full)
     vacuous = audit(full)
     if vacuous:
         full += ''.join(f'\nCOULD-NOT-CHECK: {v}' for v in vacuous)
@@ -119,10 +123,13 @@ for (kind, key, cmd), res in zip(jobs, results):
         out[kind].append({'name': key, 'cmd': cmd, 'exitCode': code, 'stdout': stdout, 'output': text})
         continue
     code, text = res
-    if kind == 'mechanical':
-        out[kind].append({'name': key, 'cmd': cmd, 'exitCode': code, 'output': text})
-    else:
-        out[kind].append({'id': key, 'command': cmd, 'exitCode': code, 'output': text})
+    entry = {'name': key, 'cmd': cmd} if kind == 'mechanical' else {'id': key, 'command': cmd}
+    entry.update(exitCode=code, output=text)
+    if LEGS.get(cmd) and LEGS[cmd][0]:
+        entry['legs'] = LEGS[cmd][0]
+        if LEGS[cmd][1]:
+            entry['legsOmitted'] = LEGS[cmd][1]
+    out[kind].append(entry)
 
 # Ownership mirrors work-stage.mjs `covers`: a glob, or the path itself, or a directory prefix.
 norm = lambda p: re.sub(r'/+$', '', re.sub(r'^\./', '', str(p or '')))
