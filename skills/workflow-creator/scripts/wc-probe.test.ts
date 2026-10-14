@@ -286,6 +286,46 @@ describe('D2 — fenced-block extraction in Markdown', () => {
     check(String(skips[0]?.reason).includes('{{COURSE}}'), 'first skip reason must name {{COURSE}}')
   })
 
+  // A fence const spelled as a plain literal is substituted into `${name}` template refs, so the
+  // ref is CHECKED (not skipped); a double-quoted `${name}` never interpolates and is a finding.
+  describe('fence const refs', () => {
+    const setup = (refsLine: string) => {
+      const dir = fixture({ 'rules/real.md': '# r', 'SKILL.md': skillMd('fenced', '') })
+      const body = ['```js', `const rules = \`${dir}/rules\``, 'Workflow({', '  tasks: [',
+        `    { id: "t1", work: "w", acceptance: "a", ${refsLine} },`, '  ],', '})', '```'].join('\n')
+      writeFileSync(join(dir, 'SKILL.md'), skillMd('fenced', body))
+      return join(dir, 'SKILL.md')
+    }
+    const run = (file: string) => {
+      const skips: any[] = []
+      const text = probe.maskNonFenced(read(file))
+      const p7 = probe.checkRefsDeclaration(file, text, dirname(file), [], undefined, skips)
+      return { p7, skips, quoted: probe.checkQuotedConstInterp(file, text, []) }
+    }
+    test('a template ref through a const resolves and is checked, not skipped', () => {
+      const r = run(setup('refs: [`${rules}/real.md`]'))
+      expect(r.skips).toEqual([])
+      expect(r.p7).toEqual([])
+    })
+    test('a misspelled module through the const is a finding', () => {
+      const r = run(setup('refs: [`${rules}/reel.md`]'))
+      expect(r.skips).toEqual([])
+      expect(r.p7.some((f: any) => f.detail.includes('reel.md') && f.detail.includes('does not exist'))).toBe(true)
+    })
+    test('a double-quoted ${const} string is a finding', () => {
+      const r = run(setup('refs: ["${rules}/real.md"]'))
+      expect(r.quoted.length).toBe(1)
+      expect(r.quoted[0].detail).toContain('${rules}')
+    })
+    test('a quote inside a template literal is not a string start', () => {
+      const t = 'const cmd = `x`\nconst a = `run "${cmd}" ${cmd ? ` --f "${cmd}"` : ""}`\n'
+      expect(probe.checkQuotedConstInterp('SKILL.md', t, [])).toEqual([])
+    })
+    test('${CLAUDE_*} in double quotes is not', () => {
+      expect(run(setup('refs: ["${CLAUDE_PLUGIN_ROOT}/x.md"]')).quoted).toEqual([])
+    })
+  })
+
   test('P7 refuses an attempt with no refs key', () => {
     const body = ['```js', 'Workflow({', '  tasks: [],', '  attempts: [{key: "a1", prompt: "foo"}]', '})', '```'].join('\n')
     const dir = fixture({ 'SKILL.md': skillMd('fenced', body) })

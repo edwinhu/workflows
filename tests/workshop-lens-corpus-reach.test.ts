@@ -9,7 +9,7 @@ const ROOT = join(import.meta.dir, '..')
 const skill = readFileSync(join(ROOT, 'skills', 'workshop', 'SKILL.md'), 'utf8')
 const reviewer = readFileSync(join(ROOT, 'user-agents', 'workshop-reviewer.md'), 'utf8')
 const lens = skill.slice(skill.indexOf('  lens: {'), skill.indexOf('  authorityExtra: ['))
-const refs = [...lens.matchAll(/\$\{typstRules\}\/([\w-]+\.md)/g)].map((m) => m[1])
+const refs = [...lens.matchAll(/`\$\{typstRules\}\/([\w-]+\.md)`/g)].map((m) => m[1])
 
 function typstRoot(): string {
   try {

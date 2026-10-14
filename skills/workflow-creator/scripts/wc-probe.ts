@@ -2746,6 +2746,67 @@ export function isLensObject(src: string, masked: string, start: number): boolea
   return src.slice(i + 1, end) === 'lens'
 }
 
+/** `const name = <plain literal>` declarations in `text`, name -> value (no `${` inside the literal). */
+export function fenceConsts(text: string): Map<string, string> {
+  const out = new Map<string, string>()
+  for (const m of text.matchAll(/\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*(?:\/\*.*?\*\/\s*)?(["'`])((?:\\.|(?!\2)[^\\])*)\2/g)) {
+    if (!m[3].includes('${')) out.set(m[1], m[3])
+  }
+  return out
+}
+
+/** `raw` with each `${name}` of a declared plain-literal const replaced by its value. */
+export function substConsts(raw: string, consts: Map<string, string>): string {
+  return raw.replace(/\$\{([A-Za-z_$][\w$]*)\}/g, (all, n) => consts.get(n) ?? all)
+}
+
+/**
+ * A double-quoted string holding `${name}` for a const the same file declares — JS does not
+ * interpolate there, so the literal text `${name}` reaches the consumer as an unresolvable path.
+ * `${CLAUDE_*}` placeholders are the harness's and are never consts.
+ */
+export function checkQuotedConstInterp(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
+  const names = new Set([...text.matchAll(/\bconst\s+([a-z][\w$]*)\s*=/g)].map(m => m[1]))
+  if (!names.size) return []
+  const findings: Finding[] = []
+  // Walk the text as JS strings so a `"` inside a template literal or comment is not a string start.
+  let i = 0
+  while (i < text.length) {
+    const c = text[i]
+    if (c === '/' && text[i + 1] === '/') { while (i < text.length && text[i] !== '\n') i++; continue }
+    if (c === '/' && text[i + 1] === '*') { const e = text.indexOf('*/', i + 2); i = e === -1 ? text.length : e + 2; continue }
+    if (c !== '"' && c !== "'" && c !== '`') { i++; continue }
+    let j = i + 1
+    while (j < text.length && text[j] !== c && !(c !== '`' && text[j] === '\n')) {
+      if (c === '`' && text[j] === '$' && text[j + 1] === '{') {
+        // a template's `${…}` holds code, which may itself quote: skip it balanced
+        let depth = 0
+        for (; j < text.length; j++) {
+          if (text[j] === '{') depth++
+          else if (text[j] === '}' && --depth === 0) { j++; break }
+        }
+      } else j += text[j] === '\\' ? 2 : 1
+    }
+    const body = text.slice(i + 1, j)
+    if (c === '"') {
+      const v = [...body.matchAll(/\$\{([a-z][\w$]*)\}/g)].find(x => names.has(x[1]))
+      const line = lineOf(text, i)
+      if (v && !isExemptAt(exemptions, 'refs', line)) {
+        findings.push({
+          rule: 'P7 quoted interpolation',
+          severity: 'major',
+          file,
+          line,
+          detail: `double-quoted string ${JSON.stringify(c + body.slice(0, 60) + c)} holds \${${v[1]}} — a "…" string does not interpolate, so the consumer receives the literal text`,
+          remedy: 'write it as a template literal (`…`), or build the strings from the const in code',
+        })
+      }
+    }
+    i = j + 1
+  }
+  return findings
+}
+
 /**
  * P7 refs declaration — every task row and the lens must declare a `refs` key
  * (refs: [] is CLEAN; an absent key is a finding, because an omission cannot be
@@ -2765,6 +2826,7 @@ export function checkRefsDeclaration(
   const findings: Finding[] = []
   const context = ctx ?? skillContextFor(file, target)
   const masked = maskLiterals(text)
+  const consts = fenceConsts(text)
 
   const attemptsBounds = [...masked.matchAll(/(?<![\w$.'"-])attempts\s*:\s*\[/g)].map(match => {
     const arrayStart = match.index! + match[0].length - 1
@@ -2819,7 +2881,8 @@ export function checkRefsDeclaration(
     // resolve every declared ref
     const refsPos = findKeyValueSpan(text, masked, obj, 'refs')
     if (!refsPos) continue
-    for (const raw of stringLiteralsIn(text, refsPos.start, refsPos.end)) {
+    for (const written of stringLiteralsIn(text, refsPos.start, refsPos.end)) {
+      const raw = substConsts(written, consts)
       const variable = unresolvedVarIn(raw, context)
       if (variable !== null) {
         skips.push({
@@ -2875,6 +2938,7 @@ export function checkInputsReadable(
   const context = ctx ?? skillContextFor(file, target)
   const masked = maskLiterals(text)
   const objs = findObjectLiterals(text)
+  const consts = fenceConsts(text)
   const seen = new Set<string>()
   const report = (line: number, detail: string, remedy: string) => {
     const key = `${line}:${detail}`
@@ -2903,8 +2967,8 @@ export function checkInputsReadable(
     const nestedInputs = objs
       .filter(n => n !== obj && n.start > obj.start && n.end <= obj.end && n.keys.includes('inputs'))
       .flatMap(n => literalsOf(n, 'inputs'))
-    const refs = hasRefs ? literalsOf(obj, 'refs') : []
-    const inputs = [...(hasInputs ? literalsOf(obj, 'inputs') : []), ...nestedInputs]
+    const refs = (hasRefs ? literalsOf(obj, 'refs') : []).map(r => substConsts(r, consts))
+    const inputs = [...(hasInputs ? literalsOf(obj, 'inputs') : []), ...nestedInputs].map(r => substConsts(r, consts))
     const projected = PROJECTION_CMD_RE.test(prompt)
 
     const unreadable = (raw: string, kind: string) =>
@@ -4958,6 +5022,7 @@ export function runProbe(
       const code = maskNonFenced(text)
       findings.push(...checkBareWorkflowRefs(file, code, fileExemptions))
       findings.push(...checkRefsDeclaration(file, code, root, fileExemptions, ctx, unresolvedRefs))
+      findings.push(...checkQuotedConstInterp(file, code, fileExemptions))
       findings.push(...checkInputsReadable(file, code, root, fileExemptions, ctx))
     } else {
       findings.push(...checkReturnShapeDrift(file, text, { exemptions: fileExemptions, ctx }))
