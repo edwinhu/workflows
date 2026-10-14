@@ -702,7 +702,7 @@ test('a redCommand still brackets its OWN implementer inside a concurrent wave',
 // The agent returns RAW COUNTS and work computes every score, because an agent that reports its own
 // score inflates it and one that never sees the formula cannot. Nothing below may reach overallPass.
 
-// The slides-diagnose constants, declared rather than coded: s1 = 10 - missing·1.0 - collapsed·0.5,
+// The teaching slides SKILL.md `slides-audit` constants, declared rather than coded: s1 = 10 - missing·1.0 - collapsed·0.5,
 // s2 = 10 - redundant·0.5, x1 = 10 - mismatches·1.5, composite = 0.5·s1 + 0.3·s2 + 0.2·x1.
 const countProps = {
   itemsChecked: { type: 'integer' }, missing: { type: 'integer' }, collapsed: { type: 'integer' },
@@ -748,7 +748,7 @@ test('absent scoredChecks dispatches no scored agent and reports the score dimen
   }
 })
 
-test('the S3 arithmetic is computed per ITEM from the slides-diagnose constants, and never aggregated', async () => {
+test('the S3 arithmetic is computed per ITEM from the teaching slides-audit constants, and never aggregated', async () => {
   const { result, dispatched } = await run(
     { ...baseArgs, tasks: one, scoredChecks: [scoredCheck()] },
     scoredReplies({ scored: {
