@@ -365,3 +365,13 @@ test('an unchanged committed target reports the diff-scoped authoring-lint as NO
   const dirty = target({ js: 'export const x = 1\n', tests: { 'a.test.ts': PASSING_TEST } })
   expect(combined(run(harness(), ['--target', dirty]))).not.toContain('authoring-lint: NOT CHECKED')
 })
+
+test('an authoring-gate that examined 0 checks says NOT CHECKED, exit unchanged; one that examined something does not', () => {
+  const empty = run(harness(), ['--target', target()]) // no .js, no scripts/: the gate has nothing in scope
+  expect(combined(empty)).toMatch(/^authoring-gate: NOT CHECKED — /m)
+  expect(legStatus(empty.stdout, 'authoring-gate')).toContain('exit=0')
+  const t = target({ js: 'export const x = 1\n', tests: { 'a.test.ts': PASSING_TEST } })
+  const out = combined(run(harness(), ['--target', t]))
+  const m = /^authoring-gate: (\d+) check\(s\) examined/m.exec(out)
+  if (m && Number(m[1]) > 0) expect(out).not.toContain('authoring-gate: NOT CHECKED')
+})

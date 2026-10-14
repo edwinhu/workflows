@@ -206,8 +206,14 @@ if [ -z "$OWN_ROOT" ] || [ ! -r "$OWN_ROOT/bin/workflow-check" ]; then
   echo "check.sh: cannot run authoring-gate — no bin/workflow-check under ${OWN_ROOT:-a plugin root above $SCRIPT_DIR}" >&2
   report authoring-gate 2 "runner unreachable"
 else
-  python3 "$OWN_ROOT/bin/workflow-check" authoring --constraints-only --project-dir "${TARGET_ROOT:-$TARGET}" --files "$TARGET" >&2
-  report authoring-gate $?
+  gate_out=$(python3 "$OWN_ROOT/bin/workflow-check" authoring --constraints-only --project-dir "${TARGET_ROOT:-$TARGET}" --files "$TARGET" 2>&1)
+  gate_rc=$?
+  printf '%s\n' "$gate_out" >&2
+  # Non-gating like the lint leg, but loud: a gate that examined nothing is unchecked, not clean.
+  case "$gate_out" in
+    *"authoring-gate: 0 check(s) examined"*) echo "authoring-gate: NOT CHECKED — no authoring constraint examined anything under the target; pass a tree the constraints apply to" >&2 ;;
+  esac
+  report authoring-gate "$gate_rc"
 fi
 
 # --- leg: probe-tests --------------------------------------------------------------------------
