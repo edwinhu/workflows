@@ -15,11 +15,11 @@
  * 1 NOT CONVERGING, 2 cannot judge.
  */
 import { afterAll, expect, test, setDefaultTimeout } from 'bun:test'
-import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { useTmp } from '../../../tests/helpers/tmp.ts'
+import { spawnAsync } from '../../../tests/helpers/async-spawn.ts'
 
 setDefaultTimeout(120_000)
 
@@ -69,79 +69,79 @@ function mkRun(rounds: Round[], tasks: unknown[] = [{ id: 'T1', name: 'n', work:
   return dir
 }
 
-function run(dir: string, ...flags: string[]) {
-  const r = spawnSync('bun', [SCRIPT, dir, ...flags], { timeout: 120_000, encoding: 'utf8' })
-  expect(typeof r.status, `converge-check.ts did not execute: ${r.error?.message ?? 'no exit status'}`).toBe('number')
+async function run(dir: string, ...flags: string[]) {
+  const r = await spawnAsync('bun', [SCRIPT, dir, ...flags], { timeout: 120_000, env: process.env })
+  expect(typeof r.status, 'converge-check.ts did not execute: no exit status').toBe('number')
   return { code: r.status as number, stdout: r.stdout || '', stderr: r.stderr || '' }
 }
 
-const json = (dir: string) => JSON.parse(run(dir, '--json').stdout)
+const json = async (dir: string) => JSON.parse((await run(dir, '--json')).stdout)
 
 // ---------------------------------------------------------------- too short to judge
 
-test('a single-round dir reports too short to judge, not a verdict', () => {
-  const r = run(mkRun([{ blocking: 3 }]))
+test('a single-round dir reports too short to judge, not a verdict', async () => {
+  const r = await run(mkRun([{ blocking: 3 }]))
   expect(r.code).toBe(2)
   expect(r.stdout).toContain('too short to judge')
   expect(r.stdout).not.toContain('NOT CONVERGING')
   expect(r.stdout).not.toMatch(/\bCONVERGING\b/)
 })
 
-test('a dir with no result files at all cannot judge and says so', () => {
+test('a dir with no result files at all cannot judge and says so', async () => {
   const dir = mkTmp('converge-')
   scratch.push(dir)
   writeFileSync(join(dir, 'args.json'), JSON.stringify({ projectDir: dir, tasks: [] }))
-  const r = run(dir)
+  const r = await run(dir)
   expect(r.code).toBe(2)
   expect(r.stdout + r.stderr).toContain('too short to judge')
 })
 
-test('a non-object result is excluded from the sequence without crashing', () => {
+test('a non-object result is excluded from the sequence without crashing', async () => {
   const dir = mkRun([{ blocking: 2 }, { blocking: 0 }])
   writeFileSync(join(dir, 'result.json'), 'null\n')
-  const r = run(dir, '--json')
+  const r = await run(dir, '--json')
   expect(r.code).toBe(0)
   expect(JSON.parse(r.stdout).blocking).toEqual([2, 0])
   expect(r.stderr).toContain('excluded from the sequence')
   expect(r.stderr).not.toContain('TypeError')
 })
 
-test('a nonexistent run dir is refused on stderr', () => {
-  const r = run(join(tmpdir(), 'no-such-run-dir-converge'))
+test('a nonexistent run dir is refused on stderr', async () => {
+  const r = await run(join(tmpdir(), 'no-such-run-dir-converge'))
   expect(r.code).toBe(2)
   expect(r.stderr).toMatch(/no such|not a directory/i)
 })
 
 // ---------------------------------------------------------------- the blocking sequence IS the verdict
 
-test('a blocking sequence that clears to zero is CONVERGING', () => {
-  const r = run(mkRun([{ blocking: 4 }, { blocking: 1 }, { blocking: 1 }, { blocking: 0 }]))
+test('a blocking sequence that clears to zero is CONVERGING', async () => {
+  const r = await run(mkRun([{ blocking: 4 }, { blocking: 1 }, { blocking: 1 }, { blocking: 0 }]))
   expect(r.code).toBe(0)
   expect(r.stdout).toContain('CONVERGING')
   expect(r.stdout).not.toContain('NOT CONVERGING')
 })
 
-test('a non-increasing sequence with a net decrease is CONVERGING even without reaching zero', () => {
-  expect(run(mkRun([{ blocking: 5 }, { blocking: 4 }, { blocking: 2 }])).code).toBe(0)
+test('a non-increasing sequence with a net decrease is CONVERGING even without reaching zero', async () => {
+  expect((await run(mkRun([{ blocking: 5 }, { blocking: 4 }, { blocking: 2 }]))).code).toBe(0)
 })
 
-test('a sequence that rises at any round is NOT CONVERGING and names the round', () => {
-  const r = run(mkRun([{ blocking: 7 }, { blocking: 9 }, { blocking: 8 }, { blocking: 6 }]))
+test('a sequence that rises at any round is NOT CONVERGING and names the round', async () => {
+  const r = await run(mkRun([{ blocking: 7 }, { blocking: 9 }, { blocking: 8 }, { blocking: 6 }]))
   expect(r.code).toBe(1)
   expect(r.stdout).toContain('NOT CONVERGING')
   expect(r.stdout).toMatch(/rose at round 2/)
 })
 
-test('a flat non-zero sequence is NOT CONVERGING — no net decrease', () => {
-  const r = run(mkRun([{ blocking: 3 }, { blocking: 3 }, { blocking: 3 }]))
+test('a flat non-zero sequence is NOT CONVERGING — no net decrease', async () => {
+  const r = await run(mkRun([{ blocking: 3 }, { blocking: 3 }, { blocking: 3 }]))
   expect(r.code).toBe(1)
   expect(r.stdout).toContain('no net decrease')
 })
 
 // ---------------------------------------------------------------- the repeated failure
 
-test('two rounds failing in exactly the same place point at the brief, not the implementer', () => {
-  const r = run(mkRun([
+test('two rounds failing in exactly the same place point at the brief, not the implementer', async () => {
+  const r = await run(mkRun([
     { blocking: 0, titles: [], tasksThatFlagged: ['T2'], red: [{ id: 'T2', verdict: 'green-not-green' }] },
     { blocking: 0, titles: [], tasksThatFlagged: ['T2'], red: [{ id: 'T2', verdict: 'green-not-green' }] },
   ]))
@@ -152,22 +152,22 @@ test('two rounds failing in exactly the same place point at the brief, not the i
   expect(r.stdout).toContain('suspect the BRIEF')
 })
 
-test('a run failing in a DIFFERENT place each round raises no repeat reason', () => {
-  const r = json(mkRun([
+test('a run failing in a DIFFERENT place each round raises no repeat reason', async () => {
+  const r = await json(mkRun([
     { blocking: 0, titles: [], tasksThatFlagged: ['T1'] },
     { blocking: 0, titles: [], tasksThatFlagged: ['T2'] },
   ]))
   expect(r.repeatedFailure).toEqual([])
 })
 
-test('a clean round repeating a clean round is not a repeated failure', () => {
-  const r = json(mkRun([{ blocking: 0, titles: [] }, { blocking: 0, titles: [] }]))
+test('a clean round repeating a clean round is not a repeated failure', async () => {
+  const r = await json(mkRun([{ blocking: 0, titles: [] }, { blocking: 0, titles: [] }]))
   expect(r.repeatedFailure).toEqual([])
   expect(r.verdict).toBe('CONVERGING')
 })
 
-test('a failing mechanical check repeating across rounds is a repeated failure', () => {
-  const r = json(mkRun([
+test('a failing mechanical check repeating across rounds is a repeated failure', async () => {
+  const r = await json(mkRun([
     { blocking: 0, titles: [], mechFailed: ['tests'] },
     { blocking: 0, titles: [], mechFailed: ['tests'] },
   ]))
@@ -175,8 +175,8 @@ test('a failing mechanical check repeating across rounds is a repeated failure',
   expect(r.reasons.join(' ')).toContain('mech:tests')
 })
 
-test('an all-zero blocking sequence does not claim "no net decrease" — the failure is elsewhere', () => {
-  const r = run(mkRun([
+test('an all-zero blocking sequence does not claim "no net decrease" — the failure is elsewhere', async () => {
+  const r = await run(mkRun([
     { blocking: 0, titles: [], tasksThatFlagged: ['T1'] },
     { blocking: 0, titles: [], tasksThatFlagged: ['T2'] },
   ]))
@@ -185,13 +185,13 @@ test('an all-zero blocking sequence does not claim "no net decrease" — the fai
 
 // ---------------------------------------------------------------- accretion (self-contained, tier 1's rule)
 
-test('accreted round markers make a run NOT CONVERGING and are named as the reason', () => {
+test('accreted round markers make a run NOT CONVERGING and are named as the reason', async () => {
   const dir = mkRun(
     [{ blocking: 4 }, { blocking: 2 }, { blocking: 1 }],
     [{ id: 'T1', name: 'n', acceptance: 'a', writablePaths: ['src/'],
        work: 'do it. ROUND 2 — also x. ROUND 3 — also y.' }],
   )
-  const r = run(dir)
+  const r = await run(dir)
   expect(r.code).toBe(1)
   expect(r.stdout).toContain('NOT CONVERGING')
   expect(r.stdout).toContain('accretion')
@@ -200,23 +200,23 @@ test('accreted round markers make a run NOT CONVERGING and are named as the reas
 
 // ---------------------------------------------------------------- the measured diagnostics
 
-test('the repeat rate distinguishes a re-litigated finding from a fresh one', () => {
-  const relit = json(mkRun([
+test('the repeat rate distinguishes a re-litigated finding from a fresh one', async () => {
+  const relit = await json(mkRun([
     { blocking: 2, titles: ['alpha defect', 'beta defect'] },
     { blocking: 2, titles: ['alpha defect', 'gamma defect'] },
   ]))
   expect(relit.repeats.post).toBe(2)
   expect(relit.repeats.exact).toBe(1)
 
-  const fresh = json(mkRun([
+  const fresh = await json(mkRun([
     { blocking: 2, titles: ['alpha defect', 'beta defect'] },
     { blocking: 2, titles: ['gamma defect', 'delta defect'] },
   ]))
   expect(fresh.repeats.exact).toBe(0)
 }, 240_000)
 
-test('a near-miss title counts as a Jaccard repeat but not an exact one', () => {
-  const r = json(mkRun([
+test('a near-miss title counts as a Jaccard repeat but not an exact one', async () => {
+  const r = await json(mkRun([
     { blocking: 1, titles: ['the red gate asserts existence only, not behaviour'] },
     { blocking: 1, titles: ['the red gate asserts existence only and not behaviour'] },
   ]))
@@ -224,15 +224,15 @@ test('a near-miss title counts as a Jaccard repeat but not an exact one', () => 
   expect(r.repeats.jaccard).toBe(1)
 })
 
-test('generation slope is measured over the rounds, not asserted', () => {
-  const flat = json(mkRun([{ blocking: 1, generated: 10 }, { blocking: 1, generated: 10 }, { blocking: 1, generated: 10 }]))
+test('generation slope is measured over the rounds, not asserted', async () => {
+  const flat = await json(mkRun([{ blocking: 1, generated: 10 }, { blocking: 1, generated: 10 }, { blocking: 1, generated: 10 }]))
   expect(flat.generated.slope).toBe(0)
-  const falling = json(mkRun([{ blocking: 3, generated: 12 }, { blocking: 2, generated: 8 }, { blocking: 1, generated: 4 }]))
+  const falling = await json(mkRun([{ blocking: 3, generated: 12 }, { blocking: 2, generated: 8 }, { blocking: 1, generated: 4 }]))
   expect(falling.generated.slope).toBe(-4)
 }, 240_000)
 
-test('findings are split by whether their file is a task writable path', () => {
-  const r = json(mkRun(
+test('findings are split by whether their file is a task writable path', async () => {
+  const r = await json(mkRun(
     [
       { blocking: 2, titles: ['a', 'b'], files: ['src/thing.ts:12', 'docs/README.md'] },
       { blocking: 1, titles: ['c'] },
@@ -242,8 +242,8 @@ test('findings are split by whether their file is a task writable path', () => {
   expect(r.split).toEqual({ deliverable: 1, gate: 1, unattributed: 1 })
 })
 
-test('--json emits the whole diagnosis and the verdict, and prints nothing else', () => {
-  const out = run(mkRun([{ blocking: 2 }, { blocking: 1 }]), '--json').stdout
+test('--json emits the whole diagnosis and the verdict, and prints nothing else', async () => {
+  const out = (await run(mkRun([{ blocking: 2 }, { blocking: 1 }]), '--json')).stdout
   const r = JSON.parse(out)
   expect(r.verdict).toBe('CONVERGING')
   expect(r.rounds).toBe(2)
@@ -259,12 +259,12 @@ test('--json emits the whole diagnosis and the verdict, and prints nothing else'
  * run whose spine was upgraded mid-loop — so the two numbers this script reads must keep working and
  * the unknown keys must be ignored rather than counted.
  */
-test('the new scoreTable keys are tolerated and the sequence still reads', () => {
+test('the new scoreTable keys are tolerated and the sequence still reads', async () => {
   const extra = {
     lensMode: 'GREEN', routes: 0, carriedSubmitted: 3, carriedOpen: 1, planFindings: 0,
     dispositions: 4, dispositionsRoutedFromFindings: 0, lensesRun: 1, lensesReported: 1,
   }
-  const r = json(mkRun([
+  const r = await json(mkRun([
     { blocking: 3, scoreTableExtra: extra },
     { blocking: 1, scoreTableExtra: { ...extra, carriedOpen: 1, routes: 2 } },
   ]))
@@ -272,8 +272,8 @@ test('the new scoreTable keys are tolerated and the sequence still reads', () =>
   expect(r.blocking).toEqual([3, 1])
 })
 
-test('a sequence mixing an old table with a new one is still comparable', () => {
-  const r = json(mkRun([
+test('a sequence mixing an old table with a new one is still comparable', async () => {
+  const r = await json(mkRun([
     { blocking: 3 },                                                        // pre-one-lens round
     { blocking: 1, scoreTableExtra: { lensMode: 'RED', routes: 2, carriedOpen: 1 } },
   ]))
@@ -287,9 +287,9 @@ test('a sequence mixing an old table with a new one is still comparable', () => 
  * item to the plan twice is a run whose plan was never amended, and that is the most specific
  * non-convergence there is.
  */
-test('a repeated plan-routed item is a repeated failure', () => {
+test('a repeated plan-routed item is a repeated failure', async () => {
   const routed = [{ title: 'the artifact is outside every writablePath' }]
-  const r = json(mkRun([
+  const r = await json(mkRun([
     { blocking: 1, titles: ['a'], planFindings: routed },
     { blocking: 1, titles: ['b'], planFindings: routed },
   ]))
@@ -300,8 +300,8 @@ test('a repeated plan-routed item is a repeated failure', () => {
 
 // The shared stripper handles the RANGE form too: `src/thing.ts:12-18` is a deliverable finding, not
 // an unattributed one. Fixing only `:12` is how the range form stayed broken in the scoping path.
-test('a finding file with a line RANGE still counts as a deliverable finding', () => {
-  const r = json(mkRun(
+test('a finding file with a line RANGE still counts as a deliverable finding', async () => {
+  const r = await json(mkRun(
     [
       { blocking: 2, titles: ['a', 'b'], files: ['src/thing.ts:12-18', 'src/other.ts:3:9'] },
       { blocking: 1, titles: ['c'], files: ['docs/README.md'] },
