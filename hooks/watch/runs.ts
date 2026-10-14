@@ -293,9 +293,9 @@ export function table(views: View[], nowMs: number): string {
 }
 
 const LOOP_EXITS: Record<string, string> = {
-  '0': 'gate passed', '1': 'dispatch died with no verdict', '2': 'bad arguments or result refused',
+  '0': 'gate passed', '2': 'bad arguments or result refused',
   '3': 'redispatch refused at Tier 1', '5': 'NOT CONVERGING', '6': 'loop cap reached, gate failing',
-  '7': 'plan defect escalates to a human', '8': 'read-only run reached its verdict',
+  '7': 'plan defect escalates to a human', '8': 'read-only run reached its verdict', '9': 'dispatch died with no verdict',
 }
 
 /** The prompt that wakes the session for a grind loop whose gate keeps waiting. */
