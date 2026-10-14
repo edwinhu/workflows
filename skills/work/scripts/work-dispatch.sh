@@ -978,12 +978,25 @@ tmp="$R/.args.lint.json"
 # (bin/workflow-check <wf> --list) says whether the workflow has rules, and the command scores all of
 # them, parents included. A plan that carries its own ruleChecks keeps it; plan-lint refuses one that
 # scores a different workflow. An unknown workflow is left unfilled for plan-lint to refuse by name.
-python3 - "$run" "$tmp" "$PLUGIN_ROOT/bin/workflow-check" <<'PY' || exit 1
+python3 - "$run" "$tmp" "$PLUGIN_ROOT/bin/workflow-check" "$SKILL/scripts/tree-snapshot.sh" "$out" <<'PY' || exit 1
 import json, shlex, subprocess, sys
-run, tmp, runner = sys.argv[1], sys.argv[2], sys.argv[3]
+run, tmp, runner, snapshot, prior = sys.argv[1:6]
 r = json.loads(run)
 a, wf = r["args"], r["workflow"]
 a["rounds"] = 1
+# runBaseline: the working tree as it stands at dispatch (a tree sha from a throwaway index, so the real
+# index and tree are untouched). work-checks.sh passes it to the rule runners as --since, so they score only
+# what this run changes, not the WIP already there. Kept across a re-dispatch of the same run; absent when
+# the project is not a git repo or the run is readOnly (it must not write to projectDir's .git).
+try:
+    a["runBaseline"] = json.load(open(prior)).get("runBaseline") or None
+except (OSError, ValueError):
+    a["runBaseline"] = None
+if not a["runBaseline"] and not a.get("readOnly"):
+    snap = subprocess.run(["bash", snapshot, a["projectDir"]], capture_output=True, text=True, check=False)
+    a["runBaseline"] = snap.stdout.strip() or None
+if not a["runBaseline"]:
+    del a["runBaseline"]
 if not a.get("ruleChecks") and wf != "work":
     ls = subprocess.run([sys.executable, runner, wf, "--list"], capture_output=True, text=True, check=False)
     try:

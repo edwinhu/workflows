@@ -36,8 +36,27 @@ export interface Unavailable {
   reason: string;
 }
 
-// Changed and untracked files of a git working tree, as absolute paths.
-export function changedFiles(projectDir: string): string[] {
+const SNAPSHOT = join(__dirname, 'tree-snapshot.sh');
+
+/** A snapshot tree of the working tree as it stands now, to diff against a recorded args.runBaseline tree
+ *  (two trees, so untracked files are diffed like any other). Null when git cannot snapshot (not a repo). */
+function nowTree(projectDir: string): { top: string; now: string } | null {
+  const snap = spawnSync('bash', [SNAPSHOT, projectDir], { encoding: 'utf8' });
+  const top = spawnSync('git', ['-C', projectDir, 'rev-parse', '--show-toplevel'], { encoding: 'utf8' });
+  if (snap.status !== 0 || top.status !== 0 || !snap.stdout.trim()) return null;
+  return { top: top.stdout.trim(), now: snap.stdout.trim() };
+}
+
+// Changed and untracked files of a git working tree, as absolute paths. `since` (a tree-ish) scopes it to
+// what changed after that tree, not after HEAD.
+export function changedFiles(projectDir: string, since?: string): string[] {
+  if (since) {
+    const t = nowTree(projectDir);
+    if (!t) return [];
+    const r = spawnSync('git', ['-C', projectDir, '-c', 'core.quotepath=off', 'diff', '--name-only', '--diff-filter=d', since, t.now], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
+    if (r.error) throw r.error;
+    return (r.stdout || '').split('\n').filter(Boolean).map(f => join(projectDir, f));
+  }
   const diffRes = spawnSync('git', ['-C', projectDir, 'diff', '--name-only', 'HEAD'], { encoding: 'utf8' });
   if (diffRes.error) throw diffRes.error;
   const diff = (diffRes.stdout || '').trim();
@@ -51,12 +70,15 @@ export function changedFiles(projectDir: string): string[] {
 }
 
 // Changed line ranges per changed or untracked file (absolute path -> [lo, hi] pairs, inclusive), from
-// `git diff -U0 HEAD`; an untracked file is all of its lines. A pure deletion after line c is the point
+// `git diff -U0 HEAD` (or, with `since`, `git diff -U0 <since> <tree of now>`); an untracked file is all of its lines. A pure deletion after line c is the point
 // [c + 0.5, c + 0.5], so it hits only a statement that spans both c and c + 1. Null when git cannot diff.
-export function changedRanges(projectDir: string): Record<string, number[][]> | null {
+export function changedRanges(projectDir: string, since?: string): Record<string, number[][]> | null {
   const git = (...a: string[]) => spawnSync('git', ['-C', projectDir, '-c', 'core.quotepath=off', ...a], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
   const top = git('rev-parse', '--show-toplevel');
-  const diff = git('diff', '--no-color', '--no-ext-diff', '-U0', 'HEAD');
+  // `since`: the recorded tree against a fresh snapshot of now, so a line already there when the run began is out of scope
+  const now = since ? nowTree(projectDir) : null;
+  if (since && !now) return null;
+  const diff = since ? git('diff', '--no-color', '--no-ext-diff', '-U0', since, now!.now) : git('diff', '--no-color', '--no-ext-diff', '-U0', 'HEAD');
   if (top.status !== 0 || diff.status !== 0) return null;
   const root = top.stdout.trim();
   const out: Record<string, number[][]> = {};
@@ -73,7 +95,8 @@ export function changedRanges(projectDir: string): Record<string, number[][]> | 
       cur.push(n === 0 ? [start + 0.5, start + 0.5] : [start, start + n - 1]);
     }
   }
-  const untracked = git('ls-files', '--others', '--exclude-standard', '--full-name');
+  // under `since` the untracked files are already in the tree diff above
+  const untracked = since ? { stdout: '' } : git('ls-files', '--others', '--exclude-standard', '--full-name');
   for (const f of untracked.stdout.split('\n').filter(Boolean)) {
     const abs = resolve(root, f);
     let n = 1;
@@ -319,6 +342,7 @@ function main() {
   let batch = false;
   let maxTimeSeconds: number | undefined;
   let changedFile = '';
+  let since = '';
 
   const argv = process.argv.slice(2);
   for (let i = 0; i < argv.length; i++) {
@@ -337,6 +361,8 @@ function main() {
       maxTimeSeconds = parseFloat(argv[++i]);
     } else if (arg === '--changed-lines') {
       changedFile = argv[++i];
+    } else if (arg === '--since') {
+      since = argv[++i];
     } else if (arg === '--workflow') {
       // the layout decides the set: checks/<workflow>/rules and its parents', through workflow-check --list
       workflow = argv[++i];
@@ -381,10 +407,15 @@ function main() {
       process.exit(1);
     }
   }
+  if (since) {
+    if (!projectDir) { console.error('rule-check: --since scopes --project-dir; name it'); process.exit(1); }
+    const ok = spawnSync('git', ['-C', projectDir, 'cat-file', '-e', `${since}^{tree}`]);
+    if (ok.status !== 0) { console.error(`rule-check: --since ${since} is not a tree in ${projectDir}'s repo`); process.exit(1); }
+  }
   if (projectDir) {
     try {
-      files = files.concat(changedFiles(projectDir));
-      changed = changedRanges(projectDir);
+      files = files.concat(changedFiles(projectDir, since || undefined));
+      changed = changedRanges(projectDir, since || undefined);
     } catch (e) {
       console.error("Failed to list files from git:", e);
       process.exit(1);

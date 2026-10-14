@@ -18,7 +18,9 @@ else, so every fact the proposition needs must be in it — and nothing the prop
 ## `changed`, exactly
 
 - `rule-check.ts --project-dir` computes `changedRanges` from `git diff -U0 HEAD`; untracked files are
-  `[[1, n]]`. `evidence.py` passes `changed=` **only** to a module whose `evidence()` signature declares
+  `[[1, n]]`. Under a `work` run, `work-checks.sh` appends `--since <args.runBaseline>` (the tree
+  `work-dispatch.sh` snapshotted), and both ranges and the file list become the diff from that tree to the
+  tree now, so only what the run wrote is in scope; a non-git or readOnly run has no baseline and keeps HEAD. `evidence.py` passes `changed=` **only** to a module whose `evidence()` signature declares
   it (`inspect.signature`), so adding the parameter changes nothing for rules that lack it.
 - `changed is None` → no diff info → the whole file is in scope (a `--files` run, a files-layout case).
 - A file the map does not name has no diff info → all its lines count.

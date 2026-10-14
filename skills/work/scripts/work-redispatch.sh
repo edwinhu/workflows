@@ -140,7 +140,7 @@ if not isinstance(cap, int) or isinstance(cap, bool) or cap < 1:
 # `carriedFindings` and `taskFixes` are derived from the PREVIOUS VERDICT below and in the selection
 # block; a plan never declares either, so syncing them would mean deleting the round's own carry.
 RUN_LOCAL = {"onlyTasks", "priorResults", "priorFindings", "carriedFindings", "taskFixes",
-             "maxAgents", "rounds", "freezeFindingSet", "maxRounds"}
+             "maxAgents", "rounds", "freezeFindingSet", "maxRounds", "runBaseline"}
 synced = []
 try:
     import re

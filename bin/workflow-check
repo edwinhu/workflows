@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The one runner for a workflow's checks: every constraint and every Jev rule under checks/<workflow>/.
 
-    workflow-check <wf> --project-dir P [--plan X] [--files F ...|--changed] [--constraints-only|--rules-only]
+    workflow-check <wf> --project-dir P [--plan X] [--files F ...|--changed] [--constraints-only|--rules-only] [--since TREE]
     workflow-check <wf> --cwd DIR --stamp FILE --log FILE [--expect P ...] [--plan X] [...]   # a farmed row
     workflow-check <wf> --list                                                                # what it reaches, JSON
 
@@ -202,10 +202,10 @@ def run_constraint(path: Path, project: Path, plan: Path | None, files: list[Pat
             "warnings": [ln for ln in rest.splitlines() if ln.startswith("warning: ")]}
 
 
-def score_rules(wf: str, files: list[Path], project: Path, plan: Path | None, by_git: bool) -> dict:
+def score_rules(wf: str, files: list[Path], project: Path, plan: Path | None, by_git: bool, since: str | None = None) -> dict:
     cmd = os.environ.get("DOMAIN_GATE_RULE_CHECK", "").split() or ["bun", str(ROOT / "skills" / "work" / "scripts" / "rule-check.ts")]
     cmd += ["--workflow", wf, *(["--plan", str(plan)] if plan else [])]
-    cmd += ["--project-dir", str(project)] if by_git else ["--project", project.name, "--files", *map(str, files)]
+    cmd += ["--project-dir", str(project), *(["--since", since] if since else [])] if by_git else ["--project", project.name, "--files", *map(str, files)]
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=TIMEOUT, check=False)
     except (subprocess.TimeoutExpired, OSError) as e:
@@ -237,6 +237,7 @@ def main() -> int:
     ap.add_argument("--expect", action="append", default=[])
     ap.add_argument("--constraints-only", action="store_true")
     ap.add_argument("--rules-only", action="store_true")
+    ap.add_argument("--since")
     a = ap.parse_args()
     try:
         lay = resolve(a.workflow)
@@ -293,7 +294,7 @@ def main() -> int:
         elif not files:
             notes.append("jev rules: nothing in scope (no file in scope)")
         else:
-            rules = score_rules(wf, files, project, plan, by_git)
+            rules = score_rules(wf, files, project, plan, by_git, a.since)
             notes.append(f"jev rules: {rules['n']} scored")
 
     worst = max([min(r["rc"], 2) for r in results] + ([rules["rc"]] if rules else []) + [0])
