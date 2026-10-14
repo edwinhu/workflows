@@ -177,7 +177,12 @@ test('a background task that finished inside the turn is not an orphan', () => {
 // child has at its turn end -- an MCP server (a plain child: not a job), a run_in_background Bash
 // (a shell launched through the harness's shell snapshot), and a setsid escapee (reparented away).
 
+// The three fake jobs sleep for durations unique to this call: cleanup kills by those exact argv
+// strings, and a fixed `sleep 57..59` pattern killed the jobs of every other suite running on the
+// machine (a parallel session's farm-bgjob test saw its hook output turn empty -> JSON EOF).
 function runHookTree(opts: { rowEnv?: boolean, farmChild?: boolean, blocks?: number } = {}) {
+  const tag = 100_000 + Math.floor(Math.random() * 800_000)
+  const [S_MCP, S_JOB, S_ESC] = [`${tag}9`, `${tag}8`, `${tag}7`]
   const root = mkdtempSync(join(tmpdir(), 'farmbghook-'))
   const fake = join(root, 'claude')
   const payload = join(root, 'payload.json')
@@ -187,12 +192,12 @@ function runHookTree(opts: { rowEnv?: boolean, farmChild?: boolean, blocks?: num
   writeFileSync(snap, '')
   const blocks = opts.blocks ?? 1
   writeFileSync(fake, `#!/usr/bin/env bash
-sleep 59 </dev/null >/dev/null 2>&1 & echo $! > "${root}/mcp.pid"
-/usr/bin/bash -c "source ${snap} 2>/dev/null || true && eval 'sleep 58 && echo '\\"'\\"'done'\\"'\\"'' < /dev/null" >/dev/null 2>&1 & echo $! > "${root}/job.pid"
-( setsid sleep 57 </dev/null >/dev/null 2>&1 & echo $! > "${root}/esc.pid" )
+sleep ${S_MCP} </dev/null >/dev/null 2>&1 & echo $! > "${root}/mcp.pid"
+/usr/bin/bash -c "source ${snap} 2>/dev/null || true && eval 'sleep ${S_JOB} && echo '\\"'\\"'done'\\"'\\"'' < /dev/null" >/dev/null 2>&1 & echo $! > "${root}/job.pid"
+( setsid sleep ${S_ESC} </dev/null >/dev/null 2>&1 & echo $! > "${root}/esc.pid" )
 # Wait until each job has exec'd its command (a fixed sleep lost the race under load), at most 10 s.
 up() { local p; p=$(cat "${root}/$1.pid" 2>/dev/null) && [ -n "$p" ] && case "$(tr '\\0' ' ' < /proc/$p/cmdline 2>/dev/null)" in $2) return 0;; esac; return 1; }
-for _ in $(seq 1 100); do up mcp 'sleep 59 ' && up job '*sleep 58*' && up esc 'sleep 57 ' && break; sleep 0.1; done
+for _ in $(seq 1 100); do up mcp 'sleep ${S_MCP} ' && up job '*sleep ${S_JOB}*' && up esc 'sleep ${S_ESC} ' && break; sleep 0.1; done
 for i in $(seq 1 ${blocks}); do
   sh -c 'python3 "${BGJOBS}" hook' < "${payload}" > "${root}/out.$i.json" 2> "${root}/err.$i.txt"
 done
@@ -208,21 +213,21 @@ done
   const errs = Array.from({ length: blocks }, (_, i) => readFileSync(join(root, `err.${i + 1}.txt`), 'utf8'))
   const cleanup = () => {
     // the job shell's own sleep child too: kill by the row's marker
-    spawnSync('bash', ['-c', `pkill -f '^sleep 5[789]$' ; true`], { timeout: 10_000 })
+    spawnSync('bash', ['-c', `pkill -f '^sleep (${S_MCP}|${S_JOB}|${S_ESC})$' ; true`], { timeout: 10_000 })
     for (const p of pids) { try { process.kill(p, 'SIGKILL') } catch {} }
     rmSync(root, { recursive: true, force: true })
   }
-  return { outs, errs, cleanup }
+  return { outs, errs, cleanup, S_MCP, S_JOB, S_ESC }
 }
 
 test('the Stop hook blocks a farm child whose background jobs are alive, naming each, but not its MCP servers', () => {
-  const { outs, cleanup } = runHookTree()
+  const { outs, cleanup, S_MCP, S_JOB, S_ESC } = runHookTree()
   try {
     const d = JSON.parse(outs[0])
     expect(d.decision).toBe('block')
-    expect(d.reason).toContain("sleep 58 && echo 'done'")
-    expect(d.reason).toContain('sleep 57')
-    expect(d.reason).not.toContain('sleep 59')
+    expect(d.reason).toContain(`sleep ${S_JOB} && echo 'done'`)
+    expect(d.reason).toContain(`sleep ${S_ESC}`)
+    expect(d.reason).not.toContain(`sleep ${S_MCP}`)
   } finally { cleanup() }
 }, 70_000)
 
