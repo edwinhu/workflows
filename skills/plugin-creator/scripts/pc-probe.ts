@@ -1710,5 +1710,11 @@ export function main(argv: string[], run: typeof runProbe = runProbe): number {
 }
 
 if (import.meta.main) {
-  process.exit(main(process.argv.slice(2)))
+  try {
+    process.exit(main(process.argv.slice(2)))
+  } catch (e) {
+    // an internal exception is could-not-look (2), never a finding (1)
+    console.error(`pc-probe: internal failure — ${(e as Error).stack ?? e}`)
+    process.exit(2)
+  }
 }

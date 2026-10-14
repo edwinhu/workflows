@@ -72,13 +72,13 @@ TARGET="$(cd "$TARGET" && pwd -P)"
 
 FAILED=0
 # Every leg reports through here, so a leg that runs but whose status reaches no verdict is not
-# expressible. A leg exiting 2 (could-not-look) raises the whole verdict to 2, never to 1: the
-# caller must be able to tell "a rule was broken" from "a rule was never applied".
+# expressible. A leg exiting 2 or 3 (could-not-look, or a probe that crashed) raises the whole verdict
+# to 2, never to 1: the caller must be able to tell "a rule was broken" from "a rule was never applied".
 report() { # report <leg name> <exit code> [note]
   printf 'leg %s exit=%s%s\n' "$1" "$2" "${3:+ ($3)}"
   case "$2" in
     0) ;;
-    2) FAILED=2 ;;
+    2|3) FAILED=2 ;;
     *) [ "$FAILED" -eq 2 ] || FAILED=1 ;;
   esac
 }

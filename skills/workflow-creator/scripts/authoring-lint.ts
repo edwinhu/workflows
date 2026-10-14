@@ -3,7 +3,7 @@
  * authoring-lint.ts — the authoring rules a string settles, over the lines a change ADDED.
  *
  * Usage:  bun authoring-lint.ts --target <dir> [--json]
- * Exit:   0 = no findings, 1 = findings, 2 = argument error.
+ * Exit:   0 = no findings, 1 = findings, 2 = argument error or internal failure (could not look).
  *
  * Diff-scoped: inside a git work tree a file's added lines are `git diff -U0 HEAD` plus every line of
  * an untracked file; outside one, every line of every file counts. The corpus carries legacy instances
@@ -178,9 +178,14 @@ if (import.meta.main) {
     console.error('usage: authoring-lint.ts --target <dir> [--json]')
     process.exit(2)
   }
-  const findings = lint(realpathSync(target))
-  if (argv.includes('--json')) console.log(JSON.stringify({ findings }))
-  else for (const f of findings) console.log(`${f.file}:${f.line}  ${f.rule}\n    ${f.text}`)
-  console.error(`authoring-lint: ${findings.length} finding(s) over the added lines under ${target}`)
-  process.exit(findings.length ? 1 : 0)
+  try {
+    const findings = lint(realpathSync(target))
+    if (argv.includes('--json')) console.log(JSON.stringify({ findings }))
+    else for (const f of findings) console.log(`${f.file}:${f.line}  ${f.rule}\n    ${f.text}`)
+    console.error(`authoring-lint: ${findings.length} finding(s) over the added lines under ${target}`)
+    process.exit(findings.length ? 1 : 0)
+  } catch (e) {
+    console.error(`authoring-lint: internal failure — ${(e as Error).stack ?? e}`)
+    process.exit(2)
+  }
 }
