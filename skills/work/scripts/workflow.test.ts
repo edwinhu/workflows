@@ -1117,14 +1117,17 @@ test('lensModel is the fallback only when the lens itself names model: null', as
   expect(dflt.get('lens').model).toBe('sonnet')
 })
 
-test("the lens's agentType reaches the leg, and readOnly forces Explore when it names none", async () => {
+test("the lens's agentType reaches the leg, and Explore is the default when it names none", async () => {
   const explicit = await dispatchOpts({ ...baseArgs, tasks: one, lens: { prompt: 'p', agentType: 'ds-reviewer' } })
   expect(explicit.get('lens').agentType).toBe('ds-reviewer')
   const ro = await dispatchOpts({ ...baseArgs, readOnly: true, tasks: [], lens: { prompt: 'p' } })
   expect(ro.get('lens').agentType).toBe('Explore')
-  // Outside readOnly, no agentType key at all — byte-identical to inheriting the dispatcher default.
+  // A write run's lens and verifiers are review legs too: an agent type is the boundary, the prompt only a request.
   const plain = await dispatchOpts({ ...baseArgs, tasks: one, lens: { prompt: 'p' } })
-  expect('agentType' in plain.get('lens')).toBe(false)
+  expect(plain.get('lens').agentType).toBe('Explore')
+  expect(plain.get('verify:T1').agentType).toBe('Explore')
+  const pinned = await dispatchOpts({ ...baseArgs, tasks: one, verifierAgentType: 'ds-reviewer', lens: { prompt: 'p' } })
+  expect(pinned.get('verify:T1').agentType).toBe('ds-reviewer')
 })
 
 // ---------------------------------------------------------------- positive dispositions (the leak)
@@ -1150,20 +1153,40 @@ test('a lens `dispositions` entry is reported and never gates', async () => {
   expect(result.findings).toEqual([])
 })
 
-test('defect:false on a finding routes it to dispositions instead of gating — the structural backstop', async () => {
+test('defect:false routes an entry that carries no severity to dispositions, preserving the reason', async () => {
   const { result } = await run(
     lensOnly(),
-    reports({ findings: [{ title: 'looks like a defect claim', severity: 'critical', detail: 'd', ownerTask: 'plan', defect: false }] }))
+    reports({ findings: [{ title: 'looks like a defect claim', detail: 'd', ownerTask: 'plan', defect: false }] }))
   expect(result.overallPass).toBe(true)
   expect(result.scoreTable.survivingBlocking).toBe(0)
-  // Routed, not deleted: the claimed severity and the reason are both preserved for the human.
   expect(result.dispositions).toHaveLength(1)
   expect(result.dispositions[0].routedFromFinding).toBe(true)
-  expect(result.dispositions[0].claimedSeverity).toBe('critical')
   expect(result.dispositions[0].routedBecause).toMatch(/defect:false/)
   expect(result.scoreTable.dispositionsRoutedFromFindings).toBe(1)
-  // A routed entry reaches NO selector: it never becomes a planFindings item either.
   expect(result.planFindings).toEqual([])
+})
+
+test('defect:false on a finding that carries a severity does NOT leave the gate — the lens cannot self-clear a critical', async () => {
+  for (const severity of ['critical', 'major']) {
+    const { result } = await run(
+      lensOnly(),
+      reports({ findings: [{ title: 'parseRow throws on empty input', severity, detail: 'd', ownerTask: 'plan', defect: false }] }))
+    expect(result.overallPass).toBe(false)
+    expect(result.scoreTable.survivingBlocking).toBe(1)
+    expect(result.dispositions).toEqual([])
+  }
+})
+
+test('a lens finding with no title, or a severity outside critical/major/minor, fails closed', async () => {
+  for (const f of [
+    { severity: 'critical', detail: 'd', ownerTask: 'plan' },
+    { title: 'bad severity', severity: 'blocker', detail: 'd', ownerTask: 'plan' },
+    { title: 'no severity', detail: 'd', ownerTask: 'plan' },
+  ]) {
+    const { result } = await run(lensOnly(), reports({ findings: [f] }))
+    expect(result.overallPass).toBe(false)
+    expect(result.lensesThatFlagged).toEqual(['lens'])
+  }
 })
 
 test('defect:true, and an omitted defect key, both leave a finding in the gate', async () => {
@@ -2044,6 +2067,16 @@ test('advisory rule checklist reaches the GREEN lens prompt ranked by p', async 
   const idx2 = p.indexOf('R2: p=0.5')
   expect(idx1).toBeLessThan(idx2)
   expect(idx1).toBeGreaterThan(-1)
+})
+
+test('a rule check whose verdicts are empty and carry no scope fails closed, never reads as every rule MET', async () => {
+  const stdout = JSON.stringify({ verdicts: [], unavailable: [] })
+  const { result } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout } } })
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed).toEqual(['ruleChecks:rules'])
 })
 
 test('a rule check that scored nothing in scope says so in scoreTable and the lens digest, never as silence', async () => {

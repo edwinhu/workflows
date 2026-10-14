@@ -55,7 +55,7 @@ function project(opts: { owed: boolean; runId?: string; planPath?: string }) {
   if (!opts.owed)
     writeFileSync(join(R, 'result.json'), JSON.stringify({
       overallPass: true, verdict: 'PASS', scoreTable: {}, findings: [],
-      tasksThatFlagged: [], mechanicalThatFailed: [], lensesThatFlagged: [],
+      tasksThatFlagged: [], mechanicalThatFailed: [], lensesThatFlagged: [], rulesThatFailed: [],
     }))
   return { dir, plan, R, runId }
 }

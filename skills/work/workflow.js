@@ -44,7 +44,7 @@ for (const a of attempts) {
 if (!projectDir) throw new Error('work: projectDir required')
 if (!planPath) throw new Error('work: planPath required — the approved plan snapshot is the sole authority')
 if (!/^[0-9a-f]{64}$/.test(specHash || '')) throw new Error('work: specHash must be the 64-hex sha256 of the plan\'s canonical work:dispatch spec')
-if (!goal) throw new Error('work: goal required (one sentence + criteria from .work/<run>/goal.md)')
+if (!goal) throw new Error('work: goal required (one sentence + criteria)')
 // readOnly (default false): audit an existing tree. No Implement phase, no per-task verifiers, and
 // therefore no requirement that tasks[] be non-empty. When readOnly is false the tasks[] guard is
 // exactly as it has always been.
@@ -376,21 +376,18 @@ const implementerAgentType = args.implementerAgentType || null
 const verifierAgentType = args.verifierAgentType || null
 // Every call site spreads `...agentTypeOpt(X)`, which contributes no key at all when X is absent.
 //
-// Read-only agents by default. Under readOnly EVERY review leg — the lens row and the scored, attempt
-// and rule probes — defaults to the Explore agent type, which structurally has no Edit
-// and no Write tool. A prompt that says "modify nothing" is a request; an agent type is a boundary,
-// and a readOnly run is exactly the case where the tree must not be touched. Precedence: an explicit
-// lens agentType wins over this default.
-// Outside readOnly the default does not apply at all — reviewAgentType(undefined) returns null,
-// agentTypeOpt(null) contributes {}, and agent() receives NO agentType key whatsoever,
-// byte-identical to before this change.
+// Read-only agents by default. EVERY review leg — the lens row, the per-task verifiers and the scored,
+// attempt and rule probes — defaults to the Explore agent type, which structurally has no Edit
+// and no Write tool, on write runs as well as readOnly ones. A prompt that says "modify nothing" is a
+// request; an agent type is a boundary, and a review that edits the tree closes its own findings on
+// its own edit. Precedence: an explicit agentType wins over this default.
 //
 // Explore keeps Bash — a probe that cannot run its command is not a probe — while removing the tools
 // an agent writes with by choice. RESIDUAL: `mechanicalChecks` cmds run VERBATIM in work-checks.sh,
 // so a caller who passes a command that writes still writes; a readOnly charter must pass commands
 // that only read.
 const READ_ONLY_AGENT_TYPE = 'Explore'
-const reviewAgentType = explicit => explicit || (readOnly ? READ_ONLY_AGENT_TYPE : null)
+const reviewAgentType = explicit => explicit || READ_ONLY_AGENT_TYPE
 const agentTypeOpt = t => (t ? { agentType: t } : {})
 // Optional refs: absolute paths the agent must Read in full. An absent or empty list contributes
 // NOTHING to the prompt — not a blank line, not a heading.
@@ -444,6 +441,7 @@ const optIf = (k, v) => (v ? { [k]: v } : {})
 // the lens synthesizes a critical finding, which flows into survivingBlocking → lensesThatFlagged →
 // overallPass by the ordinary arithmetic. `syntheticDeadLens` is what exempts it from the
 // freezeFindingSet residue bucket: a review that did not happen is not a fresh finding to defer.
+const SEVERITIES = new Set(['critical', 'major', 'minor'])
 const DEAD_LENS_TITLE = 'the review lens died or was skipped — no review ran this round'
 const deadLensFinding = how => ({
   title: DEAD_LENS_TITLE,
@@ -720,7 +718,7 @@ const LENS_SCHEMA = {
           ownerTask: { type: 'string', description: OWNER_TASK_DESC },
           // The structural backstop. A lens that files a satisfied check here anyway can say so, and
           // the JS routes it to dispositions instead of gating the run on a true statement.
-          defect: { type: 'boolean', description: 'false ONLY if this entry is not a defect claim — a satisfied check reported for completeness. Such an entry is moved to dispositions and never gates. Omit it (or set true) for a real defect.' },
+          defect: { type: 'boolean', description: 'Omit it (or set true) for a real defect. false moves an entry to dispositions only when the entry carries no severity; an entry with a severity always gates, so report a satisfied check in `dispositions`.' },
         },
       },
     },
@@ -785,7 +783,9 @@ const DISPOSITION_DETAIL_HEAD_RE = new RegExp(
 // text patterns: a structural signal beats a guess about wording.
 const dispositionReason = f => {
   if (!f) return null
-  if (f.defect === false) return 'the lens set defect:false on this entry — its own report says it is not a defect claim'
+  // Only an entry with no severity can leave the gate on the lens's own say-so: a severity-bearing entry
+  // gates, so a lens cannot clear a critical it filed by flagging it defect:false.
+  if (f.defect === false && !f.severity) return 'the lens set defect:false on this entry, which carries no severity — its own report says it is not a defect claim'
   if (DISPOSITION_TITLE_RE.test(f.title || '')) return 'the title self-labels a satisfied check rather than a defect (a gate cannot block on a true statement, so this would have failed the run for nothing)'
   if (DISPOSITION_DETAIL_HEAD_RE.test(f.detail || '')) return 'the detail opens by self-labelling this as not a defect (a gate cannot block on a true statement, so this would have failed the run for nothing)'
   return null
@@ -906,7 +906,7 @@ const lensSpec = digest => {
       : 'Rules: modify nothing; cite files and lines; run read-only commands and quote their output as your evidence.',
     'Put a line number in the `line` field, NOT in `file`. A `file` of "src/a.go:135" matches no path in the plan\'s task table, so the fix loop cannot route it and re-runs everything.',
     'A FINDING IS A DEFECT CLAIM AND NOTHING ELSE. Every entry in `findings` must assert that something is WRONG. "I checked X and it holds", "constraint Y is satisfied", "no violation found", "recorded for completeness" — none of those are findings, and filing one as a finding fails the run on a true statement.',
-    'Put every satisfied check in `dispositions` instead. It is REPORTED to the user in full, so the obligation to show what you examined is discharged there, not by inflating the findings list. If you must file a non-defect under `findings` anyway, set `defect: false` on it.',
+    'Put every satisfied check in `dispositions` instead. It is REPORTED to the user in full, so the obligation to show what you examined is discharged there, not by inflating the findings list. Every entry in `findings` carries a severity and gates; `defect: false` does not clear it.',
   ].join('\n')
   return {
     label: LENS_KEY, kind: 'review', mode: digest.mode, prompt, schema,
@@ -936,7 +936,13 @@ const parseLens = review => {
   }
   const findings = []
   for (const f of review.findings || []) {
-    if (!f || !f.title) continue
+    // A malformed entry is not dropped: the lens did report something, and silence would certify it.
+    const selfCleared = !!f && f.defect === false && !f.severity
+    if (!f || typeof f !== 'object' || (!selfCleared && (!f.title || !SEVERITIES.has(f.severity)))) {
+      findings.push(deadLensFinding('returned a malformed finding (no title, or a severity outside critical/major/minor): ' + JSON.stringify(f).slice(0, 200)))
+      continue
+    }
+    if (!f.title) continue
     const why = dispositionReason(f)
     if (why) dispositions.push(routedDisposition(f, why))
     else findings.push({ ...f, lens: LENS_KEY })
@@ -1045,7 +1051,7 @@ const verifyLeg = async () => {
         '- Modify nothing. Run read-only checks/commands and paste their VERBATIM output as evidence.',
         '- pass=true only if the acceptance is demonstrably met. Ambiguity fails.',
       ].join('\n'),
-      { label: `verify:${t.id}`, phase: 'Verify', schema: VERIFY_SCHEMA, ...agentTypeOpt(verifierAgentType), ...optIf('model', verifierModel), ...optIf('effort', verifierEffort) }
+      { label: `verify:${t.id}`, phase: 'Verify', schema: VERIFY_SCHEMA, ...agentTypeOpt(reviewAgentType(verifierAgentType)), ...optIf('model', verifierModel), ...optIf('effort', verifierEffort) }
     )
   ))
   // The agent's own id is not evidence — this leg was dispatched for a known task, so stamp it.
@@ -1317,6 +1323,10 @@ if (ruleChecks) {
   if (parseFailed) {
     rulesThatFailed.push(`ruleChecks:${ruleChecks.name}`)
   } else {
+    if (parsed.verdicts.length === 0 && !(typeof parsed.scope === 'string' && parsed.scope.trim())) {
+      // An empty verdict set with no scope line judged nothing; it must not read as every rule MET.
+      rulesThatFailed.push(`ruleChecks:${ruleChecks.name}`)
+    }
     if (parsed.verdicts.length === 0 && typeof parsed.scope === 'string' && parsed.scope.trim()) ruleScope = parsed.scope.trim()
     for (const v of parsed.verdicts) {
       const spans = Array.isArray(v.spans) ? v.spans.filter(x => typeof x === 'string') : []

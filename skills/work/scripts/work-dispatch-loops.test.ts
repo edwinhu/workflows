@@ -54,7 +54,7 @@ function stubFarm(dir: string, pass: boolean, delaySec = 0) {
     findings: [],
     tasksThatFlagged: pass ? [] : ['T1'],
     mechanicalThatFailed: [],
-    lensesThatFlagged: [],
+    lensesThatFlagged: [], rulesThatFailed: [],
     mechanical: [],
   })
   return script(dir, 'stub-farm.sh', [
