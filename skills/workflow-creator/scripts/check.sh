@@ -4,7 +4,7 @@
 # a list of N independent commands loses one silently and nothing reports a check it never knew
 # about.
 #
-# Usage: check.sh --target <skill dir> [--agent <agent .md outside the skill dir>]
+# Usage: check.sh --target <skill dir> [--agent <agent .md outside the skill dir>]...   (--agent repeats: one per dispatched agent)
 #
 # Legs (all seven run; none short-circuits, so one line is printed per leg every time):
 #   wc-probe     the probe over --target (and --agent, which lives outside it)
@@ -47,11 +47,11 @@ set -uo pipefail  # deliberately not -e: every leg must run so every leg reports
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 usage() {
-  echo "usage: check.sh --target <skill dir> [--agent <agent .md>]" >&2
+  echo "usage: check.sh --target <skill dir> [--agent <agent .md>]... (--agent repeats, one per dispatched agent)" >&2
 }
 
 TARGET=""
-AGENT=""
+AGENTS=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --target)
@@ -59,7 +59,7 @@ while [ $# -gt 0 ]; do
       TARGET="$2"; shift 2 ;;
     --agent)
       [ $# -ge 2 ] || { echo "check.sh: --agent requires a value" >&2; usage; exit 2; }
-      AGENT="$2"; shift 2 ;;
+      AGENTS+=("$2"); shift 2 ;;
     *)
       echo "check.sh: unknown argument: $1" >&2; usage; exit 2 ;;
   esac
@@ -67,10 +67,9 @@ done
 
 [ -n "$TARGET" ] || { echo "check.sh: --target is required" >&2; usage; exit 2; }
 [ -d "$TARGET" ] || { echo "check.sh: --target is not a directory: $TARGET" >&2; exit 2; }
-if [ -n "$AGENT" ] && [ ! -f "$AGENT" ]; then
-  echo "check.sh: --agent is not a file: $AGENT" >&2
-  exit 2
-fi
+for a in "${AGENTS[@]+"${AGENTS[@]}"}"; do
+  [ -f "$a" ] || { echo "check.sh: --agent is not a file: $a" >&2; exit 2; }
+done
 TARGET="$(cd "$TARGET" && pwd -P)"
 
 FAILED=0
@@ -121,11 +120,9 @@ if [ -n "$OWN_ROOT" ]; then
 fi
 
 # --- leg: wc-probe -----------------------------------------------------------------------------
-if [ -n "$AGENT" ]; then
-  bun "$SCRIPT_DIR/wc-probe.ts" --target "$TARGET" --agent "$AGENT" >&2
-else
-  bun "$SCRIPT_DIR/wc-probe.ts" --target "$TARGET" >&2
-fi
+agent_args=()
+for a in "${AGENTS[@]+"${AGENTS[@]}"}"; do agent_args+=(--agent "$a"); done
+bun "$SCRIPT_DIR/wc-probe.ts" --target "$TARGET" "${agent_args[@]+"${agent_args[@]}"}" >&2
 report wc-probe $?
 
 # --- leg: sc-probe -----------------------------------------------------------------------------
