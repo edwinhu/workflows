@@ -11,12 +11,12 @@
 
 == The panel spans 1994 through 2019.
 
-- Say why the edges are unbalanced.
+- Now that the trend line is made, turn to the panel behind it: say why the edges are unbalanced.
 
 - Do not read the table.
 
 == Blockholders raise dividends by four points.
 
-- Give the point estimate once.
+- Now that the table is left unread, turn to the result: give the point estimate once.
 
 - Then move to the event study.

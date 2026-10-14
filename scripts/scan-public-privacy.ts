@@ -83,7 +83,7 @@ const UNREVIEWED_BINARY_DISPOSITION = "unreviewed";
 // An unstaged working-tree rebuild is skipped instead; see classifyBinary for why.
 const PRESERVED_BINARIES: ReadonlyArray<{ path: string; digest: string }> = [
   { path: "skills/law-econ-docx/examples/sample/figure1.png", digest: "70a977e0f296010321ccf92afa731b46d9e66dc52efbb7067474efaccb21f775" },
-  { path: "skills/workshop/fixtures/clean/presentation/notes.pdf", digest: "a75cde5738b43c406c2df69436bc37efbbe573e83fbdde0c3b92597410220016" },
+  { path: "skills/workshop/fixtures/clean/presentation/notes.pdf", digest: "2d68662fb757cc6c16e3b228867d1b227f0b515cea49535760b61d7c7025f314" },
   { path: "skills/workshop/fixtures/clean/presentation/slides.pdf", digest: "4df2355eaa9d1e8495130f32833199f92617bd5ab986c1b96c0c551a63ded609" },
   { path: "skills/wrds/scripts/parse_13f/parse_13f_go/parse_13f_go", digest: "f09563d7e6625cd777a8d597538ebd26ba0cd2578961b149ffa648c92d80887f" },
   { path: "skills/wrds/scripts/parse_npx/parse_npx_go/parse_npx_go", digest: "a80c5b4d1658994874b7546cb61fe0505538f474519dc5c3c136e3b81b7ee7b8" },
