@@ -1,11 +1,11 @@
-import { expect, test } from 'bun:test'
+import { expect, setDefaultTimeout, test } from 'bun:test'
 import { spawn } from 'node:child_process'
 import { appendFileSync, chmodSync, closeSync, mkdirSync, mkdtempSync, openSync, readFileSync, utimesSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
-import { freePort } from './helpers/free-port.ts'
+import { startPyStub } from './helpers/stub-server.ts'
 import { DEFAULT_THRESHOLD, INSTRUCTIONS, handLaunches, idleTicks, judgeContext, mandateCeilingMs, NO_WAKE_REASON, STALE_TICKS, afkHold, afkHoldGoal, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
 
 const mkTmp = useTmp()
@@ -22,10 +22,11 @@ const mkTmp = useTmp()
  */
 
 const ROOT = dirname(import.meta.dir)
+setDefaultTimeout(240_000) // bun's 5 s default killed tests that wait on a hook child under load
 const HOOK = join(ROOT, 'hooks', 'early-stop.ts')
 
 /** The Decisions API's shape: one typed question in, a calibrated probability out. */
-function stubDecisions(port: number, noul: number) {
+function stubDecisions(noul: number) {
   const code = `
 import json, http.server, socketserver
 class H(http.server.BaseHTTPRequestHandler):
@@ -34,14 +35,12 @@ class H(http.server.BaseHTTPRequestHandler):
         self.send_response(200); self.send_header("content-type","application/json")
         self.send_header("content-length", str(len(b))); self.end_headers(); self.wfile.write(b)
     def log_message(self, *a): pass
-socketserver.TCPServer.allow_reuse_address = True
-socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
 `
-  return Bun.spawn(['python3', '-c', code], { stdout: 'ignore', stderr: 'ignore' })
+  return startPyStub(code)
 }
 
 /** A server that is up and answering 500. curl exits 0 on a 500, so this is NOT the unreachable case. */
-function stubBroken(port: number) {
+function stubBroken() {
   const code = `
 import http.server, socketserver
 class H(http.server.BaseHTTPRequestHandler):
@@ -50,13 +49,10 @@ class H(http.server.BaseHTTPRequestHandler):
         self.send_response(500); self.send_header("content-type","text/plain")
         self.send_header("content-length", str(len(b))); self.end_headers(); self.wfile.write(b)
     def log_message(self, *a): pass
-socketserver.TCPServer.allow_reuse_address = True
-socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
 `
-  return Bun.spawn(['python3', '-c', code], { stdout: 'ignore', stderr: 'ignore' })
+  return startPyStub(code)
 }
 
-const settle = () => Bun.sleep(700)
 
 /**
  * The child env.
@@ -138,9 +134,8 @@ const DEAD = { WORK_HOLD_DECISIONS_URL: 'http://127.0.0.1:1/decisions' }
 // ------------------------------------------------------------------- the judged decision
 
 test('an early stop at or above the threshold BLOCKS', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   const r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('es-block', transcript))
   srv.kill()
@@ -151,9 +146,8 @@ test('an early stop at or above the threshold BLOCKS', async () => {
 }, 30000)
 
 test('below the threshold the stop is ALLOWED', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.12)
-  await settle()
+  const srv = await stubDecisions(0.12)
+  const port = srv.port
   const { dir, transcript } = fixture()
   const r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('es-low', transcript))
   srv.kill()
@@ -163,9 +157,8 @@ test('below the threshold the stop is ALLOWED', async () => {
 }, 30000)
 
 test('EARLY_STOP_THRESHOLD moves the bar', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.55)
-  await settle()
+  const srv = await stubDecisions(0.55)
+  const port = srv.port
   const high = fixture()
   const rHigh = runHook(childEnv(high.dir, decisionsAt(port)), stopPayload('es-thr-high', high.transcript))
   const low = fixture()
@@ -181,9 +174,8 @@ test('EARLY_STOP_THRESHOLD moves the bar', async () => {
 // ------------------------------------------------------------------------ failing open
 
 test('a judge that ERRORS allows the stop', async () => {
-  const port = freePort()
-  const srv = stubBroken(port)
-  await settle()
+  const srv = await stubBroken()
+  const port = srv.port
   const { dir, transcript } = fixture()
   const r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('es-500', transcript))
   srv.kill()
@@ -210,9 +202,8 @@ test('no key and no token: unavailable, so the stop is allowed', () => {
 // --------------------------------------------------------- the paths that never reach the judge
 
 test('FARM_OUT_CHILD=1 allows immediately', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   const r = runHook(
     childEnv(dir, { ...decisionsAt(port), FARM_OUT_CHILD: '1' }),
@@ -224,9 +215,8 @@ test('FARM_OUT_CHILD=1 allows immediately', async () => {
 }, 30000)
 
 test('GRIND_ITERATION allows immediately', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   const r = runHook(
     childEnv(dir, { ...decisionsAt(port), GRIND_ITERATION: '7' }),
@@ -238,9 +228,8 @@ test('GRIND_ITERATION allows immediately', async () => {
 }, 30000)
 
 test('EARLY_STOP_HOOK=0 opts the session out', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   const r = runHook(
     childEnv(dir, { ...decisionsAt(port), EARLY_STOP_HOOK: '0' }),
@@ -252,9 +241,8 @@ test('EARLY_STOP_HOOK=0 opts the session out', async () => {
 }, 30000)
 
 test('an ARMED work-hold stands this hook down, so the two never both block', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   // What `work-hold.sh` arms: the per-session state file, in the same TMPDIR.
   writeFileSync(join(dir, 'work-hold-es-hold.json'), JSON.stringify({
@@ -268,9 +256,8 @@ test('an ARMED work-hold stands this hook down, so the two never both block', as
 }, 30000)
 
 test('an EMPTY last_assistant_message allows immediately', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   const r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('es-empty', transcript, '   '))
   srv.kill()
@@ -279,9 +266,8 @@ test('an EMPTY last_assistant_message allows immediately', async () => {
 }, 30000)
 
 test('a transcript with no genuine user request allows immediately', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   // Only system injections and tool results — neither is a turn boundary.
   writeFileSync(transcript, [
@@ -297,9 +283,8 @@ test('a transcript with no genuine user request allows immediately', async () =>
 // -------------------------------------------------------------------------------- the cap
 
 test('two blocks per user turn, then the third stop is allowed — and a NEW turn blocks again', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   const env = childEnv(dir, decisionsAt(port))
   const payload = stopPayload('es-cap', transcript)
@@ -331,9 +316,8 @@ test('two blocks per user turn, then the third stop is allowed — and a NEW tur
 }, 60000)
 
 test('an UNWRITABLE counter fails open rather than blocking uncapped', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   // A READ-ONLY counter, holding a valid record for a DIFFERENT turn: it reads cleanly and says
   // zero blocks spent on this turn, so the judge is reached and a block is decided — and then the
@@ -359,9 +343,8 @@ test('an UNWRITABLE counter fails open rather than blocking uncapped', async () 
  * from the counter, never from a lenient judge.
  */
 test('a counter that EXISTS but cannot be parsed fails open', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   writeFileSync(join(dir, 'early-stop-es-garbage.json'), 'this is not json{{{')
   const r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('es-garbage', transcript))
@@ -372,9 +355,8 @@ test('a counter that EXISTS but cannot be parsed fails open', async () => {
 }, 30000)
 
 test('a counter that EXISTS but cannot be READ fails open', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   // A DIRECTORY at the counter path: readFileSync raises EISDIR, which is not ENOENT.
   mkdirSync(join(dir, 'early-stop-es-unreadable.json'))
@@ -386,9 +368,8 @@ test('a counter that EXISTS but cannot be READ fails open', async () => {
 }, 30000)
 
 test('an ABSENT counter is the only read that counts as zero blocks: it BLOCKS', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   const r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('es-absent', transcript))
   srv.kill()
@@ -398,9 +379,8 @@ test('an ABSENT counter is the only read that counts as zero blocks: it BLOCKS',
 }, 30000)
 
 test('a TMPDIR that does not exist survives: no counter, no audit, still an allow', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   const r = runHook(
     childEnv(dir, { ...decisionsAt(port), TMPDIR: join(dir, 'no', 'such', 'dir') }),
@@ -414,9 +394,8 @@ test('a TMPDIR that does not exist survives: no counter, no audit, still an allo
 // ------------------------------------------------------------------------------ the audit
 
 test('every decision writes one audit line: session, turn, p, verdict', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   runHook(childEnv(dir, decisionsAt(port)), stopPayload('es-audit', transcript))
   srv.kill()
@@ -493,9 +472,8 @@ function interactiveEnv(dir: string, port: number, extra: Record<string, string>
 }
 
 test('a LIVE owned run with a FRESH watcher beacon ALLOWS: the watcher wakes it', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   // The test runner's own pid: alive for as long as the hook runs.
   farmEvents(dir, 'es-live', process.pid, [START('alpha')])
@@ -507,9 +485,8 @@ test('a LIVE owned run with a FRESH watcher beacon ALLOWS: the watcher wakes it'
 }, 30000)
 
 test('a FINISHED owned run (DONE line) leaves the judge in charge: it BLOCKS', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   farmEvents(dir, 'es-done', process.pid, [START('alpha'), 'farm: DONE alpha ok rc=0'])
   beacon(dir, 'es-done')
@@ -519,9 +496,8 @@ test('a FINISHED owned run (DONE line) leaves the judge in charge: it BLOCKS', a
 }, 30000)
 
 test('a GONE owned run (no DONE, pid dead) leaves the judge in charge: it BLOCKS', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   farmEvents(dir, 'es-gone', deadPid(), [START('alpha')])
   beacon(dir, 'es-gone')
@@ -531,9 +507,8 @@ test('a GONE owned run (no DONE, pid dead) leaves the judge in charge: it BLOCKS
 }, 30000)
 
 test("ANOTHER session's live run does not count: it BLOCKS", async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   farmEvents(dir, 'some-other-session', process.pid, [START('theirs')])
   beacon(dir, 'es-mine')
@@ -543,9 +518,8 @@ test("ANOTHER session's live run does not count: it BLOCKS", async () => {
 }, 30000)
 
 test('HEADLESS (entrypoint sdk-cli) with a live owned run: no watcher, so it BLOCKS', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   farmEvents(dir, 'es-headless', process.pid, [START('alpha')])
   const r = runHook(interactiveEnv(dir, port, { CLAUDE_CODE_ENTRYPOINT: 'sdk-cli' }), stopPayload('es-headless', transcript))
@@ -554,9 +528,8 @@ test('HEADLESS (entrypoint sdk-cli) with a live owned run: no watcher, so it BLO
 }, 30000)
 
 test('a STALE beacon (the watcher stopped ticking) leaves the judge in charge: it BLOCKS', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   farmEvents(dir, 'es-stale', process.pid, [START('alpha')])
   beacon(dir, 'es-stale', 61)
@@ -570,9 +543,8 @@ test('a STALE beacon (the watcher stopped ticking) leaves the judge in charge: i
 // switch off and loaded no mod: no watcher, so nothing would wake it. The lines are its event files
 // 2692394/2692410/2693151 verbatim, with the run dir moved into the fixture and t= made recent.
 test('secreg e3b75752: live owned runs on 2.1.287 but NO beacon (mods never loaded): it BLOCKS', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   const R = join(dir, 'craft', '1002-notes-18-repair-b')
   const t = Math.floor(Date.now() / 1000) - 120
@@ -886,9 +858,8 @@ test('afk hold, no wake left: the no-wake block sends questions to the morning r
 }, 30000)
 
 test('afk hold, judged early stop: the afk BLOCK_REASON variant', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   // A live heartbeat, so the no-wake leg stays quiet and the judge is asked.
   const { dir, transcript } = mandateSession([cronCreate('bbbb2222', '2026-10-07T01:01:00.000Z')])
   afkHoldFile(dir, 'afk-judged')
@@ -901,9 +872,8 @@ test('afk hold, judged early stop: the afk BLOCK_REASON variant', async () => {
 }, 30000)
 
 test('an afk hold past its ceiling, or with a check, still stands this hook down', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const past = fixture()
   afkHoldFile(past.dir, 'afk-past', { startedAt: Math.floor(Date.now() / 1000) - 7200, ceilingMinutes: 60 })
   const rPast = runHook(childEnv(past.dir, decisionsAt(port)), stopPayload('afk-past', past.transcript))
@@ -940,9 +910,8 @@ function borrowedHold(dir: string, sid: string) {
 }
 
 test('(c) a non-afk hold on top with an afk hold queued: this hook stands down, and the queued mandate is recognised', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = mandateSession([cronCreate('cccc3333', '2026-10-07T01:01:00.000Z')])
   let run = ''
   let r: ReturnType<typeof runHook>
@@ -969,9 +938,8 @@ test('(c) a non-afk hold on top with an afk hold queued: this hook stands down, 
 }, 60000)
 
 test('(d) after the borrowed hold releases, the promoted afk hold makes this hook use AFK_BLOCK_REASON', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = mandateSession([cronCreate('dddd4444', '2026-10-07T01:01:00.000Z')])
   let r: ReturnType<typeof runHook>
   try {
@@ -1625,9 +1593,8 @@ const feedback = (path: string, n: number) =>
   appendFileSync(path, JSON.stringify({ type: 'user', uuid: `meta-${n}`, isMeta: true, message: { content: 'Stop hook feedback:\nkeep going' } }) + '\n')
 
 test('reblock: an armed hold with a check, stop_hook_active true — this hook EVALUATES the stop instead of standing down', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   goalHoldFile(dir, 'rb-a', { check: 'bun test' })
   const env = childEnv(dir, decisionsAt(port))
@@ -1656,9 +1623,8 @@ test('reblock: the hold goal is the mandate, so the no-wake leg runs on a check-
 }, 30000)
 
 test('reblock: a hold block followed by this hook\'s blocks is capped per turn — the third stop is allowed', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = fixture()
   goalHoldFile(dir, 'rb-c', { check: 'exit 1' })
   const env = childEnv(dir, decisionsAt(port))
@@ -1692,9 +1658,8 @@ test('reblock: under an afk-silent hold stop_hook_active changes nothing — the
 }, 30000)
 
 test('reblock: with a live heartbeat the no-wake leg is quiet and the JUDGE blocks the stop', async () => {
-  const port = freePort()
-  const srv = stubDecisions(port, 0.99)
-  await settle()
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
   const { dir, transcript } = mandateSession([cronCreate('eeee5555', '2026-10-07T01:01:00.000Z')])
   goalHoldFile(dir, 'rb-e', { check: 'exit 1' })
   const r = runHook(childEnv(dir, decisionsAt(port)), reblock(stopPayload('rb-e', transcript)))

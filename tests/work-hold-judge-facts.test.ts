@@ -5,7 +5,7 @@ import { spawnSync } from 'node:child_process'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { failingLegs, runFacts, runRounds, redispatchBlocked, lastLedgerEntry } from '../hooks/work-hold'
 import { useTmp } from './helpers/tmp.ts'
-import { freePort } from './helpers/free-port.ts'
+import { startPyStub } from './helpers/stub-server.ts'
 
 const mkTmp = useTmp()
 setDefaultTimeout(150_000)
@@ -60,7 +60,7 @@ function landedRun(dir: string, res: object, o: { rounds?: number; amended?: boo
 }
 
 /** A Decisions stub that records each request body and answers `noul`. Out of process. */
-function stubJev(port: number, noul: number, log: string) {
+function stubJev(noul: number, log: string) {
   const code = `
 import json, http.server, socketserver
 class H(http.server.BaseHTTPRequestHandler):
@@ -71,10 +71,8 @@ class H(http.server.BaseHTTPRequestHandler):
         self.send_response(200); self.send_header("content-type","application/json")
         self.send_header("content-length", str(len(b))); self.end_headers(); self.wfile.write(b)
     def log_message(self, *a): pass
-socketserver.TCPServer.allow_reuse_address = True
-socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
 `
-  return Bun.spawn(['python3', '-c', code], { stdout: 'ignore', stderr: 'ignore' })
+  return startPyStub(code)
 }
 
 /** One Stop through the real hook, with a check-less hold on `run`, judged by the stub on `port`. */
@@ -126,9 +124,8 @@ describe('item 20: the judge reads the facts the goal names, not only overallPas
     const dir = mkTmp('judgefacts-')
     const run = landedRun(dir, result(['hierarchy (exit 1)']))
     const log = join(dir, 'jev.log')
-    const port = freePort()
-    const srv = stubJev(port, 0.9, log)
-    await Bun.sleep(700)
+    const srv = await stubJev(0.9, log)
+    const port = srv.port
     const r = stop(dir, 'facts-met', { run }, port)
     srv.kill()
     const [body] = sent(log)
@@ -149,9 +146,8 @@ describe('item 20: the judge reads the facts the goal names, not only overallPas
     const dir = mkTmp('judgefacts-')
     const run = landedRun(dir, result(['alignment (exit 1)', 'hierarchy (exit 1)']))
     const log = join(dir, 'jev.log')
-    const port = freePort()
-    const srv = stubJev(port, 0.1, log)
-    await Bun.sleep(700)
+    const srv = await stubJev(0.1, log)
+    const port = srv.port
     const r = stop(dir, 'facts-unmet', { run }, port)
     srv.kill()
     expect(sent(log)[0].state).toContain('alignment (exit 1), hierarchy (exit 1)')
@@ -163,9 +159,8 @@ describe('a hold that watches NO run keeps the transcript judge and its two-clau
   test('state is the transcript, question is "met AND no obvious open work"', async () => {
     const dir = mkTmp('judgefacts-')
     const log = join(dir, 'jev.log')
-    const port = freePort()
-    const srv = stubJev(port, 0.1, log)
-    await Bun.sleep(700)
+    const srv = await stubJev(0.1, log)
+    const port = srv.port
     stop(dir, 'no-run', {}, port)
     srv.kill()
     const [body] = sent(log)
@@ -179,9 +174,8 @@ describe('item 20b: no redispatch advice when the redispatch is refused at Tier 
   test('plan-routed items under an unchanged spec hash: the block says what blocks, not "redispatch"', async () => {
     const dir = mkTmp('judgetier1-')
     const run = landedRun(dir, result(['alignment (exit 1)']))
-    const port = freePort()
-    const srv = stubJev(port, 0.1, join(dir, 'jev.log'))
-    await Bun.sleep(700)
+    const srv = await stubJev(0.1, join(dir, 'jev.log'))
+    const port = srv.port
     const r = stop(dir, 'tier1', { run, authority: 'A.', continuation: 'C.' }, port)
     srv.kill()
     const reason = JSON.parse(r.stdout).reason
@@ -226,9 +220,8 @@ describe('item 21: a round is a DISPATCH, not a Stop', () => {
   test('two UNMET Stops with no dispatch between them leave the round count where args.json has it', async () => {
     const dir = mkTmp('judgerounds-')
     const run = landedRun(dir, result(['alignment (exit 1)']), { amended: true })
-    const port = freePort()
-    const srv = stubJev(port, 0.1, join(dir, 'jev.log'))
-    await Bun.sleep(700)
+    const srv = await stubJev(0.1, join(dir, 'jev.log'))
+    const port = srv.port
     const a = stop(dir, 'rounds', { run }, port)
     const b = stop(dir, 'rounds', {}, port)
     // a redispatch actually ran: the run's own counter advances, and so does the hold's
@@ -248,9 +241,8 @@ describe('item 21: a round is a DISPATCH, not a Stop', () => {
   test('six Stops do not expire a hold whose run dispatched one round', async () => {
     const dir = mkTmp('judgerounds-')
     const run = landedRun(dir, result(['alignment (exit 1)']), { amended: true })
-    const port = freePort()
-    const srv = stubJev(port, 0.1, join(dir, 'jev.log'))
-    await Bun.sleep(700)
+    const srv = await stubJev(0.1, join(dir, 'jev.log'))
+    const port = srv.port
     let last = stop(dir, 'drain', { run }, port)
     for (let i = 0; i < 6; i++) last = stop(dir, 'drain', {}, port)
     srv.kill()
@@ -272,9 +264,8 @@ describe('item 21: a round is a DISPATCH, not a Stop', () => {
   test('the round ceiling still binds on dispatched rounds', async () => {
     const dir = mkTmp('judgerounds-')
     const run = landedRun(dir, result(['alignment (exit 1)']), { rounds: 6, amended: true })
-    const port = freePort()
-    const srv = stubJev(port, 0.1, join(dir, 'jev.log'))
-    await Bun.sleep(700)
+    const srv = await stubJev(0.1, join(dir, 'jev.log'))
+    const port = srv.port
     const r = stop(dir, 'capped', { run }, port)
     srv.kill()
     expect(lastLedgerEntry(join(dir, 'work-hold-capped.releases.log'))?.verb).toBe('expired')
@@ -312,9 +303,8 @@ describe('a check-less, run-less afk hold is never judged: the ceiling clock is 
     const dir = mkTmp('judgefacts-')
     const log = join(dir, 'jev.log')
     writeFileSync(log, '')
-    const port = freePort()
-    const srv = stubJev(port, 0.1, log)
-    await Bun.sleep(700)
+    const srv = await stubJev(0.1, log)
+    const port = srv.port
     const r = stop(dir, 'afk-quiet', { origin: 'afk' }, port)
     srv.kill()
     expect(r.status).toBe(0)
@@ -327,9 +317,8 @@ describe('a check-less, run-less afk hold is never judged: the ceiling clock is 
     const dir = mkTmp('judgefacts-')
     const log = join(dir, 'jev.log')
     writeFileSync(log, '')
-    const port = freePort()
-    const srv = stubJev(port, 0.1, log)
-    await Bun.sleep(700)
+    const srv = await stubJev(0.1, log)
+    const port = srv.port
     const r = stop(dir, 'afk-done', { origin: 'overnight', startedAt: Math.floor(Date.now() / 1000) - 3600, ceilingMinutes: 30 }, port)
     srv.kill()
     expect(r.stdout).toBe('')

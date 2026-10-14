@@ -3,7 +3,7 @@ import { mkdtempSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { useTmp } from "./helpers/tmp.ts";
-import { freePort } from "./helpers/free-port.ts";
+import { startPyStub } from "./helpers/stub-server.ts";
 
 setDefaultTimeout(120_000)
 
@@ -19,7 +19,7 @@ const mkTmp = useTmp();
  * the very event loop that would serve the request — the hook then times out against a server
  * sitting in the same process that is waiting for the hook.
  */
-function stubJudge(port: number, met: boolean, why: string) {
+function stubJudge(met: boolean, why: string) {
   const code = `
 import json, http.server, socketserver
 class H(http.server.BaseHTTPRequestHandler):
@@ -28,10 +28,8 @@ class H(http.server.BaseHTTPRequestHandler):
         self.send_response(200); self.send_header("content-type","application/json")
         self.send_header("content-length", str(len(b))); self.end_headers(); self.wfile.write(b)
     def log_message(self, *a): pass
-socketserver.TCPServer.allow_reuse_address = True
-socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
 `;
-  return Bun.spawn(["python3", "-c", code], { stdout: "ignore", stderr: "ignore" });
+  return startPyStub(code);
 }
 
 function runHook(env: Record<string, string>, payload: unknown) {
@@ -67,12 +65,10 @@ function fixture(session: string, goal: string, extra: Record<string, unknown> =
   return { dir, transcript };
 }
 
-const settle = () => Bun.sleep(700);
 
 test("a GREEN check with an UNMET goal blocks, carrying goal, evidence and continuation", async () => {
-  const port = freePort();
-  const srv = stubJudge(port, false, "two suites still red");
-  await settle();
+  const srv = await stubJudge(false, "two suites still red");
+  const port = srv.port;
   const { dir, transcript } = fixture("it-unmet", "every suite in the repo is green", {
     authority: "You may commit without asking.",
     continuation: "Report at the ceiling, not at the first stopping point.",
@@ -89,9 +85,8 @@ test("a GREEN check with an UNMET goal blocks, carrying goal, evidence and conti
 }, 120_000);
 
 test("a GREEN check with a MET goal releases the hold", async () => {
-  const port = freePort();
-  const srv = stubJudge(port, true, "all green");
-  await settle();
+  const srv = await stubJudge(true, "all green");
+  const port = srv.port;
   const { dir, transcript } = fixture("it-met", "every suite is green");
   const r = runHook(
     { TMPDIR: dir, WORK_HOLD_JUDGE_URL: `http://127.0.0.1:${port}/v1/chat/completions` },
@@ -115,7 +110,7 @@ test("an UNREACHABLE judge releases rather than trapping the session", async () 
 }, 120_000);
 
 /** The Decisions API's shape: one typed question in, a calibrated probability out. */
-function stubDecisions(port: number, noul: number) {
+function stubDecisions(noul: number) {
   const code = `
 import json, http.server, socketserver
 class H(http.server.BaseHTTPRequestHandler):
@@ -124,16 +119,13 @@ class H(http.server.BaseHTTPRequestHandler):
         self.send_response(200); self.send_header("content-type","application/json")
         self.send_header("content-length", str(len(b))); self.end_headers(); self.wfile.write(b)
     def log_message(self, *a): pass
-socketserver.TCPServer.allow_reuse_address = True
-socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
 `;
-  return Bun.spawn(["python3", "-c", code], { stdout: "ignore", stderr: "ignore" });
+  return startPyStub(code);
 }
 
 test("Jev below the threshold blocks, and reports the probability it gave", async () => {
-  const port = freePort();
-  const srv = stubDecisions(port, 0.21);
-  await settle();
+  const srv = await stubDecisions(0.21);
+  const port = srv.port;
   const { dir, transcript } = fixture("it-jev-low", "every suite is green");
   const r = runHook(
     {
@@ -152,9 +144,8 @@ test("Jev below the threshold blocks, and reports the probability it gave", asyn
 }, 120_000);
 
 test("Jev above the threshold releases the hold", async () => {
-  const port = freePort();
-  const srv = stubDecisions(port, 0.93);
-  await settle();
+  const srv = await stubDecisions(0.93);
+  const port = srv.port;
   const { dir, transcript } = fixture("it-jev-high", "every suite is green");
   const r = runHook(
     {
@@ -180,7 +171,7 @@ test("Jev above the threshold releases the hold", async () => {
  * `state`, so block-vs-release is direct evidence the summary travelled from the transcript file
  * into the judge's request.
  */
-function stubDecisionsEchoing(port: number, marker: string) {
+function stubDecisionsEchoing(marker: string) {
   const code = `
 import json, http.server, socketserver
 class H(http.server.BaseHTTPRequestHandler):
@@ -192,10 +183,8 @@ class H(http.server.BaseHTTPRequestHandler):
         self.send_response(200); self.send_header("content-type","application/json")
         self.send_header("content-length", str(len(b))); self.end_headers(); self.wfile.write(b)
     def log_message(self, *a): pass
-socketserver.TCPServer.allow_reuse_address = True
-socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
 `;
-  return Bun.spawn(["python3", "-c", code], { stdout: "ignore", stderr: "ignore" });
+  return startPyStub(code);
 }
 
 /** A transcript whose compaction boundary sits far further back than any fixed tail window. */
@@ -214,10 +203,9 @@ function compactedTranscript(dir: string, marker: string | null) {
 }
 
 test("the compaction summary REACHES the judge — a marker only in it flips the verdict", async () => {
-  const port = freePort();
-  const marker = "MARKER-ONLY-IN-THE-COMPACTION-SUMMARY";
-  const srv = stubDecisionsEchoing(port, marker);
-  await settle();
+    const marker = "MARKER-ONLY-IN-THE-COMPACTION-SUMMARY";
+  const srv = await stubDecisionsEchoing(marker);
+  const port = srv.port;
   const env = (dir: string) => ({
     TMPDIR: dir,
     WORK_HOLD_JUDGE_TOKEN: "test-token",
@@ -244,10 +232,9 @@ test("the compaction summary REACHES the judge — a marker only in it flips the
 }, 240_000);
 
 test("the round record travels to the judge too", async () => {
-  const port = freePort();
-  const marker = "judge UNMET: the fixture is still stubbed";
-  const srv = stubDecisionsEchoing(port, marker);
-  await settle();
+    const marker = "judge UNMET: the fixture is still stubbed";
+  const srv = await stubDecisionsEchoing(marker);
+  const port = srv.port;
   const { dir, transcript } = fixture("it-hist", "every suite is green", {
     history: [{ round: 1, at: 1_700_000_000, exit: 1 },
                { round: 2, at: 1_700_003_600, exit: 0, note: marker }],
