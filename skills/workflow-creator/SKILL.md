@@ -215,10 +215,11 @@ The charter's frontmatter must say `workflow: authoring`: the fence's `ruleCheck
 const auditDir = /* absolute path of the workflow under audit */
 const agentFile = /* absolute path of its agent .md, or null if it ships none — see Phase 4 */
 const projectDir = /* the repo that contains auditDir — see Phase 4 */
+const planPath = /* the charter's path */
 
 // The args object. Written to the args file as plain JSON — no comments; the annotations are here.
 const args = {
-  projectDir, planPath: "<the charter's path>",   // specHash is injected by work-dispatch.sh from the plan, never written here
+  projectDir, planPath,   // specHash is injected by work-dispatch.sh from the plan, never written here
   goal: "<one sentence — phrase it as a verdict returned, never as PASS>",
 
   readOnly: true,
@@ -235,7 +236,7 @@ const args = {
   // The authoring judgement rules (checks/authoring/rules/), scored by Jev over the changed lines;
   // each is wired only after rule-calibrate passed it. On an unchanged tree there are no changed
   // lines, so this scores nothing: check.sh prints `authoring-lint: NOT CHECKED` for the same reason.
-  ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir <projectDir> --plan <planPath>" },
+  ruleChecks: { name: "jev-authoring-rules", cmd: `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir ${projectDir} --plan ${planPath}` },
 
   // The Phase 4 lens verbatim, minus scope fidelity. Omitting `lens` selects work's generic default,
   // not this domain checklist. Keep shared prompt items and refs in sync across both fences.
@@ -372,10 +373,11 @@ const agentFile = /* absolute path of the agent .md, or null if the workflow shi
 // "Work only there", so when CLARIFY axis 2 puts the generated skill in a DIFFERENT repo from the
 // session, this is the tree that holds the artifact — not necessarily the session's cwd.
 const projectDir = /* the repo that contains genDir */
+const planPath = /* the path $PLAN resolved to in Phase 2 */
 
 // The args object. Written to the args file as plain JSON — no comments; the annotations are here.
 const args = {
-  projectDir, planPath: "<the path $PLAN resolved to in Phase 2>",   // specHash is injected by work-dispatch.sh, never written here
+  projectDir, planPath,   // specHash is injected by work-dispatch.sh, never written here
   goal: "<one sentence>",
 
   tasks: [ /* the plan's table verbatim: {id, name, work, writablePaths, acceptance, refs} */ ],
@@ -395,7 +397,7 @@ const args = {
   // The authoring judgement rules (checks/authoring/rules/), scored by Jev over the changed lines;
   // each is wired only after rule-calibrate passed it. On an unchanged tree there are no changed
   // lines, so this scores nothing: check.sh prints `authoring-lint: NOT CHECKED` for the same reason.
-  ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir <projectDir> --plan <planPath>" },
+  ruleChecks: { name: "jev-authoring-rules", cmd: `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir ${projectDir} --plan ${planPath}` },
 
   // One lens after verification and mechanical checks: gate integrity, spine fidelity and scope.
   // Audit-only uses the same checklist minus scope, which has no changes to judge.
@@ -527,8 +529,8 @@ Every `.md` a workflow carries is one or the other, and which one decides everyt
 | reaches an agent by | the index skill named in that agent's `skills:` | `refs`, or a Read at the phase that needs it |
 
 The frontmatter is how a constraint DECLARES itself, not what makes it one — and the declaration
-tracks the type exactly: measured 2026-09-14, 219 files across 37 skills split 200/19, the 19
-carrying frontmatter being precisely the 19 without a `# Heading` first line.
+tracks the type exactly: the files carrying frontmatter are precisely those without a `# Heading`
+first line.
 
 **Location follows from the type for a constraint, and from consumers for a reference.**
 
@@ -540,11 +542,11 @@ a REFERENCE (knowledge a grader reads) or a SKILL (a procedure), and goes where 
 
 A REFERENCE goes where its consumers are. One domain → beside its skill, in `<skill>/references/`.
 Several → the plugin root's `references/`, because the alternative is a copy per consumer, which is
-the vendoring defect. Measured 2026-09-14: 5 of the 10 files at this plugin's root are read by two
-or more skills and belong there; the other 5 have exactly one consumer and belong one level down.
+the vendoring defect. A file at the plugin root read by two or more skills belongs there; one with
+exactly one consumer belongs one level down (`grep -l` over `skills/*/SKILL.md` finds the readers).
 
 Measure before moving anything, and beware the half-migrated state: typst carries BOTH
-`constraints/` (29 scripts, correct) and `constraints/` (22 markdown, 14 of which merely
+`checks/<wf>/constraints/` (scripts, correct) and `rules/` (markdown, many of which merely
 restate a script sitting beside them). That duplicate is the debt this rule exists to retire, not a
 second sanctioned location.
 
