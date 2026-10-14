@@ -3,7 +3,7 @@
 #
 #   scope-check.sh --plan PLAN [--project-dir DIR]
 #
-# The changed set is checks/_lib/changed.py's: the tree $WORK_RUN_BASELINE (work-checks.sh exports it to
+# The changed set is checks/_lib/changed.py's changed_paths (deletions and rename sources included): the tree $WORK_RUN_BASELINE (work-checks.sh exports it to
 # mechanical checks) against now, else the working tree against HEAD plus untracked files. Containment is
 # work-dispatch.sh --covers / --scaffold, so this leg and the dispatch guard cannot disagree. `.planning/`
 # and the plan file itself are the run's own bookkeeping, not scope.
@@ -28,7 +28,7 @@ CHANGED="$(CHECKS_LIB="$HERE/../../../checks/_lib" python3 -I - "$PROJ" <<'PY'
 import os, sys
 sys.path.insert(0, os.environ['CHECKS_LIB'])
 import changed
-names = changed.changed_files(sys.argv[1])
+names = changed.changed_paths(sys.argv[1])
 if names is None:
     sys.exit(2)
 print('\n'.join(names))
@@ -36,20 +36,20 @@ PY
 )" || { echo "scope-check: cannot compute the changed-file set in $PROJ (not a git tree, or the baseline is unreadable)" >&2; exit 2; }
 
 N=0; STRAY=()
+LIST=()
 while IFS= read -r rel; do
   [ -n "$rel" ] || continue
-  abs="$PROJ/$rel"
   case "$rel" in .planning/*) continue ;; esac
-  [ "$abs" = "$PLAN" ] && continue
-  N=$((N + 1))
-  bash "$HERE/work-dispatch.sh" --covers "$PLAN" "$abs"; c=$?
-  [ "$c" -eq 0 ] && continue
-  [ "$c" -eq 2 ] && { echo "scope-check: $PLAN has no readable work:dispatch block or no writablePaths — scope is undecidable" >&2; exit 2; }
-  bash "$HERE/work-dispatch.sh" --scaffold "$PLAN" "$abs"; s=$?
-  [ "$s" -eq 0 ] && continue
-  [ "$s" -eq 2 ] && { echo "scope-check: $PLAN scaffoldPaths unreadable" >&2; exit 2; }
-  STRAY+=("$rel")
+  [ "$PROJ/$rel" = "$PLAN" ] && continue
+  LIST+=("$rel")
 done <<< "$CHANGED"
+N=${#LIST[@]}
+if [ "$N" -gt 0 ]; then
+  # one process decides every path: work-dispatch.sh --stray prints the paths no task covers or scaffolds
+  OUT="$(printf '%s\0' "${LIST[@]/#/$PROJ/}" | bash "$HERE/work-dispatch.sh" --stray "$PLAN")"; c=$?
+  [ "$c" -eq 2 ] && { echo "scope-check: $PLAN has no readable work:dispatch block or no writablePaths — scope is undecidable" >&2; exit 2; }
+  while IFS= read -r abs; do [ -n "$abs" ] && STRAY+=("${abs#"$PROJ"/}"); done <<< "$OUT"
+fi
 
 if [ "$N" -eq 0 ]; then
   count_line scope 0 "path(s)" "— nothing in scope (no file changed this run)"

@@ -79,3 +79,55 @@ test("WORK_RUN_BASELINE scopes to this run: an edit already in the tree at dispa
     expect(r2.out).not.toContain("prior-wip");
   } finally { rmSync(f.d, { recursive: true, force: true }); }
 });
+
+// Deletions and rename sources are changes too: under a baseline they used to vanish from the changed set.
+function baselined(setup: Record<string, string>) {
+  const f = fixture({ tasks: [{ id: "T1", writablePaths: ["src", "lib"], refs: [] }] }, setup);
+  const git = (...a: string[]) => spawnSync("git", ["-C", f.d, ...a], { encoding: "utf8", timeout: 30_000 });
+  git("add", "-A"); git("commit", "-qm", "files");
+  const snap = spawnSync("bash", [join(import.meta.dir, "tree-snapshot.sh"), f.d], { encoding: "utf8", timeout: 30_000 }).stdout.trim();
+  return { ...f, snap, git };
+}
+
+test("under a baseline an out-of-scope deletion exits 1 and names the path", () => {
+  const f = baselined({ "other/important.ts": "export {}\n" });
+  try {
+    rmSync(join(f.d, "other/important.ts"));
+    const r = run(f.d, f.plan, { WORK_RUN_BASELINE: f.snap });
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("other/important.ts");
+  } finally { rmSync(f.d, { recursive: true, force: true }); }
+});
+
+test("under a baseline an out-of-scope rename source exits 1 and names the old path", () => {
+  const f = baselined({ "other/old.ts": "export const keep = 'a long enough body to be a rename'\n" });
+  try {
+    f.git("mv", "other/old.ts", "src/new.ts");
+    const r = run(f.d, f.plan, { WORK_RUN_BASELINE: f.snap });
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("other/old.ts");
+  } finally { rmSync(f.d, { recursive: true, force: true }); }
+});
+
+test("under a baseline an in-scope deletion exits 0 and is counted", () => {
+  const f = baselined({ "src/gone.ts": "export {}\n" });
+  try {
+    rmSync(join(f.d, "src/gone.ts"));
+    const r = run(f.d, f.plan, { WORK_RUN_BASELINE: f.snap });
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("scope: 1 path(s) examined");
+  } finally { rmSync(f.d, { recursive: true, force: true }); }
+});
+
+test("scope examines 200 changed paths in one containment process", () => {
+  const edits: Record<string, string> = {};
+  for (let i = 0; i < 200; i++) edits[`src/gen/f${i}.ts`] = `export const n = ${i}\n`;
+  const f = fixture({ tasks: [{ id: "T1", writablePaths: ["src"], refs: [] }] }, edits);
+  try {
+    const t = Date.now();
+    const r = run(f.d, f.plan);
+    console.log(`scope 200 paths: ${Date.now() - t} ms`);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("scope: 200 path(s) examined");
+  } finally { rmSync(f.d, { recursive: true, force: true }); }
+});

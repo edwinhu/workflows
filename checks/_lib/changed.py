@@ -35,18 +35,29 @@ def _since_tree(root, since):
     return (b, now) if now else None
 
 
-def changed_files(project, since=None):
-    """Paths relative to `project` of the changed and untracked files under it, or None when it is no git tree."""
+def _changed(project, since, scope):
     top = _git(project, 'rev-parse', '--show-toplevel')
     if top.returncode != 0:
         return None
     tr = _since_tree(project, since)
+    # scope lists deletions and both sides of a rename; the added-lines callers want only files that still exist.
+    flt = ['--no-renames'] if scope else ['--diff-filter=d']
     if tr:
-        r = _git(project, 'diff', '--name-only', '--relative', '--diff-filter=d', tr[0], tr[1], '--', '.')
+        r = _git(project, 'diff', '--name-only', '--relative', *flt, tr[0], tr[1], '--', '.')
         return [n for n in r.stdout.split('\n') if n]
-    names = _git(project, 'diff', '--name-only', '--relative', 'HEAD', '--', '.').stdout.split('\n') + \
+    names = _git(project, 'diff', '--name-only', '--relative', *flt, 'HEAD', '--', '.').stdout.split('\n') + \
         _git(project, 'ls-files', '--others', '--exclude-standard').stdout.split('\n')
     return [n for n in names if n]
+
+
+def changed_files(project, since=None):
+    """Paths relative to `project` of the changed and untracked files under it, or None when it is no git tree."""
+    return _changed(project, since, False)
+
+
+def changed_paths(project, since=None):
+    """changed_files plus deleted paths and the old side of renames: what a scope check must see."""
+    return _changed(project, since, True)
 
 
 def added_lines(root, wanted=None, since=None):
