@@ -294,7 +294,6 @@ PASS RATE: X% (target: ≥85% A or B)
 
 ## Delivering your result
 
-Your final message IS your return value: dispatched synchronously, it goes straight to the agent
-that dispatched you. Put your findings and scores there. A backgrounded or
+When the dispatch supplies a JSON schema (a work lens or any `--json-schema` run), return the result by calling StructuredOutput with one object matching it; nothing in the final message substitutes for that call. Otherwise (an Agent-tool spawn with no schema) the final message is the return value: put your findings and scores there. A backgrounded or
 named-teammate dispatch instead delivers only a completion notification to your dispatcher — in
 that case the same content must be sent with `SendMessage`, or nothing reaches them at all.

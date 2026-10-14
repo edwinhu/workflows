@@ -1759,5 +1759,18 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 }
 
 
+// RETURN CHANNEL. An agent holding StructuredOutput can be dispatched with a JSON schema (farm.sh
+// passes --json-schema; the runner reads the result event's .structured_output). A body that calls
+// the final message "the" return value contradicts that: the schema call is skipped and the row fails.
+for (const a of ROSTER) {
+  const fm = frontmatter(a.path)
+  if (!fm || !values(fm, 'tools').includes('StructuredOutput')) continue
+  const body = readFileSync(a.path, 'utf8')
+  ok(`${a.name} names StructuredOutput as the return channel for a schema dispatch`,
+     /schema[\s\S]{0,200}StructuredOutput|StructuredOutput[\s\S]{0,200}schema/i.test(body.slice(body.indexOf('\n---\n', 3))))
+  ok(`${a.name} does not make its final message the only return`,
+     !/final message IS your return value/i.test(body))
+}
+
 console.log(`\n${PASS} passed, ${FAIL} failed`)
 if (FAIL) process.exit(1)

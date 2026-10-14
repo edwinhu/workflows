@@ -103,5 +103,4 @@ names none is not a review.
 
 ## Delivering your result
 
-Your final message IS your return value: dispatched synchronously, it goes straight to the agent
-that dispatched you. Put your findings there.
+When the dispatch supplies a JSON schema (a work lens or any `--json-schema` run), return the result by calling StructuredOutput with one object matching it; nothing in the final message substitutes for that call. Otherwise (an Agent-tool spawn with no schema) the final message is the return value: put your findings there.
