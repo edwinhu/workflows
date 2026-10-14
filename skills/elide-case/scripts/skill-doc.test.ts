@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test"
-import { readFileSync } from "node:fs"
+import { readFileSync, existsSync } from "node:fs"
 import { join } from "node:path"
 
 const root = join(import.meta.dir, "..")
@@ -29,4 +29,41 @@ test("context-loaded files carry no dated incident narrative", () => {
   for (const f of ["SKILL.md", "references/retrieval.md", "references/editing-marks.md"]) {
     expect(read(f)).not.toMatch(/\b20\d\d-\d\d-\d\d\b/)
   }
+})
+
+const plugin = join(root, "..", "..")
+const SCRIPT_TOKEN = /[~\w${}/.-]*\bscripts\/[\w.-]+\.(?:sh|py|ts)\b/g
+
+test("every script path in SKILL.md and the references resolves from any cwd", () => {
+  for (const f of ["SKILL.md", "references/retrieval.md", "references/verification.md", "references/authenticity.md", "references/editing-marks.md"]) {
+    for (const m of read(f).matchAll(SCRIPT_TOKEN)) {
+      const tok = m[0]
+      if (!tok.startsWith("${CLAUDE_PLUGIN_ROOT}/") && !tok.startsWith("/") && !tok.startsWith("~/")) throw new Error(`${f}: relative script path ${tok}`)
+      const abs = tok.replace("${CLAUDE_PLUGIN_ROOT}", plugin).replace("~/.claude/skills/workflows", plugin)
+      expect(existsSync(abs), `${f}: ${tok} does not exist`).toBe(true)
+    }
+  }
+})
+
+test("the fallback fetch script is named by absolute path, with no unsubstituted SKILL_DIR in a reference", () => {
+  const abs = "${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/fetch-opinion.sh"
+  expect(read("SKILL.md")).toContain(abs)
+  const r = read("references/retrieval.md")
+  expect(r).not.toContain("${CLAUDE_SKILL_DIR}")
+  expect(r).toContain("${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts")
+})
+
+test("Route 2: the cut acceptance and the fidelity prompt follow the plan's source, not a hard-coded .westlaw.docx", () => {
+  const s = read("SKILL.md")
+  const acc = s.match(/acceptance: "python3 [^\n]*check-quotes\.py[^\n]*"/)![0]
+  expect(acc).not.toContain("<name>.westlaw.docx")
+  expect(acc).toContain("<source>")
+  expect(acc).toContain(".txt")
+  const fid = s.match(/prompt: "Verbatim matching cannot see misrepresentation[^\n]*"/)![0]
+  expect(fid).not.toContain("<name>.westlaw.docx")
+  expect(fid).toContain("<source>")
+  expect(fid).toContain("westlaw-docx-text.py")
+  expect(fid).toMatch(/\.txt[^.]*directly|directly[^.]*\.txt/)
+  const cut = s.match(/work: "ONE READING, CUT ONLY[^\n]*"/)![0]
+  expect(cut).not.toContain("docs/<name>.westlaw.docx")
 })
