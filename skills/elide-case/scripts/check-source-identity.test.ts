@@ -1,10 +1,13 @@
 // The source-identity constraint: the source the caption maps to must contain the caption's own
 // reporter citation, so a stale or mis-picked export cannot verify an excerpt "verbatim".
-import { describe, expect, test } from "bun:test";
+import { describe, expect, setDefaultTimeout, test } from "bun:test";
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { useTmp } from "../../../tests/helpers/tmp.ts";
+
+// Each case spawns python3 for up to 120 s; bun's 5 s default would cut it short.
+setDefaultTimeout(300_000);
 
 const mkTmp = useTmp();
 const REPO = path.join(import.meta.dir, "..", "..", "..");
