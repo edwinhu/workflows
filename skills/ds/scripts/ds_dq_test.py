@@ -294,7 +294,7 @@ def test_check_sh_ds_dq_leg_passes_when_every_output_passes(clean: Path, tmp_pat
     stub = tmp_path / "stub_suite_test.py"
     stub.write_text("def test_ok():\n    pass\n")
     proc = subprocess.run(
-        ["bash", str(CHECK_SH), "--plan", str(plan), "--project-dir", str(tmp_path)],
+        ["bash", str(CHECK_SH), "--plan", str(plan), "--project-dir", str(tmp_path), "--no-test-cmd", "--no-lint-cmd"],
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False,
         env={**os.environ, "DS_DQ_SUITE": str(stub)},
     )
