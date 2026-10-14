@@ -12,7 +12,7 @@ const ALIVE = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'farm-ali
 function dispatch(outPath: string, tmp: string) {
   const bin = join(tmp, 'bin'); mkdirSync(bin, { recursive: true })
   const stub = join(bin, 'claude-code')
-  writeFileSync(stub, `#!/usr/bin/env bash\nsleep 4\nprintf '{"type":"result","result":"ok"}\\n'\n`)
+  writeFileSync(stub, `#!/usr/bin/env bash\nsleep 60\nprintf '{"type":"result","result":"ok"}\\n'\n`)
   chmodSync(stub, 0o755)
   const tasks = join(tmp, 't.json')
   writeFileSync(tasks, JSON.stringify([{ label: 'r', workflow: 'none', prompt: 'p', expect: outPath }]))
@@ -26,8 +26,13 @@ test('farm-alive.sh finds a run that farm.sh actually emitted', async () => {
   const tmp = mkdtempSync(join(tmpdir(), 'roundtrip-'))
   const out = join(tmp, 'result.json')
   const child = dispatch(out, tmp)
-  await new Promise((r) => setTimeout(r, 1500))
-  const status = spawnSync('bash', [ALIVE, out], { timeout: 120_000, encoding: 'utf8', env: { ...process.env, TMPDIR: tmp } }).status
+  // Poll until farm.sh has emitted START (the stub stays alive for the whole window), not sleep-then-hope.
+  let status: number | null = null
+  for (const deadline = Date.now() + 60_000; Date.now() < deadline;) {
+    status = spawnSync('bash', [ALIVE, out], { timeout: 120_000, encoding: 'utf8', env: { ...process.env, TMPDIR: tmp } }).status
+    if (status === 0) break
+    await new Promise((r) => setTimeout(r, 250))
+  }
   try { process.kill(-child.pid!, 'SIGKILL') } catch {}
   rmSync(tmp, { recursive: true, force: true })
   expect(status).toBe(0)
