@@ -5,13 +5,13 @@ Use this script to validate extraction prompt and file access
 before submitting a full batch job.
 
 Usage:
-    python test_single.py <gcs_uri> "<prompt>"
+    python single_request.py <gcs_uri> "<prompt>"
 
     # Cloud GCS smoke test, using ADC and the same model as the batch
-    GOOGLE_CLOUD_PROJECT=my-project python test_single.py gs://bucket/doc.pdf "Extract the title"
+    GOOGLE_CLOUD_PROJECT=my-project python single_request.py gs://bucket/doc.pdf "Extract the title"
 
 Example:
-    python test_single.py gs://my-bucket/documents/sample.pdf "Extract as JSON: {title, date, summary}"
+    python single_request.py gs://my-bucket/documents/sample.pdf "Extract as JSON: {title, date, summary}"
 """
 
 import os
