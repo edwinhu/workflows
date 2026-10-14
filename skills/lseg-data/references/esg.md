@@ -403,5 +403,5 @@ LSEG has updated ESG methodology over time. Historical comparisons should note:
 
 - [SKILL.md](../SKILL.md) - Core API patterns
 - [fundamentals.md](fundamentals.md) - Financial fundamentals
-- [WRDS_COMPARISON.md](../WRDS_COMPARISON.md) - MSCI ESG comparison
-- [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) - Common issues
+- [WRDS_COMPARISON.md](wrds-comparison.md) - MSCI ESG comparison
+- [TROUBLESHOOTING.md](troubleshooting.md) - Common issues
