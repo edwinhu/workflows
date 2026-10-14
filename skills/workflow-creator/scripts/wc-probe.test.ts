@@ -276,10 +276,14 @@ describe('D2 — fenced-block extraction in Markdown', () => {
     const file = join(fixture({ 'SKILL.md': skillMd('fenced', body) }), 'SKILL.md')
     const skips: any[] = []
     const p7 = probe.checkRefsDeclaration(file, probe.maskNonFenced(read(file)), dirname(file), [], undefined, skips)
-    expect(p7.map((f: any) => f.detail).join('\n')).not.toContain('t1')
-    expect(p7.some((f: any) => f.detail.includes('t2') && f.detail.includes('does not exist'))).toBe(true)
-    expect(skips.map((s: any) => s.token)).toEqual(['{{COURSE}}/{{L1_DECK}}', '{{SOURCE}}'])
-    expect(skips[0].reason).toContain('{{COURSE}}')
+    // The state the assertions read, in the failure text: this test once failed under load and
+    // passed on re-run, and a bare toBe(false) records nothing about which half went wrong.
+    const state = JSON.stringify({ file, p7: p7.map((f: any) => f.detail), skips }, null, 1)
+    const check = (ok: boolean, what: string) => { if (!ok) throw new Error(`${what}\n${state}`) }
+    check(!p7.map((f: any) => f.detail).join('\n').includes('t1'), 't1 ({{NAME}} refs) must not be reported')
+    check(p7.some((f: any) => f.detail.includes('t2') && f.detail.includes('does not exist')), 't2 missing ref must be reported')
+    check(JSON.stringify(skips.map((s: any) => s.token)) === JSON.stringify(['{{COURSE}}/{{L1_DECK}}', '{{SOURCE}}']), 'skips must be the two {{NAME}} refs')
+    check(String(skips[0]?.reason).includes('{{COURSE}}'), 'first skip reason must name {{COURSE}}')
   })
 
   test('P7 refuses an attempt with no refs key', () => {
