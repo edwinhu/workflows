@@ -352,7 +352,7 @@ This is the preferred path — NLM handles Drive authentication and ingestion na
 
 **Preferred: Batch script (by tag)**
 ```bash
-uv run python3 /Users/vwh7mb/projects/workflows/skills/readwise/scripts/readwise_to_nlm.py \
+uv run python3 ~/projects/workflows/skills/readwise/scripts/readwise_to_nlm.py \
   --tag "private markets" --tag "disclosure" \
   --notebook <notebook-id>
 ```
@@ -449,7 +449,7 @@ Search academic literature via the `scholar` CLI (on PATH via `~/.local/bin/scho
 
 ```bash
 # ALWAYS read this first
-cat ${CLAUDE_PLUGIN_ROOT}/references/trusted-journals.local.md
+cat ~/.claude/skills/workflows/references/trusted-journals.local.md
 ```
 
 This contains the user's curated list of trusted journals and authors. Use it to:
@@ -554,7 +554,7 @@ Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 2. Search Consensus for academic literature (Scholar for targeted lookups)
 3. If gaps still exist AND user requests broader research:
    - Load the deep-research skill: `Skill(skill="workflows:deep-research")`
-   - Run: `cd ${CLAUDE_PLUGIN_ROOT}/skills/deep-research && bun deep-research.ts "query"`
+   - Run: `cd ~/.claude/skills/workflows/skills/deep-research && bun deep-research.ts "query"`
    - For faster results: `bun deep-research.ts --fast "query"`
 4. Add deep research findings to NLM for future semantic Q&A
 
@@ -564,7 +564,7 @@ Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 2. **Academic path: Paperpile → bib → Consensus → Scholar** - For papers, start with the user's library and discovery tools, not NLM/Readwise
 3. **Web path: NLM → Readwise** - For articles/blogs/news, start with curated knowledge bases
 4. **Readwise via CLI** - Use `readwise` (official) for most operations, `readwise-custom` for chat/prune/upload/keyword-search
-5. **Search with the trusted-journal list** - Always load `${CLAUDE_PLUGIN_ROOT}/references/trusted-journals.local.md` before searching Consensus or Scholar; it is shared with the consensus and research skills
+5. **Search with the trusted-journal list** - Always load `~/.claude/skills/workflows/references/trusted-journals.local.md` before searching Consensus or Scholar; it is shared with the consensus and research skills
 6. **Consensus is the default discovery engine** - Topic sweeps and literature reviews run on the `consensus` CLI (it also filters to the user's journals via `--journals-file`). Scholar is for targeted lookups only, serial, stopping after one failed solve on exit 75. Never `mcp__consensus__search`.
 7. **NO WEB** - Never search the open web. Google Scholar and Consensus are structured academic search, not "the web".
 8. **Never fetch from source URLs** - Readwise has the full archived content
