@@ -39,8 +39,7 @@ This classification determines how much enforcement audit to apply after each dr
 
 **`<bang>` in this file means a literal `!` followed by a backtick.** Written out, it would RUN:
 the parser fires on that sequence at line start or after whitespace, and a fenced code block does
-not protect it — nor does inline code. Both creator skills were taken offline on 2026-09-15 by
-their own examples, one of which executed a placeholder named `cmd`.
+not protect it — nor does inline code. An example in a creator skill that executes a placeholder named `cmd` takes the skill offline.
 
 ### Where a thing goes — the plugin root
 
@@ -66,9 +65,8 @@ identity.
 
 **Generic tooling belongs in `plugin-utils`, never in a leaf plugin.** `skill-toc` sat in
 `workflows/bin/` first; workflows already depends on typst, so the first typst skill wanting a TOC
-would have closed a cycle. **Do not add a `dependencies:` field to declare that** — doing so on
-2026-09-15 made all three plugins fail to load (`Unknown skill: typst:typst` in a fresh session)
-until the manifests were reverted. The marketplaces are not registered with Claude Code, and a
+would have closed a cycle. **Do not add a `dependencies:` field to declare that** — it makes the
+plugins fail to load (`Unknown skill: typst:typst` in a fresh session). The marketplaces are not registered with Claude Code, and a
 dependency on one it does not know takes the depending plugin down rather than warning.
 
 ### Step 1b: Check for Mechanical Enforcement Opportunities
@@ -133,8 +131,7 @@ Those two are the whole point: `references/*.md` and `scripts/*.{py,ts,sh}` sitt
 **A skill IS a SKILL.md with a `references/` folder and a `scripts/` folder, and Claude is told the
 base DIRECTORY but never the contents.** A skill load injects `Base directory for this skill: <path>`
 plus the SKILL.md body; nothing lists either folder. So anything the prose does not name is
-invisible — measured 2026-09-14, 16 of 219 reference files across 10 skills, and **48 of 156
-scripts**, a third of them.
+invisible — a third of the scripts and reference files went unnamed.
 
 One line emits both — `skill-toc` lives in `plugin-utils/bin/`, and Claude Code adds every enabled
 plugin's `bin/` to the Bash tool's PATH, so it is callable as a bare command from ANY plugin's
@@ -184,7 +181,7 @@ hooks:
           command: "uv run python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lint.py"
 ```
 
-**⚠️ Hook-command variable rule:** use `${CLAUDE_PLUGIN_ROOT}` in hook `command:` fields — **not** `${CLAUDE_SKILL_DIR}`. The latter is for skill content (markdown body, bang-backtick commands). Hook frontmatter is a different substitution context; mixing these up causes silent failures when the hook fires outside an active `Skill()` session. See `workflow-creator` Step 3b for the April 2026 incident.
+**⚠️ Hook-command variable rule:** use `${CLAUDE_PLUGIN_ROOT}` in hook `command:` fields — **not** `${CLAUDE_SKILL_DIR}`. The latter is for skill content (markdown body, bang-backtick commands). Hook frontmatter is a different substitution context; mixing these up causes silent failures when the hook fires outside an active `Skill()` session. See `workflow-creator` Step 3b.
 
 | Enforce with Hook | Keep as Prompt |
 |-------------------|----------------|
@@ -305,10 +302,8 @@ duplication and derivability, and neither is measured in percentages. A share-of
 happily delete rows 3 and 4, which are the rows carrying the enforcement.
 </EXTREMELY-IMPORTANT>
 
-- Measured 2026-09-01 on the hold skill (191 lines, since folded into `work`): a volume-based read proposed cutting
-  ~400 words because 31% of the file was retrospective. The trim test found one true duplicate
-  and one bloated row — **-126 words, every rule intact**. The rows the volume argument would
-  also have taken were the incidents behind lint rules G2 and G9.
+- A volume-based read proposes cutting rows the trim test keeps: the rows a volume argument
+  takes are the ones behind lint rules G2 and G9.
 
 ### Step 5: Continue the Eval Loop
 
