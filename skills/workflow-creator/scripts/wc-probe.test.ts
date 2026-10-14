@@ -3615,6 +3615,97 @@ describe('P20 one loader entry point', () => {
 })
 
 
+// P21 — a gate leg may not pass having examined nothing: every `report <leg> <status>` is preceded
+// on its path by a count line for that leg, and a literal `report <leg> 0` carries a stated reason.
+describe('P21 leg count line', () => {
+  const run = (text: string) => probe.checkLegCounts('check.sh', text, probe.parseExemptions('check.sh', text))
+
+  test('a leg whose report follows its count line is clean', () => {
+    const text = ['legcount_run tests bash t.sh', 'report tests "$LEG_STATUS"', 'count_line lint 3 "file(s)" "x"', 'report lint $?'].join('\n')
+    expect(run(text)).toEqual([])
+  })
+
+  test('a report with no count line for its leg is a finding naming the leg and line', () => {
+    const f = run(['bun probe.ts', 'report wc-probe $?'].join('\n'))
+    expect(f.length).toBe(1)
+    expect(f[0].rule).toStartWith('P21')
+    expect(f[0].line).toBe(2)
+    expect(f[0].detail).toContain('`wc-probe`')
+    expect(f[0].detail).toContain('no count line')
+  })
+
+  test('a count line for a DIFFERENT leg does not cover the report', () => {
+    const f = run(['legcount_run tests bash t.sh', 'report tests $LEG_STATUS', 'report lint $?'].join('\n'))
+    expect(f.map(x => x.line)).toEqual([3])
+  })
+
+  test('a count line before an earlier report does not cover a later one for the same leg', () => {
+    const f = run(['count_line a 1 "x" "y"', 'report a $?', 'report a $?'].join('\n'))
+    expect(f.map(x => x.line)).toEqual([3])
+  })
+
+  test('a hard-coded zero with no nothing-in-scope count line is a finding', () => {
+    const f = run('report scope 0 "declined"')
+    expect(f.length).toBe(1)
+    expect(f[0].detail).toContain('hard-coded zero')
+  })
+
+  test('a hard-coded zero preceded by a zero count line with a reason is clean', () => {
+    expect(run(['count_line scope 0 "path(s)" "— nothing in scope (declined)" >&2', 'report scope 0 "declined"'].join('\n'))).toEqual([])
+  })
+
+  test('a zero count line with no reason does not license a hard-coded zero', () => {
+    const f = run(['count_line scope 0 "path(s)" >&2', 'report scope 0'].join('\n'))
+    expect(f.length).toBe(1)
+    expect(f[0].detail).toContain('hard-coded zero')
+  })
+
+  test('a positive count line does not license a hard-coded zero', () => {
+    expect(run(['count_line scope 4 "path(s)" "r"', 'report scope 0'].join('\n')).length).toBe(1)
+  })
+
+  test('a literal non-zero status cannot pass, so it needs no count line', () => {
+    expect(run('report sc-probe 2 "probe unreachable"\nreport x 1')).toEqual([])
+  })
+
+  test('the report function definition and comments are not calls', () => {
+    expect(run(['report() { # report <leg> <exit code>', '  :', '}', '# report foo 0'].join('\n'))).toEqual([])
+  })
+
+  test('an embedded-language `report = x` or `report + y` is not a shell call', () => {
+    expect(run(['python3 - <<EOF', 'report = tail(p.stdout)', "sys.stderr.write(report + '\\n')", 'EOF'].join('\n'))).toEqual([])
+  })
+
+  test('a report after then/else on one line is still read', () => {
+    const f = run('if x; then report a $?; else report b 0; fi')
+    expect(f.map(x => x.detail.match(/`report (\w+)/)?.[1])).toEqual(['a', 'b'])
+  })
+
+  test('a quoted variable leg is matched textually against its count line', () => {
+    expect(run(['legcount_run "$name" cmd', 'report "$name" "$LEG_STATUS"'].join('\n'))).toEqual([])
+  })
+
+  test('a helper defined in the file that prints a count_line is a count emitter', () => {
+    const text = ['probe_count() {', '  count_line "$1" 3 "x" "y"', '}', 'probe_count p out', 'report p $?'].join('\n')
+    expect(run(text)).toEqual([])
+    expect(run(['helper() {', '  echo hi', '}', 'helper p out', 'report p $?'].join('\n')).length).toBe(1)
+  })
+
+  test('a printed `<leg>: N … examined` line counts', () => {
+    expect(run(['echo "probe: $n skill(s) examined" >&2', 'report probe $rc'].join('\n'))).toEqual([])
+  })
+
+  test('a declared exemption silences it', () => {
+    const text = ['# the probe prints its own scanned count', '# <!-- wc-probe: ignore-leg-count -->', 'report p $?'].join('\n')
+    expect(run(text)).toEqual([])
+  })
+
+  test('only shell files are judged', () => {
+    expect(probe.checkLegCounts('SKILL.md', 'report a 0', [])).toEqual([])
+  })
+})
+
+
 describe('ruleChecks configuration', () => {
   test('ruleChecks with blockAt out of range is flagged', () => {
     const text = [

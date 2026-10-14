@@ -915,7 +915,7 @@ out of a prompt, which is not an enumeration.
 A fence whose `tasks[]` is empty or absent is skipped entirely — that is what a `readOnly` charter
 declares, and flagging it would fire on every audit block. Marker: `task-coverage`.
 
-### P14-P20 round-shape rules
+### P14-P21 round-shape rules
 
 | rule | fires on | severity | marker |
 |---|---|---|---|
@@ -926,6 +926,7 @@ declares, and flagging it would fire on every audit block. Marker: `task-coverag
 | P18 fixed shared temp path | a worktree add/remove or recursive delete at a literal temp path with no per-run part, on the line or through one assignment | major | `fixed-temp` |
 | P19 rule-skill preload | a SKILL.md with a work-args fence that declares no rule skill, or names a non-built-in `implementerAgentType`/`verifierAgentType`/`agentType` whose agent file is missing or whose `skills:` lacks a declared rule skill, or whose `initialPrompt` (its first slash command, plus the skills that command's `load-skills.ts` bangs name) does not cover one, or whose `skills:` is not exactly that one command | major | none — `rule-skills: none` is the opt-out |
 | P20 one loader entry point | a SKILL.md reaching a constraint corpus by the loader's implementation file, an older name or a hand-rolled `$HOME` resolver | major | `ignore-loader-entry-point` |
+| P21 leg count line | in a shell gate, a `report <leg> <status>` with no `legcount_run`/`legcount_cmd`/`count_line <leg>` (or a helper that prints one) since the previous `report`; or a literal `report <leg> 0` with no `count_line <leg> 0 <unit> "<reason>"` before it | major | `leg-count` |
 
 Advisory rules print as `[advisory <severity>]` in both modes and never move the exit code. P15 gates since its 2026-10-02 baseline (15 findings, ds lens and teaching notes scoredChecks) was cleared.
 
@@ -941,7 +942,7 @@ A check may be suppressed only by a marker that is the **whole trimmed line**, o
 
 `<rule>` is one of **`all`, `hooks`, `paths`, `returns`, `workflow-refs`, `refs`, `entry-point`,
 `dispatch`, `task-coverage`, `shell-leg`, `duplicate-grading`, `rule-checks`, `serial-loop`,
-`fixed-temp`** — the rules that are actually honoured.
+`fixed-temp`, `leg-count`** — the rules that are actually honoured.
 Any other name is a `P9 exemption vocabulary` finding rather than a silent
 no-op: a marker that reads as a suppression and is not one hides a failing check twice over.
 Markers are parsed **once, from the raw file**, and threaded into every predicate, so what suppresses
@@ -988,7 +989,7 @@ run, alongside `SKILL.md`'s `lens-set-differs prompt` declaration, which is not 
 | Task or lens has no domain rules | omit `refs` | `refs: []` — absent is refused, empty is a statement |
 | About to name an implementer or reviewer agent without preloading the rule skill | trust the dispatch `refs` to carry the rules | **STOP**: it runs rule-less outside a dispatch. Add the declared `rule-skills` to the agent's `skills:` AND name them in its `initialPrompt` (P19) |
 | A documented return shape drifts from the script | assume P5 caught it because the suite is green | P5 compares a SKILL.md's shape against the **script its `scriptPath` names** — check the `crossFileTargets` note to see which file the verdict was actually about |
-| A check needs suppressing | invent a rule name for the marker | only `all`/`hooks`/`paths`/`returns`/`workflow-refs`/`refs`/`entry-point`/`dispatch`/`task-coverage`/`shell-leg`/`duplicate-grading`/`rule-checks`/`serial-loop`/`fixed-temp` are honoured; anything else is a `P9` finding, not a suppression. P11 has no `ignore-` form at all — declare the intended difference with `lens-set-differs <field>` |
+| A check needs suppressing | invent a rule name for the marker | only `all`/`hooks`/`paths`/`returns`/`workflow-refs`/`refs`/`entry-point`/`dispatch`/`task-coverage`/`shell-leg`/`duplicate-grading`/`rule-checks`/`serial-loop`/`fixed-temp`/`leg-count` are honoured; anything else is a `P9` finding, not a suppression. P11 has no `ignore-` form at all — declare the intended difference with `lens-set-differs <field>` |
 | A skill dispatches `work` with its own hand-rolled runner line | copy the invocation into the SKILL.md | that skips the gates `work-dispatch.sh` owns on the way in, and P12 refuses it |
 | Gate says PASS and the probe was skipped | read `mechanicalRun: 0` as clean | nothing was checked; re-run with the checks present |
 | FAIL with an empty `tasksThatFlagged` | conclude there is nothing to fix | read `mechanicalThatFailed`, `rulesThatFailed`, `lensesThatFlagged` **and** `planFindings` too — only `tasksThatFlagged` owns tasks. A blocking lens finding the lens could route to no task lands in `planFindings` and is fixed by amending the plan. Only when every channel is empty does an empty selector on a failing run mean re-run everything |
