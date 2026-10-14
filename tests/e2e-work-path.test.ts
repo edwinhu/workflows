@@ -240,6 +240,8 @@ describe('each assertion fails on the run built to break it', () => {
     const r = await canaryAssert('vacuous', '0,8', [DIAG_COUNT])
     expect(r.code).toBe(1)
     expect(r.out).toMatch(/FAIL \[e2e-vacuous\] mechanical notes-mech: leg lines examined 0 — vacuous/)
+    // the leg_counts audit reports the one vacuous leg once; the --mech-count line is a separate assertion
+    expect(r.out.split('\n').filter(l => /^FAIL \[e2e-vacuous\] mechanical notes-mech: leg /.test(l))).toHaveLength(1)
   })
 
   test('3. every rule leg judged: a judge outage leaves the rule leg unavailable', async () => {

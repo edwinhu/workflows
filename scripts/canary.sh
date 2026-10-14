@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-# canary.sh — the release gate the unit suite cannot be: two REAL runs through the real path
+# canary.sh — the release gate the unit suite cannot be: one REAL run through the real path
 # (work-dispatch.sh -> work-loop.sh -> work-round.sh -> farm rows -> work-checks.sh -> lens ->
 # work-result.sh), against the checkout this script lives in, then decidable assertions over what
-# they left on disk. A failing canary blocks the tag.
+# it leaves on disk. A failing canary blocks the tag.
+# The dev round is covered by tests/e2e-work-path.test.ts (stub model, every suite run); --only dev opts in.
 #
-#   scripts/canary.sh --run              both runs dispatched first, suites + template while they run
-#                                        (the runs cost model calls)
+#   scripts/canary.sh --run              the diagnose dispatched first, suites + template while it runs
+#                                        (the run costs model calls)
 #   scripts/canary.sh --run --only suites|template|diag|dev   one step
-#   scripts/canary.sh --dry-run          suites + template, then build + plan-lint + probes for both
-#                                        runs, dispatching nothing — no model calls
+#   scripts/canary.sh --dry-run          suites + template, then build + plan-lint + probes for the
+#                                        run, dispatching nothing — no model calls
 #   scripts/canary.sh --assert RUN_DIR --events DIR [--expect-exit 0|8] [--mech-count 'RE' ...]
 #                                        re-run the assertions on an existing run dir
 #   CANARY_TIMEOUT_MIN=40                wall cap per run (default 40)
@@ -16,7 +17,7 @@
 #
 # (a) DIAG: a read-only teaching slides DIAGNOSE of an already-taught secreg lecture whose gates
 #     passed. Run dir under ~/.local/state/work; the course tree is only ever READ.
-# (b) DEV: one dev round on a throwaway git repo in a temp dir — a red bun test, one task to green it.
+# (b) DEV (--only dev): one dev round on a throwaway git repo in a temp dir — a red bun test, one task to green it.
 # SUITES: workflows' scripts/test.sh in a clean worktree at the committed HEAD, AND teaching's
 #     tests/run-all.sh (FAIL on a tracked-file change there), each pointed at the other's tree under
 #     release, so a cross-repo break blocks the tag of EITHER repo (teaching 4.3.7's {{NAME}} refs
@@ -483,7 +484,7 @@ PY
 # ------------------------------------------------------------------ run
 RUNS=()   # NAME|DIR|RUN_DIR|EXPECT|COUNTS (counts joined by \x1f)
 FAILED=0
-# The runs are model-bound and the suites CPU-bound, so both runs are dispatched FIRST and the suites
+# The run is model-bound and the suites CPU-bound, so the run is dispatched FIRST and the suites
 # and template execute while they are in flight (the runs' TMPDIR, session id and temp root are the
 # canary's own; the suites run in their own worktree with their own TMPDIR).
 if step diag; then
@@ -496,7 +497,7 @@ if step diag; then
     echo "FAIL [diag] work-dispatch.sh refused or failed (exit above)"; FAILED=1
   fi
 fi
-if step dev; then
+if [ "$ONLY" = dev ]; then
   d=$(plan_dev) || exit 2
   echo; echo "=== canary (b): dev round on a throwaway repo ($d) -> $STATE/$DEV_ID"
   if dispatch dev "$d" "$d/plan.md" 2; then

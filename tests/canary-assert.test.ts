@@ -228,8 +228,18 @@ describe('canary run section order', () => {
   const run = src.slice(src.indexOf('# ------------------------------------------------------------------ run\n'))
   const at = (needle: string) => { const i = run.indexOf(needle); expect(i).toBeGreaterThan(-1); return i }
 
-  test('diag and dev are dispatched before the suites and template run', () => {
-    const lastDispatch = Math.max(at('dispatch diag '), at('dispatch dev '))
+  test('the default --run dispatches diag and not dev; dev is an explicit --only dev opt-in', () => {
+    const diagBlock = run.slice(at('if step diag; then'), at('if [ "$ONLY" = dev ]'))
+    const devBlock = run.slice(at('if [ "$ONLY" = dev ]'), at('deadline=$('))
+    expect(diagBlock).toContain('RUNS+=("diag|')
+    expect(diagBlock).not.toContain('RUNS+=("dev|')
+    expect(devBlock).toContain('RUNS+=("dev|')
+    expect(devBlock).toContain('[ "$ONLY" = dev ]')
+    expect(src).toMatch(/^# .*dev round is covered by tests\/e2e-work-path\.test\.ts/m)
+  })
+
+  test('diag is dispatched before the suites and template run', () => {
+    const lastDispatch = at('dispatch diag ')
     expect(lastDispatch).toBeLessThan(at('step suites && run_suites'))
     expect(lastDispatch).toBeLessThan(at('step template && run_template'))
   })

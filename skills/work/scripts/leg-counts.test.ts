@@ -233,3 +233,20 @@ describe('every Jev rule declares EXAMINED, and no calibration case reads as exa
     expect(bad).toEqual([])
   }, 300_000)
 })
+
+describe('leg_counts audit never reads its own echo as a leg', () => {
+  test('a tail holding one vacuous leg plus its COULD-NOT-CHECK echoes yields exactly one finding', () => {
+    const dir = mkTmp('leg-counts-echo-')
+    const f = join(dir, 'tail.txt')
+    writeFileSync(f, [
+      '=== leg: lines', 'lines: 0 line(s) examined',
+      'COULD-NOT-CHECK: leg lines examined 0 — vacuous: lines: 0 line(s) examined',
+      'COULD-NOT-CHECK: COULD-NOT-CHECK: leg lines examined 0 — vacuous: lines: 0 line(s) examined',
+      'COULD-NOT-CHECK: leg COULD-NOT-CHECK examined 0 — vacuous: COULD-NOT-CHECK: leg lines examined 0',
+    ].join('\n') + '\n')
+    const r = spawnSync('python3', [PY, 'audit', f], { encoding: 'utf8', timeout: 30_000 })
+    expect(r.status).toBe(2)
+    expect(r.stderr.trim().split('\n')).toHaveLength(1)
+    expect(r.stderr).toContain('leg lines examined 0 — vacuous')
+  })
+})
