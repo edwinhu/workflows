@@ -242,7 +242,7 @@ Omitting it silently runs the user's codex request on claude.
   },
 
   authorityExtra: [
-    "THE DS CONSTRAINT CORPUS IS ONE COMMAND AWAY. Run `${CLAUDE_PLUGIN_ROOT}/scripts/load-constraints ds` for the index — every rule scoped to this workflow, with an openable path — then read the ones your task touches. Do not work from a paraphrase of them in a brief: a paraphrase is a lossy copy of a corpus that moves.",
+    "THE DS CONSTRAINT CORPUS IS ONE COMMAND AWAY. Run `${CLAUDE_PLUGIN_ROOT}/scripts/load-constraints ds` for the index — the C/V/A/E ids the ds-rules digest prints plus any further rule scoped to this workflow, each with an openable path — then read the ones your task touches. Do not work from a paraphrase of them in a brief: a paraphrase is a lossy copy of a corpus that moves.",
     "IRON LAW OF DS PLANNING — ask before you look; plan only from evidence you actually gathered.",
     "IRON LAW OF DS VERIFICATION — no check result without the runner's own output. A mechanical check reported from reading the code, or an N/A justified by a reason the model composed, is the model certifying its own enumeration. Every mechanical result is a line ${CLAUDE_PLUGIN_ROOT}/checks/ds/constraints/ds-dq.py emitted, quoted as emitted.",
     "Never report M1, UNI, DEN, DEL or R1 as PASS. The runner lists them as MODEL-EVALUATED; Jev scores M1, UNI, DEN and R1, and DEL is a judgement reported with the evidence read.",

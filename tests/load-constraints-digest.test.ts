@@ -72,3 +72,29 @@ test('a scope whose aggregates index nothing is exit 2 and says NO digest, never
   expect(out.stdout).toBe('')
   expect(out.stderr).toContain('NO rule digest')
 })
+
+// ONE selection: a scope with aggregates lists, in --index, exactly the ids --digest prints. Rules
+// scoped by applies-to that no aggregate indexes follow under their own heading, never in the id list.
+test('--index lists the same ids --digest prints, for ds and for a fixture scope', () => {
+  const ids = (s: string, re: RegExp) => [...s.matchAll(re)].map(m => m[1])
+  const idx = run('ds', '--index')
+  const dig = run('ds', '--digest')
+  expect(idx.status).toBe(0)
+  const indexed = ids(idx.stdout.split(/^## /m)[0], /^- \*\*([A-Z]+\d+)\*\*/gm)
+  expect(indexed).toEqual(ids(dig.stdout, /^### ([A-Z]+\d+) — /gm))
+  expect(indexed.length).toBe(28)
+  expect(idx.stdout).toContain('# Constraints for ds (30)')
+
+  const tree = mkTmp('ds-index-fixture-')
+  mkdirSync(join(tree, 'rules'))
+  mkdirSync(join(tree, 'skills', 'x', 'rules'), { recursive: true })
+  writeFileSync(join(tree, 'skills', 'x', 'rules', 'agg.md'),
+    '---\nname: agg\napplies-to: [x]\n---\n\n| ID | Constraint | File | Description |\n|----|----|----|----|\n| X1 | One | [r.md](${CLAUDE_PLUGIN_ROOT}/rules/r.md) | the summary |\n')
+  writeFileSync(join(tree, 'rules', 'r.md'), '---\nname: r\napplies-to: [x-delegate]\n---\n# r\n\n## Rule\n\nDo it.\n')
+  writeFileSync(join(tree, 'rules', 'loose.md'), '---\nname: loose\napplies-to: [x]\n---\n# loose\n\n## Rule\n\nDo that.\n')
+  const out = run('x', '--index', '--dir', join(tree, 'rules')).stdout
+  expect(ids(out.split(/^## /m)[0], /^- \*\*([A-Z]+\d+)\*\*/gm)).toEqual(['X1'])
+  expect(out).toContain(join(tree, 'rules', 'r.md'))
+  expect(out).toMatch(/^## .*no id/m)
+  expect(out).toContain('**loose**')
+})

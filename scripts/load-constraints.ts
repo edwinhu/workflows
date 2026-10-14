@@ -116,6 +116,9 @@ export interface ConstraintLoadEvidence {
 export interface ConstraintLoadResult {
   output: string;
   evidence: ConstraintLoadEvidence;
+  scopes?: string[];
+  index: string;
+  indexRows: [string, string][];
 }
 
 function isContained(root: string, candidate: string): boolean {
@@ -197,7 +200,7 @@ export function loadConstraints(options: LoadConstraintsOptions): ConstraintLoad
     ? `# Constraints for ${skillName} (${matched})\n\n` +
       indexRows.sort().map(([n, f]) => `- **${n}**  \`${f}\``).join("\n")
     : "";
-  return { output, evidence, scopes: [...scopes].sort(), index };
+  return { output, evidence, scopes: [...scopes].sort(), index, indexRows };
 }
 
 const stripCode = (s: string) => s.replace(/^```[\s\S]*?^```\s*$/gm, "");
@@ -268,6 +271,25 @@ export function digest(scope: string, pluginRoot: string): string {
   return `# Rule digest for ${scope} (${entries.length})\n\n${sections.join("\n\n")}\n`.replaceAll("${CLAUDE_PLUGIN_ROOT}", pluginRoot);
 }
 
+/**
+ * `--index`: ONE selection with `--digest`. A scope whose aggregates index rule ids lists exactly those
+ * ids (the digest's set); rules `applies-to` selects that no aggregate indexes follow under their own
+ * heading, so they stay visible without posing as part of the id list. A scope with no aggregate keeps
+ * the applies-to index unchanged.
+ */
+export function indexFor(skillName: string, constraintsDir: string, applied: { index: string; rows: [string, string][] }): string {
+  const root = resolve(constraintsDir, "..");
+  const entries = digestEntries(skillName, root);
+  if (!entries.length) return applied.index;
+  const listed = new Set(entries.map((e) => realpathSync(join(root, e.file))));
+  const extra = applied.rows.filter(([, f]) => !listed.has(f));
+  const lines = entries.map((e) => `- **${e.id}** ${e.title}  \`${join(root, e.file)}\``);
+  const tail = extra.length
+    ? `\n\n## Also scoped to ${skillName} by applies-to (no id)\n\n` + extra.sort().map(([n, f]) => `- **${n}**  \`${f}\``).join("\n")
+    : "";
+  return `# Constraints for ${skillName} (${entries.length + extra.length})\n\n${lines.join("\n")}${tail}`;
+}
+
 // CLI entry point. Guarded by import.meta.main so importing this module for its exported
 // parseFrontmatter/skillMatches (the test does) does not execute the loader and dump 29 KB of
 // constraint prose into the test output.
@@ -329,7 +351,7 @@ if (digestMode) {
 try {
   const result = loadConstraints({ skillName, constraintsDir });
   if (result.output) {
-    console.log(indexOnly ? result.index : result.output);
+    console.log(indexOnly ? indexFor(skillName, constraintsDir, { index: result.index, rows: result.indexRows }) : result.output);
   } else {
     console.error(
       `Error: no constraint is scoped to '${skillName}' — the scope names nothing, which is not ` +
