@@ -221,6 +221,27 @@ blocking findings into `planFindings`. Scored results choose neither RED/GREEN m
 and never enter that routing or the gate, even when an agent dies. `overallPass === false` still
 requires at least one non-empty selector from the gating dimensions.
 
+## S8 — Carry-forward by input fingerprint
+
+An item may be `{text, inputs: [paths]}` (string items are never carried; a duplicate `text` within a
+key throws). A job is **carried** — not dispatched, its prior entry returned with `carried: true` —
+iff all four hold:
+
+1. `priorResults.scores` holds a **measured** entry (`composite` finite) for the same `key` and `text`;
+2. its `fingerprint` equals `args.scoredFingerprints["<key>::<text>"]`, a non-null string;
+3. no `inputs` path overlaps the `writablePaths` of an active task (the fingerprint predates this
+   round's implementers);
+4. at GATE, `checks.scored` (re-hashed after the agents) still equals it, else the entry becomes `null`
+   with reason "carried score's inputs changed during this round".
+
+`work-dispatch.sh` / `work-redispatch.sh --scored-fingerprints` write `scoredFingerprints` (sha256 over
+the check minus `items`, its `refs` bytes, the item text and each input's bytes; null when anything is
+unreadable), recomputed every round and never carried; `work-checks.sh` emits `checks.scored`. Fresh
+entries are stamped with the post-agents value. `fanOut.scored` counts dispatched jobs only
+(`scoredCarried` is reported, not counted); `scoreTable.scoresCarried` is `null` without scoredChecks.
+There is no selector argument: the carry is derived from bytes, like M1's proven red. Scores still
+never gate.
+
 ## Why advisory — and why there is no threshold
 
 There is no threshold and no `blockBelow`, and adding one is not a configuration choice this
