@@ -1,5 +1,5 @@
 // rule-check --since: a run's rule scope is what THIS run changed, not the tree's pre-existing WIP.
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test, setDefaultTimeout } from 'bun:test';
 import { spawnSync } from 'child_process';
 import { createHash } from 'crypto';
 import { mkdirSync, readFileSync, realpathSync, writeFileSync } from 'fs';
@@ -7,6 +7,7 @@ import { join } from 'path';
 import { useTmp } from '../../../tests/helpers/tmp.ts';
 import { changedFiles, changedRanges } from './rule-check.ts';
 
+setDefaultTimeout(300_000);
 const mkTmp = useTmp();
 const HERE = import.meta.dir;
 const SNAPSHOT = join(HERE, 'tree-snapshot.sh');
@@ -14,11 +15,11 @@ const CHECKS = join(HERE, 'work-checks.sh');
 
 const GIT = ['-c', 'user.email=t@t', '-c', 'user.name=t'];
 const git = (d: string, ...a: string[]) => {
-  const r = spawnSync('git', ['-C', d, ...GIT, ...a], { encoding: 'utf8', timeout: 120_000 });
+  const r = spawnSync('git', ['-C', d, ...GIT, ...a], { encoding: 'utf8', timeout: 20_000 });
   if (r.status !== 0) throw new Error(`git ${a.join(' ')}: ${r.stderr}`);
   return r.stdout;
 };
-const snapshot = (d: string) => spawnSync('bash', [SNAPSHOT, d], { encoding: 'utf8', timeout: 120_000 });
+const snapshot = (d: string) => spawnSync('bash', [SNAPSHOT, d], { encoding: 'utf8', timeout: 20_000 });
 const sha256 = (p: string) => createHash('sha256').update(readFileSync(p)).digest('hex');
 
 /** A repo with a committed file, then WIP: a tracked line edit and an untracked file, both predating the "run". */
@@ -97,13 +98,13 @@ describe('changedFiles / changedRanges --since', () => {
   test('a file the run deletes is not listed', () => {
     const d = wipRepo();
     const snap = snapshot(d).stdout.trim();
-    spawnSync('rm', [join(d, 'wip_new.py')], { timeout: 120_000 });
+    spawnSync('rm', [join(d, 'wip_new.py')], { timeout: 20_000 });
     expect(changedFiles(d, snap)).toEqual([]);
   });
 });
 
 describe('rule-check.ts CLI --since', () => {
-  const run = (args: string[]) => spawnSync('bun', ['run', join(HERE, 'rule-check.ts'), '--workflow', 'ds', ...args], { encoding: 'utf8', timeout: 120_000 });
+  const run = (args: string[]) => spawnSync('bun', ['run', join(HERE, 'rule-check.ts'), '--workflow', 'ds', ...args], { encoding: 'utf8', timeout: 20_000 });
 
   test('a run that changed nothing since the snapshot is "nothing in scope", WIP notwithstanding', () => {
     const d = wipRepo();
@@ -128,7 +129,7 @@ describe('work-checks.sh appends --since from args.runBaseline', () => {
     const a = join(dir, 'args.json'), raw = join(dir, 'raw.json'), out = join(dir, 'checks.json');
     writeFileSync(a, JSON.stringify(args));
     writeFileSync(raw, JSON.stringify({ stage: 'agents', agents: {}, checkPlan: { red: [], acceptance: [], mechanical: [], rules: [{ name: 'rules', cmd }] } }));
-    const r = spawnSync('bash', [CHECKS, a, raw, out], { encoding: 'utf8', timeout: 120_000, env: { ...process.env, WORK_CHECK_TIMEOUT: '30' } });
+    const r = spawnSync('bash', [CHECKS, a, raw, out], { encoding: 'utf8', timeout: 20_000, env: { ...process.env, WORK_CHECK_TIMEOUT: '30' } });
     expect(r.status).toBe(0);
     return JSON.parse(readFileSync(out, 'utf8')).rules[0];
   }

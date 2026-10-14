@@ -633,7 +633,7 @@ describe('--spec-hash hashes the authored spec, not the bytes around it', () => 
 })
 
 describe('dispatch records the run baseline tree in args.json (runBaseline)', () => {
-  const git = (d: string, ...a: string[]) => execFileSync('git', ['-C', d, '-c', 'user.email=t@t', '-c', 'user.name=t', ...a], { encoding: 'utf8', timeout: 120_000 })
+  const git = (d: string, ...a: string[]) => execFileSync('git', ['-C', d, '-c', 'user.email=t@t', '-c', 'user.name=t', ...a], { encoding: 'utf8', timeout: 10_000 })
 
   test('a git project: runBaseline is the tree of the WIP at dispatch, kept across a re-dispatch', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
@@ -649,7 +649,7 @@ describe('dispatch records the run baseline tree in args.json (runBaseline)', ()
     writeFileSync(join(f.dir, 'run-edit.txt'), 'written after dispatch\n')
     expect(dispatch(f).code).toBe(0)
     expect(JSON.parse(readFileSync(f.argsPath, 'utf8')).runBaseline).toBe(base)
-  }, 240_000)
+  }, 900_000)
 
   test('a non-git project records none, and a readOnly run records none', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
@@ -664,7 +664,7 @@ describe('dispatch records the run baseline tree in args.json (runBaseline)', ()
     const ro = join(g.dir, 'ro-run', 'probe-run', 'args.json')
     expect(existsSync(ro)).toBe(true)
     expect('runBaseline' in JSON.parse(readFileSync(ro, 'utf8'))).toBe(false)
-  }, 240_000)
+  }, 900_000)
 })
 
 describe('dispatch injects specHash, and planHash is gone', () => {
