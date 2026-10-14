@@ -1,4 +1,6 @@
 # Multi-Kernel Setup
+<!-- wc-probe: ignore-paths -->
+<!-- Quotes ~/.jupyter and ~/.config files the reader is told to create; they do not exist until then. -->
 
 ## Contents
 
