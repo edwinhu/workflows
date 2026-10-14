@@ -46,8 +46,15 @@ export const ENV_NAMES = [
   'TEMP',
   'TMP',
   'WORK_ALLOW_CRON_DELETE',
+  'GUARD_NOW_MS',
 ] as const
 export type EnvName = (typeof ENV_NAMES)[number]
+
+/** The guards' clock: GUARD_NOW_MS (epoch ms) when set, so a parity run reads one instant on both sides; else the wall clock. */
+export function guardNow(fixed: string | undefined): number {
+  const n = Number(fixed)
+  return fixed && Number.isFinite(n) ? n : Date.now()
+}
 
 export type Guard = (payload: Payload, io: GuardIO) => Promise<Outcome>
 

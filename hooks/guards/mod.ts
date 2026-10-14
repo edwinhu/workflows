@@ -6,7 +6,7 @@
 // rule. A crashed PreToolUse gate denies (as `denyOnCrash` made the script deny); a crashed
 // PostToolUse guard adds nothing (as the script's exit 1 was non-blocking).
 import type { EngineInterface, On, ToolCallResult } from 'claude-code'
-import { absolute, crashDeny, type EnvName, type FileStat, type Guard, type GuardIO, type Payload } from './core.ts'
+import { absolute, crashDeny, guardNow, type EnvName, type FileStat, type Guard, type GuardIO, type Payload } from './core.ts'
 import { atomicConstraintGuard } from './atomic-constraint.ts'
 import { bunParallelGuard } from './bun-test.ts'
 import { cronDeleteGuard, cronRecord } from './cron-delete.ts'
@@ -52,7 +52,7 @@ const RESERVED = new Set(['tool', 'tool_use_id', 'consent'])
 
 /** Each variable read by its literal name: `claude plugin validate` lists them, and requires it. */
 async function readEnv($: $): Promise<Record<EnvName, string | undefined>> {
-  const [a, b, c, d, e, f, g, h, i] = await Promise.all([
+  const [a, b, c, d, e, f, g, h, i, j] = await Promise.all([
     $.env.get('LOOK_AT_NESTED'),
     $.env.get('READ_GUARD_BYTES'),
     $.env.get('COMPACT_THRESHOLD'),
@@ -62,10 +62,11 @@ async function readEnv($: $): Promise<Record<EnvName, string | undefined>> {
     $.env.get('TEMP'),
     $.env.get('TMP'),
     $.env.get('WORK_ALLOW_CRON_DELETE'),
+    $.env.get('GUARD_NOW_MS'),
   ])
   return {
     LOOK_AT_NESTED: a, READ_GUARD_BYTES: b, COMPACT_THRESHOLD: c, COMPACT_INTERVAL: d,
-    CLAUDE_CODE_SESSION_ID: e, TMPDIR: f, TEMP: g, TMP: h, WORK_ALLOW_CRON_DELETE: i,
+    CLAUDE_CODE_SESSION_ID: e, TMPDIR: f, TEMP: g, TMP: h, WORK_ALLOW_CRON_DELETE: i, GUARD_NOW_MS: j,
   }
 }
 
@@ -88,7 +89,7 @@ export function modIO($: $, env: Record<EnvName, string | undefined>, cwd: strin
     // node's os.tmpdir() on POSIX: TMPDIR, TMP, TEMP, then /tmp, a trailing slash dropped.
     osTmpdir: ((env.TMPDIR || env.TMP || env.TEMP || '/tmp').replace(/(.)\/+$/, '$1')),
     fallbackKey: sessionId,
-    nowMs: () => Date.now(),
+    nowMs: () => guardNow(env.GUARD_NOW_MS),
     stat: async (p): Promise<FileStat | null> => {
       const a = abs(p)
       if (a === null) return null

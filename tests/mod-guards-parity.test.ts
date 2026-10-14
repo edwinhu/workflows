@@ -34,6 +34,7 @@ const mkTmp = useTmp()
 const REPO = join(import.meta.dir, '..')
 const BASE = process.env.PARITY_BASE ?? '3f97c10f'
 const P = tmpdir()
+const PARITY_NOW_MS = Date.now()
 
 interface Observed { stat?: { kind: string; size: number; mtimeMs: number } | null; text?: string | null; list?: string[] | null }
 interface Rec {
@@ -159,7 +160,8 @@ function snapshot(): Record<string, string> {
 interface Outcome { deny?: string; context?: string; files: Record<string, string> }
 
 function childEnv(r: Rec): Record<string, string> {
-  const env: Record<string, string> = { PATH: process.env.PATH ?? '', HOME: process.env.HOME ?? '' }
+  // One instant for both sides: a guard's text may embed an age ("armed N m ago") that a minute can tick.
+  const env: Record<string, string> = { PATH: process.env.PATH ?? '', HOME: process.env.HOME ?? '', GUARD_NOW_MS: String(PARITY_NOW_MS) }
   for (const [k, v] of Object.entries(r.env)) env[k] = rebase(v)
   return env
 }
@@ -234,6 +236,13 @@ let baseRoot: string | null = null
   const dir = mkTmp('parity-base-', P)
   const tar = spawnSync('bash', ['-c', `git -C "${REPO}" archive ${BASE} hooks | tar -x -C "${dir}"`], { timeout: 300_000, encoding: 'utf8' })
   if (tar.status === 0 && existsSync(join(dir, 'hooks', 'read-guard.ts'))) baseRoot = dir
+  // The frozen original reads the wall clock; give it the same GUARD_NOW_MS seam the ported guards have.
+  const frozen = join(dir, 'hooks', 'cron-delete-guard.ts')
+  if (baseRoot && existsSync(frozen)) {
+    const src = readFileSync(frozen, 'utf8')
+    if (!src.includes('Date.now()')) throw new Error('base cron-delete-guard no longer reads Date.now(); drop the clock patch')
+    writeFileSync(frozen, src.replaceAll('Date.now()', 'Number(process.env.GUARD_NOW_MS || Date.now())'))
+  }
 }
 
 /**
