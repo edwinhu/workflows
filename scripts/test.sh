@@ -13,9 +13,14 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# The roots a farm-events writer reaches when a test hands its child no TMPDIR of its own: /tmp (the
+# writers' default) and the caller's TMPDIR, which is taken before this script replaces it.
+event_roots=(/tmp/farm-events)
+[ -n "${TMPDIR:-}" ] && [ "${TMPDIR%/}/farm-events" != /tmp/farm-events ] && event_roots+=("${TMPDIR%/}/farm-events")
 run_tmp=$(mktemp -d "${TEST_TMP_BASE:-/tmp}/workflows-test.XXXXXX")
 # The run's own bookkeeping (per-file timings, the cap report), outside run_tmp so no test sees it.
 run_meta=$(mktemp -d "${TEST_TMP_BASE:-/tmp}/workflows-test-meta.XXXXXX")
+touch "$run_meta/start"
 if [ "${KEEP_TMP:-}" = 1 ]; then
   echo "test.sh: KEEP_TMP=1 — fixtures kept in $run_tmp, leak guard off" >&2
 else
@@ -121,6 +126,26 @@ if [ "${KEEP_TMP:-}" != 1 ]; then
     [ "$rc" = 0 ] && rc=1
   else
     echo "test.sh: leak guard ok — the run's TMPDIR is empty" >&2
+  fi
+fi
+
+# THE EVENT GUARD. The run's own TMPDIR is empty above even when a test points a farm.sh/grind.sh child
+# at the machine's real event root: /tmp/farm-events/<session>/<pid>.ndjson is outside it, and the
+# session's watcher reads those rows as live runs (473 files by 2026-10-14, every one naming a
+# fixture journal under a workflows-test.* dir). A row written during this run that names this run's
+# TMPDIR is a test's, whatever session dir it landed in; a real session's row cannot name it.
+if [ "${KEEP_TMP:-}" != 1 ]; then
+  leaked=$(for root in "${event_roots[@]}"; do
+    [ -d "$root" ] && find "$root" -type f -name '*.ndjson' -newer "$run_meta/start" -print0 2>/dev/null \
+      | xargs -0 -r grep -lF -- "$run_tmp" 2>/dev/null
+  done | sort -u || true)
+  if [ -n "$leaked" ]; then
+    echo "test.sh: EVENT GUARD FAILED — $(wc -l <<<"$leaked") event stream(s) naming this run's fixtures landed in a real farm-events root:" >&2
+    head -20 <<<"$leaked" | sed 's/^/  /' >&2
+    echo "Give the spawned farm.sh/grind.sh/work-loop child an env with TMPDIR set to the test's own dir (grindEnv() in skills/grind/scripts/grind-test-env.ts, or hermeticEnv() in tests/helpers/hermetic-env.ts)." >&2
+    [ "$rc" = 0 ] && rc=1
+  else
+    echo "test.sh: event guard ok — no farm-events stream naming this run's fixtures reached ${event_roots[*]}" >&2
   fi
 fi
 

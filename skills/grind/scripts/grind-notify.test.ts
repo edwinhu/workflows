@@ -93,7 +93,7 @@ function stubPath(dir: string, stubs: string[]): { env: Record<string, string>; 
     const real = spawnSync('bash', ['-c', `PATH=/usr/bin:/bin command -v ${tool}`], { timeout: 30_000, encoding: 'utf8' }).stdout.trim()
     if (real && !existsSync(join(bin, tool))) symlinkSync(real, join(bin, tool))
   }
-  return { env: { PATH: bin, HOME: dir }, log }
+  return { env: { PATH: bin, HOME: dir, TMPDIR: dir }, log }
 }
 
 describe('grind.sh --notify', () => {
