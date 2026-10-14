@@ -52,9 +52,9 @@ LEGS = {}      # cmd -> (leg records, omitted) read from the FULL output
 def tail(s):
     return '\n'.join(s.splitlines()[-TAIL:])
 
-def run(cmd):
+def run(cmd, extra_env=None):
     try:
-        p = subprocess.run(['bash', '-c', cmd], cwd=cwd, env=env, capture_output=True, text=True,
+        p = subprocess.run(['bash', '-c', cmd], cwd=cwd, env={**env, **(extra_env or {})}, capture_output=True, text=True,
                            errors='replace', timeout=timeout)
     except subprocess.TimeoutExpired:
         return -1, f'could not run: timed out after {timeout}s: {cmd}'
@@ -130,7 +130,8 @@ jobs = [('red', r['id'], r['command']) for r in plan.get('red') or []] \
      + [('mechanical', r['name'], r['cmd']) for r in plan.get('mechanical') or []] \
      + [('rules', r['name'], r['cmd']) for r in plan.get('rules') or []]
 with ThreadPoolExecutor(max_workers=max(1, min(8, len(jobs)))) as ex:
-    results = list(ex.map(lambda j: run_rules(j[2]) if j[0] == 'rules' else run(j[2]), jobs))
+    # mechanical cmds (a check.sh running authoring-lint) get the baseline too; red/acceptance run unscoped
+    results = list(ex.map(lambda j: run_rules(j[2]) if j[0] == 'rules' else run(j[2], baseline_env() if j[0] == 'mechanical' else None), jobs))
 
 out = {'red': [], 'acceptance': [], 'mechanical': [], 'rules': []}
 for (kind, key, cmd), res in zip(jobs, results):

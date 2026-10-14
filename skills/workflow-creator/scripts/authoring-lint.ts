@@ -34,6 +34,7 @@ import { spawnSync } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 import { covers, runnerTargets, scriptReaches } from '../../work/scripts/plan-lint.ts'
+import { changedRanges } from '../../work/scripts/rule-check.ts'
 
 export interface Finding { rule: string; file: string; line: number; text: string }
 
@@ -63,8 +64,24 @@ function walk(dir: string): string[] {
   })
 }
 
-/** absolute file -> added line numbers (null = every line). */
+/** absolute file -> added line numbers (null = every line). With a valid WORK_RUN_BASELINE (the tree work-checks.sh
+ *  exports) "added" means added since that tree, so WIP already present at dispatch is not the run's; else over HEAD. */
 export function addedLines(target: string): Map<string, Set<number> | null> {
+  const base = process.env.WORK_RUN_BASELINE
+  if (base && /^[0-9a-f]{40,64}$/.test(base)) {
+    const ranges = changedRanges(target, base)
+    if (ranges) {
+      const out = new Map<string, Set<number> | null>()
+      const prefix = resolve(target) + '/'
+      for (const [f, rs] of Object.entries(ranges)) {
+        if (!f.startsWith(prefix)) continue
+        const lines = new Set<number>()
+        for (const [lo, hi] of rs) if (Number.isInteger(lo)) for (let k = lo; k <= hi; k++) lines.add(k)
+        out.set(f, lines)
+      }
+      return out
+    }
+  }
   const git = (...a: string[]) => spawnSync('git', ['-C', target, '-c', 'core.quotepath=off', ...a], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
   const top = git('rev-parse', '--show-toplevel')
   const out = new Map<string, Set<number> | null>()
