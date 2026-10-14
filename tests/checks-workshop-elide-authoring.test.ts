@@ -169,3 +169,21 @@ test('workflow-check workshop on a temp copy of fixtures/clean exits 0, and the 
   expect(first(r.stdout)).toMatch(/^workshop-gate: 2 check\(s\) examined/)
   expect(digest(), 'a check wrote into the tracked fixture tree').toBe(before)
 })
+
+// The page-break checkers (widows/orphans/runts) run under `uv run --with pymupdf` and judge slides.pdf as
+// prose unless its pages carry the template's "n / N" footer, so the fixture must keep that footer.
+// widows/orphans/runts belong to the typst plugin, found by workflow-check's default roots (~/.claude/skills/*).
+const TYPST_CHECKS = join(process.env.HOME ?? '', '.claude', 'skills', 'typst', 'checks', 'workshop', 'constraints', 'widows.py')
+const PYMUPDF_OK = existsSync(TYPST_CHECKS) && (() => { const r = sh('uv', ['run', '--with', 'pymupdf', 'python3', '-c', 'import pymupdf']); return r.status === 0 })()
+if (!PYMUPDF_OK) console.error('SKIPPED: fixtures/clean widows/orphans/runts test -- the typst plugin widows.py, uv or pymupdf is unavailable here, so the page-break checkers cannot run')
+test.skipIf(!PYMUPDF_OK)('workflow-check workshop --files on a temp copy of fixtures/clean exits 0 with widows, orphans and runts examining files', () => {
+  const proj = join(mkTmp('wfc-clean-files-'), 'proj')
+  cpSync(join(ROOT, 'skills', 'workshop', 'fixtures', 'clean'), proj, { recursive: true })
+  const r = sh(RUNNER, ['workshop', '--constraints-only', '--project-dir', '.', '--files', 'presentation/notes.typ', 'presentation/notes.pdf', 'presentation/slides.typ', 'presentation/slides.pdf', 'paper.md'], {}, proj)
+  expect(r.status, r.stdout + r.stderr).toBe(0)
+  for (const leg of ['widows', 'orphans', 'runts']) {
+    const line = r.stdout.split('\n').find(l => l.startsWith(`${leg}: `)) ?? ''
+    expect(line, `${leg} did not examine a file:\n${r.stdout}`).toMatch(/^\w+: [1-9]\d* file\(s\) examined/)
+  }
+  expect(r.stdout).not.toMatch(/COULD-NOT-CHECK|NO CHECK RAN/)
+})
