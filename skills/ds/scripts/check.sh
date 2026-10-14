@@ -46,8 +46,11 @@ report() { printf 'leg %s exit=%s%s\n' "$1" "$2" "${3:+ ($3)}"; [ "$2" -le "$RC"
 legcount_run ds-gate python3 "$HERE/../../../bin/workflow-check" ds --project-dir "$PROJ" --plan "$PLAN" --constraints-only
 report ds-gate "$LEG_STATUS"
 
+POLARS_PIN="$(sed -n 's/^POLARS_PIN = "\([0-9.]*\)".*/\1/p' "$HERE/../../../checks/ds/constraints/ds-dq.py")"
+[ -n "$POLARS_PIN" ] || { echo "check.sh: POLARS_PIN not found in ds-dq.py" >&2; exit 2; }
+echo "ds-dq-tests: polars==$POLARS_PIN" >&2
 SUITE="${DS_DQ_SUITE:-$HERE/ds_dq_test.py}"
-legcount_run ds-dq-tests legcount_cmd ds-dq-tests "$HERE" "uv run --with polars,pytest python3 -m pytest -o addopts= -p no:cacheprovider \"$SUITE\" -q"
+legcount_run ds-dq-tests legcount_cmd ds-dq-tests "$HERE" "uv run --with polars==$POLARS_PIN --with pytest python3 -m pytest -o addopts= -p no:cacheprovider \"$SUITE\" -q"
 report ds-dq-tests "$LEG_STATUS"
 
 if [ -n "$TESTCMD" ]; then legcount_run tests legcount_cmd tests "$PROJ" "$TESTCMD" "$TESTRE"; report tests "$LEG_STATUS"
