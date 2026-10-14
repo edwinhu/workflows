@@ -166,8 +166,8 @@ a proxy call — it holds the verified model-routing and failure-mode details.
 ## Provider routing
 
 Every `--tasks` row carries a `kind` — `script`, `judgement`, `review` or `bulk`. `farm.sh` hands
-each row to `scripts/lib/route.ts`, which picks the provider and a pinned model from the committed
-`scripts/lib/routing.json`: the kind's pick, else its first available fallback. A row may name
+each row to `${CLAUDE_PLUGIN_ROOT}/scripts/lib/route.ts`, which picks the provider and a pinned model from the committed
+`${CLAUDE_PLUGIN_ROOT}/scripts/lib/routing.json`: the kind's pick, else its first available fallback. A row may name
 `provider`/`model` itself instead. A row with neither a `kind` nor a `provider`/`model` is
 **refused** — exit 2, no row runs, and it never falls through to a default.
 

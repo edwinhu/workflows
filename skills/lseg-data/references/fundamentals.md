@@ -325,4 +325,4 @@ parameters={'Scale': 9}  # Divide by 1,000,000,000 (billions)
 - [SKILL.md](../SKILL.md) - Core API patterns
 - [esg.md](esg.md) - ESG scores
 - [symbology.md](symbology.md) - Identifier conversion
-- [WRDS_COMPARISON.md](../WRDS_COMPARISON.md) - Compustat field mapping
+- [WRDS_COMPARISON.md](wrds-comparison.md) - Compustat field mapping

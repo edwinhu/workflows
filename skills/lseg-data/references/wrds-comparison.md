@@ -366,6 +366,6 @@ rd.close_session()
 
 ## See Also
 
-- [SKILL.md](SKILL.md) - LSEG main documentation
-- [modules/symbology.md](modules/symbology.md) - Identifier conversion
-- [../wrds/SKILL.md](../wrds/SKILL.md) - WRDS skill documentation
+- [SKILL.md](../SKILL.md) - LSEG main documentation
+- [symbology.md](symbology.md) - Identifier conversion
+- [../wrds/SKILL.md](../../wrds/SKILL.md) - WRDS skill documentation

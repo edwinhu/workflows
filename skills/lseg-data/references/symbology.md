@@ -427,6 +427,6 @@ Identifiers are generally case-insensitive:
 ## See Also
 
 - [SKILL.md](../SKILL.md) - Core API patterns
-- [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) - Symbol conversion issues
-- [WRDS_COMPARISON.md](../WRDS_COMPARISON.md) - PERMNO/GVKEY mapping
+- [TROUBLESHOOTING.md](troubleshooting.md) - Symbol conversion issues
+- [WRDS_COMPARISON.md](wrds-comparison.md) - PERMNO/GVKEY mapping
 - [fundamentals.md](fundamentals.md) - Using symbols for data retrieval

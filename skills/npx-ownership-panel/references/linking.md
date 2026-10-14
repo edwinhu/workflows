@@ -9,7 +9,7 @@ Builds the `fundid → block` crosswalk that
 
 **It runs end to end from a fresh checkout with nothing but WRDS credentials.**
 Every input is either a WRDS table or a public SEC download. Read
-[`references/npx-crsp-linking.md`](../../../references/npx-crsp-linking.md)
+[`npx-crsp-linking.md`](npx-crsp-linking.md)
 before touching a threshold — it documents the measured failure each one prevents.
 
 ## Quick start
