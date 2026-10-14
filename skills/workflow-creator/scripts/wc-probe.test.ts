@@ -3909,6 +3909,58 @@ describe('P23 missing flag refused', () => {
 })
 
 
+// P24 — a context-loaded file states the rule, not the story behind it.
+describe('P24 narrated history', () => {
+  const run = (text: string, file = 'SKILL.md') => probe.checkNarratedHistory(file, text, probe.parseExemptions(file, text))
+
+  test('a clean rule line is silent', () => {
+    expect(run('# T\n\nNever re-run a settled check; the digest is the record.\n')).toEqual([])
+  })
+
+  test('an ISO date in prose is a finding naming the date', () => {
+    const f = run('# T\n\nUse a temp path per run (2026-10-02: a shared name deleted a checkout).\n')
+    expect(f.length).toBe(1)
+    expect(f[0].rule).toBe('P24 narrated history')
+    expect(f[0].line).toBe(3)
+    expect(f[0].detail).toContain('2026-10-02')
+  })
+
+  test.each([
+    ['The rule used to be "label it js".', 'used to be'],
+    ['This parser was broken for tables.', 'was broken'],
+    ['After the incident we added a guard.', 'incident'],
+    ['See Step 3b for the April outage incident.', 'incident'],
+    ['we found that the gate passed vacuously.', 'we found'],
+    ['Last time we ran it the loop stalled.', 'last time we'],
+    ['Held until 2027 by the hook.', 'until 2027'],
+  ])('a narrated phrase is a finding: %s', (line, token) => {
+    const f = run(`# T\n\n${line}\n`)
+    expect(f.length).toBe(1)
+    expect(f[0].detail.toLowerCase()).toContain(token.toLowerCase())
+  })
+
+  test('ordinary uses of the same words are silent', () => {
+    expect(run('# T\n\nThe flag is used to select a scope. Compare to what it looked like last time. Fact rows are incident-grounded; name the incidents and a named incident.\n')).toEqual([])
+  })
+
+  test('a date inside a fenced block is silent', () => {
+    expect(run('# T\n\n```\nrun --since 2026-10-02\n```\n')).toEqual([])
+  })
+
+  test('a date range in a data example is silent', () => {
+    expect(run('# T\n\n| datadate: 2005-01-01..2025-12-31 |\n')).toEqual([])
+  })
+
+  test('the declared exemption silences it', () => {
+    const text = '# T\n\n<!-- wc-probe: ignore-narrated-history -->\nMeasured 2026-08-08 on 2.1.226.\n'
+    expect(run(text)).toEqual([])
+  })
+
+  test('an agent file is judged too', () => {
+    expect(run('Seen 2026-01-02.\n', 'user-agents/x.md').length).toBe(1)
+  })
+})
+
 describe('ruleChecks configuration', () => {
   test('ruleChecks with blockAt out of range is flagged', () => {
     const text = [
