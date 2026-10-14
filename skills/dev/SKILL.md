@@ -141,9 +141,14 @@ above. `--provider` is the only spelling the scripts take, and both reject the o
 Omitting it silently runs the user's codex request on claude.
 
 ```js
-{
+const goal = /* one sentence */
+const planPath = /* the approved plan's path */
+const testCmd = /* the project's test command, from CLARIFY axis 3 */
+const lintCmd = /* the project's lint command, or null */
+const buildCmd = /* the project's build command, or null */
+const args = {
   projectDir,
-  goal: "<one sentence>",
+  goal,
 
   // The plan's table verbatim. Every implementation task carries redCommand and refs.
   tasks: [
@@ -162,10 +167,10 @@ Omitting it silently runs the user's codex request on claude.
   // ONE entry point; three lose one silently. Undeclared lint/build legs say so; a missing --test-cmd is exit 2.
   mechanicalChecks: [
     { name: "dev",
-      cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/dev/scripts/check.sh --project-dir <projectDir> --test-cmd \"<the project's test command>\" [--lint-cmd \"<lint>\"] [--build-cmd \"<build>\"]" },
+      cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/dev/scripts/check.sh --project-dir ${projectDir} --test-cmd "${testCmd}"${lintCmd ? ` --lint-cmd "${lintCmd}"` : ''}${buildCmd ? ` --build-cmd "${buildCmd}"` : ''}` },
   ],
   // check.sh runs every checks/dev/constraints/ script through `workflow-check dev --constraints-only`. work-checks.sh runs ruleChecks as a command (no agent); Jev scores the rules under checks/dev/rules/ (LOOP, MOCK, NET, SHELL, WEAK); a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
-  ruleChecks: { name: 'jev-dev-rules', cmd: 'bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow dev --project-dir <projectDir> --plan <planPath>' },
+  ruleChecks: { name: 'jev-dev-rules', cmd: `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow dev --project-dir ${projectDir} --plan ${planPath}` },
 
   // One lens after verification and mechanical checks; its checklist covers all four dimensions.
   lens: {
