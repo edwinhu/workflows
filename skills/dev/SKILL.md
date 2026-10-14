@@ -170,10 +170,10 @@ const args = {
 
   // The TARGET project's own commands, collected at CLARIFY. Nothing generic — a check that does
   // not run this repo's suite gates nothing.
-  // ONE entry point; three lose one silently. Undeclared lint/build legs say so; a missing --test-cmd or --plan (absent --no-plan) is exit 2.
+  // ONE entry point; three lose one silently. A missing --test-cmd, --lint-cmd, --build-cmd or --plan is exit 2 unless --no-lint-cmd / --no-build-cmd / --no-plan declines it.
   mechanicalChecks: [
     { name: "dev",
-      cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/dev/scripts/check.sh --project-dir ${projectDir} --plan ${planPath} --test-cmd "${testCmd}"${lintCmd ? ` --lint-cmd "${lintCmd}"` : ''}${buildCmd ? ` --build-cmd "${buildCmd}"` : ''}` },
+      cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/dev/scripts/check.sh --project-dir ${projectDir} --plan ${planPath} --test-cmd "${testCmd}"${lintCmd ? ` --lint-cmd "${lintCmd}"` : ' --no-lint-cmd'}${buildCmd ? ` --build-cmd "${buildCmd}"` : ' --no-build-cmd'}` },
   ],
   // check.sh runs every checks/dev/constraints/ script through `workflow-check dev --constraints-only`. work-checks.sh runs ruleChecks as a command (no agent); Jev scores the rules under checks/dev/rules/ (LOOP, MOCK, NET, SHELL, WEAK); a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
   ruleChecks: { name: 'jev-dev-rules', cmd: `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow dev --project-dir ${projectDir} --plan ${planPath}` },

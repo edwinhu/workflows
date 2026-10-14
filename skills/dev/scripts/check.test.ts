@@ -12,7 +12,13 @@ const runRaw = (...a: string[]) => {
   const r = spawnSync("bash", [CHECK, ...a], { timeout: 120_000, encoding: "utf8" });
   return { code: r.status ?? -1, out: r.stdout ?? "", err: r.stderr ?? "" };
 };
-const run = (...a: string[]) => runRaw(...(a.includes("--plan") || a.includes("--no-plan") ? a : [...a, "--no-plan"]));
+// Each of --plan/--lint-cmd/--build-cmd is required or declined, so the helper declines the ones a test does not exercise.
+const run = (...a: string[]) => runRaw(...[
+  ...a,
+  ...(a.includes("--plan") || a.includes("--no-plan") ? [] : ["--no-plan"]),
+  ...(a.includes("--lint-cmd") || a.includes("--no-lint-cmd") ? [] : ["--no-lint-cmd"]),
+  ...(a.includes("--build-cmd") || a.includes("--no-build-cmd") ? [] : ["--no-build-cmd"]),
+]);
 const proj = () => mkdtempSync(join(tmpdir(), "devcheck-"));
 // A test command that ran tests says how many; the tests leg counts them (work/scripts/leg-counts.sh),
 // so a stand-in for a passing or failing suite prints a runner summary rather than being `true`/`false`.
@@ -47,7 +53,7 @@ test("declaring nothing is exit 2, never a clean pass", () => {
     const r = run("--project-dir", d);
     expect(r.code).toBe(2);
     expect(r.err).toContain("--test-cmd is required");
-    expect(r.out).toContain("not declared");
+    expect(r.out).toContain("declined");
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
 
@@ -63,12 +69,12 @@ test("an empty or omitted --test-cmd is exit 2 even when lint is declared and pa
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
 
-test("an undeclared leg passes and says so, so it cannot be mistaken for absent", () => {
+test("a declined leg passes and says so, so it cannot be mistaken for absent", () => {
   const d = proj();
   try {
     const r = run("--project-dir", d, "--test-cmd", PASS);
     expect(r.code).toBe(0);
-    expect(r.out).toContain("leg build exit=0 (not declared)");
+    expect(r.out).toContain("leg build exit=0 (declined)");
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
 
@@ -186,7 +192,7 @@ test("the tests leg counts what the runner ran, and --test-count-re counts an un
     const c = run("--project-dir", d, "--test-cmd", "echo 'checked 7 cases'", "--test-count-re", "checked (\\d+) cases");
     expect(c.code).toBe(0);
     expect(c.err).toContain("tests: 7 test(s) examined (custom)");
-    expect(c.err).toContain("lint: 0 command(s) examined — nothing in scope (not declared)");
+    expect(c.err).toContain("lint: 0 command(s) examined — nothing in scope (declined)");
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
 
@@ -220,13 +226,13 @@ test("scope: no --plan is exit 2 naming the flag; --no-plan is exit 0 declined; 
     expect(none.err).toContain("--plan");
     expect(none.err).toContain("--no-plan");
     expect(none.out).not.toContain("leg scope exit=0");
-    const declined = runRaw("--project-dir", d, "--test-cmd", PASS, "--no-plan");
+    const declined = runRaw("--project-dir", d, "--test-cmd", PASS, "--no-plan", "--no-lint-cmd", "--no-build-cmd");
     expect(declined.code).toBe(0);
     expect(declined.out).toContain("leg scope exit=0 (declined)");
     const plan = join(d, "plan.md");
     writeFileSync(plan, `<!-- work:dispatch ${JSON.stringify({ args: { projectDir: d, tasks: [{ id: "T1", writablePaths: ["src"], refs: [] }] } })} -->\n`);
-    const ran = runRaw("--project-dir", d, "--test-cmd", PASS, "--plan", plan);
+    const ran = runRaw("--project-dir", d, "--test-cmd", PASS, "--plan", plan, "--no-lint-cmd", "--no-build-cmd");
     expect(ran.out).toMatch(/leg scope exit=\d+(?! \(declined\))/);
-    expect(ran.out).not.toContain("(declined)");
+    expect(ran.out).not.toContain("leg scope exit=0 (declined)");
   } finally { rmSync(d, { recursive: true, force: true }); }
 });

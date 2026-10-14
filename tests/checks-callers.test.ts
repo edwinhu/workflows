@@ -89,7 +89,7 @@ function planFor(opts: { workflow?: string; mech?: (dir: string) => string; rule
 }
 const dispatch = (f: { dir: string; plan: string }) =>
   sh('bash', [DISPATCH, '--provider', 'claude', '--no-red-probe', '--no-mech-probe', '--no-suite-lint', f.plan], { WORK_DISPATCH_DRYRUN: '1', WORKFLOW_CHECKS_PATH: ROOT }, f.dir)
-const DEV_CHECK = (dir: string) => `bash ${ROOT}/skills/dev/scripts/check.sh --project-dir ${dir} --no-plan --test-cmd "true"`
+const DEV_CHECK = (dir: string) => `bash ${ROOT}/skills/dev/scripts/check.sh --project-dir ${dir} --no-plan --test-cmd "true" --no-lint-cmd --no-build-cmd`
 
 test('dispatch reads the plan\'s workflow:, writes ACTIVE_WORKFLOW.md and fills ruleChecks with workflow-check <wf> --rules-only itself', () => {
   const f = planFor({ workflow: 'dev', mech: DEV_CHECK })
