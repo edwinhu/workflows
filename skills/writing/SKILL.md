@@ -290,9 +290,15 @@ above. `--provider` is the only spelling the scripts take, and both reject the o
 Omitting it silently runs the user's codex request on claude.
 
 ```js
-{
+const proj = /* the manuscript project directory */
+const bib = /* the bibliography path, relative to proj */
+const planPath = /* the armed plan's path, .planning/<slug>.md under proj */
+const planHash = /* the work plan hash */
+const domain = /* the plan's Domain: "general", "legal" or "econ" — it is also the --style */
+const goal = /* one sentence */
+const args = {
   projectDir,
-  goal: "<one sentence>",
+  goal,
 
   // ONE ROW PER SECTION, drawn from the plan's ## Section Outputs, in that table's order — this is
   // the per-section fan-out, expressed as task rows. Outline and draft are the SAME row's work.
@@ -329,7 +335,7 @@ Omitting it silently runs the user's codex request on claude.
   ],
 
   // The writing gate. GRAMMAR once for the project; CITE+CLAIM once per section (one probe settles
-  // both); PROSE-HARD once for the project. Quoted byte-identically from references/writing-checks.md.
+  // both); PROSE-HARD once for the project. The flags are the usage line in scripts/check.sh's header.
   // ONE entry point. The cite-claim leg was one entry PER SECTION, written out by the
   // plan — the purest form of what P10 refuses, since a plan that forgets a row drops
   // that section's citation gate and nothing reports a check it never knew about.
@@ -339,15 +345,14 @@ Omitting it silently runs the user's codex request on claude.
   // constraint under checks/writing/, so the set is the directory, never a list here.
   mechanicalChecks: [
     { name: "writing",
-      cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/check.sh --project <proj> --bib \"<proj>/<bib>.bib\" --plan \"<proj>/.planning/<slug>.md\" --plan-hash <work plan hash> --style <domain>" },
+      cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/check.sh --project ${proj} --bib "${proj}/${bib}" --plan "${planPath}" --plan-hash ${planHash} --style ${domain}` },
   ],
   // Jev scores the calibrated prose rules the layout holds for the workflow: checks/writing/rules
   // (signposting, stacked hedges, vague attribution), and for a register its own rules ON TOP of them,
   // never instead. p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens ranked.
-  // The workflow is substituted from Domain: when --style is: Domain: legal -> `writing/legal`,
-  // Domain: econ -> `writing/econ`, Domain: general -> `writing/general` (the same set check.sh's constraints leg runs).
-  // Left unsubstituted, it fails loudly.
-  ruleChecks: { name: "jev-writing-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --workflow writing/<domain>" },
+  // The workflow follows `domain`: legal -> `writing/legal`, econ -> `writing/econ`, general -> `writing/general`
+  // (the same set check.sh's constraints leg runs).
+  ruleChecks: { name: "jev-writing-rules", cmd: `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir ${projectDir} --plan ${planPath} --workflow writing/${domain}` },
 
   // One lens after verification and mechanical checks; its checklist covers all five dimensions.
   //
