@@ -14,11 +14,11 @@ const CHECKS = join(HERE, 'work-checks.sh');
 
 const GIT = ['-c', 'user.email=t@t', '-c', 'user.name=t'];
 const git = (d: string, ...a: string[]) => {
-  const r = spawnSync('git', ['-C', d, ...GIT, ...a], { encoding: 'utf8' });
+  const r = spawnSync('git', ['-C', d, ...GIT, ...a], { encoding: 'utf8', timeout: 120_000 });
   if (r.status !== 0) throw new Error(`git ${a.join(' ')}: ${r.stderr}`);
   return r.stdout;
 };
-const snapshot = (d: string) => spawnSync('bash', [SNAPSHOT, d], { encoding: 'utf8' });
+const snapshot = (d: string) => spawnSync('bash', [SNAPSHOT, d], { encoding: 'utf8', timeout: 120_000 });
 const sha256 = (p: string) => createHash('sha256').update(readFileSync(p)).digest('hex');
 
 /** A repo with a committed file, then WIP: a tracked line edit and an untracked file, both predating the "run". */
@@ -97,13 +97,13 @@ describe('changedFiles / changedRanges --since', () => {
   test('a file the run deletes is not listed', () => {
     const d = wipRepo();
     const snap = snapshot(d).stdout.trim();
-    spawnSync('rm', [join(d, 'wip_new.py')]);
+    spawnSync('rm', [join(d, 'wip_new.py')], { timeout: 120_000 });
     expect(changedFiles(d, snap)).toEqual([]);
   });
 });
 
 describe('rule-check.ts CLI --since', () => {
-  const run = (args: string[]) => spawnSync('bun', ['run', join(HERE, 'rule-check.ts'), '--workflow', 'ds', ...args], { encoding: 'utf8' });
+  const run = (args: string[]) => spawnSync('bun', ['run', join(HERE, 'rule-check.ts'), '--workflow', 'ds', ...args], { encoding: 'utf8', timeout: 120_000 });
 
   test('a run that changed nothing since the snapshot is "nothing in scope", WIP notwithstanding', () => {
     const d = wipRepo();
@@ -128,7 +128,7 @@ describe('work-checks.sh appends --since from args.runBaseline', () => {
     const a = join(dir, 'args.json'), raw = join(dir, 'raw.json'), out = join(dir, 'checks.json');
     writeFileSync(a, JSON.stringify(args));
     writeFileSync(raw, JSON.stringify({ stage: 'agents', agents: {}, checkPlan: { red: [], acceptance: [], mechanical: [], rules: [{ name: 'rules', cmd }] } }));
-    const r = spawnSync('bash', [CHECKS, a, raw, out], { encoding: 'utf8', env: { ...process.env, WORK_CHECK_TIMEOUT: '30' } });
+    const r = spawnSync('bash', [CHECKS, a, raw, out], { encoding: 'utf8', timeout: 120_000, env: { ...process.env, WORK_CHECK_TIMEOUT: '30' } });
     expect(r.status).toBe(0);
     return JSON.parse(readFileSync(out, 'utf8')).rules[0];
   }

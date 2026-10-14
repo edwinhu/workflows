@@ -633,7 +633,7 @@ describe('--spec-hash hashes the authored spec, not the bytes around it', () => 
 })
 
 describe('dispatch records the run baseline tree in args.json (runBaseline)', () => {
-  const git = (d: string, ...a: string[]) => execFileSync('git', ['-C', d, '-c', 'user.email=t@t', '-c', 'user.name=t', ...a], { encoding: 'utf8' })
+  const git = (d: string, ...a: string[]) => execFileSync('git', ['-C', d, '-c', 'user.email=t@t', '-c', 'user.name=t', ...a], { encoding: 'utf8', timeout: 120_000 })
 
   test('a git project: runBaseline is the tree of the WIP at dispatch, kept across a re-dispatch', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
