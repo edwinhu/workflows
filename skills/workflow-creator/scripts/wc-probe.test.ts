@@ -4278,3 +4278,22 @@ describe('COV — P3 and P5 sites that had no label pin', () => {
     expect(probe.runProbe(good.dir).findings.filter((x: any) => x.rule === 'P5 return-shape drift')).toEqual([])
   })
 })
+
+describe('main — a throw while rendering is could-not-look, not a rule failure', () => {
+  test('a render failure exits 3, never the uncaught-throw 1', () => {
+    const dir = fixture({ 'SKILL.md': skillMd('render-throw') })
+    const realLog = console.log
+    const realErr = console.error
+    const seen: string[] = []
+    console.log = () => { throw new Error('render boom') }
+    console.error = (...a: unknown[]) => { seen.push(String(a[0])) }
+    try {
+      const code = probe.main(["--target", dir])
+      expect(code).toBe(3)
+      expect(seen[0]).toContain('failed to render the report')
+    } finally {
+      console.log = realLog
+      console.error = realErr
+    }
+  })
+})

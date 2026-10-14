@@ -4751,8 +4751,14 @@ export function main(argv: string[]): number {
   // Serialize the WHOLE result. Hand-building a subset literal here is how `pathCheckExempt` came to
   // be dropped. NOTE: the audit branch runs the TEXT mode (SKILL.md passes no --json), which is why
   // every coverage and suppression note is printed in both modes rather than only in the JSON.
-  if (opts.json) console.log(JSON.stringify(result, null, 2))
-  else console.log(formatText(result))
+  // Rendering is inside the guard: an uncaught throw exits 1, which reads as a rule failure.
+  try {
+    if (opts.json) console.log(JSON.stringify(result, null, 2))
+    else console.log(formatText(result))
+  } catch (e) {
+    console.error(`wc-probe: failed to render the report for ${opts.target}: ${(e as Error).message}`)
+    return 3
+  }
   return result.findings.length > 0 ? 1 : 0
 }
 
