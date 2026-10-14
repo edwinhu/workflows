@@ -19,6 +19,7 @@
  */
 import { describe, expect, test, afterAll, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
+import { spawnAsync } from '../../../tests/helpers/async-spawn.ts'
 import { readdirSync, mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync, symlinkSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -70,8 +71,8 @@ function notifier(dir: string): { path: string; out: string } {
  * with grindEnv() -- its shims would shadow the recording stubs the assertion reads.
  */
 function run(d: string, args: string[], env?: Record<string, string>) {
-  return spawnSync('bash', [GRIND, 'run', '--runner', 'claude-code', ...args], {
-    encoding: 'utf8', timeout: 60_000,
+  return spawnAsync('bash', [GRIND, 'run', '--runner', 'claude-code', ...args], {
+    timeout: 60_000,
     env: env ? { ...env, TMPDIR: d } : grindEnv({ TMPDIR: d }),
   })
 }
@@ -96,7 +97,7 @@ function stubPath(dir: string, stubs: string[]): { env: Record<string, string>; 
 }
 
 describe('grind.sh --notify', () => {
-  test('fires on a clean finish, naming the state and the exit code', () => {
+  test('fires on a clean finish, naming the state and the exit code', async () => {
     const d = workdir('grind-notify-done')
     const journal = join(d, 'journal.jsonl')
     const n = notifier(d)
@@ -104,7 +105,7 @@ describe('grind.sh --notify', () => {
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = run(d, [
+    const r = await run(d, [
       '--journal', journal,
       '--check', check,
       '--runner', runner,
@@ -119,7 +120,7 @@ describe('grind.sh --notify', () => {
     expect(readFileSync(n.out, 'utf8').trim()).toBe(`done 0 ${journal}`)
   })
 
-  test('fires on a stall too — the outcome you most need to hear about', () => {
+  test('fires on a stall too — the outcome you most need to hear about', async () => {
     const d = workdir('grind-notify-stall')
     const journal = join(d, 'journal.jsonl')
     const n = notifier(d)
@@ -127,7 +128,7 @@ describe('grind.sh --notify', () => {
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = run(d, [
+    const r = await run(d, [
       '--journal', journal,
       '--check', check,
       '--runner', runner,
@@ -142,7 +143,7 @@ describe('grind.sh --notify', () => {
     expect(readFileSync(n.out, 'utf8').trim()).toBe(`stalled 3 ${journal}`)
   })
 
-  test('fires when the pass budget runs out', () => {
+  test('fires when the pass budget runs out', async () => {
     const d = workdir('grind-notify-budget')
     const journal = join(d, 'journal.jsonl')
     const n = notifier(d)
@@ -150,7 +151,7 @@ describe('grind.sh --notify', () => {
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = run(d, [
+    const r = await run(d, [
       '--journal', journal,
       '--check', check,
       '--runner', runner,
@@ -165,7 +166,7 @@ describe('grind.sh --notify', () => {
     expect(readFileSync(n.out, 'utf8').trim()).toBe(`budget 4 ${journal}`)
   })
 
-  test('a notifier that fails does not change the run own verdict', () => {
+  test('a notifier that fails does not change the run own verdict', async () => {
     // Telling someone is not part of the work. A broken notifier must not turn a finished run into
     // a failed one, for the same reason journal writes are swallowed: reporting must never be the
     // thing that breaks a week-long loop.
@@ -176,7 +177,7 @@ describe('grind.sh --notify', () => {
     const runner = script(d, 'runner.sh', 'exit 0')
     writeFileSync(join(d, 'prompt.txt'), 'work')
 
-    const r = run(d, [
+    const r = await run(d, [
       '--journal', journal,
       '--check', check,
       '--runner', runner,
@@ -204,12 +205,12 @@ describe('grind.sh --notify', () => {
     }
   }
 
-  test('with no event stream it agent-msgs the launching session, and pops herdr when herdr is present', () => {
+  test('with no event stream it agent-msgs the launching session, and pops herdr when herdr is present', async () => {
     const d = workdir('grind-notify-default')
     const { journal, args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
 
-    const r = run(d, [...args, '--no-events'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = await run(d, [...args, '--no-events'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     const calls = readFileSync(log, 'utf8')
@@ -225,27 +226,27 @@ describe('grind.sh --notify', () => {
     writeFileSync(join(f, 'watcher.alive'), String(Math.floor(Date.now() / 1000) - ageSec))
   }
 
-  test('a stale or missing watcher beacon means the ending is agent-msg\'d even with the stream live', () => {
+  test('a stale or missing watcher beacon means the ending is agent-msg\'d even with the stream live', async () => {
     for (const [name, age] of [['missing', null], ['stale', 600]] as const) {
       const d = workdir(`grind-notify-nobeacon-${name}`)
       const { args } = finishing(d)
       const { env, log } = stubPath(d, ['agent-msg'])
       if (age !== null) beacon(d, 'sess-launch', age)
 
-      const r = run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+      const r = await run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
       expect(r.status).toBe(0)
       expect(readFileSync(log, 'utf8')).toMatch(/^agent-msg send sess-launch .*done/m)
     }
   })
 
-  test('with the event stream and a fresh watcher beacon for the launch session the ending sends no agent-msg, but still pops herdr', () => {
+  test('with the event stream and a fresh watcher beacon for the launch session the ending sends no agent-msg, but still pops herdr', async () => {
     const d = workdir('grind-notify-stream')
     const { journal, args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
     beacon(d, 'sess-launch', 5)
 
-    const r = run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = await run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     const calls = readFileSync(log, 'utf8')
@@ -259,12 +260,12 @@ describe('grind.sh --notify', () => {
     expect(lines).toContain(`journal=${journal}`)
   })
 
-  test('--notify-to naming another session still agent-msgs it even with the stream live', () => {
+  test('--notify-to naming another session still agent-msgs it even with the stream live', async () => {
     const d = workdir('grind-notify-stream-other')
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg'])
 
-    const r = run(d, [...args, '--notify-to', 'other-session'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = await run(d, [...args, '--notify-to', 'other-session'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     const calls = readFileSync(log, 'utf8')
@@ -272,12 +273,12 @@ describe('grind.sh --notify', () => {
     expect(calls).not.toMatch(/^agent-msg send sess-launch/m)
   })
 
-  test('--push also sends a phone push through claude, because agent-msg to an idle session can be dropped', () => {
+  test('--push also sends a phone push through claude, because agent-msg to an idle session can be dropped', async () => {
     const d = workdir('grind-notify-push')
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'claude'])
 
-    const r = run(d, [...args, '--no-events', '--push'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = await run(d, [...args, '--no-events', '--push'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     const calls = readFileSync(log, 'utf8')
@@ -285,23 +286,23 @@ describe('grind.sh --notify', () => {
     expect(calls).toMatch(/^claude -p .*PushNotification.*done/m)
   })
 
-  test('without --push no claude call is made, so test runs never reach a phone', () => {
+  test('without --push no claude call is made, so test runs never reach a phone', async () => {
     const d = workdir('grind-notify-nopush')
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'claude'])
 
-    const r = run(d, [...args, '--no-events'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = await run(d, [...args, '--no-events'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     expect(readFileSync(log, 'utf8')).not.toMatch(/^claude /m)
   })
 
-  test('without herdr on PATH the no-stream default sends agent-msg alone', () => {
+  test('without herdr on PATH the no-stream default sends agent-msg alone', async () => {
     const d = workdir('grind-notify-noherdr')
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg'])
 
-    const r = run(d, [...args, '--no-events'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = await run(d, [...args, '--no-events'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     const calls = readFileSync(log, 'utf8')
@@ -309,35 +310,35 @@ describe('grind.sh --notify', () => {
     expect(calls).not.toMatch(/^herdr /m)
   })
 
-  test('--notify-to overrides the launching session as the target', () => {
+  test('--notify-to overrides the launching session as the target', async () => {
     const d = workdir('grind-notify-to')
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg'])
 
-    const r = run(d, [...args, '--notify-to', 'orchestrator'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = await run(d, [...args, '--notify-to', 'orchestrator'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     expect(readFileSync(log, 'utf8')).toMatch(/^agent-msg send orchestrator /m)
   })
 
-  test('--notify none spawns nothing and the run is unchanged', () => {
+  test('--notify none spawns nothing and the run is unchanged', async () => {
     const d = workdir('grind-notify-none')
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
 
-    const r = run(d, [...args, '--notify', 'none'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = await run(d, [...args, '--notify', 'none'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     expect(existsSync(log)).toBe(false)
   })
 
-  test('a custom --notify replaces the default rather than adding to it', () => {
+  test('a custom --notify replaces the default rather than adding to it', async () => {
     const d = workdir('grind-notify-custom')
     const { journal, args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
     const n = notifier(d)
 
-    const r = run(d, [...args, '--notify', n.path], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = await run(d, [...args, '--notify', n.path], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     expect(readFileSync(n.out, 'utf8').trim()).toBe(`done 0 ${journal}`)
