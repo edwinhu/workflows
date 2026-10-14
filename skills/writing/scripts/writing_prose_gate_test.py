@@ -3,7 +3,7 @@
 
     uv run python3 writing_prose_gate_test.py
 
-Four cases, each exercising the gate end to end as a subprocess against a temporary
+Five cases, each exercising the gate end to end as a subprocess against a temporary
 project it builds itself (it never writes into `fixtures/`, which other checks are
 demonstrated against):
 
@@ -11,6 +11,7 @@ demonstrated against):
   2. a soft-only document exits 0 with the advisory printed
   3. a missing engine exits non-zero
   4. unparseable engine output exits non-zero
+  5. a planned draft that is absent exits non-zero
 """
 from __future__ import annotations
 
@@ -108,6 +109,17 @@ def main() -> int:
             "unparseable output exits non-zero",
             proc.returncode != 0 and "GATE DEFECT" in proc.stdout,
             f"exit={proc.returncode} defect={'GATE DEFECT' in proc.stdout}",
+        )
+
+        # 5 — a planned draft that is absent fails the gate; the present one cannot carry it.
+        gap_project = build_project(root / "gap", SOFT_DRAFT)
+        plan = gap_project / ".planning" / "fixture-plan.md"
+        plan.write_text(PLAN + "| Conclusion | outlines/Conclusion.md | drafts/Conclusion.md | Introduction |\n")
+        proc = run_gate(gap_project)
+        check(
+            "a planned draft that is absent exits non-zero",
+            proc.returncode != 0 and "drafts/Conclusion.md" in proc.stdout,
+            f"exit={proc.returncode} named={'drafts/Conclusion.md' in proc.stdout}",
         )
 
     passed = sum(1 for _, ok, _ in results if ok)

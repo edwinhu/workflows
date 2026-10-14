@@ -11,10 +11,12 @@ const mkTmp = useTmp()
 const CHECK = join(import.meta.dir, 'check.sh')
 
 /** Three drafts; a stub `uv` answers the probe per draft: JSON for all but `bad`, which gets `badOut` ('' = nothing). */
-function run(badOut: string, badExit = 0) {
+function run(badOut: string, badExit = 0, opts: { absent?: string; planStyle?: string; style?: string } = {}) {
   const d = mkTmp('wchk-cite-')
   mkdirSync(join(d, 'drafts')); mkdirSync(join(d, 'bin'))
-  for (const s of ['A', 'B', 'C']) writeFileSync(join(d, 'drafts', `${s}.md`), 'x\n')
+  for (const s of ['A', 'B', 'C']) if (s !== opts.absent) writeFileSync(join(d, 'drafts', `${s}.md`), 'x\n')
+  const sections = JSON.stringify(['A', 'B', 'C'].map((s) => ({ name: s, draftFile: join(d, 'drafts', `${s}.md`) })))
+  const planStyle = opts.planStyle ?? 'general'
   writeFileSync(join(d, 'refs.bib'), ''); writeFileSync(join(d, 'plan.md'), '# Plan\n')
   const stub = `#!/usr/bin/env bash
 case "$*" in
@@ -23,13 +25,13 @@ case "$*" in
       *C.md*) printf '%s' '${badOut}'; exit ${badExit} ;;
       *) echo '{"pass": true, "citesChecked": 2}'; exit 0 ;;
     esac ;;
-  *writing_section_index.py*) echo '{"ok": true, "sections": [1]}'; exit 0 ;;
+  *writing_section_index.py*) echo '{"ok": true, "style": "${planStyle}", "sections": ${sections}}'; exit 0 ;;
   *) exit 0 ;;
 esac
 `
   writeFileSync(join(d, 'bin', 'uv'), stub); chmodSync(join(d, 'bin', 'uv'), 0o755)
   return spawnSync('bash', [CHECK, '--project', d, '--bib', join(d, 'refs.bib'), '--plan', join(d, 'plan.md'),
-    '--plan-hash', 'h', '--style', 'general'],
+    '--plan-hash', 'h', '--style', opts.style ?? 'general'],
     { encoding: 'utf8', timeout: 50_000, env: { ...process.env, PATH: `${join(d, 'bin')}:${process.env.PATH}` } })
 }
 const legExit = (r: { stdout: string }) => Number(/^leg cite-claim exit=(\d+)/m.exec(r.stdout)?.[1])
@@ -44,4 +46,14 @@ test('a probe that exits 0 with unparseable output fails the leg', () => {
 })
 test('a probe that prints nothing fails the leg', () => {
   expect(legExit(run(''))).not.toBe(0)
+})
+test('a planned section whose draft is absent fails the leg, though the other drafts pass', () => {
+  const r = run('{"pass": true, "citesChecked": 1}', 0, { absent: 'C' })
+  expect(r.stderr).toContain('planned draft absent')
+  expect(legExit(r)).not.toBe(0)
+})
+test('a --style that differs from the plan Domain is refused', () => {
+  const r = run('{"pass": true, "citesChecked": 1}', 0, { planStyle: 'legal', style: 'general' })
+  expect(r.stderr).toContain("plan Domain is 'legal'")
+  expect(r.status).not.toBe(0)
 })

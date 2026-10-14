@@ -4,8 +4,8 @@
 # The cite-claim leg was a VARIABLE-LENGTH list before 2026-09-15 -- one mechanicalChecks
 # entry per section, written out by the plan. That is the failure P10 names in its purest
 # form: a plan that forgets a row drops a section's citation gate and nothing reports a
-# check it never knew about. The sections are DISCOVERED here instead, from the drafts
-# directory, so the set cannot disagree with what exists on disk.
+# check it never knew about. The sections come from the plan instead (the section index's
+# draftFile), so a planned draft that is absent on disk fails rather than going unexamined.
 #
 # Every leg prints `<leg>: N <unit> examined` (work/scripts/leg-counts.sh).
 #
@@ -39,26 +39,48 @@ grammar_leg() {
   local out s
   out="$(uv run python3 "$HERE/writing_section_index.py" "$PROJ")"
   s=$?
+  GRAMMAR_JSON="$out"
   printf '%s\n' "$out" >&2
   printf '%s' "$out" | python3 -c 'import json, sys
 d = json.load(sys.stdin)
 print("grammar: %d section(s) examined, ok=%s" % (len(d.get("sections") or []), d.get("ok")))' >&2
   return "$s"
 }
+GRAMMAR_JSON=""
 legcount_run grammar grammar_leg
 report grammar "$LEG_STATUS"
 
-# DISCOVERED, not listed. A drafts directory with no section means the gate would examine
-# nothing, which is a refusal rather than a pass.
-mapfile -t SECTIONS < <(find "$PROJ/drafts" -maxdepth 1 -name '*.md' -print 2>/dev/null | sort)
+# The plan is the authority: sections are its `draftFile`s, not whatever *.md sits in drafts/. A plan with
+# no section means the gate would examine nothing, which is a refusal rather than a pass.
+mapfile -t SECTIONS < <(printf '%s' "$GRAMMAR_JSON" | python3 -c 'import json, sys
+try:
+    d = json.load(sys.stdin)
+except ValueError:
+    d = {}
+for s in d.get("sections") or []:
+    print(s.get("draftFile", ""))' 2>/dev/null | sed '/^$/d')
+PLAN_STYLE="$(printf '%s' "$GRAMMAR_JSON" | python3 -c 'import json, sys
+try:
+    print(json.load(sys.stdin).get("style", ""))
+except ValueError:
+    pass' 2>/dev/null)"
+domain_leg() {
+  count_line domain 1 "plan Domain(s)" "('$PLAN_STYLE' vs --style $STYLE)" >&2
+  if [ -z "$PLAN_STYLE" ] || [ "$PLAN_STYLE" = unspecified ] || [ "$PLAN_STYLE" = "$STYLE" ]; then return 0; fi
+  echo "check.sh: --style $STYLE but the plan Domain is '$PLAN_STYLE' — the register gate would grade the wrong register" >&2
+  return 1
+}
+legcount_run domain domain_leg
+report domain "$LEG_STATUS"
 if [ "${#SECTIONS[@]}" -eq 0 ]; then
-  echo "check.sh: no *.md under $PROJ/drafts — the citation gate would examine nothing" >&2
+  echo "check.sh: the plan names no section draft — the citation gate would examine nothing" >&2
   report cite-claim 2 "no sections found"
 else
   # A section counts as examined when its probe printed a verdict; the cites are its detail.
   cite_claim_leg() {
     local rc=0 d out n=0 cites=0
     for d in "${SECTIONS[@]}"; do
+      [ -f "$d" ] || { echo "check.sh: planned draft absent: $d" >&2; rc=1; continue; }
       out="$(uv run python3 "$HERE/writing_gate_probe.py" "$d" --bib "$BIB" --plan "$PLAN" --plan-hash "$HASH")" || rc=1
       printf '%s\n' "$out" >&2
       if c="$(printf '%s' "$out" | python3 -c 'import json, sys
