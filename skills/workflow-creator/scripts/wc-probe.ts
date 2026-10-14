@@ -362,6 +362,7 @@ export const KNOWN_EXEMPTION_RULES: readonly string[] = [
   'serial-loop',
   'fixed-temp',
   'leg-count',
+  'inputs-readable',
 ]
 
 /**
@@ -2844,6 +2845,120 @@ export function checkRefsDeclaration(
   return findings
 }
 
+/**
+ * P22 inputs readable — a ref, item input or authorityExtra path an agent cannot use.
+ *
+ * Over every object that declares `refs`, `inputs` or `authorityExtra` (the prompt is the object's
+ * own `prompt`/`work`/`acceptance`/`authorityExtra` text), with `{{PLACEHOLDER}}` and unresolvable
+ * `$VAR` paths skipped:
+ *   (a) an extension the Read tool cannot open as text, with no projection command in the prompt;
+ *   (b) an existing file over 256 KB when the prompt says to read it "in full";
+ *   (c) a `{{NAME}}` placeholder in refs when the prompt says "search-only".
+ */
+const UNREADABLE_EXT_RE = /\.(docx|xlsx|pptx|doc|xls|ppt|zip|db|sqlite)$/i
+const UNREADABLE_TOKEN_RE = /(?<![\w$~./<>-])[\w$~\/][\w${}.\/~-]*\.(?:docx|xlsx|pptx|doc|xls|ppt|zip|db|sqlite)\b/gi
+const PROJECTION_CMD_RE = /\b(pandoc|docx2txt|markitdown|unzip|xlsx2csv|in2csv|sqlite3|duckdb|soffice|libreoffice|docx-render|pptx-render|catdoc|unoconv)\b/i
+const READ_IN_FULL_RE = /\bin full\b|\bin its entirety\b/i
+const SEARCH_ONLY_RE = /\bsearch[- ]only\b/i
+const READ_IN_FULL_MAX_BYTES = 256 * 1024
+
+export function checkInputsReadable(
+  file: string,
+  text: string,
+  target: string,
+  exemptions: readonly Exemption[],
+  ctx?: SkillContext,
+): Finding[] {
+  const findings: Finding[] = []
+  const context = ctx ?? skillContextFor(file, target)
+  const masked = maskLiterals(text)
+  const objs = findObjectLiterals(text)
+  const seen = new Set<string>()
+  const report = (line: number, detail: string, remedy: string) => {
+    const key = `${line}:${detail}`
+    if (seen.has(key)) return
+    seen.add(key)
+    findings.push({ rule: 'P22 inputs readable', severity: 'major', file, line, detail, remedy })
+  }
+  const literalsOf = (obj: ObjectLiteral, key: string): string[] => {
+    const span = findKeyValueSpan(text, masked, obj, key)
+    return span ? stringLiteralsIn(text, span.start, span.end) : []
+  }
+
+  for (const obj of objs) {
+    const hasRefs = obj.keys.includes('refs')
+    const hasInputs = obj.keys.includes('inputs')
+    const hasAuthority = obj.keys.includes('authorityExtra')
+    if (!hasRefs && !hasInputs && !hasAuthority) continue
+    // an item `{text, inputs}` has no prompt of its own: its enclosing object judges it
+    if (!hasRefs && !hasAuthority && !obj.keys.some(k => k === 'prompt' || k === 'work')) continue
+    const line = lineOf(text, obj.start)
+    if (isExemptAt(exemptions, 'inputs-readable', line)) continue
+
+    const prompt = ['prompt', 'work', 'acceptance', 'authorityExtra'].flatMap(k => literalsOf(obj, k)).join('\n')
+    const label = (literalsOf(obj, 'id')[0] ?? literalsOf(obj, 'key')[0] ?? literalsOf(obj, 'agentType')[0]) || 'object'
+    // inputs of items nested in this object are judged against this object's prompt
+    const nestedInputs = objs
+      .filter(n => n !== obj && n.start > obj.start && n.end <= obj.end && n.keys.includes('inputs'))
+      .flatMap(n => literalsOf(n, 'inputs'))
+    const refs = hasRefs ? literalsOf(obj, 'refs') : []
+    const inputs = [...(hasInputs ? literalsOf(obj, 'inputs') : []), ...nestedInputs]
+    const projected = PROJECTION_CMD_RE.test(prompt)
+
+    const unreadable = (raw: string, kind: string) =>
+      report(
+        line,
+        `${label} ${kind} ${JSON.stringify(raw)} has an extension the Read tool cannot open as text and the prompt names no projection command`,
+        'name the command that projects it to text (pandoc, docx-render, xlsx2csv, sqlite3 …) in the same prompt, or ref the projected file; declare <!-- wc-probe: ignore-inputs-readable --> with a reason if the agent has another way in',
+      )
+
+    for (const [raw, kind] of [...refs.map(r => [r, 'ref'] as const), ...inputs.map(r => [r, 'input'] as const)]) {
+      if (/\{\{[^}]+\}\}/.test(raw)) {
+        if (kind === 'ref' && SEARCH_ONLY_RE.test(prompt)) {
+          report(
+            line,
+            `${label} ref ${JSON.stringify(raw)} is a placeholder under a search-only prompt — a search leg has nothing to open`,
+            'drop the placeholder from refs, or make the leg a read leg',
+          )
+        }
+        continue
+      }
+      if (unresolvedVarIn(raw, context) !== null) continue
+      if (UNREADABLE_EXT_RE.test(raw)) {
+        if (!projected) unreadable(raw, kind)
+        continue
+      }
+      if (!READ_IN_FULL_RE.test(prompt)) continue
+      const resolved = resolveRefPath(raw, dirname(file), context)
+      if (resolved === null) continue
+      let size = 0
+      try {
+        const st = statSync(resolved)
+        size = st.isFile() ? st.size : 0
+      } catch {
+        continue
+      }
+      if (size > READ_IN_FULL_MAX_BYTES) {
+        report(
+          line,
+          `${label} ${kind} ${JSON.stringify(raw)} is ${Math.round(size / 1024)} KB and the prompt says to read it in full — the Read tool truncates above 256 KB`,
+          'say "search" or give a line range, or split the file; declare <!-- wc-probe: ignore-inputs-readable --> with a reason if truncation is acceptable',
+        )
+      }
+    }
+
+    if (hasAuthority && !projected) {
+      for (const lit of literalsOf(obj, 'authorityExtra')) {
+        for (const tok of lit.match(UNREADABLE_TOKEN_RE) ?? []) {
+          if (/\{\{/.test(tok) || unresolvedVarIn(tok, context) !== null) continue
+          unreadable(tok, 'authorityExtra path')
+        }
+      }
+    }
+  }
+  return findings
+}
+
 /** Span of the value for `key` inside an object literal, or null. */
 export function findKeyValueSpan(
   src: string,
@@ -4609,11 +4724,13 @@ export function runProbe(
       const code = maskNonFenced(text)
       findings.push(...checkBareWorkflowRefs(file, code, fileExemptions))
       findings.push(...checkRefsDeclaration(file, code, root, fileExemptions, ctx, unresolvedRefs))
+      findings.push(...checkInputsReadable(file, code, root, fileExemptions, ctx))
     } else {
       findings.push(...checkReturnShapeDrift(file, text, { exemptions: fileExemptions, ctx }))
       findings.push(...checkShellOnlyAgentLegs(file, text, fileExemptions))
       findings.push(...checkBareWorkflowRefs(file, text, fileExemptions))
       findings.push(...checkRefsDeclaration(file, text, root, fileExemptions, ctx, unresolvedRefs))
+      findings.push(...checkInputsReadable(file, text, root, fileExemptions, ctx))
     }
   }
 

@@ -3705,6 +3705,78 @@ describe('P21 leg count line', () => {
   })
 })
 
+// P22 — an input an agent cannot use: unreadable extension, "in full" over a huge file, a placeholder under search-only.
+describe('P22 inputs readable', () => {
+  const fence = (body: string) => '```js\n' + body + '\n```\n'
+  const run = (body: string, files: Record<string, string> = {}, ex: any[] = []) => {
+    const dir = mkTmp('p21-')
+    for (const [name, content] of Object.entries(files)) {
+      mkdirSync(dirname(join(dir, name)), { recursive: true })
+      writeFileSync(join(dir, name), content)
+    }
+    const file = join(dir, 'SKILL.md')
+    const text = fence(body)
+    writeFileSync(file, text)
+    return probe.checkInputsReadable(file, probe.maskNonFenced(text), dir, ex)
+  }
+
+  test('(a) a .docx ref with no projection command is a finding naming the ref', () => {
+    const f = run('{id: "t1", work: "Read the memo and summarise it", refs: ["memo.docx"]}', { 'memo.docx': 'x' })
+    expect(f.length).toBe(1)
+    expect(f[0].rule).toBe('P22 inputs readable')
+    expect(f[0].detail).toContain('"memo.docx"')
+    expect(f[0].detail).toContain('Read tool cannot open')
+  })
+
+  test('(a) the same ref is clean when the prompt names a projection command', () => {
+    const body = '{id: "t1", work: "Run pandoc memo.docx -t plain first, then summarise", refs: ["memo.docx"]}'
+    expect(run(body, { 'memo.docx': 'x' })).toEqual([])
+  })
+
+  test('(a) a scoredChecks item input and an authorityExtra path are judged the same way', () => {
+    const body = [
+      '{key: "k", prompt: "Count the rows", refs: [], items: [{text: "a", inputs: ["data/t.xlsx"]}]},',
+      '{authorityExtra: "The source is sheets/book.xlsx"}',
+    ].join('\n')
+    const f = run(body)
+    expect(f.map((x: any) => x.detail).join('\n')).toContain('"data/t.xlsx"')
+    expect(f.map((x: any) => x.detail).join('\n')).toContain('"sheets/book.xlsx"')
+    expect(f.length).toBe(2)
+  })
+
+  test('(a) a placeholder ref is skipped, a readable extension is clean', () => {
+    expect(run('{id: "t1", work: "Read it", refs: ["{{SOURCE}}.docx", "notes.md", "p.pdf"]}', { 'notes.md': 'x' })).toEqual([])
+  })
+
+  test('(a) a bare suffix in authorityExtra prose is not a path', () => {
+    expect(run('{authorityExtra: "the golden copy is <name>.westlaw.docx; a .docx is the only artifact; the .westlaw.docx suffix"}')).toEqual([])
+  })
+
+  test('(b) "in full" over a file above 256 KB is a finding; under it is clean', () => {
+    const big = 'x'.repeat(256 * 1024 + 1)
+    const f = run('{id: "t1", work: "Read tm.md in full", refs: ["tm.md"]}', { 'tm.md': big })
+    expect(f.length).toBe(1)
+    expect(f[0].detail).toContain('"tm.md"')
+    expect(f[0].detail).toContain('in full')
+    expect(run('{id: "t1", work: "Read tm.md in full", refs: ["tm.md"]}', { 'tm.md': 'small' })).toEqual([])
+    expect(run('{id: "t1", work: "Search tm.md for the term", refs: ["tm.md"]}', { 'tm.md': big })).toEqual([])
+  })
+
+  test('(c) a {{SOURCE}} placeholder in refs under a search-only prompt is a finding', () => {
+    const f = run('{id: "t1", work: "This leg is search-only: grep the corpus", refs: ["{{SOURCE}}"]}')
+    expect(f.length).toBe(1)
+    expect(f[0].detail).toContain('"{{SOURCE}}"')
+    expect(f[0].detail).toContain('search-only')
+    expect(run('{id: "t1", work: "Read the source", refs: ["{{SOURCE}}"]}')).toEqual([])
+  })
+
+  test('a declared inputs-readable exemption silences it', () => {
+    const text = '<!-- wc-probe: ignore-inputs-readable -->\n' + fence('{id: "t1", work: "Read it", refs: ["m.docx"]}')
+    const ex = probe.parseExemptions('SKILL.md', text)
+    expect(probe.checkInputsReadable('SKILL.md', probe.maskNonFenced(text), '/nonexistent', ex)).toEqual([])
+  })
+})
+
 
 describe('ruleChecks configuration', () => {
   test('ruleChecks with blockAt out of range is flagged', () => {
