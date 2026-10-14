@@ -215,7 +215,7 @@ run keeps all three rows — collapsing them re-introduces the overlap the momen
 added.
 
 `retrieve` stays one serial row (P17 exempted): every Westlaw export shares the user's one signed-in browser, one delivery queue whose top item `#0_qitem` is clicked, and one Downloads directory, so concurrent retrievals can take each other's file.
-<!-- wc-probe: ignore-serial-loop -->
+<!-- wc-probe: ignore-serial-loop:start -->
 
 ```js
 const addendum = /* /home/eh/areas/secreg/addenda/NN-addendum.typ with the addendum's number */
@@ -280,6 +280,7 @@ const args = {
         "${CLAUDE_PLUGIN_ROOT}/skills/elide-case/references/retrieval.md",
       ],
     },
+    // <!-- wc-probe: ignore-serial-loop:end -->
     // ── WAVE 2: ONE ROW PER READING. Copy this row for each `## Readings In Scope` line,
     // substituting the slug, caption, source basename and page target. Each row cuts its own
     // reading, so `tasksThatFlagged` on a FAIL names exactly the readings to re-cut. Each writes
@@ -386,7 +387,7 @@ const args = {
   // One lens after verification and mechanical checks; legibility and fidelity remain advisory above.
   lens: {
     agentType: "Explore",
-    refs: [],
+    refs: ["${CLAUDE_PLUGIN_ROOT}/skills/elide-case/references/editing-marks.md"],
     prompt: "Judge the delivered artifacts against the approved plan and the goal. CHECKLIST: (1) CRITERIA vs ARTIFACTS — for each success criterion in the plan and goal, is there an artifact that satisfies it? Missing or partial satisfaction is a finding, CRITICAL where the deliverable cannot stand without it. (2) SCOPE FIDELITY — did the changes stay inside the plan's task table and writable paths, limited to addenda/, output/addenda/ and docs/? Out-of-scope edits, unrequested features and silently skipped readings are findings, CRITICAL where an edit landed outside every declared writable path. Severity is MAJOR at minimum. Legibility and fidelity are advisory scoredChecks, not additional checklist items here. Holding-cutting elisions, unmarked heading or ordinal skips, editors' voice in the court's text, un-noted emphasis in quotations and boilerplate notes are the jev-elide-rules verdicts in the digest: do not re-grade them, except to rule on a verdict the digest ranks below the block line. MODE — RED (a task was flagged or a mechanical check failed): diagnose EVERY failure in the digest and route it with cause and fix to its owner task id, or to 'plan' when no task can own the fix. MODE — GREEN (everything passed): make one open-ended pass over the checklist and report each finding with an ownerTask. In both modes, rule every carried finding open or closed against evidence you actually read; silence leaves it open.",
   },
 
