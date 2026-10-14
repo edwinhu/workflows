@@ -216,11 +216,12 @@ const auditDir = /* absolute path of the workflow under audit */
 const agentFile = /* absolute path of its agent .md, or null if it ships none — see Phase 4 */
 const projectDir = /* the repo that contains auditDir — see Phase 4 */
 const planPath = /* the charter's path */
+const goal = /* one sentence — phrase it as a verdict returned, never as PASS */
+const phase4Authority = /* the Phase 4 authorityExtra string, verbatim */
 
 // The args object. Written to the args file as plain JSON — no comments; the annotations are here.
 const args = {
-  projectDir, planPath,   // specHash is injected by work-dispatch.sh from the plan, never written here
-  goal: "<one sentence — phrase it as a verdict returned, never as PASS>",
+  projectDir, planPath, goal,   // specHash is injected by work-dispatch.sh from the plan, never written here
 
   readOnly: true,
   tasks: [],        // a charter carries no work order, and readOnly dispatches no implementer
@@ -247,7 +248,7 @@ const args = {
     prompt: "Judge the workflow against the approved plan or audit charter and the goal. Read gate-laws.md in full before judging item (1). CHECKLIST, every item in scope on every run: (1) GATE INTEGRITY — judge the artifact's relationship to the gate, and ONLY the judgement residue: refs presence (P7), path resolution (P1/P2/P4/P6), the single entry point and lens parity (P10/P11) are decided by wc-probe's exit code, and an acceptance clause naming no command is decided by `work`'s plan-lint — do not re-litigate any of them. FIRST: does it ship a .js of its own? The default deliverable is a SKILL that passes parameters to `work`'s workflow.js — a domain .js is justified ONLY by a genuine fan-out with its own gate over its own index, and the plan must say so in writing. An unjustified .js is a CRITICAL finding: it forks the shared spine. If there is no .js, judge MEANING, which no exit code reads: is the declared lens decorative — is any clause of its ask answerable at all, and could a lint rule decide it instead, in which case that clause should have BEEN the rule; and does the one mechanical entry point actually exit non-zero when what it names is wrong, rather than passing vacuously over a set it matched nothing in. If a .js IS justified, judge it against the JS-gate laws in the refs: documented returns{...} keys match actual return{...} keys and selector ids live in the namespace the script filters against; the selective re-run path does not vacuously pass an empty set, does not disable verification, and carries forward as a union; overallPass===false implies a non-empty selector for EVERY fail path including whole-artifact ones owning no item; every gated dimension fails closed on a null agent result and distinguishes crash-drop from intentional skip; no gate field is produced by the agent whose work it certifies. (2) SPINE FIDELITY, against work/SKILL.md in refs — does the skill supply parameters to `work`'s spine rather than re-deriving one? Findings: a second lifecycle re-implemented inside the skill instead of parameterizing the spine; a domain .js that duplicates what `work`'s workflow.js already does; an orchestrator doing work a dispatched agent should do; a phase named in the plan that no task, lens item or mechanical check actually covers; a phase that runs but whose result reaches no gate; any of work's five phases silently dropped. CRITICAL where a dropped phase leaves a gated dimension certified by nothing. Severity across the checklist is MAJOR at minimum. MODE — RED (a task was flagged or a mechanical check failed): diagnose EVERY failure in the digest and route it, naming cause and fix, to the task id whose writablePaths own the file, or to 'plan' when no task can own the fix. MODE — GREEN (everything passed): make one open-ended pass over the whole checklist and report each finding with an ownerTask. In both modes, rule every carried finding open or closed against evidence you actually read; silence leaves it open.",
   },
 
-  authorityExtra: "<the Phase 4 block, verbatim>",
+  authorityExtra: phase4Authority,
 
   // Optional: discoveries made outside this run — a main-chat agent team (CLARIFY axis 7),
   // or a previous audit's surviving findings. They join the carried set the lens rules on.
@@ -345,8 +346,10 @@ workflow," say the loop is overkill and just do it.
   task has no domain rules; absent is refused, because an omission cannot be told from a forgotten
   one.
 
-| id | name | work | writable paths | refs | acceptance |
-|---|---|---|---|---|---|
+| id | name | work | writable paths | refs | acceptance | agentType |
+|---|---|---|---|---|---|---|
+
+**`agentType` is optional** (`—` when the task runs as the default implementer): the implementer persona for that one task, copied to its `tasks[].agentType` in the args fence. It names an agent the human is approving, so it belongs in the table, not only in the args.
 
 If the plan justifies a domain `.js` under the iron law above, it must also record which `work`
 parameter was considered instead and why it did not fit.
@@ -374,13 +377,13 @@ const agentFile = /* absolute path of the agent .md, or null if the workflow shi
 // session, this is the tree that holds the artifact — not necessarily the session's cwd.
 const projectDir = /* the repo that contains genDir */
 const planPath = /* the path $PLAN resolved to in Phase 2 */
+const goal = /* one sentence */
 
 // The args object. Written to the args file as plain JSON — no comments; the annotations are here.
 const args = {
-  projectDir, planPath,   // specHash is injected by work-dispatch.sh, never written here
-  goal: "<one sentence>",
+  projectDir, planPath, goal,   // specHash is injected by work-dispatch.sh, never written here
 
-  tasks: [ /* the plan's table verbatim: {id, name, work, writablePaths, acceptance, refs} */ ],
+  tasks: [ /* the plan's table verbatim: {id, name, work, writablePaths, acceptance, refs, agentType?} */ ],
 
   // ONE entry, always: check.sh runs every leg (wc-probe, parity, the authoring constraints over genDir, and
   // genDir's OWN probe suite) and its exit code is the whole mechanical verdict. A new deterministic
