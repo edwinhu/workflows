@@ -59,15 +59,13 @@ Three facts decide these axes, and each prevents a defect that is expensive to f
 - A sample period and an entity universe are **research choices**, not properties inferred from the
   first query result. A rate at the wrong grain is a different statistic with a familiar label.
 - The universe predicate belongs where scope is decided. Applying it to a lookup or a denominator
-  can turn available values into nulls; a 43.7% null-denominator incident came from exactly that
-  duplicate filtering mistake.
+  can turn available values into nulls.
 - A criterion that **cannot name evidence** is a wish. The explicit `TBD (<phase>)` convention is
   legitimate only when profiling is the scheduled evidence-producing phase; never invent coverage.
 
 `work`'s remaining axes are taken as `work` states them, with two domain bindings: `work` axis 4
 (observable success criteria) is answered with the DQ runner over the plan's `## Data Outputs` plus
-the target project's own test and lint commands, and those strings become `mechanicalChecks`
-verbatim; `work` axis 5 (review surface) is answered by the plan's
+the target project's own test and lint commands, and those strings become the `--test-cmd` / `--lint-cmd` arguments of the single `ds` mechanical entry (Phase 4); `work` axis 5 (review surface) is answered by the plan's
 `## Review Surfaces` section. The `ds-dq` entry is never conditional. CLARIFY records, for each of test and lint, either the
 project's command or an explicit "none" — an unanswered one is a refusal (`check.sh` exits 2), never
 a leg that ran nothing. A "none" becomes `--no-test-cmd` / `--no-lint-cmd`; `work`'s probe runs a
@@ -176,6 +174,8 @@ Omitting it silently runs the user's codex request on claude.
 ```js
 const goal = /* one sentence */
 const planPath = /* the approved plan's path */
+// shq single-quotes a command so quotes and $ reach check.sh intact.
+const shq = s => `'${s.replaceAll("'", `'\\''`)}'`
 const testCmd = /* the project's test command, or null when CLARIFY recorded "none" */
 const lintCmd = /* the project's lint command, or null when CLARIFY recorded "none" */
 const args = {
@@ -213,12 +213,12 @@ const args = {
   // The DS gate: the runner reads the approved plan's ## Data Outputs and opens each artifact
   // itself. ds-dq is never conditional. tests and lint are the TARGET project's own commands,
   // collected at CLARIFY: a command, or an explicit "none" that becomes --no-test-cmd / --no-lint-cmd.
-  // ONE entry point. These were three entries until 2026-09-15; a list of N independent
-  // commands loses one silently. The project's own test and lint commands are ARGUMENTS
-  // because this skill cannot know them — omit both a command and its opt-out and check.sh exits 2.
+  // ONE entry point: a list of N independent commands loses one silently. The project's own test and
+  // lint commands are ARGUMENTS because this skill cannot know them — omit both a command and its
+  // opt-out and check.sh exits 2.
   mechanicalChecks: [
     { name: "ds",
-      cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/check.sh --plan ${planPath} --project-dir ${projectDir}${testCmd ? ` --test-cmd "${testCmd}"` : ' --no-test-cmd'}${lintCmd ? ` --lint-cmd "${lintCmd}"` : ' --no-lint-cmd'}` },
+      cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/check.sh --plan ${planPath} --project-dir ${projectDir}${testCmd ? ` --test-cmd ${shq(testCmd)}` : ' --no-test-cmd'}${lintCmd ? ` --lint-cmd ${shq(lintCmd)}` : ' --no-lint-cmd'}` },
   ],
   // check.sh runs every checks/ds/constraints/ script through `workflow-check ds --constraints-only`. work-checks.sh runs ruleChecks as a command (no agent); Jev scores the rules under checks/ds/rules/ (A1, A4, DEN, DQ4, DQ6, E7, M1, R1, UNI; DQ1 waits in checks/ds/rules/uncalibrated/ and ds-dq.py decides it); a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
   ruleChecks: { name: "jev-rules", cmd: `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow ds --project-dir ${projectDir} --plan ${planPath}` },
