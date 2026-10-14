@@ -819,6 +819,11 @@ if [ "${1:-}" = "--red-probe" ]; then
   red_probe_gate "$2" "${3:-gate}"
   exit $?
 fi
+if [ "${1:-}" = "--scored-fingerprints" ]; then
+  [ -f "${2:-}" ] || { echo "--scored-fingerprints needs an existing args.json" >&2; exit 2; }
+  python3 "$SKILL/scripts/scored_fingerprint.py" "$2"
+  exit $?
+fi
 if [ "${1:-}" = "--resolve-routing" ]; then
   [ -f "${2:-}" ] && [ -n "${3:-}" ] || { echo "--resolve-routing needs <args.json> <run-id> [provider]" >&2; exit 2; }
   case "${4:-}" in ''|claude|codex|gemini) ;;
@@ -1061,6 +1066,12 @@ if [ "$mechprobe" = 1 ] && [ "$mode" != print ]; then
   if [ "$mp" -ne 0 ]; then rm -f "$tmp"; exit "$mp"; fi
 fi
 
+# Scored carry-forward: hash every object-form scored item's inputs so workflow.js can compare. NOT
+# gated on readOnly (a diagnose loop is exactly where it pays), and nothing here can refuse.
+if [ "$mode" != print ]; then
+  python3 "$SKILL/scripts/scored_fingerprint.py" "$tmp" || { rm -f "$tmp"; exit 1; }
+fi
+
 # TIER 3, last of the three because it is the only one that cannot refuse: a dispatch already
 # refused above has nothing to report on. Skipped under --print, which promises to build and stop.
 if [ "$suitelint" = 1 ] && [ "$mode" != print ]; then
@@ -1098,8 +1109,8 @@ fi
 
 # Sizing, recomputed from what will actually be dispatched. The plan's prose Run sizing block is
 # for the human; this is what the gate reads. A mismatch between them is worth stopping over.
-python3 - "$out" <<'PY'
-import json, sys
+SKILL="$SKILL" python3 - "$out" <<'PY'
+import json, os, subprocess, sys
 a = json.load(open(sys.argv[1]))
 t = a.get("tasks") or []
 only = a.get("onlyTasks")
@@ -1119,11 +1130,22 @@ mech = len(a.get("mechanicalChecks") or [])
 acc = 0 if ro else sum(1 for x in active if x.get("acceptanceCmd"))
 carried = len(a.get("carriedFindings") or []) + len(a.get("priorFindings") or [])
 scored = sum(len(s.get("items") or []) for s in (a.get("scoredChecks") or []))
+scored_carried = 0
+# The carry predicate lives in workflow.js; ask its plan stage rather than mirroring it here. A plan
+# stage that refuses (fan-out over maxAgents) keeps the mirror, and the floor line below says so.
+try:
+    p = subprocess.run(["bun", os.path.join(os.environ["SKILL"], "scripts", "work-stage.mjs"), "plan", "--args", sys.argv[1]],
+                       capture_output=True, text=True, timeout=60)
+    fo = json.loads(p.stdout.strip().splitlines()[-1])["fanOut"] if p.returncode == 0 and p.stdout.strip() else None
+except (OSError, ValueError, KeyError, subprocess.TimeoutExpired):
+    fo = None
+if fo is not None:
+    scored, scored_carried = fo.get("scored", 0), fo.get("scoredCarried", 0)
 att = len(a.get("attempts") or [])
 rule = 1 if a.get("ruleChecks") else 0
 floor = impl + ver + lens + scored + att
 print(f"  readOnly={ro} tasks={len(t)} active={impl} verifiers={ver} lens={lens} "
-      f"scored={scored} carried={carried} attempts={att}")
+      f"scored={scored} carried={carried} attempts={att}" + (f" scoredCarried={scored_carried}" if scored_carried else ""))
 print(f"  scripted (no agent): red-before={red} acceptanceCmd={acc} mech={mech} rule-checks={rule}")
 print(f"  fan-out floor {floor} vs maxAgents {a.get('maxAgents', 50)}")
 PY

@@ -6,7 +6,8 @@
 # ARGS  the staged args (projectDir, tasks, redSuiteHashes from work-dispatch.sh)
 # RAW   the AGENTS stage's output (farm.sh --workflow --out), whose checkPlan names the commands
 # OUT   {red:[{id,command,exitCode,output}], acceptance:[…], mechanical:[{name,cmd,exitCode,output}],
-#        rules:[{name,cmd,exitCode,stdout,output}], suite:{checked, changed:[{path,before,after,owner}]}}
+#        rules:[{name,cmd,exitCode,stdout,output}], suite:{checked, changed:[{path,before,after,owner}]},
+#        scored:{"<key>::<item>": fingerprint|null} (only with object-form scoredChecks items)}
 #
 # A command that cannot run — timeout, cannot spawn, exit 126/127 — records exitCode -1, which the
 # gate reads as unproven, never as a pass. Output keeps the LAST 60 lines: the evidence is at the end.
@@ -35,6 +36,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, sys.argv[1])
 from leg_counts import audit, leg_records
+from scored_fingerprint import fingerprints
 
 args_path, raw_path, out_path = sys.argv[2:5]
 args = json.load(open(args_path))
@@ -178,6 +180,11 @@ for path, before in sorted(hashes.items()):
     if after != before:
         changed.append({'path': path, 'before': before, 'after': after, 'owner': owner(path)})
 out['suite'] = {'checked': len(hashes), 'changed': changed}
+# Scored carry-forward: the inputs' fingerprints AFTER the agents ran. A fresh score is stamped with
+# these (they are what the agent read); a carried one whose value moved is no longer a measurement.
+scored_fp = fingerprints(args)
+if scored_fp:
+    out['scored'] = scored_fp
 
 with open(out_path, 'w') as fh:
     json.dump(out, fh, indent=2)
