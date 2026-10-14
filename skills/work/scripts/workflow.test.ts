@@ -676,6 +676,19 @@ test('an edge to a task outside onlyTasks is treated as satisfied, not unschedul
   expect(r.result.overallPass).toBe(true)
 })
 
+test('an active task depending on a carried task whose verdict is not pass is refused, by name', async () => {
+  const tasks = [dep('T1', undefined, ['a']), dep('T2', ['T1'], ['b'])]
+  const failing = await runCatching({ ...baseArgs, tasks, onlyTasks: ['T2'],
+    priorResults: { implemented: [{ id: 'T1', done: true, changedFiles: ['a'], evidence: 'e' }], verified: [{ id: 'T1', pass: false, evidence: 'e', failures: ['x'] }] },
+  }, replies())
+  expect(failing.threw).toBe(true)
+  expect(String(failing.error)).toMatch(/T2.*depends on carried.*T1/s)
+  const unverified = await runCatching({ ...baseArgs, tasks, onlyTasks: ['T2'],
+    priorResults: { implemented: [{ id: 'T1', done: true, changedFiles: ['a'], evidence: 'e' }], verified: [] },
+  }, replies())
+  expect(unverified.threw).toBe(true)
+})
+
 test('a redCommand still brackets its OWN implementer inside a concurrent wave', async () => {
   const r = await run({ ...baseArgs, tasks: [
     dep('T1', undefined, ['a']), task({ id: 'T2', writablePaths: ['b'], redCommand: 'pytest t.py' }),
