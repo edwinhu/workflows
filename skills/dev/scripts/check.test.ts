@@ -44,8 +44,20 @@ test("declaring nothing is exit 2, never a clean pass", () => {
   try {
     const r = run("--project-dir", d);
     expect(r.code).toBe(2);
-    expect(r.err).toContain("ran nothing");
+    expect(r.err).toContain("--test-cmd is required");
     expect(r.out).toContain("not declared");
+  } finally { rmSync(d, { recursive: true, force: true }); }
+});
+
+// A suite that never runs must not read as a pass: lint and build are optional, the tests leg is not.
+test("an empty or omitted --test-cmd is exit 2 even when lint is declared and passes", () => {
+  const d = proj();
+  try {
+    for (const args of [["--lint-cmd", "true"], ["--test-cmd", "", "--lint-cmd", "true"]]) {
+      const r = run("--project-dir", d, ...args);
+      expect(r.code).toBe(2);
+      expect(r.err).toContain("--test-cmd is required");
+    }
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
 

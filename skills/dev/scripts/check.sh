@@ -6,22 +6,22 @@
 # which is the whole of P10 — three separate mechanicalChecks entries lose one silently,
 # and work re-runs a claimed mechanical pass in a shell, affordable for one and not three.
 #
-# A command not passed reports "not declared" and passes. That is deliberate and visible:
+# A lint or build command not passed reports "not declared" and passes. That is deliberate and visible:
 # a project with no build step should say so once, here, rather than have the plan quietly
-# omit a row that nobody can tell from a forgotten one.
+# omit a row that nobody can tell from a forgotten one. --test-cmd is not optional: exit 2 without it.
 #
 # Every leg prints `<leg>: N <unit> examined` (work/scripts/leg-counts.sh). The tests leg counts the
 # tests the runner reports; a runner whose summary is not recognised needs --test-count-re, a regex
 # whose groups are summed, or the leg cannot say it ran anything and is COULD-NOT-CHECK.
 #
-# Usage: check.sh --project-dir <dir> [--test-cmd <cmd>] [--test-count-re <re>] [--lint-cmd <cmd>] [--build-cmd <cmd>]
+# Usage: check.sh --project-dir <dir> --test-cmd <cmd> [--test-count-re <re>] [--lint-cmd <cmd>] [--build-cmd <cmd>]
 # Exit 0 = every declared leg passed. 1 = some leg failed. 2 = refusal, or a leg that examined nothing.
 set -uo pipefail   # deliberately not -e: every leg must run so every leg reports.
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/../../work/scripts/leg-counts.sh"
 
-PROJ="."; TESTCMD=""; TESTRE=""; LINTCMD=""; BUILDCMD=""; DECLARED=0
+PROJ="."; TESTCMD=""; TESTRE=""; LINTCMD=""; BUILDCMD=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --project-dir) PROJ="${2:-}"; shift 2 ;;
@@ -42,7 +42,6 @@ leg() {
     count_line "$name" 0 "command(s)" "— nothing in scope (not declared)" >&2
     report "$name" 0 "not declared"; return
   fi
-  DECLARED=$((DECLARED+1))
   legcount_run "$name" legcount_cmd "$name" "$PROJ" "$cmd" "$([ "$name" = tests ] && printf '%s' "$TESTRE")"
   report "$name" "$LEG_STATUS"
 }
@@ -57,9 +56,9 @@ leg build "$BUILDCMD"
 legcount_run dev-gate python3 "$HERE/../../../bin/workflow-check" dev --project-dir "$PROJ" --constraints-only
 report dev-gate "$LEG_STATUS"
 
-# A run in which nothing was declared examined nothing, and must not read as a clean gate.
-if [ "$DECLARED" -eq 0 ]; then
-  echo "check.sh: no command was declared — this gate ran nothing, which is not a pass" >&2
+# A run with no tests leg examined no suite, and must not read as a clean gate.
+if [ -z "$TESTCMD" ]; then
+  echo "check.sh: --test-cmd is required — no tests leg ran, which is not a pass" >&2
   exit 2
 fi
 exit "$RC"
