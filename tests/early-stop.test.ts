@@ -1,6 +1,6 @@
 import { expect, setDefaultTimeout, test } from 'bun:test'
 import { spawn } from 'node:child_process'
-import { appendFileSync, chmodSync, closeSync, mkdirSync, mkdtempSync, openSync, readFileSync, utimesSync, writeFileSync } from 'node:fs'
+import { appendFileSync, chmodSync, closeSync, mkdirSync, mkdtempSync, openSync, readFileSync, readlinkSync, utimesSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
@@ -1296,6 +1296,15 @@ function spawnJob(argv: string[], out: string, session: string) {
   p.unref()
   return { pid: p.pid!, exited, stop: () => { try { process.kill(-p.pid!, 'SIGKILL') } catch {} } }
 }
+/** Wait until the spawned job has exec'd (a forked child still reads as bun) before the hook samples it, then give its first rows `settle` ms. */
+async function jobUp(job: { pid: number }, settle: number) {
+  const self = readlinkSync('/proc/self/exe')
+  for (const deadline = Date.now() + 20_000; Date.now() < deadline;) {
+    try { if (readlinkSync(`/proc/${job.pid}/exe`) !== self) break } catch {}
+    await Bun.sleep(25)
+  }
+  await Bun.sleep(settle)
+}
 const old = (path: string) => { const t = new Date(Date.now() - 40 * 60_000); utimesSync(path, t, t) }
 const LOOP = 'while :; do echo row; sleep 0.2; done'
 
@@ -1308,7 +1317,7 @@ test('hand job (a): a setsid job this session launched, alive and its log growin
   const { dir, transcript } = handSession(nCall(59, { command: `setsid nohup bash ${script} > ${log} 2>&1 < /dev/null &` }, ''))
   const job = spawnJob(['bash', script], log, s)
   try {
-    await Bun.sleep(600)
+    await jobUp(job, 600)
     const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, PROGRESS_SAY))
     expect(r.out).toBe('')
     expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(STALE_LOG)
@@ -1328,7 +1337,7 @@ test('hand job (a): a run_in_background job, alive and its task output growing, 
   const wrapper = `source /nonexistent/shell-snapshots/snapshot-bash-0-test.sh 2>/dev/null || true && eval '${LOOP}' < /dev/null && pwd -P >| /dev/null`
   const job = spawnJob(['/usr/bin/bash', '-c', wrapper], out, s)
   try {
-    await Bun.sleep(600)
+    await jobUp(job, 600)
     const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, PROGRESS_SAY))
     expect(r.out).toBe('')
     expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(STALE_LOG)
@@ -1346,7 +1355,7 @@ test('hand job (a): the e83fb488 shape — redirect target stays empty, the job 
   const { dir, transcript } = handSession(nCall(59, { command: `D=${pre}; setsid nohup bash $D/run_batches.sh > $D/driver2.out 2>&1 < /dev/null & echo $! > $D/driver.pid` }, ''))
   const job = spawnJob(['bash', script], driver, s)
   try {
-    await Bun.sleep(600)
+    await jobUp(job, 600)
     old(driver)
     const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, PROGRESS_SAY))
     expect(r.out).toBe('')
@@ -1365,7 +1374,7 @@ test('hand job (b): alive but its log unchanged since the previous tick is a han
   const { dir, transcript } = handSession(nCall(59, { command: `setsid nohup bash ${script} > ${log} 2>&1 < /dev/null &` }, ''))
   const job = spawnJob(['bash', script], log, s)
   try {
-    await Bun.sleep(300)
+    await jobUp(job, 300)
     old(log)
     const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, PROGRESS_SAY))
     expect(r.out).toContain('"decision":"block"')
@@ -1387,7 +1396,7 @@ test('hand job (b): a job launched since the previous tick whose output is still
   const wrapper = `source /nonexistent/shell-snapshots/snapshot-bash-0-test.sh 2>/dev/null || true && eval '${wait}' < /dev/null && pwd -P >| /dev/null`
   const job = spawnJob(['/usr/bin/bash', '-c', wrapper], out, s)
   try {
-    await Bun.sleep(300)
+    await jobUp(job, 300)
     const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, PROGRESS_SAY))
     expect(r.out).toContain('"decision":"block"')
     expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain(STALE_LOG)
@@ -1418,7 +1427,7 @@ test("hand job: the same command running under ANOTHER session is not this sessi
   const { dir, transcript } = handSession(nCall(59, { command: `setsid nohup bash ${script} > ${log} 2>&1 < /dev/null &` }, ''))
   const job = spawnJob(['bash', script], log, 'some-other-session')
   try {
-    await Bun.sleep(600)
+    await jobUp(job, 600)
     const r = runHook(childEnv(dir, DEAD), stopPayload('hj-own', transcript, PROGRESS_SAY))
     expect(r.out).toContain('"decision":"block"')
   } finally {
@@ -1539,7 +1548,7 @@ test('no wake (d): a live run_in_background job this session launched is a wake:
   const out = join(mkTmp('earlystop-nw-'), 'bnw1.output')
   const { dir, transcript, job } = mandateBgJob(s, out)
   try {
-    await Bun.sleep(300)
+    await jobUp(job, 300)
     const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, 'All done, nothing is running.'))
     expect(r.out).toBe('')
     expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(LEG_LOG)
@@ -1569,7 +1578,7 @@ test('no wake (f): a live setsid job notifies nobody when it exits: it BLOCKS', 
   const { dir, transcript } = mandateSession(nCall(59, { command: `setsid nohup bash ${script} > ${log} 2>&1 < /dev/null &` }, ''))
   const job = spawnJob(['bash', script], log, s)
   try {
-    await Bun.sleep(600)
+    await jobUp(job, 600)
     const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, 'All done, nothing is running.'))
     expect(r.out).toContain('"decision":"block"')
     expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain(LEG_LOG)
