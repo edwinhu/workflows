@@ -4133,3 +4133,107 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
     }
   })
 })
+
+// ------------------------------------------------------------------ COV — the label on every finding and reported skip
+//
+// Coverage audit: neutering a rule label (renaming the string a finding or skip carries) left these
+// sites green, because the older tests assert the detail text, an exit code or a skip COUNT, never
+// the rule that raised it. A reader keys on the label (`P2 path-resolution`), so each site below is
+// pinned on it, on a bad fixture that must emit it and a good one that must not.
+
+describe('COV — P0 floors carry P0 coverage', () => {
+  test('--expect agents over a directory with no agent file is a P0, and a real agent is not', () => {
+    const bad = fixture({ 'notagents/readme.md': '# hi\n' })
+    const f = probe.runProbe(join(bad, 'notagents'), 'agents').findings.filter((x: any) => x.rule === 'P0 coverage')
+    expect(f.length).toBe(1)
+    expect(f[0].detail).toContain('passed vacuously')
+    const good = fixture({ '.claude/agents/x-impl.md': ['---', 'name: x-impl', 'description: d', '---', '', 'body', ''].join('\n') })
+    expect(probe.runProbe(join(good, '.claude/agents'), 'agents').findings.filter((x: any) => x.rule === 'P0 coverage')).toEqual([])
+  })
+
+  test('a source file that cannot be read as text is a P0 naming it, and a text file is not', () => {
+    const dir = fixture({ 'SKILL.md': skillMd('bin'), 'refs/blob.md': 'text\n' })
+    writeFileSync(join(dir, 'refs/binary.md'), Buffer.from([0x61, 0x00, 0x62, 0x0a]))
+    const f = probe.runProbe(dir).findings.filter((x: any) => x.rule === 'P0 coverage')
+    expect(f.map((x: any) => x.file)).toEqual([join(dir, 'refs/binary.md')])
+    expect(f[0].detail).toContain('could not be read')
+  })
+})
+
+describe('COV — reported skips carry the rule that declined to check', () => {
+  test('P1: an unresolvable $HOME in a hook command is a P1 skip', () => {
+    const skips: any[] = []
+    probe.checkHookRegistration(fixture({ 'SKILL.md': hookedSkill('bash $HOME/scripts/g.sh') }), skips)
+    expect(skips.map((s: any) => s.rule)).toEqual(['P1 hook-registration'])
+  })
+
+  const p2Skips = (body: string, extra: Record<string, string> = {}) =>
+    probe.runProbe(fixture({ 'SKILL.md': skillMd('cov-p2', body), ...extra })).unresolvedRefs.filter((u: any) => u.rule === 'P2 path-resolution')
+
+  test('P2: a portable reference in a fenced example is a skip, and the same reference in prose is a finding', () => {
+    const fenced = p2Skips(['```', 'cat ${CLAUDE_SKILL_DIR}/refs/gone.md', '```'].join('\n'))
+    expect(fenced.length).toBe(1)
+    expect(fenced[0].reason).toContain('fenced example')
+    const prose = probe.runProbe(fixture({ 'SKILL.md': skillMd('cov-p2', 'cat ${CLAUDE_SKILL_DIR}/refs/gone.md') }))
+    expect(prose.findings.some((f: any) => f.rule === 'P2 path-resolution' && f.severity === 'critical')).toBe(true)
+  })
+
+  test('P2: a placeholder-carrying path is a skip, and a plain resolvable one is not', () => {
+    const s = p2Skips('see ${CLAUDE_SKILL_DIR}/scripts/dev-[phase]/workflow.js')
+    expect(s.length).toBe(1)
+    expect(s[0].reason).toContain('documentation placeholder')
+    expect(p2Skips('see ${CLAUDE_SKILL_DIR}/refs/here.md', { 'refs/here.md': 'x\n' })).toEqual([])
+  })
+
+  test('P2: an absolute tail behind a <placeholder> head is a template skip, and a bare absolute path is not', () => {
+    const s = p2Skips('copy <skill>/agents/x-impl.md into place')
+    expect(s.length).toBe(1)
+    expect(s[0].reason).toContain('template, not a path')
+    expect(s[0].token).toBe('<skill>/agents/x-impl.md')
+    expect(p2Skips('copy /agents/x-impl.md into place').every((u: any) => !u.reason.includes('template, not a path'))).toBe(true)
+  })
+
+  test('P7: a ref with an unresolvable variable is a P7 skip, a literal missing ref a P7 finding, an existing ref neither', () => {
+    const row = (ref: string) => ['```js', 'Workflow({', '  tasks: [', `    { id: "t1", work: "w", acceptance: "a", refs: [${JSON.stringify(ref)}] },`, '  ],', '})', '```'].join('\n')
+    const run = (ref: string, extra: Record<string, string> = {}) => {
+      const file = join(fixture({ 'SKILL.md': skillMd('cov-p7', row(ref)), ...extra }), 'SKILL.md')
+      const skips: any[] = []
+      const found = probe.checkRefsDeclaration(file, probe.maskNonFenced(read(file)), dirname(file), [], undefined, skips)
+      return { found, skips }
+    }
+    const missing = run('no-such-ref.md')
+    expect(missing.found.map((f: any) => f.rule)).toEqual(['P7 refs declaration'])
+    expect(missing.found[0].detail).toContain('does not exist')
+    expect(missing.skips).toEqual([])
+    const unresolved = run('$NOPE/x.md')
+    expect(unresolved.found).toEqual([])
+    expect(unresolved.skips.map((s: any) => s.rule)).toEqual(['P7 refs declaration'])
+    const ok = run('refs/here.md', { 'refs/here.md': 'x\n' })
+    expect(ok.found).toEqual([])
+    expect(ok.skips).toEqual([])
+  })
+})
+
+describe('COV — P3 and P5 sites that had no label pin', () => {
+  test('P3: a SKILL.md with no frontmatter block is a major P3, and a complete one is clean', () => {
+    const f = probe.checkFrontmatter('SKILL.md', '# no frontmatter here\n')
+    expect(f.map((x: any) => [x.rule, x.severity])).toEqual([['P3 frontmatter', 'major']])
+    expect(f[0].detail).toContain('no YAML frontmatter')
+    expect(probe.checkFrontmatter('SKILL.md', '---\nname: a\ndescription: d\n---\n\nbody\n')).toEqual([])
+  })
+
+  test('P3: a missing required key is a critical P3 naming the key', () => {
+    const f = probe.checkFrontmatter('SKILL.md', '---\nname: a\n---\n\nbody\n')
+    expect(f.map((x: any) => [x.rule, x.severity])).toEqual([['P3 frontmatter', 'critical']])
+    expect(f[0].detail).toContain('"description"')
+  })
+
+  test('P5: a documented shape whose target has no top-level return is a P5, and one with a return is clean', () => {
+    const bad = crossFileFixture('{ a, b }', 'const x = 1\n')
+    const f = probe.runProbe(bad.dir).findings.filter((x: any) => x.rule === 'P5 return-shape drift')
+    expect(f.length).toBe(1)
+    expect(f[0].detail).toContain('no return {...} at indentation zero')
+    const good = crossFileFixture('{ a, b }', 'return { a: 1, b: 2 }\n')
+    expect(probe.runProbe(good.dir).findings.filter((x: any) => x.rule === 'P5 return-shape drift')).toEqual([])
+  })
+})

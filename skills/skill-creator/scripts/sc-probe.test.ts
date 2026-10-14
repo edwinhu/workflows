@@ -588,3 +588,40 @@ test('a SHARED constraint without applies-to is still a finding', () => {
     expect(f[0].detail).toContain('plugin root')
   } finally { rmSync(d, { recursive: true, force: true }) }
 })
+
+// ---------------------------------------------------------------- S5 labels
+// Coverage audit: every S5 emission site could be relabelled with the suite still green, because
+// the older tests count advisories or match a fragment of the label. Each branch is pinned on its
+// exact label, against the input that must NOT draw it.
+
+test('S5: each branch carries its own label, and a correct or singular count draws none', () => {
+  const d = mkdtempSync(join(tmpdir(), 'sc-s5-labels-'))
+  try {
+    const withRefs = join(d, 'with')
+    mkdirSync(join(withRefs, 'references'), { recursive: true })
+    for (const n of ['a.md', 'b.md', 'c.md']) writeFileSync(join(withRefs, 'references', n), 'x')
+    const md = join(withRefs, 'SKILL.md')
+    const labels = (f: string, body: string) => checkProseCounts(f, body).map(a => a.rule)
+
+    // a tally that spans more than this skill: unverified
+    const spanning = labels(md, '16 reference files across 10 skills are named by none')
+    expect(spanning.length).toBeGreaterThan(0)
+    expect(spanning.every(r => r === 'S5 a corpus count written in prose (unverified)')).toBe(true)
+    // a references count that disagrees with the directory: the drift label, with both numbers
+    const drift = checkProseCounts(md, 'This skill has eight references.')
+    expect(drift.map(a => a.rule)).toEqual(['S5 a prose count disagrees with the corpus'])
+    expect(drift[0].detail).toContain('holds 3')
+    // ...and a correct one draws nothing
+    expect(labels(md, 'This skill has three references.')).toEqual([])
+    // a skill with no references/: unverified, naming why
+    const none = checkProseCounts(join(d, 'SKILL.md'), 'the corpus holds eight references')
+    expect(none.map(a => a.rule)).toEqual(['S5 a corpus count written in prose (unverified)'])
+    expect(none[0].detail).toContain('no references/')
+    // any other countable noun: unverified, and the advisory says it cannot count that noun
+    const other = checkProseCounts(md, 'it ships three modules')
+    expect(other.map(a => a.rule)).toEqual(['S5 a corpus count written in prose (unverified)'])
+    expect(other[0].detail).toContain('cannot count "modules"')
+    // a singular is prose about a design: nothing
+    expect(labels(md, 'one module ships here')).toEqual([])
+  } finally { rmSync(d, { recursive: true, force: true }) }
+})
