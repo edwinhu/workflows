@@ -162,9 +162,9 @@ describe('the one prompt asks for all five checklist dimensions', () => {
     expect(lens.prompt).toMatch(/TEST PINS BEHAVIOUR.*went RED assert the behaviour.*MAJOR finding/)
   })
 
-  test('item 5 leaves mock-only shapes to the MOCK rule', () => {
+  test('item 5 does not re-grade the shape the MOCK rule decides (P15)', () => {
     expect(lens.prompt).not.toContain('a mock call')
-    expect(lens.prompt).toMatch(/TEST PINS BEHAVIOUR.*MOCK/)
+    expect(lens.prompt).not.toMatch(/test double|\bmock\b/i)
   })
 
   test('no retired `tests` lens came back: still no TESTS dimension', () => {
