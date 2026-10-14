@@ -72,7 +72,7 @@ for this," and every one became a work parameter instead:
 
 | the urge | the parameter it became |
 |---|---|
-| "I need to run deterministic checks and gate on them" | `mechanicalChecks` — the agent runs the command, the JS reads the exit code |
+| "I need to run deterministic checks and gate on them" | `mechanicalChecks` — `work-checks.sh` runs the command and records the exit code, no agent does; the JS reads that record |
 | "my implementers need the domain's rules in front of them" | `tasks[].refs` / `lens.refs` |
 | "every agent needs to know one domain fact" | `authorityExtra` |
 | "my reviewers must not be able to write" | `implementerAgentType` / `verifierAgentType` / per-lens `agentType` |
@@ -209,6 +209,8 @@ JS-computed gate, its dead-lens synthesis and its score table, none of which a h
 rather than a work order: what is being audited, what the lens judges it against, which mechanical checks run,
 and the standing instruction that nothing may be written. That makes an audit a plan-mode round trip; pay it.
 
+The charter's frontmatter must say `workflow: authoring`: the fence's `ruleChecks` scores that workflow, and plan-lint's `rulechecks-workflow` blocks a ruleChecks whose workflow differs from the plan's (`workflow-creator` is not a layout workflow, so it fails `workflow-unknown` instead).
+
 ```js
 const auditDir = /* absolute path of the workflow under audit */
 const agentFile = /* absolute path of its agent .md, or null if it ships none — see Phase 4 */
@@ -216,7 +218,7 @@ const projectDir = /* the repo that contains auditDir — see Phase 4 */
 
 // The args object. Written to the args file as plain JSON — no comments; the annotations are here.
 const args = {
-  projectDir, planPath: "<the charter's path>", planHash: "<64-hex>",
+  projectDir, planPath: "<the charter's path>",   // specHash is injected by work-dispatch.sh from the plan, never written here
   goal: "<one sentence — phrase it as a verdict returned, never as PASS>",
 
   readOnly: true,
@@ -373,7 +375,7 @@ const projectDir = /* the repo that contains genDir */
 
 // The args object. Written to the args file as plain JSON — no comments; the annotations are here.
 const args = {
-  projectDir, planPath: "<the path $PLAN resolved to in Phase 2>", planHash: "<64-hex>",
+  projectDir, planPath: "<the path $PLAN resolved to in Phase 2>",   // specHash is injected by work-dispatch.sh, never written here
   goal: "<one sentence>",
 
   tasks: [ /* the plan's table verbatim: {id, name, work, writablePaths, acceptance, refs} */ ],
@@ -429,8 +431,8 @@ is dead on arrival. `farm.sh` sets `FARM_OUT_CHILD=1`, which is what lets its ch
 ```
 
 `farm.sh` exits 2 on a malformed call and non-zero when `--out` came back missing or not a JSON
-object; `work-result.sh` then refuses (exit 2) unless that object carries `work`'s **seven** required
-return keys — all three selectors included — at the right types, **and** re-runs every
+object; `work-result.sh` then refuses (exit 2) unless that object carries every required key of
+its CONTRACT block (`work`'s own list, not restated here) at the right types, **and** re-runs every
 mechanical check the result claims, refusing when the shell's exit code disagrees with the claimed
 one. It adjudicates rather than validating shape: **its exit code is the verdict** — 0 pass, 1 fail,
 2 refused — and `overallPass` is never read directly. Adjudication reaches the mechanical claims
@@ -448,8 +450,8 @@ than the defect it is where the output is prose. A custom agent is justified onl
 prompt, hooks or preloaded skills; none of the three applies, so creating one would be an agent
 justified by nothing.
 
-On the result, follow `work`'s Phase 4 handling — and remember the re-run selector is **all four** of
-`tasksThatFlagged`, `mechanicalThatFailed`, `lensesThatFlagged` and `planFindings`. A `wc-probe`
+On the result, follow `work`'s Phase 4 handling — and remember the re-run selector is every FAIL channel `work` names: `tasksThatFlagged`,
+`mechanicalThatFailed`, `rulesThatFailed`, `lensesThatFlagged` and `planFindings`. A `wc-probe`
 failure owns no task by itself; the lens routes it to the task whose writablePaths own the offending
 file, and you re-invoke with the same `mechanicalChecks`, which always re-run. A blocking lens finding
 the lens could route to no task lands in `planFindings`, and the remedy there is to amend the plan,
@@ -982,8 +984,8 @@ run, alongside `SKILL.md`'s `lens-set-differs prompt` declaration, which is not 
 | A check needs suppressing | invent a rule name for the marker | only `all`/`hooks`/`paths`/`returns`/`workflow-refs`/`refs`/`entry-point`/`dispatch`/`task-coverage`/`shell-leg`/`duplicate-grading`/`rule-checks`/`serial-loop`/`fixed-temp` are honoured; anything else is a `P9` finding, not a suppression. P11 has no `ignore-` form at all — declare the intended difference with `lens-set-differs <field>` |
 | A skill dispatches `work` with its own hand-rolled runner line | copy the invocation into the SKILL.md | that skips the gates `work-dispatch.sh` owns on the way in, and P12 refuses it |
 | Gate says PASS and the probe was skipped | read `mechanicalRun: 0` as clean | nothing was checked; re-run with the checks present |
-| FAIL with an empty `tasksThatFlagged` | conclude there is nothing to fix | read `mechanicalThatFailed`, `lensesThatFlagged` **and** `planFindings` too — the selector has four channels and only one of them owns tasks. A blocking lens finding the lens could route to no task lands in `planFindings` and is fixed by amending the plan. Only when all four are empty does an empty selector on a failing run mean re-run everything |
+| FAIL with an empty `tasksThatFlagged` | conclude there is nothing to fix | read `mechanicalThatFailed`, `rulesThatFailed`, `lensesThatFlagged` **and** `planFindings` too — only `tasksThatFlagged` owns tasks. A blocking lens finding the lens could route to no task lands in `planFindings` and is fixed by amending the plan. Only when every channel is empty does an empty selector on a failing run mean re-run everything |
 | A generated gate field is filled in by the agent that did the work | ship it | pair it with a deterministic JS check or a separate low-effort probe — self-report is not a gate |
 | The workflow needs something `work` doesn't obviously do | write a `workflow.js` for it | **ask which work parameter is missing and generalize `work`.** That urge produced `mechanicalChecks`, `refs`, `authorityExtra` and the `agentType` overrides — each now available to every workflow. A `.js` only after that answers "none", justified in the plan |
 | A domain `.js` **was** justified, and `node --check` passes on it | call it tested | it is a syntax check; smoke it with bogus args and confirm it reaches its **own** arg-validation error |
-| Whole-artifact failure in the generated gate | let it flip `overallPass` with no selector | give it its own selector channel and make the fix loop consume **every** channel the gate returns — `work`'s own returns four, so a generated gate that adds one has five |
+| Whole-artifact failure in the generated gate | let it flip `overallPass` with no selector | give it its own selector channel and make the fix loop consume **every** channel the gate returns — `work`'s own gate returns its channels; a generated gate that adds one adds it to that set |
