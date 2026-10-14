@@ -10,7 +10,7 @@
 //
 // The workflow body is compiled the way workflow-harness.mjs compiles it (top-level await, hooks
 // as free variables), so the gate arithmetic that runs here is the file under test, not a copy.
-import { readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, existsSync, renameSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { join } from 'node:path'
 
@@ -209,7 +209,9 @@ async function main() {
     const lens = readJsonOrNull(f.lens)
     const { result, logs } = await runStage(args, { ...round, lens })
     if (!result || result.stage) throw new Error('work-stage: gate stage did not return a result')
-    writeFileSync(f.out, JSON.stringify(result, null, 2) + '\n')
+    // tmp + rename: the loop polls f.out with `-s`, so a truncate-then-write is a half-written verdict
+    writeFileSync(f.out + '.tmp', JSON.stringify(result, null, 2) + '\n')
+    renameSync(f.out + '.tmp', f.out)
     for (const l of logs) process.stdout.write(l + '\n')
   } else {
     throw new Error(`work-stage: unknown stage ${cmd}`)

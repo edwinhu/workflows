@@ -247,6 +247,9 @@ while :; do
   while :; do
     [ -s "$RESULT" ] && break
     if ! bash "$SKILL/scripts/farm-alive.sh" "$RESULT" > /dev/null 2>&1 && ! runner_alive; then
+      # A runner can file its verdict and exit between the `-s` above and the two liveness reads, so
+      # "no runner" is only death if the verdict is still absent AFTER them.
+      [ -s "$RESULT" ] && break
       if [ "$grace" -gt 0 ]; then
         grace=$((grace - 1))
         sleep 1
