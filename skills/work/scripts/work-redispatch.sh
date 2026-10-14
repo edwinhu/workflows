@@ -551,19 +551,28 @@ const validRed = rec("red").filter((r: any) => {
 })
 const provenRed = validRed.filter((r: any) => r.verdict === "red-green")
 
-const fullRun = (why: string) => {
+// ---- scored carry-forward: MEASURED prior scores that carry a fingerprint ----------------------
+// workflow.js reuses one only when its fingerprint (recomputed below, from the bytes on disk now) is equal, so
+// carrying is safe on every path. --full is the one way to force a full re-audit.
+const carryScores = rec("scores").filter((s: any) =>
+  s && typeof s === "object" && Number.isFinite(s.composite) && typeof s.fingerprint === "string" && s.fingerprint)
+
+const fullRun = (why: string, keepScores = true) => {
   delete args.onlyTasks
   delete args.priorResults
   const lines = [`selection: FULL re-run — ${why}`]
   // Carry proven RED independently of task scope; re-probing fixed code would refuse the round.
-  if (round >= 2 && provenRed.length) {
-    args.priorResults = { implemented: [], verified: [], red: provenRed }
-    lines.push(`  carried red adjudications, NOT re-probed (M1): ${provenRed.map((r: any) => r.id).join(", ")}`)
+  const proven = round >= 2 && provenRed.length > 0
+  const scores = keepScores ? carryScores : []
+  if (proven || scores.length) {
+    args.priorResults = { implemented: [], verified: [], red: proven ? provenRed : [], ...(scores.length ? { scores } : {}) }
   }
+  if (proven) lines.push(`  carried red adjudications, NOT re-probed (M1): ${provenRed.map((r: any) => r.id).join(", ")}`)
+  if (scores.length) lines.push(`  carried measured scores, reused where the fingerprint is unchanged: ${scores.length}`)
   commit([...lines, ...fixNote])
 }
 
-if (process.env.WORK_SEL_FULL === "1") fullRun("--full was given")
+if (process.env.WORK_SEL_FULL === "1") fullRun("--full was given", false)
 if (args.readOnly) fullRun("readOnly run — there is no task channel to scope")
 if (!prevPath) fullRun("no previous result.json or result-round<N>.json in the run dir to scope from")
 if (unreadable) fullRun(unreadable)
@@ -708,7 +717,8 @@ const carry = (k: string) => rec(k).filter((r: any) => r && carried.includes(r.i
 const carryRed = [...validRed.filter((r: any) => carried.includes(r.id)),
                   ...provenRed.filter((r: any) => !carried.includes(r.id))]
 args.onlyTasks = only
-args.priorResults = { implemented: carry("implemented"), verified: carry("verified"), red: carryRed }
+args.priorResults = { implemented: carry("implemented"), verified: carry("verified"), red: carryRed,
+                      ...(carryScores.length ? { scores: carryScores } : {}) }
 
 const lines = [`selection: ${only.length} of ${tasks.length} tasks re-run — ${only.join(", ")}`,
   `  flagged by ${prevPath.replace(/^.*\//, "")}: ${pick("flagged").join(", ")}`]
@@ -722,6 +732,7 @@ const reprobed = only.filter(id => { const t = byId.get(id); return t && t.redCo
 if (provenRed.length)
   lines.push(`  proven red carried, NOT re-probed (M1): ${provenRed.map((r: any) => r.id).join(", ")}${reprobed.length ? `; re-probed: ${reprobed.join(", ")}` : ""}`)
 lines.push(...fixNote)
+if (carryScores.length) lines.push(`  scored items carried by fingerprint: up to ${carryScores.length} (an item is re-audited when an input byte moved or a task may write it)`)
 lines.push("  the lens and the mechanical checks judge the whole deliverable and are NOT narrowed")
 commit(lines)
 ') || die "selective re-run derivation failed — refusing to dispatch an unscoped round"
@@ -778,6 +789,16 @@ if [ "$DISPATCH" = "--dispatch" ]; then
     rm -f "$STAGE"
     printf '\nNothing was spent: args.json is unchanged, the counters above were NOT written, result.json is unrotated.\n' >&2
     exit "$rp"
+  }
+fi
+
+# Scored carry-forward: today's input bytes, recomputed every round (never carried), so workflow.js
+# compares the previous round's fingerprints with what is on disk now.
+if [ "$DISPATCH" = "--dispatch" ]; then
+  bash "$SKILL/scripts/work-dispatch.sh" --scored-fingerprints "$STAGE" || {
+    rm -f "$STAGE"
+    printf '\nNothing was spent: args.json is unchanged, the counters above were NOT written, result.json is unrotated.\n' >&2
+    exit 1
   }
 fi
 
