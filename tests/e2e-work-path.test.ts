@@ -10,6 +10,7 @@
  *
  *   dev   a red bun test and one task to green it (the canary's dev round)        -> every assertion holds
  *   diag  readOnly, no tasks, one mechanical leg, a rule leg and a lens            -> every assertion holds
+ *   slow-start  dev, with the round runner delayed 8 s: the loop waits for it, never reports it dead
  *   and one run per failure class, each built so exactly that assertion must fail:
  *     no-edit     the implementer changes nothing: no verdict of 0              (1. verdict reached)
  *     tool-error  a hook error line in a row's reply                            (2. no tool error line)
@@ -136,9 +137,10 @@ exit "$rc"
 const CLAMP = 'export function clamp(x, lo, hi) {\n  return Math.min(hi, Math.max(lo, x))\n}\n'
 const NOTES = '# Notes\n\nThe firm discloses its risk factors in Item 1A.\nThe board reviews them annually.\n'
 
-type Scenario = { kind: 'dev' | 'diag'; fault?: string; edits?: Record<string, string>; notes?: string; judgePath?: string }
+type Scenario = { kind: 'dev' | 'diag'; fault?: string; edits?: Record<string, string>; notes?: string; judgePath?: string; startDelay?: number }
 const SCENARIOS: Record<string, Scenario> = {
   'dev': { kind: 'dev', edits: { 'src/clamp.js': CLAMP } },
+  'slow-start': { kind: 'dev', edits: { 'src/clamp.js': CLAMP }, startDelay: 8 },
   'diag': { kind: 'diag' },
   'no-edit': { kind: 'dev', edits: {} },
   'tool-error': { kind: 'dev', edits: { 'src/clamp.js': CLAMP }, fault: 'tool-error' },
@@ -156,6 +158,19 @@ const AMBIENT = /^(FARM_|GRIND_|WORK_|JEV_|HERDR_|STUB_|CANARY_)|^(OPENAI_API_KE
 const isolated = (tmp: string, pinned: Record<string, string>) => Object.fromEntries(
   Object.entries(hermeticEnv(tmp, pinned)).filter(([k]) => k in pinned || !AMBIENT.test(k)))
 
+// The loop reports a dispatch dead when the round runner has not registered in farm-events within
+// dispatch's 2 s sleep plus this many seconds. On a loaded machine (8 runs at once, or the full suite)
+// the runner's start-up outlasts a 1 s grace; the grace is spent only while nothing is registered,
+// so a large one costs a passing run nothing.
+const SETTLE = 15
+
+/** work-round.sh behind a delay: a runner that is slow to register, as on a loaded machine. */
+function slowRound(bin: string, seconds: number): string {
+  const wrapper = join(bin, 'slow-round.sh')
+  writeFileSync(wrapper, `#!/usr/bin/env bash\nsleep ${seconds}\nexec bash ${join(WORK, 'work-round.sh')} "$@"\n`, { mode: 0o755 })
+  return wrapper
+}
+
 async function launch(name: string, s: Scenario): Promise<Run> {
   const t0 = Date.now()
   const root = mkTmp(`e2e-${name}-`)
@@ -169,7 +184,8 @@ async function launch(name: string, s: Scenario): Promise<Run> {
     PATH: `${bin}:${process.env.PATH}`,
     CLAUDE_CODE_SESSION_ID: sid, CLAUDE_PROJECT_DIR: dir, WORKFLOW_CHECKS_PATH: ROOT,
     XDG_STATE_HOME: join(root, 'xdg-state'), XDG_CACHE_HOME: join(root, 'xdg-cache'),
-    WORK_NO_SCOPE: '1', WORK_LOOP_POLL: '1', WORK_LOOP_SETTLE: '1',
+    WORK_NO_SCOPE: '1', WORK_LOOP_POLL: '1', WORK_LOOP_SETTLE: String(SETTLE),
+    ...(s.startDelay ? { WORK_ROUND: slowRound(bin, s.startDelay) } : {}),
     WORK_HOLD_DECISIONS_URL: `http://127.0.0.1:${judge.port}${s.judgePath ?? '/'}`, WORK_HOLD_JUDGE_TOKEN: 'stub',
     STUB_EDITS: JSON.stringify(s.edits ?? {}), STUB_FAULT: s.fault ?? '',
   })
@@ -210,6 +226,12 @@ describe('the canary assertions hold over a stub-model run of the real path', ()
     expect(r.out).toMatch(/canary: \[e2e-dev\] ok \(loop\.exit=0, verdict=PASS, W=[1-9]\d*/)
     expect(r.code).toBe(0)
     expect(readFileSync(join(runs.dev!.runDir, '..', '..', 'project', 'src', 'clamp.js'), 'utf8')).toBe(CLAMP)
+  })
+
+  test('dev round, runner slow to register: the loop waits for the runner, not reports it dead', async () => {
+    const r = await canaryAssert('slow-start', '0', [DEV_COUNT])
+    expect(r.out).not.toContain('FAIL [')
+    expect(r.code).toBe(0)
   })
 
   test('read-only diagnose: no tasks, a mechanical leg, a rule leg and a lens reach a verdict', async () => {
