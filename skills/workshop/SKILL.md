@@ -117,7 +117,7 @@ resolves them against no particular directory; `writablePaths` and every `mechan
 const planPath = /* the path $PLAN resolved to in Phase 2 */
 const goal = /* one sentence */
 const projectDir = /* absolute project root, from Phase 1 axis 2 */
-const typstRules = /* absolute: `$(typst-plugin-root)/rules`, the corpus `typst-rules slides,notes,workshop` indexes */
+const typstRules = `~/.claude/skills/typst/rules`   // write the absolute path: `typst-plugin-root` prints the root (+ /rules); the corpus `typst-rules slides,notes,workshop` indexes
 const args = {
   projectDir, planPath, goal,   // specHash is injected by work-dispatch.sh from the plan, never written here
 
@@ -188,26 +188,26 @@ const args = {
   lens: {
     agentType: "workshop-reviewer",
     refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md",
-            "${typstRules}/computed-values.md",
-            "${typstRules}/diagram-grounding.md",
-            "${typstRules}/element-vocabulary.md",
-            "${typstRules}/fletcher-diagrams.md",
-            "${typstRules}/heading-semantics.md",
-            "${typstRules}/images.md",
-            "${typstRules}/kickers.md",
-            "${typstRules}/lilaq-traps.md",
-            "${typstRules}/notes-structure.md",
-            "${typstRules}/overflow-fixes.md",
-            "${typstRules}/slide-format.md",
-            "${typstRules}/source-fidelity.md",
-            "${typstRules}/storytelling-comments.md",
-            "${typstRules}/table-grounding.md",
-            "${typstRules}/teleprompter-style.md",
-            "${typstRules}/title-register.md",
-            "${typstRules}/two-by-two.md",
-            "${typstRules}/typography.md",
-            "${typstRules}/verbatim-quotes.md",
-            "${typstRules}/visual-verify.md"],
+            `${typstRules}/computed-values.md`,
+            `${typstRules}/diagram-grounding.md`,
+            `${typstRules}/element-vocabulary.md`,
+            `${typstRules}/fletcher-diagrams.md`,
+            `${typstRules}/heading-semantics.md`,
+            `${typstRules}/images.md`,
+            `${typstRules}/kickers.md`,
+            `${typstRules}/lilaq-traps.md`,
+            `${typstRules}/notes-structure.md`,
+            `${typstRules}/overflow-fixes.md`,
+            `${typstRules}/slide-format.md`,
+            `${typstRules}/source-fidelity.md`,
+            `${typstRules}/storytelling-comments.md`,
+            `${typstRules}/table-grounding.md`,
+            `${typstRules}/teleprompter-style.md`,
+            `${typstRules}/title-register.md`,
+            `${typstRules}/two-by-two.md`,
+            `${typstRules}/typography.md`,
+            `${typstRules}/verbatim-quotes.md`,
+            `${typstRules}/visual-verify.md`],
     prompt: "Judge the built deck and its speaker notes against the approved plan and the goal. Read workshop-checks.md and every rule in refs in full first, along with the built slides.typ and notes.typ. CHECKLIST, every item in scope on every run: (1) CRITERIA vs ARTIFACTS — for each success criterion in the plan and goal, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding, CRITICAL where the deliverable cannot stand without it. (2) SCOPE fidelity — did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features and silently skipped plan items are findings, CRITICAL where an edit landed outside every declared writable path. (3) FID, against the plan's ## Source Inventory and the source paper itself at the path this run's plan names under ## Source Paper — the paper is not in refs because refs is a static list and the paper differs per run, so read it from the plan rather than expecting it injected. Whether a number occurs in the paper or the Source Inventory is COMPUTED by workshop-numbers.py (a constraint module — do not re-derive it); yours is the judgement half. Findings: a holding or conclusion on a slide that traces to no declared Source Inventory ID or to the paper; a number that is in the paper but is the wrong one for the claim beside it; a slide overstating what its source supports. CRITICAL where the deck asserts a result the paper does not contain. (4) CONV, against the plan's ## Audience, Venue, Duration, and Proportions and its ## Slide Spec: a convention violation the constraint modules cannot catch — a takeaway that is not a claim, a bullet restating its title, notes duplicating the slide instead of expanding it. (5) VIS, judged on the Typst diagram SOURCE against the Visual cell of each ## Slide Spec row: clipped or overlapping labels, arrows routed through nodes, illegible sizing, a diagram contradicting its caption. Source, not a render — look_at.py is not vendored, so say what you could not determine from source rather than papering over it. (6) DECK CONSTRAINTS — first, begin your report with the line MODULES CONSIDERED listing by file name every rule in your refs (the typst deck-rules corpus), each name drawn from them; an empty list is a CRITICAL finding and grades no DECK CONSTRAINTS item. Then grade slides.typ and notes.typ against those refs, never a count you carry and never a subset, and ONLY on the judgement half no checker reaches: a takeaway that names a topic instead of asserting a claim (a `===` subtitle opening on a wh-word, or a takeaway outside the subtitle), a bullet restating its own slide title, notes duplicating the slide instead of carrying the spoken words, outline fragments where speakable sentences belong, a section hierarchy the argument does not have, a table whose numbers are not traceable to the paper or whose synthesis is undocumented. A hollow notes bullet (one announcing scenarios, factors or examples the notes never write out), a `#callout` quoting source text and a `// Storytelling:` comment naming no visual mechanism or no insight and a `===` subtitle that is a noun- or gerund-phrase label are NOT on this checklist: Jev's T-HOLLOW, T-CALLOUT, T-STORY and T-TAKEAWAY score them through ruleChecks on the round's changed lines, and a rule in rulesThatFailed is diagnosed and routed like a mechanical failure. Do NOT re-derive what the gate's constraint modules already computed; name the module for each constraint finding and list every module you considered including those you judged satisfied. FID, CONV and VIS are MODEL-EVALUATED: report each as MODEL-EVALUATED with the evidence you actually read — never as PASS, and never as N/A, which is not a third kind of pass. Quote the offending text with a file:line for every finding. Severity across the whole checklist is MAJOR at minimum, CRITICAL where the deck asserts something its source does not support. MODE — RED (a task was flagged or a mechanical check failed): diagnose EVERY failure in the digest and route it, naming cause and fix, to the task id whose writablePaths own the file, or to 'plan' when no task can own the fix. MODE — GREEN (everything passed): make one open-ended pass over the whole checklist and report each finding with an ownerTask. In both modes, rule every carried finding open or closed against evidence you actually read; silence leaves it open.",
   },
 
