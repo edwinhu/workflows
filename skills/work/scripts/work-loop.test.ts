@@ -401,9 +401,9 @@ describe('a continuation round actually runs', () => {
   }, 420_000)
 
   /**
-   * The settle is load-bearing, pinned by WORK_LOOP_SETTLE rather than by timing luck. With the
-   * grace set to 0 the loop condemns a round whose runner has not registered yet; with the real
-   * grace the same runner survives. Same fixture, same runner, one variable.
+   * A runner slow to register is alive, not dead: the loop reads the process table, so even with the
+   * settle grace at 0 a round whose runner exists but has not filed farm-events yet survives.
+   * (A runner that is really gone is pinned in tests/work-loop-liveness.test.ts.)
    */
   function slowStartFarm(dir: string) {
     const p = join(dir, 'slow-start-farm.sh')
@@ -434,8 +434,8 @@ describe('a continuation round actually runs', () => {
     } catch (e: any) { return e.status ?? -1 }
   }
 
-  test('without the settle a healthy continuation round is condemned; with it, the same round survives', () => {
-    expect(runWithSettle(continuationFixture(), '0')).toBe(1)   // no grace: declared dead at once
+  test('a healthy continuation round whose runner is slow to register survives, with or without the settle', () => {
+    expect(runWithSettle(continuationFixture(), '0')).toBe(0)   // no grace: the live process is the evidence
     expect(runWithSettle(continuationFixture(), '5')).toBe(0)   // grace: the runner registers, PASS
   }, 840_000)
 })

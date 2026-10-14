@@ -53,9 +53,10 @@ case "$POLL" in ''|*[!0-9]*) die "WORK_LOOP_POLL must be a whole number of secon
 # farm-alive.sh and realpath every iteration for the whole run.
 [ "$POLL" -gt 0 ] || die "WORK_LOOP_POLL must be at least 1 second, got: $POLL"
 
-# A detached runner registers in farm-events a moment AFTER its dispatcher returns, so a liveness
-# check taken at that instant correctly reports no live run for a round that is perfectly healthy.
-# work-dispatch.sh settles before its own check; every round here gets the same grace.
+# A detached runner registers in farm-events a moment AFTER its dispatcher returns, and on a loaded
+# machine that moment is unbounded. So a missing registration is not evidence of death: a round is
+# alive while its runner process is (runner_alive), and dead only once neither record shows it. The
+# grace below then covers only the instant between a launch and the runner's first exec.
 SETTLE=${WORK_LOOP_SETTLE:-2}
 case "$SETTLE" in ''|*[!0-9]*) die "WORK_LOOP_SETTLE must be a whole number of seconds, got: $SETTLE" ;; esac
 
@@ -209,18 +210,43 @@ print(f" ({note})")
 PY
 )
 
+# Is the round runner a live process? The dispatchers launch `work-round.sh ARGS RESULT CWD HOST`, and
+# every wrapper (env, systemd-run --scope, WORK_ROUND) keeps those arguments in its argv, so the
+# process table already names the runner before it has filed a single farm-events line. Exact
+# adjacent argv match on this run's args.json + result.json, not a substring: an editor holding
+# result.json open is not a runner.
+runner_alive() {
+  python3 - "$ARGS" "$RESULT" <<'PY' 2>/dev/null
+import os, sys
+want = (os.path.realpath(sys.argv[1]), os.path.realpath(sys.argv[2]))
+me = {os.getpid(), os.getppid()}
+for pid in filter(str.isdigit, os.listdir('/proc')):
+    if int(pid) in me:
+        continue
+    try:
+        argv = open(f'/proc/{pid}/cmdline', 'rb').read().split(b'\0')
+    except OSError:
+        continue
+    for i in range(len(argv) - 1):
+        if argv[i].endswith(b'args.json') and argv[i + 1].endswith(b'result.json') \
+                and (os.path.realpath(argv[i]), os.path.realpath(argv[i + 1])) == tuple(map(os.fsencode, want)):
+            sys.exit(0)
+sys.exit(1)
+PY
+}
+
 round=1
 while :; do
   echo "work-loop: round $round of $LOOPS$CAP_NOTE — waiting on $RESULT"
 
   # Wait WITH a liveness leg. Order matters: the verdict is checked first, so a run that finished
-  # between two polls is never reported dead. The grace covers only the registration window at the
-  # start of a round; once the runner has been seen alive, or the window closes, a dead dispatch is
-  # reported exactly as before — that report is the whole feature.
+  # between two polls is never reported dead. A live runner process keeps the round alive however late
+  # it registers; the grace covers only the launch-to-exec instant, and once the runner has been seen
+  # alive a dead dispatch is reported at once — that report is the whole feature.
   grace=$SETTLE
   while :; do
     [ -s "$RESULT" ] && break
-    if ! bash "$SKILL/scripts/farm-alive.sh" "$RESULT" > /dev/null 2>&1; then
+    if ! bash "$SKILL/scripts/farm-alive.sh" "$RESULT" > /dev/null 2>&1 && ! runner_alive; then
       if [ "$grace" -gt 0 ]; then
         grace=$((grace - 1))
         sleep 1
