@@ -171,3 +171,28 @@ test('skills/writing/SKILL.md\'s example dispatch names the workflow (no <regist
   for (const f of readdirSync(join(ROOT, 'skills/writing/rules')).filter(f => f.endsWith('.md')))
     expect(read(`skills/writing/rules/${f}`), f).not.toMatch(/skills\/writing\/constraints\/|skills\/ai-anti-patterns\/constraints\/|constraints\/jev\/(writing|legal|econ)\b/)
 })
+
+// ---- scope without a run baseline ------------------------------------------------------------------------
+
+test('workflow-check with no baseline, --files or --changed examines the whole tree; with a baseline and no change nothing is in scope', () => {
+  const draft = '# T\n\n**Bold lead.** The point is made here in a full sentence.\n'
+  const d = project({ 'drafts/a.md': draft })
+  const git = (...a: string[]) => spawnSync('git', ['-C', d, ...a], { encoding: 'utf8', timeout: 60_000 })
+  git('add', '-A'); git('commit', '-qm', 'drafts')
+  const env = { WORK_RUN_BASELINE: '' }
+  const bare = wcheck(['writing', '--constraints-only', '--project-dir', d], env)
+  expect(bare.stdout).toContain('no run baseline: whole tree')
+  expect(first(bare.stdout)).toMatch(/^[\w.-]+: [1-9]\d* \S.*examined/)
+  expect(bare.stdout).toContain('a.md:')
+  expect(bare.status).toBe(1)
+  // --changed asks for the git delta explicitly: a committed tree has none
+  const ch = wcheck(['writing', '--constraints-only', '--project-dir', d, '--changed'], env)
+  expect(ch.stdout).not.toContain('whole tree')
+  expect(first(ch.stdout)).toMatch(EMPTY)
+  // inside a run (baseline set) the scope is what changed since it: nothing
+  const base = spawnSync('bash', [join(ROOT, 'skills', 'work', 'scripts', 'tree-snapshot.sh'), d], { encoding: 'utf8', timeout: 20_000 }).stdout.trim()
+  const run = wcheck(['writing', '--constraints-only', '--project-dir', d], { WORK_RUN_BASELINE: base })
+  expect(run.stdout).not.toContain('whole tree')
+  expect(first(run.stdout)).toMatch(EMPTY)
+  expect(run.status).toBe(0)
+})

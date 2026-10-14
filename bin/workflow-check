@@ -12,8 +12,9 @@ helpers and rules/uncalibrated/ is parked: neither runs. A nested workflow inher
 `writing/legal` runs writing's checks and legal's. A `_` directory (checks/_jev) is not a workflow. A
 constraint at one checks/-relative path in two roots runs once, from the first root.
 
-SCOPE. --files names it; --changed (the default with --project-dir) is the git tree's changed and untracked
-files, every file when there is no git; a farmed row is the union of the files under --cwd modified after
+SCOPE. --files names it; --changed is the git tree's changed and untracked files since the run's baseline
+(WORK_RUN_BASELINE or --since), every file when there is no git. With --project-dir alone it is --changed inside a
+run (a baseline is set) and the whole tree outside one; a farmed row is the union of the files under --cwd modified after
 --stamp, the Write/Edit paths in its stream --log and its --expect paths. Every constraint runs on that scope
 and decides its own relevance (the contract: checks/ds/constraints/_contract.py). The rules are scored on it
 through skills/work/scripts/rule-check.ts --workflow (DOMAIN_GATE_RULE_CHECK replaces that command).
@@ -286,6 +287,9 @@ def main() -> int:
     notes, by_git = [], False
     if not a.project_dir:
         files = touched(project, Path(a.stamp), Path(a.log), a.expect)
+    elif a.files is None and not a.changed and not baseline(a.since):  # out of a run: no delta exists to scope by
+        files = kept(walk(project))
+        notes.append("no run baseline: whole tree")
     elif a.files is None:
         files, by_git = changed(project, a.since)
     else:
