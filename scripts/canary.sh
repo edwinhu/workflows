@@ -4,7 +4,8 @@
 # work-result.sh), against the checkout this script lives in, then decidable assertions over what
 # they left on disk. A failing canary blocks the tag.
 #
-#   scripts/canary.sh --run              suites + template + both runs (the runs cost model calls)
+#   scripts/canary.sh --run              both runs dispatched first, suites + template while they run
+#                                        (the runs cost model calls)
 #   scripts/canary.sh --run --only suites|template|diag|dev   one step
 #   scripts/canary.sh --dry-run          suites + template, then build + plan-lint + probes for both
 #                                        runs, dispatching nothing — no model calls
@@ -482,8 +483,9 @@ PY
 # ------------------------------------------------------------------ run
 RUNS=()   # NAME|DIR|RUN_DIR|EXPECT|COUNTS (counts joined by \x1f)
 FAILED=0
-step suites && run_suites
-step template && run_template
+# The runs are model-bound and the suites CPU-bound, so both runs are dispatched FIRST and the suites
+# and template execute while they are in flight (the runs' TMPDIR, session id and temp root are the
+# canary's own; the suites run in their own worktree with their own TMPDIR).
 if step diag; then
   d=$(plan_diag) || exit 2
   echo; echo "=== canary (a): read-only diagnose, secreg lecture $LECTURE -> $STATE/$DIAG_ID"
@@ -504,6 +506,11 @@ if step dev; then
   fi
 fi
 
+# The cap runs from dispatch: the suites' minutes below overlap the runs, they do not extend them.
+deadline=$(( $(date +%s) + TIMEOUT_MIN * 60 ))
+step suites && run_suites
+step template && run_template
+
 if [ "$DRY" = 1 ]; then
   echo; echo "canary: --dry-run — suites and template run; runs built, linted and probed; nothing dispatched"
   [ "$FAILED" = 0 ] && echo "canary: dry-run PASS" || echo "canary: dry-run FAIL — the failures are listed above"
@@ -515,7 +522,6 @@ if [ "$DRY" = 1 ]; then
 fi
 
 # ------------------------------------------------------------------ wait, then assert
-deadline=$(( $(date +%s) + TIMEOUT_MIN * 60 ))
 for r in "${RUNS[@]}"; do
   IFS='|' read -r name _ rdir _ _ <<< "$r"
   while [ ! -s "$rdir/loop.exit" ]; do

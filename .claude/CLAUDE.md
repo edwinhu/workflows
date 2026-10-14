@@ -181,10 +181,9 @@ if a version site is ever added, add it there and `--check` will keep everyone h
 **Then ship it — and the tag is what ships:**
 
 ```bash
-scripts/test.sh            # whole suite, files in parallel; or scripts/test.sh ./tests/public-extension-contract.test.ts
 git commit -am "chore: release vX.Y.Z"
+scripts/canary.sh --run    # CANARY GATE on the committed HEAD: the full suite in a clean worktree (so no separate scripts/test.sh) + BOTH repos' suites + a teaching template lint + a real diagnose and dev round, run concurrently; a FAIL leaves an unpushed commit
 git push origin main
-scripts/canary.sh --run    # CANARY GATE: BOTH repos' suites + a teaching template lint + a real diagnose and dev round, ~17 min
 git tag -a workflows--vX.Y.Z -m "workflows vX.Y.Z" && git push origin workflows--vX.Y.Z
 ```
 
