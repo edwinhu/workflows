@@ -170,7 +170,7 @@ const args = {
 
   // The TARGET project's own commands, collected at CLARIFY. Nothing generic — a check that does
   // not run this repo's suite gates nothing.
-  // ONE entry point; three lose one silently. Undeclared lint/build legs say so; a missing --test-cmd is exit 2.
+  // ONE entry point; three lose one silently. Undeclared lint/build legs say so; a missing --test-cmd or --plan (absent --no-plan) is exit 2.
   mechanicalChecks: [
     { name: "dev",
       cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/dev/scripts/check.sh --project-dir ${projectDir} --plan ${planPath} --test-cmd "${testCmd}"${lintCmd ? ` --lint-cmd "${lintCmd}"` : ''}${buildCmd ? ` --build-cmd "${buildCmd}"` : ''}` },

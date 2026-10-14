@@ -381,7 +381,7 @@ block = {"runId": rid, "goalTurns": 2, "args": {
     "refs": [f"{dev}/references/tdd.md"],
   }],
   "mechanicalChecks": [{"name": "dev",
-    "cmd": f"bash {dev}/scripts/check.sh --project-dir {proj} --test-cmd \"bun test\""}],
+    "cmd": f"bash {dev}/scripts/check.sh --project-dir {proj} --plan {out} --test-cmd \"bun test\""}],
   "ruleChecks": {"name": "jev-dev-rules",
     "cmd": f"bun {root}/skills/work/scripts/rule-check.ts --workflow dev --project-dir {proj} --plan {out}"},
   "lens": {

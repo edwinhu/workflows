@@ -1,16 +1,18 @@
 import { test, expect, setDefaultTimeout } from "bun:test";
 
-setDefaultTimeout(300_000);
+setDefaultTimeout(400_000);
 import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 
 const CHECK = join(import.meta.dir, "check.sh");
-const run = (...a: string[]) => {
+// Omitting --plan is a refusal; the helper opts out with --no-plan unless the test names --plan itself.
+const runRaw = (...a: string[]) => {
   const r = spawnSync("bash", [CHECK, ...a], { timeout: 120_000, encoding: "utf8" });
   return { code: r.status ?? -1, out: r.stdout ?? "", err: r.stderr ?? "" };
 };
+const run = (...a: string[]) => runRaw(...(a.includes("--plan") || a.includes("--no-plan") ? a : [...a, "--no-plan"]));
 const proj = () => mkdtempSync(join(tmpdir(), "devcheck-"));
 // A test command that ran tests says how many; the tests leg counts them (work/scripts/leg-counts.sh),
 // so a stand-in for a passing or failing suite prints a runner summary rather than being `true`/`false`.
@@ -199,7 +201,7 @@ test("scope: --plan makes a stray edit exit 1 with the path; an in-scope edit pa
     const ok = run("--project-dir", d, "--test-cmd", PASS, "--plan", plan);
     expect(ok.code).toBe(0);
     expect(ok.out).toContain("leg scope exit=0");
-    expect(run("--project-dir", d, "--test-cmd", PASS).out).toContain("leg scope exit=0 (not declared)");
+    expect(run("--project-dir", d, "--test-cmd", PASS, "--no-plan").out).toContain("leg scope exit=0 (declined)");
     writeFileSync(join(d, "stray.txt"), "x\n");
     const bad = run("--project-dir", d, "--test-cmd", PASS, "--plan", plan);
     expect(bad.code).toBe(1);
@@ -208,3 +210,23 @@ test("scope: --plan makes a stray edit exit 1 with the path; an in-scope edit pa
     expect(run("--project-dir", d, "--test-cmd", PASS, "--plan", join(d, "nope.md")).code).toBe(2);
   } finally { rmSync(d, { recursive: true, force: true }); }
 }, 600_000);
+
+// An omitted --plan used to pass the scope leg as "not declared"; it now refuses unless --no-plan says so.
+test("scope: no --plan is exit 2 naming the flag; --no-plan is exit 0 declined; --plan runs the leg", () => {
+  const d = proj();
+  try {
+    const none = runRaw("--project-dir", d, "--test-cmd", PASS);
+    expect(none.code).toBe(2);
+    expect(none.err).toContain("--plan");
+    expect(none.err).toContain("--no-plan");
+    expect(none.out).not.toContain("leg scope exit=0");
+    const declined = runRaw("--project-dir", d, "--test-cmd", PASS, "--no-plan");
+    expect(declined.code).toBe(0);
+    expect(declined.out).toContain("leg scope exit=0 (declined)");
+    const plan = join(d, "plan.md");
+    writeFileSync(plan, `<!-- work:dispatch ${JSON.stringify({ args: { projectDir: d, tasks: [{ id: "T1", writablePaths: ["src"], refs: [] }] } })} -->\n`);
+    const ran = runRaw("--project-dir", d, "--test-cmd", PASS, "--plan", plan);
+    expect(ran.out).toMatch(/leg scope exit=\d+(?! \(declined\))/);
+    expect(ran.out).not.toContain("(declined)");
+  } finally { rmSync(d, { recursive: true, force: true }); }
+});

@@ -118,7 +118,7 @@ test('workflow-check dev --rules-only scores the dev rules: a VIOLATED verdict i
 test('dev check.sh reaches workflow-check dev: a constraint dropped into the layout fails the gate with no edit to check.sh', () => {
   const dropped = plug({ 'checks/dev/constraints/zzdev.py': FIRES('zzdev') })
   const p = project({ 'src/a.ts': 'export const a = 1\n' })
-  const r = sh('bash', [join(ROOT, 'skills', 'dev', 'scripts', 'check.sh'), '--project-dir', p, '--test-cmd', "echo 'Ran 1 test across 1 file.'", '--lint-cmd', 'echo lint-ok'], { WORKFLOW_CHECKS_PATH: dropped })
+  const r = sh('bash', [join(ROOT, 'skills', 'dev', 'scripts', 'check.sh'), '--project-dir', p, '--test-cmd', "echo 'Ran 1 test across 1 file.'", '--no-plan', '--lint-cmd', 'echo lint-ok'], { WORKFLOW_CHECKS_PATH: dropped })
   expect(r.status, r.stdout + r.stderr).toBe(1)
   expect(r.stdout + r.stderr).toContain('ZZDEV fired')
   expect(read('skills/dev/scripts/check.sh')).toMatch(/workflow-check[^\n]*\bdev\b[^\n]*--constraints-only/)

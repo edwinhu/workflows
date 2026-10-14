@@ -92,7 +92,7 @@ test('clamp limits a value to [lo, hi]', () => {
       redCommand: 'bun test src/clamp.test.js',
       refs: [join(dev, 'references', 'tdd.md')],
     }],
-    mechanicalChecks: [{ name: 'dev', cmd: `bash ${dev}/scripts/check.sh --project-dir ${dir} --test-cmd "bun test"` }],
+    mechanicalChecks: [{ name: 'dev', cmd: `bash ${dev}/scripts/check.sh --project-dir ${dir} --no-plan --test-cmd "bun test"` }],
     ruleChecks: { name: 'jev-dev-rules', cmd: filesRule
       ? `bun ${WORK}/rule-check.ts --workflow dev --files ${dir}/src/clamp.js --plan ${p}`
       : `bun ${WORK}/rule-check.ts --workflow dev --project-dir ${dir} --plan ${p}` },
