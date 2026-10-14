@@ -2,9 +2,9 @@
 // violation already committed is not the change's.
 import { afterAll, expect, setDefaultTimeout, test } from 'bun:test'
 
-setDefaultTimeout(180_000)
+setDefaultTimeout(240_000)
 import { spawnSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { lint, lintLine } from './authoring-lint.ts'
@@ -71,6 +71,29 @@ test('WORK_RUN_BASELINE scopes the lint to the run: WIP present at dispatch is o
     expect(lint(sk).map(x => `${x.file}:${x.line}`)).toEqual(['SKILL.md:7', 'SKILL.md:8'])
     process.env.WORK_RUN_BASELINE = 'not-a-tree'
     expect(lint(sk).map(x => `${x.file}:${x.line}`)).toEqual(['SKILL.md:7', 'SKILL.md:8'])
+  } finally {
+    if (prev === undefined) delete process.env.WORK_RUN_BASELINE
+    else process.env.WORK_RUN_BASELINE = prev
+  }
+})
+
+test('a symlinked target is linted like its real path, with and without WORK_RUN_BASELINE', () => {
+  const d = repo()
+  const sk = join(d, 'skills', 'a')
+  const link = join(mkdtempSync(join(tmpdir(), 'authoring-lint-link-')), 'a')
+  trash.push(join(link, '..'))
+  symlinkSync(sk, link)
+  const md = (extra: string) => `---\nname: a\ndescription: d\n---\n\nLegacy: ${CLIMB}\n${extra}\n`
+  const base = spawnSync('bash', [join(import.meta.dir, '..', '..', 'work', 'scripts', 'tree-snapshot.sh'), d], { timeout: 60_000, encoding: 'utf8' }).stdout.trim()
+  writeFileSync(join(sk, 'SKILL.md'), md(`Run: ${CLIMB}`))
+  const prev = process.env.WORK_RUN_BASELINE
+  try {
+    process.env.WORK_RUN_BASELINE = base
+    expect(lint(link).map(x => `${x.file}:${x.line}`)).toEqual(['SKILL.md:7'])
+    const cli = spawnSync('bun', [LINT, '--target', link], { timeout: 120_000, encoding: 'utf8', env: process.env })
+    expect(cli.status).toBe(1)
+    delete process.env.WORK_RUN_BASELINE
+    expect(lint(link).map(x => `${x.file}:${x.line}`)).toEqual(['SKILL.md:7'])
   } finally {
     if (prev === undefined) delete process.env.WORK_RUN_BASELINE
     else process.env.WORK_RUN_BASELINE = prev
