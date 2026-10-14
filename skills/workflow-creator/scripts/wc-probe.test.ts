@@ -3601,6 +3601,12 @@ describe('P20 one loader entry point', () => {
     expect(run(text).length).toBe(1)
   })
 
+  test('a $HOME fallback to load-constraints is a finding', () => {
+    const f = run('!`r=$HOME/.claude/skills/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" notes`\n')
+    expect(f.length).toBe(1)
+    expect(f[0].detail).toContain('hand-rolled $HOME resolver')
+  })
+
   test('a declared exemption silences it', () => {
     const text = '<!-- wc-probe: ignore-loader-entry-point -->\n!`bun scripts/load-constraints.ts ds`\n'
     const ex = probe.parseExemptions ? probe.parseExemptions('SKILL.md', text) : []

@@ -3218,6 +3218,7 @@ export function checkLoaderEntryPoint(file: string, text: string, exemptions: re
     [/scripts\/load-constraints\.(py|ts)\b/, 'the implementation file, not the entry point'],
     [/\bscripts\/rules-for\b/, 'the pre-rename name'],
     [/for d in "\$HOME[^"]*"[^;]*;\s*do[^;]*rules-for/, 'a hand-rolled $HOME resolver'],
+    [/\$HOME[^;]*load-constraints/, 'a hand-rolled $HOME resolver'],
   ]
   const lines = text.split('\n')
   for (let i = 0; i < lines.length; i++) {
