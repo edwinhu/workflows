@@ -1208,3 +1208,48 @@ test('a mixed list is not exempted — one label entry keeps the whole list in s
   const src = 'const IGNORE_PREFIXES = [".planning/", "skills/writing-"]\n'
   expect(probe.suppressionEntries(src).length).toBe(2)
 })
+
+// ------------------------------------------------------------------ COV — labels on declined checks and advisories
+// Coverage audit: relabelling these sites left the suite green. The older tests count advisories or
+// unresolved refs, or read a detail string, and never the rule that raised them. A reader keys on the
+// label, and I5/I7 are exactly the rules that say "I did NOT run", so each is pinned on it here.
+
+describe('COV — I5 and I7 labels', () => {
+  test('I5: a list matching no label is declined under I5 suppression vocabulary, and a matching list is not', () => {
+    const declined: any[] = []
+    const none = probe.checkSuppressionLists([{ file: 'hooks/h.ts', name: 'DRAFT_DIRS', entry: 'drafts/', line: 3 }], ['skills/writing/constraints/volokh'], declined)
+    expect(none).toEqual([])
+    expect(declined.map((u: any) => [u.rule, u.token])).toEqual([['I5 suppression vocabulary', 'DRAFT_DIRS']])
+    expect(declined[0].reason).toContain('I5 did NOT run')
+    const matched: any[] = []
+    probe.checkSuppressionLists([{ file: 'hooks/h.ts', name: 'PREFIXES', entry: 'skills/writing/', line: 3 }], ['skills/writing/constraints/volokh'], matched)
+    expect(matched).toEqual([])
+  })
+
+  const table = (source: string) => [{ file: 'skills/w/constraints/t.py', symbols: [], regexes: [{ source, line: 7 }], skill: 'w' }]
+
+  test('I7: a pattern that does not compile is declined under I7 corpus standing, and one that compiles is not', () => {
+    const declined: any[] = []
+    expect(probe.checkCorpusRejected(table('('), ['it is important to note'], declined)).toEqual([])
+    expect(declined.map((u: any) => u.rule)).toEqual(['I7 corpus standing'])
+    expect(declined[0].reason).toContain('does not compile')
+    const fine: any[] = []
+    probe.checkCorpusRejected(table('unrelated'), ['it is important to note'], fine)
+    expect(fine).toEqual([])
+  })
+
+  test('I7: a hit is an advisory labelled (advisory), and a non-hit is nothing', () => {
+    const adv = probe.checkCorpusRejected(table('it is important to note'), ['it is important to note'], [])
+    expect(adv.map((a: any) => a.rule)).toEqual(['I7 corpus standing (advisory)'])
+    expect(probe.checkCorpusRejected(table('rich tapestry'), ['it is important to note'], [])).toEqual([])
+  })
+
+  test('I7: a corpus path that exists but cannot be read as text is declined under I7 corpus standing', () => {
+    const dir = fixture({ 'plugin.json': PLUGIN_JSON, 'skills/w/SKILL.md': skillMd('w'), 'corpus/dir-not-file/keep': 'x' })
+    const result = probe.runProbe(dir, { corpus: join(dir, 'corpus/dir-not-file') })
+    const u = (result.unresolvedRefs as any[]).filter(r => r.rule === 'I7 corpus standing')
+    expect(u.length).toBe(1)
+    expect(u[0].reason).toContain('could not be read')
+    expect(result.advisories.filter((a: any) => a.rule.startsWith('I7'))).toEqual([])
+  })
+})

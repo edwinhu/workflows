@@ -115,3 +115,11 @@ test('L5/L6 hold only of a tree that ships the runner', () => {
 test('the law holds of this plugin as it stands', () => {
   expect(gateLaw(join(import.meta.dir, '..', '..', '..'))).toEqual([])
 })
+
+test('L4: a _CLARIFIED.json named as retired history is not a sentinel; the same name as a live write is', () => {
+  expect(lintLine('skills/a/SKILL.md', 'the WORK_CLARIFIED.json sentinel was retired')).toEqual([])
+  expect(lintLine('skills/a/SKILL.md', 'the DEV_CLARIFIED.json sentinel is written')[0]).toStartWith('L4')
+  // the two canonical state files are not "non-canonical"; any other .state file is
+  expect(lintLine('skills/a/SKILL.md', 'read .planning/.state/review.json')).toEqual([])
+  expect(lintLine('skills/a/SKILL.md', 'read .planning/.state/other.json')[0]).toStartWith('L4')
+})
