@@ -149,3 +149,9 @@ test('the audit section tells the charter to carry workflow: authoring', () => {
 test('the parameter table does not say an agent runs the mechanical command', () => {
   expect(skill).not.toMatch(/mechanicalChecks`[^|\n]*agent runs the command/)
 })
+
+test('no args-fence cmd string carries a <placeholder> — bash reads < and > as redirection', () => {
+  const cmds = [...skill.matchAll(/\bcmd: ("[^"\n]*"|`[^`\n]*`)/g)].map(m => m[1])
+  expect(cmds.length).toBeGreaterThan(3)
+  expect(cmds.filter(c => /<[A-Za-z][\w-]*>/.test(c))).toEqual([])
+})
