@@ -1,6 +1,6 @@
 ---
 name: post-subagent-boundary
-applies-to: [ds, ds-fix, ds-implement, ds-accept, ds-delegate]
+applies-to: [ds]
 ---
 
 <EXTREMELY-IMPORTANT>

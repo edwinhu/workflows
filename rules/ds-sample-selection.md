@@ -1,6 +1,6 @@
 ---
 name: sample-selection
-applies-to: [ds-delegate]
+applies-to: [ds]
 ---
 
 ## Rule

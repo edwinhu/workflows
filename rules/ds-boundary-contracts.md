@@ -1,6 +1,6 @@
 ---
 name: ds-boundary-contracts
-applies-to: [ds-delegate]
+applies-to: [ds]
 ---
 
 **What a script already decides:** `checks/ds/constraints/ds-schema-contracts.py` decides that a transformation asserts input and output schemas. What belongs in the contract is this rule.

@@ -1,6 +1,6 @@
 ---
 name: statistical-validity
-applies-to: [ds-delegate]
+applies-to: [ds]
 ---
 
 ## Rule

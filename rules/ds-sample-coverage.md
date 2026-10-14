@@ -1,6 +1,6 @@
 ---
 name: sample-coverage
-applies-to: [ds, ds-implement, ds-accept, ds-delegate, ds-fix]
+applies-to: [ds]
 ---
 
 ## Rule

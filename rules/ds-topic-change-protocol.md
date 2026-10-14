@@ -1,6 +1,6 @@
 ---
 name: topic-change-protocol
-applies-to: [ds, ds-fix, ds-implement, ds-accept, ds-delegate]
+applies-to: [ds]
 ---
 
 ## Rule

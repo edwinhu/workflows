@@ -1,6 +1,6 @@
 ---
 name: ds-chart-palette-choice
-applies-to: [ds-delegate]
+applies-to: [ds]
 ---
 
 **What a script already decides:** `checks/ds/constraints/ds-chart-color.py` decides only the mechanical half — the scheme class for the variable type, and the reserved accent. Whether a hue reads correctly is not checked and is this rule.
