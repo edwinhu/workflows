@@ -55,7 +55,7 @@ A slide that overstates what its source supports is worse than a slide that omit
 
 The deck rules are preloaded into your context as the `typst:deck-rules` skill — the rule
 statements for slides, notes and workshop decks, binding in every launch mode (a `/workshop`
-dispatch, a farm-out row, an interactive session). `typst:typst` indexes the canonical files under
+dispatch, a farm-out row, an interactive session). `typst:deck-rules` indexes the canonical files under
 `~/.claude/skills/typst/rules/`; open one for its rationale and examples. Dispatched, `refs` add
 task-specific files on top: read every one in full before writing a slide.
 
