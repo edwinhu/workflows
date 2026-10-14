@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scan the lines a change ADDS (git diff HEAD plus untracked files) for three patterns no reviewer
+"""Scan the lines a change ADDS (git diff HEAD plus untracked files; over $WORK_RUN_BASELINE's tree instead when set) for three patterns no reviewer
 should have to read for: a focused or skipped test, TLS verification turned off, a committed secret.
 
 Usage: diff-scan.py --project-dir P [--plan X] [--files F ...] (checks/ds/constraints/_contract.py). Reads
@@ -14,6 +14,9 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'ds', 'constraints'))
 from _contract import count_line, expand, parse, rel  # the contract helper
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', '_lib'))
+from changed import added_lines, baseline  # the run's scope: WORK_RUN_BASELINE, else HEAD
+
 TEST_PATH = re.compile(r'(^|/)(tests?|__tests__|spec)/|[._-](test|spec)\.[a-z]+$|(^|/)test_[^/]*\.py$|_test\.(go|py)$')
 CHECKS = [
     ('focused-or-skipped-test', True, re.compile(
@@ -26,30 +29,6 @@ CHECKS = [
 
 def git(root, *a):
     return subprocess.run(['git', '-c', 'core.quotePath=false', '-C', root, *a], capture_output=True, text=True, check=False)
-
-
-def added(root, wanted):
-    """(path, line_no, text) for every line the working tree adds over HEAD in `wanted`, untracked files whole."""
-    has_head = git(root, 'rev-parse', '--verify', '-q', 'HEAD').returncode == 0
-    if has_head:
-        path, n = None, 0
-        for ln in git(root, 'diff', 'HEAD', '-U0', '--no-color', '--no-ext-diff', '--src-prefix=a/', '--dst-prefix=b/').stdout.splitlines():
-            if ln.startswith('+++ '):
-                path = ln[6:].removesuffix('\t') if ln.startswith('+++ b/') else None  # a spaced name ends in a tab
-            elif ln.startswith('@@'):
-                m = re.search(r'\+(\d+)', ln)
-                n = int(m.group(1)) if m else 0
-            elif ln.startswith('+') and path in wanted:
-                yield path, n, ln[1:]
-                n += 1
-    tracked = set(git(root, 'ls-files', '-z').stdout.split('\0')) if has_head else set()
-    for path in sorted(wanted - tracked):
-        try:
-            with open(os.path.join(root, path), encoding='utf-8') as f:
-                for i, text in enumerate(f, 1):
-                    yield path, i, text.rstrip('\n')
-        except (UnicodeDecodeError, OSError):
-            continue
 
 
 def main():
@@ -66,7 +45,7 @@ def main():
         return 0
     root = os.path.realpath(top.stdout.strip())
     hits, lines, exempt = [], 0, 0
-    for path, n, text in added(root, {os.path.relpath(p, root) for p in files}):
+    for path, n, text in added_lines(root, {os.path.relpath(p, root) for p in files}):
         if 'fixtures/' in path or 'scan: allow' in text:
             exempt += 1
             continue
@@ -78,7 +57,7 @@ def main():
                 hits.append(f'{rel(os.path.join(root, path), proj)}:{n}: {name} {text.strip()[:160]}')
     # The non-vacuity count line (work/scripts/leg-counts.sh); a change that adds nothing is empty scope.
     note = f'{exempt} exempt' if exempt else ''
-    print(count_line('diff-scan', lines, 'added line(s)', ', '.join(filter(None, ['no line added over HEAD', note])), note))
+    print(count_line('diff-scan', lines, 'added line(s)', ', '.join(filter(None, ['no line added over ' + ('the run baseline' if baseline() else 'HEAD'), note])), note))
     for h in hits:
         print(h)
     return 1 if hits else 0

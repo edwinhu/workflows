@@ -731,35 +731,27 @@ def notes_bullets(notes_text: str) -> list[tuple[int, int, str]]:
 
 
 def added_lines(path: Path, root: Path) -> set[int] | None:
-    """Lines of `path` added against HEAD (`git diff -U0`); every line when the file is untracked.
-    None when `root` is not a git work tree: no diff info, so the whole file is in scope."""
-    def git(*args: str) -> subprocess.CompletedProcess:
-        return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True,
-                              errors="replace", timeout=SUBPROCESS_TIMEOUT)
+    """Lines of `path` the run added: against $WORK_RUN_BASELINE's tree when set, else against HEAD; every line when
+    the file is untracked. None when `root` is not a git work tree: no diff info, so the whole file is in scope."""
     try:
-        top = git("rev-parse", "--show-toplevel")
+        top = subprocess.run(["git", "-C", str(root), "rev-parse", "--show-toplevel"], capture_output=True, text=True,
+                             timeout=SUBPROCESS_TIMEOUT)
     except (OSError, subprocess.SubprocessError):
         return None
     if top.returncode != 0:
         return None
-    rel = os.path.relpath(path.resolve(), Path(top.stdout.strip()).resolve())
-    if git("cat-file", "-e", f"HEAD:{rel}").returncode != 0:
-        n = len(path.read_text(encoding="utf-8", errors="replace").splitlines())
-        return set(range(1, n + 1))
-    added: set[int] = set()
-    for ln in git("diff", "--no-color", "--no-ext-diff", "-U0", "HEAD", "--", rel).stdout.splitlines():
-        m = re.match(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@", ln)
-        if m:
-            start, count = int(m.group(1)), int(m.group(2) or 1)
-            added.update(range(start, start + count))
-    return added
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "_lib"))
+    import changed  # the run's scope: WORK_RUN_BASELINE, else HEAD (a probe copied out of checks/ cannot judge NAR)
+    top_dir = Path(top.stdout.strip()).resolve()
+    rel = os.path.relpath(path.resolve(), top_dir)
+    return {n for _, n, _ in changed.added_lines(str(top_dir), {rel})}
 
 
 def check_nar(notes_src: Path, root: Path) -> dict:
     """R8: no spoken notes bullet narrates the slide ("the slide shows", "as you can see", "this
     table presents", "the diagram on this slide"). A bracketed bullet other than `[Answer ...]` is a
     stage direction, never read aloud, and is not checked. Only bullets touching lines added against
-    HEAD are judged: accepted notes already on HEAD are legacy, not this round's work."""
+    HEAD (or since the run baseline, $WORK_RUN_BASELINE) are judged: accepted notes already there are legacy, not this round's work."""
     notes_text, err = _read_text(notes_src)
     if notes_text is None:
         return result("FAIL", f"speaker notes: {err}")
@@ -781,7 +773,7 @@ def check_nar(notes_src: Path, root: Path) -> dict:
         found = [m.group(0) for _, rx in NARRATION_PATTERNS if (m := rx.search(text))]
         if found:
             hits.append(f"{notes_src.name}:{first} {found[0]!r} in: {text[:160]}")
-    scope = "whole file (no git diff info)" if added is None else "bullets touching lines added against HEAD"
+    scope = "whole file (no git diff info)" if added is None else "bullets touching lines added " + ("since the run baseline" if os.environ.get("WORK_RUN_BASELINE") else "against HEAD")
     evidence = (f"notes_bullets={len(bullets)} in_scope_spoken={in_scope} stage_directions={stage} "
                 f"scope={scope!r}")
     if hits:
