@@ -18,8 +18,8 @@ Unparsed is UNCHECKED, never clean — every one of those paths exits non-zero.
 `--with lxml --with pyyaml` is not decoration: the engine reaches lxml through
 prose_extract.py and PyYAML through diction.yaml, and raises SystemExit without them.
 
-Drafts are the paths the plan's `## Section Outputs` table names, resolved against the
-project root; `--style` is the plan's `Domain:`, which selects the domain style guide.
+Drafts are the `draftFile`s of the sections writing_section_index.py reads from the plan (the one
+grammar parser); `--style` is the plan's `Domain:`, which selects the domain style guide.
 
 Exit codes: 0 clean · 1 blocked (a hard span) · 2 gate defect.
 """
@@ -38,6 +38,8 @@ ENGINE = Path(os.environ.get("WRITING_PROSE_ENGINE")
               or Path(__file__).resolve().parents[3] / "scripts" / "prose-audit.py")
 RUNNER = ["uv", "run", "--with", "lxml", "--with", "pyyaml", "python3"]
 
+INDEX = Path(__file__).resolve().parent / "writing_section_index.py"
+
 EXIT_CLEAN = 0
 EXIT_BLOCKED = 1
 EXIT_GATE_DEFECT = 2
@@ -47,97 +49,18 @@ class GateDefect(Exception):
     """The engine could not be run, or its output could not be read for severity."""
 
 
-def _receipt_plan(planning: Path) -> Path | None:
-    """The plan `.planning/.state/review.json` authenticates, when that file is usable.
-
-    A malformed receipt is NOT a defect here: the receipt is the grammar check's subject,
-    and PROSE-HARD must stay about prose rather than reporting another check's failure.
-    """
+def draft_paths(project: Path) -> list[Path]:
+    """The `draftFile` of every section the canonical section index reads from the project's plan."""
+    proc = subprocess.run(
+        [sys.executable, str(INDEX), str(project)], capture_output=True, text=True, timeout=120)
     try:
-        receipt = json.loads((planning / ".state" / "review.json").read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError, ValueError):
-        return None
-    name = receipt.get("plan_file") if isinstance(receipt, dict) else None
-    if not isinstance(name, str) or Path(name).name != name or name == "PLAN.md":
-        return None
-    plan = planning / name
-    return plan if plan.is_file() else None
-
-
-def find_plan(project: Path) -> Path:
-    """The generated plan under `<proj>/.planning/`.
-
-    The receipt's `plan_file` wins where it resolves. Otherwise the plan is the one
-    direct-child `.md` carrying a `## Section Outputs` heading — which is what excludes
-    `ACTIVE_WORKFLOW.md` and the retired `PRECIS.md`/`OUTLINE.md`/`PHASE_SUMMARY.md`
-    siblings without hard-coding their names. `PLAN.md` is never a plan: the vendored
-    grammar parser rejects that basename.
-    """
-    planning = project / ".planning"
-    if not planning.is_dir():
-        raise GateDefect(f"no .planning directory under {project}")
-    authenticated = _receipt_plan(planning)
-    if authenticated is not None:
-        return authenticated
-    candidates = sorted(
-        p for p in planning.glob("*.md")
-        if p.is_file()
-        and p.name != "PLAN.md"
-        and any(line.strip() == "## Section Outputs"
-                for line in p.read_text(encoding="utf-8", errors="ignore").splitlines())
-    )
-    if not candidates:
-        raise GateDefect(f"no generated plan with `## Section Outputs` directly under {planning}")
-    if len(candidates) > 1:
-        raise GateDefect(
-            f"{len(candidates)} candidate plans under {planning}: "
-            + ", ".join(p.name for p in candidates)
-        )
-    return candidates[0]
-
-
-def _table_rows(block: str) -> list[list[str]]:
-    rows = []
-    for line in block.splitlines():
-        line = line.strip()
-        if not line.startswith("|"):
-            continue
-        cells = [c.strip() for c in line.strip("|").split("|")]
-        if all(set(c) <= set("-: ") and c for c in cells):
-            continue
-        rows.append(cells)
-    return rows
-
-
-def draft_paths(plan: Path) -> list[Path]:
-    """The `Draft` column of `## Section Outputs`, resolved against the plan's project root."""
-    text = plan.read_text(encoding="utf-8", errors="ignore")
-    block, seen = [], False
-    for line in text.splitlines():
-        if line.startswith("## "):
-            if seen:
-                break
-            seen = line[3:].strip() == "Section Outputs"
-            continue
-        if seen:
-            block.append(line)
-    if not seen:
-        raise GateDefect(f"{plan} has no `## Section Outputs` section")
-    rows = _table_rows("\n".join(block))
-    if len(rows) < 2:
-        raise GateDefect(f"{plan}: `## Section Outputs` has no data rows")
-    header = [c.lower() for c in rows[0]]
-    if "draft" not in header:
-        raise GateDefect(f"{plan}: `## Section Outputs` has no Draft column")
-    col = header.index("draft")
-    root = plan.parent.parent
-    out = []
-    for row in rows[1:]:
-        if col >= len(row) or row[col] in ("", "-"):
-            continue
-        out.append(root / row[col])
+        index = json.loads(proc.stdout)
+    except ValueError:
+        raise GateDefect(f"the section index printed no JSON for {project}: {proc.stderr.strip()[:200]}")
+    out = [Path(sec["draftFile"]) for sec in index.get("sections") or [] if sec.get("draftFile")]
     if not out:
-        raise GateDefect(f"{plan}: `## Section Outputs` names no draft path")
+        raise GateDefect(f"the section index read no section from {project}: "
+                         + "; ".join(index.get("violations") or ["no violation reported"]))
     return out
 
 
@@ -208,8 +131,7 @@ def _show(kind: str, pairs: list[tuple[str, dict]], out) -> None:
 
 def gate(project: Path, style: str, engine: Path = ENGINE, out=sys.stdout) -> int:
     try:
-        plan = find_plan(project)
-        drafts = draft_paths(plan)
+        drafts = draft_paths(project)
         present = [d for d in drafts if d.is_file()]
         absent = [d for d in drafts if not d.is_file()]
         if absent:
