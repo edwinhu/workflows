@@ -66,12 +66,12 @@ Three facts decide these axes, and each prevents a defect that is expensive to f
 
 `work`'s remaining axes are taken as `work` states them, with two domain bindings: `work` axis 4
 (observable success criteria) is answered with the DQ runner over the plan's `## Data Outputs` plus
-the target project's own test and lint commands **when the project has them**, and those strings
-become `mechanicalChecks` verbatim; `work` axis 5 (review surface) is answered by the plan's
-`## Review Surfaces` section. The `ds-dq` entry is never conditional. The `tests` and `lint` entries
-are **omitted entirely when the project has no such command** — `work`'s probe runs a `cmd` verbatim,
-so an unsubstituted `<the project's lint command>` placeholder blocks the gate on a placeholder
-instead of on data quality.
+the target project's own test and lint commands, and those strings become `mechanicalChecks`
+verbatim; `work` axis 5 (review surface) is answered by the plan's
+`## Review Surfaces` section. The `ds-dq` entry is never conditional. CLARIFY records, for each of test and lint, either the
+project's command or an explicit "none" — an unanswered one is a refusal (`check.sh` exits 2), never
+a leg that ran nothing. A "none" becomes `--no-test-cmd` / `--no-lint-cmd`; `work`'s probe runs a
+`cmd` verbatim, so never leave a placeholder in it.
 
 Then gather planning evidence — **a read-only profile, never implementation**. For each source that
 materially affects the plan, collect or dispatch a profile covering: location/access, approximate
@@ -176,8 +176,8 @@ Omitting it silently runs the user's codex request on claude.
 ```js
 const goal = /* one sentence */
 const planPath = /* the approved plan's path */
-const testCmd = /* the project's test command, or null when it has none */
-const lintCmd = /* the project's lint command, or null */
+const testCmd = /* the project's test command, or null when CLARIFY recorded "none" */
+const lintCmd = /* the project's lint command, or null when CLARIFY recorded "none" */
 const args = {
   projectDir,
   goal,
@@ -212,15 +212,13 @@ const args = {
 
   // The DS gate: the runner reads the approved plan's ## Data Outputs and opens each artifact
   // itself. ds-dq is never conditional. tests and lint are the TARGET project's own commands,
-  // collected at CLARIFY, and are included ONLY when the project has them — a probe runs cmd
-  // verbatim, so an unsubstituted placeholder blocks the gate on a placeholder. Omit the entry.
+  // collected at CLARIFY: a command, or an explicit "none" that becomes --no-test-cmd / --no-lint-cmd.
   // ONE entry point. These were three entries until 2026-09-15; a list of N independent
   // commands loses one silently. The project's own test and lint commands are ARGUMENTS
-  // because this skill cannot know them — omit a flag and that leg reports "not declared",
-  // which is visible, where a dropped entry is not.
+  // because this skill cannot know them — omit both a command and its opt-out and check.sh exits 2.
   mechanicalChecks: [
     { name: "ds",
-      cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/check.sh --plan ${planPath} --project-dir ${projectDir}${testCmd ? ` --test-cmd "${testCmd}"` : ''}${lintCmd ? ` --lint-cmd "${lintCmd}"` : ''}` },
+      cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/check.sh --plan ${planPath} --project-dir ${projectDir}${testCmd ? ` --test-cmd "${testCmd}"` : ' --no-test-cmd'}${lintCmd ? ` --lint-cmd "${lintCmd}"` : ' --no-lint-cmd'}` },
   ],
   // check.sh runs every checks/ds/constraints/ script through `workflow-check ds --constraints-only`. work-checks.sh runs ruleChecks as a command (no agent); Jev scores the rules under checks/ds/rules/ (A1, A4, DEN, DQ4, DQ6, E7, M1, R1, UNI; DQ1 waits in checks/ds/rules/uncalibrated/ and ds-dq.py decides it); a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
   ruleChecks: { name: "jev-rules", cmd: `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow ds --project-dir ${projectDir} --plan ${planPath}` },
