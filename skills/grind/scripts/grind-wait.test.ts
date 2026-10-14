@@ -14,6 +14,7 @@
  */
 import { describe, expect, test, afterAll, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
+import { spawnAsync } from '../../../tests/helpers/async-spawn.ts'
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync, symlinkSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -48,8 +49,8 @@ function script(dir: string, name: string, bodyText: string): string {
 }
 
 function run(args: string[], env?: Record<string, string>) {
-  return spawnSync('bash', [GRIND, 'run', '--runner', 'claude-code', ...args], {
-    encoding: 'utf8', timeout: 60_000, env: env ?? grindEnv(),
+  return spawnAsync('bash', [GRIND, 'run', '--runner', 'claude-code', ...args], {
+    timeout: 60_000, env: env ?? grindEnv(),
   })
 }
 
@@ -122,7 +123,7 @@ function counting(dir: string): { path: string; out: string; lines: () => string
 }
 
 describe('grind.sh — a wait record says WHY the gate is shut', () => {
-  test('a gate printing to stdout puts its last non-empty line in every wait record', () => {
+  test('a gate printing to stdout puts its last non-empty line in every wait record', async () => {
     const d = workdir('grind-why-stdout')
     const { journal, args } = waiting(
       d,
@@ -130,7 +131,7 @@ describe('grind.sh — a wait record says WHY the gate is shut', () => {
       ['--max-iters', '3'],
     )
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const waits = kinds(journal, 'wait')
@@ -138,7 +139,7 @@ describe('grind.sh — a wait record says WHY the gate is shut', () => {
     for (const w of waits) expect(w.why).toBe('grid busy: 3 jobs')
   })
 
-  test('a gate printing to stderr is read the same way — the output is combined, not just stdout', () => {
+  test('a gate printing to stderr is read the same way — the output is combined, not just stdout', async () => {
     const d = workdir('grind-why-stderr')
     const { journal, args } = waiting(
       d,
@@ -146,7 +147,7 @@ describe('grind.sh — a wait record says WHY the gate is shut', () => {
       ['--max-iters', '2'],
     )
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const waits = kinds(journal, 'wait')
@@ -154,11 +155,11 @@ describe('grind.sh — a wait record says WHY the gate is shut', () => {
     for (const w of waits) expect(w.why).toBe('grid busy: 3 jobs')
   })
 
-  test('a silent gate leaves why absent or empty rather than inventing one', () => {
+  test('a silent gate leaves why absent or empty rather than inventing one', async () => {
     const d = workdir('grind-why-silent')
     const { journal, args } = waiting(d, 'exit 1', ['--max-iters', '2'])
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     const waits = kinds(journal, 'wait')
@@ -166,7 +167,7 @@ describe('grind.sh — a wait record says WHY the gate is shut', () => {
     for (const w of waits) expect(w.why ?? '').toBe('')
   })
 
-  test('quotes and backslashes in the gate output leave the record parseable', () => {
+  test('quotes and backslashes in the gate output leave the record parseable', async () => {
     // The gate is arbitrary shell owned by whoever wrote the loop. Its output is data, and pasting
     // data into a hand-built JSON string is how a journal stops being readable at 3am.
     const d = workdir('grind-why-quotes')
@@ -177,7 +178,7 @@ describe('grind.sh — a wait record says WHY the gate is shut', () => {
       ['--max-iters', '2'],
     )
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     expect(unparseableLines(journal)).toBe(0)
@@ -186,7 +187,7 @@ describe('grind.sh — a wait record says WHY the gate is shut', () => {
     for (const w of waits) expect(w.why).toBe(gateLine)
   })
 
-  test('a 500-character line is truncated to the why bound, not written whole', () => {
+  test('a 500-character line is truncated to the why bound, not written whole', async () => {
     const d = workdir('grind-why-long')
     const { journal, args } = waiting(
       d,
@@ -194,7 +195,7 @@ describe('grind.sh — a wait record says WHY the gate is shut', () => {
       ['--max-iters', '2'],
     )
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     expect(unparseableLines(journal)).toBe(0)
@@ -209,7 +210,7 @@ describe('grind.sh — a wait record says WHY the gate is shut', () => {
 })
 
 describe('grind.sh --wait-alert — a long wait is announced while it is still happening', () => {
-  test('fires at every Nth consecutive wait, and the run continues to its own ending', () => {
+  test('fires at every Nth consecutive wait, and the run continues to its own ending', async () => {
     // 7 waits with --wait-alert 3 is two alerts (at 3 and at 6) and then the budget ending. An alert
     // at 7 would mean the threshold counts something other than the consecutive streak.
     const d = workdir('grind-alert-every-n')
@@ -220,7 +221,7 @@ describe('grind.sh --wait-alert — a long wait is announced while it is still h
       '--notify', n.path,
     ])
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     expect(kinds(journal, 'wait').length).toBe(7)
@@ -233,7 +234,7 @@ describe('grind.sh --wait-alert — a long wait is announced while it is still h
     expect(lines.length).toBe(3)
   })
 
-  test('the streak resets when the gate opens — 2, then a pass, then 2 is never 3', () => {
+  test('the streak resets when the gate opens — 2, then a pass, then 2 is never 3', async () => {
     const d = workdir('grind-alert-reset')
     const n = counting(d)
     const journal = join(d, 'journal.jsonl')
@@ -252,7 +253,7 @@ describe('grind.sh --wait-alert — a long wait is announced while it is still h
       ].join('\n'),
     )
 
-    const r = run([
+    const r = await run([
       '--journal', journal,
       '--check', script(d, 'check.sh', 'exit 1'),
       '--gate', gate,
@@ -270,7 +271,7 @@ describe('grind.sh --wait-alert — a long wait is announced while it is still h
     expect(n.lines().filter(l => l.startsWith('waiting|'))).toEqual([])
   })
 
-  test('the default threshold is 6 consecutive waits', () => {
+  test('the default threshold is 6 consecutive waits', async () => {
     const d = workdir('grind-alert-default')
     const n = counting(d)
     const { journal, args } = waiting(d, "printf 'grid busy\\n'\nexit 1", [
@@ -278,14 +279,14 @@ describe('grind.sh --wait-alert — a long wait is announced while it is still h
       '--notify', n.path,
     ])
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     expect(kinds(journal, 'wait').length).toBe(6)
     expect(n.lines().filter(l => l.startsWith('waiting|'))).toEqual(['waiting|6|grid busy'])
   })
 
-  test('--wait-alert 0 disables the alert entirely', () => {
+  test('--wait-alert 0 disables the alert entirely', async () => {
     const d = workdir('grind-alert-off')
     const n = counting(d)
     const { journal, args } = waiting(d, "printf 'grid busy\\n'\nexit 1", [
@@ -294,14 +295,14 @@ describe('grind.sh --wait-alert — a long wait is announced while it is still h
       '--notify', n.path,
     ])
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     expect(kinds(journal, 'wait').length).toBe(7)
     expect(n.lines().filter(l => l.startsWith('waiting|'))).toEqual([])
   })
 
-  test('a waiting alert that fails changes neither the exit code nor the loop', () => {
+  test('a waiting alert that fails changes neither the exit code nor the loop', async () => {
     // Same rule as the terminal notification: telling someone is not part of the work, and a broken
     // notifier at wait 3 must not decide the outcome of a week-long loop.
     const d = workdir('grind-alert-broken')
@@ -311,7 +312,7 @@ describe('grind.sh --wait-alert — a long wait is announced while it is still h
       '--notify', script(d, 'notify.sh', 'exit 1'),
     ])
 
-    const r = run(args)
+    const r = await run(args)
 
     expect(r.status).toBe(4)
     expect(kinds(journal, 'wait').length).toBe(5)
@@ -338,7 +339,7 @@ function stubPath(dir: string, stubs: string[]): { env: Record<string, string>; 
 }
 
 describe('grind.sh --wait-alert — the default notifier carries the wait', () => {
-  test('agent-msgs the notify-to session with the streak and the why, and the run keeps going', () => {
+  test('agent-msgs the notify-to session with the streak and the why, and the run keeps going', async () => {
     const d = workdir('grind-alert-agentmsg')
     const { journal, args } = waiting(d, "printf 'grid busy: 3 jobs\\n'\nexit 1", [
       '--max-iters', '3',
@@ -347,7 +348,7 @@ describe('grind.sh --wait-alert — the default notifier carries the wait', () =
     ])
     const { env, log } = stubPath(d, ['agent-msg'])
 
-    const r = run(args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = await run(args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(4)
     expect(kinds(journal, 'wait').length).toBe(3)
