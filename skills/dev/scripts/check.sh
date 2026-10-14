@@ -7,7 +7,7 @@
 # and work re-runs a claimed mechanical pass in a shell, affordable for one and not three.
 #
 # --test-cmd, --lint-cmd and --build-cmd are each required or declined: omitting one is exit 2, and
-# --no-lint-cmd / --no-build-cmd report the leg "declined" and pass. A project with no build step says so once, here,
+# --no-lint-cmd / --no-build-cmd declare the leg skipped ("declined", exit 0). A project with no build step says so once, here,
 # rather than have a forgotten flag read the same as a project with nothing to run.
 #
 # Every leg prints `<leg>: N <unit> examined` (work/scripts/leg-counts.sh). The tests leg counts the

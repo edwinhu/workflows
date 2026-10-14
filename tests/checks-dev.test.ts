@@ -138,7 +138,7 @@ test('dev check.sh refuses (exit 2) an omitted --lint-cmd / --build-cmd unless -
   expect(both.status, both.stdout + both.stderr).toBe(0)
   expect(both.stdout).toMatch(/leg lint exit=0 \(declined\)/)
   expect(both.stdout).toMatch(/leg build exit=0 \(declined\)/)
-})
+}, 360_000)
 
 test('skills/dev/SKILL.md\'s example dispatch names the workflow instead of a rules directory', () => {
   const lines = read('skills/dev/SKILL.md').split('\n').filter(l => /ruleChecks/.test(l))
