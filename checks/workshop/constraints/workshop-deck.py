@@ -94,15 +94,15 @@ MATRIX = ["CMP", "CON", "SPEC", "NOTE", "NAR", "INV", "VSL", "WID", "OVR", "ENUM
 MODEL_EVALUATED = {
     "FID": (
         "Claim fidelity: whether the claim beside a cited ID is what the source paper says is a "
-        "judgement over the paper, not a property of the built file. Lens: deck-fidelity."
+        "judgement over the paper, not a property of the built file. Lens: the workshop-reviewer lens, checklist item (3)."
     ),
     "CONV": (
         "Convention: the Typst/Touying conventions and plan proportions the vendored constraints "
-        "cannot express are a judgement over the deck. Lens: deck-convention."
+        "cannot express are a judgement over the deck. Lens: the workshop-reviewer lens, checklist item (4)."
     ),
     "VIS": (
         "Visual integrity: whether a diagram is legible at venue scale and says what its slide "
-        "claims is a judgement over the diagram source. Lens: visual-integrity."
+        "claims is a judgement over the diagram source. Lens: the workshop-reviewer lens, checklist item (5)."
     ),
 }
 
@@ -116,7 +116,7 @@ INVENTORY_COLUMNS = ["id", "kind", "source"]
 OUTPUT_COLUMNS = ["artifact", "path"]
 SOURCE_PAPER_COLUMNS = ["field", "value"]
 
-# `## Source Paper` must declare both. `path` is how deck-fidelity locates the paper -- the paper
+# `## Source Paper` must declare both. `path` is how the workshop-reviewer lens (checklist item (3)) locates the paper -- the paper
 # differs per run, so it cannot be a static lens `ref`.
 REQUIRED_PAPER_FIELDS = ["path", "title"]
 
@@ -292,7 +292,7 @@ def parse_source_inventory(plan_text: str) -> list[dict]:
 def parse_source_paper(plan_text: str, root: Path) -> dict[str, str]:
     """Parse `## Source Paper` (R7c). Raises GrammarError on every unparseable clause.
 
-    The unresolvable-`path` clause is the load-bearing one: deck-fidelity judges FID by reading the
+    The unresolvable-`path` clause is the load-bearing one: the workshop-reviewer lens judges FID by reading the
     paper at this path, so a path resolving to nothing leaves the model side judging the deck
     against nothing while every computed line still reads clean.
     """
@@ -305,7 +305,7 @@ def parse_source_paper(plan_text: str, root: Path) -> dict[str, str]:
     if missing:
         raise GrammarError(
             f"`## Source Paper` is missing the mandatory row(s) {', '.join(missing)}; "
-            "deck-fidelity locates the paper through this table and nowhere else"
+            "the workshop-reviewer lens locates the paper through this table and nowhere else"
         )
 
     # Every declared `path` is checked, not merely the first: a second row must not be able to hide

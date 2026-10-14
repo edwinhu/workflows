@@ -768,7 +768,7 @@ def test_spec_fails_on_each_malformed_clause(clause: str, tmp_path: Path):
 # ------------------------------------------------------------------------------------------------
 # `## Source Paper` (R7c) -- every unparseable clause, reported on SPEC's own line
 #
-# deck-fidelity locates the paper through this table and nowhere else, so an unparseable section
+# The workshop-reviewer lens locates the paper through this table and nowhere else, so an unparseable section
 # leaves the model side judging the deck against nothing while every computed line still reads
 # clean. The computed side fails closed here instead.
 # ------------------------------------------------------------------------------------------------
