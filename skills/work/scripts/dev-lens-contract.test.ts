@@ -54,7 +54,7 @@ const DIMENSIONS = ['CRITERIA', 'SCOPE', 'SECURITY', 'PERFORMANCE', 'TEST PINS B
  * lenses collapsed into one. The ceiling is headroom for ordinary edits, not licence for a new
  * section: every line here is re-read by every agent on every dev invocation.
  */
-const LINE_CEILING = 232
+const LINE_CEILING = 242
 
 /** Use the same fenced-code parser the agent and plugin contracts exercise. */
 const declaredLenses = (md: string) => parseLenses(SKILL, md, REPO)
@@ -162,8 +162,31 @@ describe('the one prompt asks for all five checklist dimensions', () => {
     expect(lens.prompt).toMatch(/TEST PINS BEHAVIOUR.*went RED assert the behaviour.*MAJOR finding/)
   })
 
+  test('item 5 leaves mock-only shapes to the MOCK rule', () => {
+    expect(lens.prompt).not.toContain('a mock call')
+    expect(lens.prompt).toMatch(/TEST PINS BEHAVIOUR.*MOCK/)
+  })
+
   test('no retired `tests` lens came back: still no TESTS dimension', () => {
     expect(lens.prompt).not.toMatch(/\bTESTS\b/)
+  })
+})
+
+describe('the args fence is copy-runnable', () => {
+  const fence = now.slice(now.indexOf('const goal ='), now.indexOf('verifierAgentType'))
+
+  test('projectDir is declared before it is used', () => {
+    const decl = now.indexOf('const projectDir =')
+    expect(decl).toBeGreaterThan(-1)
+    expect(decl).toBeLessThan(now.indexOf('  projectDir,'))
+  })
+
+  test('the task row carries no <angle> placeholder strings', () => {
+    expect(tasksBlock(now)).not.toMatch(/"<[^">]+>"/)
+  })
+
+  test('SKILL.md states item 2 is the accepted scope gate', () => {
+    expect(now).toMatch(/item \(2\).*accepted scope gate/s)
   })
 })
 
