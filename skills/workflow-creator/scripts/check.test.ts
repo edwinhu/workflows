@@ -294,6 +294,28 @@ test('--agent is forwarded to the wc-probe leg', () => {
   expect(r.code).not.toBe(0)
 })
 
+test('repeated --agent: every agent is judged, not just the last', () => {
+  const d = tmp('wc-check-agents-')
+  mkdirSync(join(d, '.claude', 'agents'), { recursive: true })
+  const bad = join(d, '.claude', 'agents', 'first-bad.md')
+  const good = join(d, '.claude', 'agents', 'second-good.md')
+  writeFileSync(bad, BROKEN_AGENT)
+  writeFileSync(good, '---\nname: good\ndescription: d\n---\n\nplain body\n')
+  const r = run(harness(), ['--target', target(), '--agent', bad, '--agent', good])
+  expect(legStatus(r.stdout, 'wc-probe')).not.toContain('exit=0')
+  expect(r.stderr).toContain('first-bad.md')
+  expect(r.code).not.toBe(0)
+})
+
+test('repeated --agent: a missing later agent is a refusal (exit 2)', () => {
+  const d = tmp('wc-check-agents-')
+  const good = join(d, 'good.md')
+  writeFileSync(good, '---\nname: good\ndescription: d\n---\n\nplain body\n')
+  const r = run(harness(), ['--target', target(), '--agent', good, '--agent', join(d, 'absent.md')])
+  expect(r.code).toBe(2)
+  expect(r.stderr).toContain('absent.md')
+})
+
 test('--target is required', () => {
   const r = run(harness(), [])
   expect(r.code).not.toBe(0)

@@ -752,7 +752,7 @@ this.
 **Moving it out of the skill moves it out of the gate, so name it with `--agent`.** wc-probe walks
 `--target` and nothing else, and the coverage line cannot reveal the gap — it prints a full `N of N`
 over a tree that never held the file. `--agent` judges the guard against the skill it guards and
-widens the scan by exactly that file, so unrelated agents in `.claude/agents/` stay out of the gate.
+widens the scan by exactly that file (repeat `--agent` per dispatched agent; check.sh forwards every one), so unrelated agents in `.claude/agents/` stay out of the gate.
 A second `--target` at the discovery directory does not substitute: with no skill in scope
 `${CLAUDE_SKILL_DIR}` resolves to nothing and the guard's path reports NOT CHECKED.
 
