@@ -47,7 +47,7 @@ legcount_run ds-gate python3 "$HERE/../../../bin/workflow-check" ds --project-di
 report ds-gate "$LEG_STATUS"
 
 SUITE="${DS_DQ_SUITE:-$HERE/ds_dq_test.py}"
-legcount_run ds-dq-tests legcount_cmd ds-dq-tests "$HERE" "uv run --with polars,pytest python3 -m pytest -o addopts= \"$SUITE\" -q"
+legcount_run ds-dq-tests legcount_cmd ds-dq-tests "$HERE" "uv run --with polars,pytest python3 -m pytest -o addopts= -p no:cacheprovider \"$SUITE\" -q"
 report ds-dq-tests "$LEG_STATUS"
 
 if [ -n "$TESTCMD" ]; then legcount_run tests legcount_cmd tests "$PROJ" "$TESTCMD" "$TESTRE"; report tests "$LEG_STATUS"

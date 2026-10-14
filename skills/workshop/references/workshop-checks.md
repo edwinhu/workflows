@@ -45,7 +45,7 @@ computed pass.
 | CON | The typst plugin's workshop constraints report no finding over the deck, each on its own count line | workshop constraints (`workflow-check workshop`) |
 | SPEC | Slide Spec rows and built slides correspond one-to-one by normalized title | computed |
 | NOTE | Every built slide has a non-empty `notes.typ` section under the same normalized title key | computed |
-| NAR | No spoken notes bullet on lines added against HEAD narrates the slide ("the slide shows", "as you can see") | computed |
+| NAR | No spoken notes bullet on lines added since the run baseline (HEAD when none) narrates the slide ("the slide shows", "as you can see") | computed |
 | INV | Each built slide's emitted ID set equals that slide's Slide Spec `Inventory` cell | computed |
 | VSL | Each built slide builds a visual exactly when its Slide Spec `Visual` cell names one | computed |
 | WID | Zero widow lines in the handout build of the deck PDF | computed |

@@ -242,7 +242,7 @@ else
     # Scheduling only. A shard's non-zero exit is rc=1 exactly as one process's was, because
     # changing a verdict while changing a schedule is how a speedup quietly becomes a weakening.
     SHARDS="${CHECK_SHARDS:-4}"
-    pids=()
+    pids=(); pyp=()
     # Each runner's output lands in a file so its own summary can be counted after the wait.
     tdir="$(mktemp -d)"
     if [ "${#suite[@]}" -gt 0 ]; then
@@ -260,22 +260,54 @@ else
       done
     fi
     if [ "${#pysuite[@]}" -gt 0 ]; then
-      # --script lets uv read each file's own PEP 723 dependency block: a generic gate
-      # cannot know a suite needs pypdf, and guessing wrong fails cases for a missing
-      # import, which reads as broken contracts rather than a misconfigured runner.
+      # --with-requirements reads each file's own PEP 723 dependency block (a generic gate cannot
+      # know a suite needs pypdf; a missing import reads as a broken contract). NOT `--script`
+      # around pytest: that EXECUTES the file with `-m pytest ...` as argv, so no test is
+      # collected and it exits 0. The flag is added only when a block exists (else uv errors).
+      # A STANDALONE SCRIPT suite (no `def test_`, but a __main__ guard or module-scope sys.exit —
+      # tests/script-suites.txt) is the one shape pytest cannot collect: it runs as `uv run
+      # --script` and its exit code is the verdict, counted as one suite.
+      scriptpy=()
       for pf in "${pysuite[@]}"; do
-        uv run --quiet --with pytest --with pytest-xdist --script "$pf" -m pytest -q "$pf" >"$tdir/py$(basename "$pf").out" 2>&1 &
-        pids+=($!)
+        req=(); grep -q '^# /// script' "$pf" && req=(--with-requirements "$pf")
+        if ! grep -qE '^[[:space:]]*(async )?def test_|^class Test' "$pf" && grep -qE '^if __name__ == .__main__.|^sys\.exit\(' "$pf"; then
+          scriptpy+=("$pf")
+          uv run --quiet --script "$pf" >"$tdir/py$(basename "$pf").out" 2>&1 &
+          pids+=($!)
+        else
+          uv run --quiet --with pytest --with pytest-xdist "${req[@]}" python3 -m pytest -q -p no:cacheprovider --basetemp "$tdir/bt$(basename "$pf")" "$pf" >"$tdir/py$(basename "$pf").out" 2>&1 &
+          pids+=($!); pyp+=($!)
+        fi
       done
     fi
     # Every child is waited on individually: `wait` with no argument discards the statuses, which
     # would turn a failing suite into a passing leg.
-    for pid in "${pids[@]}"; do wait "$pid" || rc=1; done
+    # pytest exit 5 = collected nothing: the per-file tally below turns that into exit 2, not 1.
+    for pid in "${pids[@]}"; do
+      wait "$pid"; st=$?
+      [ "$st" -eq 0 ] && continue
+      case " ${pyp[*]:-} " in *" $pid "*) [ "$st" -eq 5 ] && continue ;; esac
+      rc=1
+    done
     cat "$tdir"/*.out >&2
-    # bun: `Ran N tests across M files`; pytest -q: `N passed` / `N failed`.
-    test_n="$(cat "$tdir"/*.out | { grep -hoE '^Ran [0-9]+ tests?|^[0-9]+ (passed|failed)|[0-9]+ (passed|failed)(,| in )' || true; } | grep -oE '[0-9]+' | awk '{ n += $1 } END { print n + 0 }')"
+    # bun: `Ran N tests across M files`; pytest -q: `N passed` / `N failed`. Counted per output
+    # file: a python file that collected nothing must not hide behind another file's sum.
+    tally() { { grep -hoE '^Ran [0-9]+ tests?|^[0-9]+ (passed|failed)|[0-9]+ (passed|failed)(,| in )' "$@" || true; } | grep -oE '[0-9]+' | awk '{ n += $1 } END { print n + 0 }'; }
+    test_n=0; empty=()
+    [ "${#suite[@]}" -gt 0 ] && test_n="$(tally "$tdir"/bun*.out)"
+    for pf in "${pysuite[@]}"; do
+      case " ${scriptpy[*]:-} " in *" $pf "*) pn=1 ;; *) pn="$(tally "$tdir/py$(basename "$pf").out")" ;; esac
+      test_n=$(( test_n + pn ))
+      [ "$pn" -gt 0 ] || empty+=("$(basename "$pf")")
+    done
     rm -rf "$tdir"
-    count_line probe-tests "${test_n:-0}" "test(s)" "no test ran"
+    if [ "${#empty[@]}" -gt 0 ] || [ "$test_n" -eq 0 ]; then
+      # A suite that was handed over and ran nothing could not look: exit 2, never the runner's 0.
+      [ "$rc" -eq 1 ] || rc=2
+      echo "probe-tests: $test_n test(s) examined — ${#empty[@]} file(s) collected no test: ${empty[*]:-(none counted)}" >&2
+    else
+      count_line probe-tests "$test_n" "test(s)" "no test ran"
+    fi
     report probe-tests "$rc" "$(( ${#suite[@]} + ${#pysuite[@]} )) file(s)"
   fi
 fi

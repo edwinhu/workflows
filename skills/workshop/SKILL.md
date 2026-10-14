@@ -59,7 +59,7 @@ count the Proportions split is drawn from.
 `work`'s remaining axes are taken as `work` states them, with two domain bindings.
 
 `work` axis 4 (observable success criteria) is answered by the deck probe, the constraint runner and
-the probe's own suite. The one `mechanicalChecks` entry runs all three, and **all three are fixed strings, and nothing is collected
+the probe's own suites (`scripts/*_test.py`: the deck probe and the numbers constraint). The one `mechanicalChecks` entry runs all three, and **all three are fixed strings, and nothing is collected
 from the user here.** The one per-run value is the approved plan's path, which `work` already resolved
 and hashed in Phase 2; every other argument is literal. `## Outputs and Verification` is an
 `Artifact | Path` table of **artifact paths, not commands** — the probe opens those paths itself, so

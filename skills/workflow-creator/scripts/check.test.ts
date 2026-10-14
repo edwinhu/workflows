@@ -375,3 +375,45 @@ test('an authoring-gate that examined 0 checks says NOT CHECKED, exit unchanged;
   const m = /^authoring-gate: (\d+) check\(s\) examined/m.exec(out)
   if (m && Number(m[1]) > 0) expect(out).not.toContain('authoring-gate: NOT CHECKED')
 })
+
+// --- python suites: the probe-tests leg must COLLECT them -------------------------------------------
+// `uv run --script <file> -m pytest` executed the test file as a script: exit 0, no test collected.
+const pyTarget = (tests: Record<string, string>) => target({ tests })
+const PY_PASS = 'def test_ok():\n    assert True\n\ndef test_ok2():\n    assert 1 + 1 == 2\n'
+const PY_FAIL = 'def test_bad():\n    assert False\n'
+const PY_EMPTY = 'X = 1\n'
+const PY_DEP = '# /// script\n# dependencies = ["cowsay"]\n# ///\nimport cowsay\n\ndef test_dep():\n    assert cowsay.char_names\n'
+const countOf = (r: { stdout: string; stderr: string }) => Number(/^probe-tests: (\d+) test\(s\) examined/m.exec(r.stderr)?.[1])
+
+test('python suite: a failing pytest case fails the probe-tests leg with exit 1', () => {
+  const r = run(harness(), ['--target', pyTarget({ 'a_test.py': PY_FAIL })])
+  expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=1')
+  expect(r.stderr).toContain('1 failed')
+})
+
+test('python suite: a file that collects 0 tests is exit 2, named in the count line', () => {
+  const r = run(harness(), ['--target', pyTarget({ 'empty_test.py': PY_EMPTY })])
+  expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=2')
+  expect(r.stderr).toMatch(/^probe-tests: 0 test\(s\) examined.*empty_test\.py/m)
+})
+
+test('python suite: one empty file is reported even when another file ran tests', () => {
+  const r = run(harness(), ['--target', pyTarget({ 'good_test.py': PY_PASS, 'empty_test.py': PY_EMPTY })])
+  expect(countOf(r)).toBe(2)
+  expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=2')
+  expect(r.stderr).toContain('empty_test.py')
+})
+
+test('python suite: a PEP 723 dependency is installed and the tests are counted', () => {
+  const r = run(harness(), ['--target', pyTarget({ 'dep_test.py': PY_DEP })])
+  expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=0')
+  expect(countOf(r)).toBe(1)
+})
+
+test('python suite: a standalone script suite (module-scope sys.exit) runs as a script and its exit code decides', () => {
+  const ok = run(harness(), ['--target', pyTarget({ 'ok_test.py': 'import sys\nsys.exit(0)\n' })])
+  expect(legStatus(ok.stdout, 'probe-tests')).toContain('exit=0')
+  expect(countOf(ok)).toBe(1)
+  const bad = run(harness(), ['--target', pyTarget({ 'bad_test.py': 'import sys\nsys.exit(3)\n' })])
+  expect(legStatus(bad.stdout, 'probe-tests')).toContain('exit=1')
+})

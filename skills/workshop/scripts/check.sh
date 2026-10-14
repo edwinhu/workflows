@@ -47,7 +47,7 @@ fi
 
 if [ -z "$ONLY" ] || [ "$ONLY" = probe-tests ]; then
 legcount_run probe-tests legcount_cmd probe-tests "$HERE" \
-  "uv run --with pypdf --with pytest --with pytest-xdist python3 -m pytest -q '$HERE/workshop_deck_test.py'"
+  "uv run --with pypdf --with pytest --with pytest-xdist python3 -m pytest -q '$HERE'/*_test.py"
 report probe-tests "$LEG_STATUS"
 fi
 
