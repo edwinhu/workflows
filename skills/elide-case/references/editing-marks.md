@@ -219,8 +219,8 @@ Two consequences for the implementer cutting a reading:
 - **You may not declare a reading non-court text.** If a reading has no reporter source, stop
   and report it to the instructor, who adds the bullet. Do not add it yourself, and do not
   route around it with `// elide-source:`.
-- **Omitting `--plan` from the check command disables this leg**, which then prints `NOT
-  CHECKED` and enforces nothing. Pass the plan path on every real run.
+- **Passing neither `--plan` nor `--no-plan` FAILS**; `--no-plan` is the fixture escape and prints `NOT
+  CHECKED`. Pass the plan path on every real run.
 
 `check.sh` prints, for every reading, the file it used and whether the mapping was `derived`
 or `declared`. Read that block — it is how the mapping stays auditable instead of guessed.

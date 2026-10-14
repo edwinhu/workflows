@@ -749,15 +749,22 @@ def leg_main(argv: list[str]) -> int:
     return rc
 
 
+def docs_dir_for(typ: Path, given: list[Path]) -> Path:
+    """The sources directory for an addendum: docs/ beside it or beside addenda/, else the common
+    directory of the .docx/.txt files handed in."""
+    docs_dir = typ.parent / "docs" if (typ.parent / "docs").is_dir() else typ.parent.parent / "docs"
+    handed = [str(p.parent) for p in given if p.suffix.lower() in (".docx", ".txt")]
+    if not docs_dir.is_dir() and handed:
+        docs_dir = Path(os.path.commonpath(handed))
+    return docs_dir
+
+
 def judge(typ: Path, ctx: dict) -> tuple[int, list[str], str]:
     """The constraint contract over one addendum: the quotes leg, against the docs/ directory
     check.sh resolves by default -- beside the .typ in a self-contained fixture, beside addenda/
     in the course repo -- or, where neither exists, the directory of the sources handed in (how
     check.sh's --docs reaches it), and the plan's non-court readings."""
-    docs_dir = typ.parent / "docs" if (typ.parent / "docs").is_dir() else typ.parent.parent / "docs"
-    handed = [str(p.parent) for p in ctx["given"] if p.suffix.lower() in (".docx", ".txt")]
-    if not docs_dir.is_dir() and handed:
-        docs_dir = Path(os.path.commonpath(handed))
+    docs_dir = docs_dir_for(typ, ctx["given"])
     plan_declared = []
     if ctx["plan"]:
         try:

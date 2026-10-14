@@ -9,7 +9,7 @@ tight page target, or for a passage that "obviously" says what you remember it s
 `docs/`. Never drafted from memory, from a Teacher's Manual summary, or from a casebook
 note. This is not negotiable.**
 
-The excerpt is cut from the `.txt` retrieved THIS RUN and saved in `docs/` — never from
+The excerpt is cut from the `.westlaw.docx` retrieved THIS RUN and saved in `docs/` (the `.txt` only on the Route 2 fallback, where retrieve saves one) — never from
 another copy of the opinion, a reporter PDF opened alongside, or a previous excerpt.
 
 ### Why the law is written this way
