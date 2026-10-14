@@ -193,7 +193,10 @@ console.log(n)
 ' 2>/dev/null)"
 case "$lint_n" in
   ''|*[!0-9]*) ;;  # the count could not be taken: print nothing, and the audit says so
-  *) count_line authoring-lint "$lint_n" "added line(s)" "no line added over HEAD under target" ;;
+  *)
+    count_line authoring-lint "$lint_n" "added line(s)" "no line added over HEAD under target"
+    # Non-gating, like every other empty scope here, but loud: the lint reads only the diff, so an unchanged tree is unchecked, not clean.
+    [ "$lint_n" -gt 0 ] || echo "authoring-lint: NOT CHECKED — the target is unchanged over HEAD and the lint reads added lines only; copy the target or pass a changed tree to apply the authoring rules" >&2 ;;
 esac
 report authoring-lint "$lint_rc"
 

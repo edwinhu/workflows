@@ -231,7 +231,8 @@ const args = {
   ],
 
   // The authoring judgement rules (checks/authoring/rules/), scored by Jev over the changed lines;
-  // each is wired only after rule-calibrate passed it.
+  // each is wired only after rule-calibrate passed it. On an unchanged tree there are no changed
+  // lines, so this scores nothing: check.sh prints `authoring-lint: NOT CHECKED` for the same reason.
   ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir <projectDir> --plan <planPath>" },
 
   // The Phase 4 lens verbatim, minus scope fidelity. Omitting `lens` selects work's generic default,
@@ -390,7 +391,8 @@ const args = {
   ],
 
   // The authoring judgement rules (checks/authoring/rules/), scored by Jev over the changed lines;
-  // each is wired only after rule-calibrate passed it.
+  // each is wired only after rule-calibrate passed it. On an unchanged tree there are no changed
+  // lines, so this scores nothing: check.sh prints `authoring-lint: NOT CHECKED` for the same reason.
   ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir <projectDir> --plan <planPath>" },
 
   // One lens after verification and mechanical checks: gate integrity, spine fidelity and scope.
@@ -547,8 +549,7 @@ second sanctioned location.
 **BOTH are a bang; the bang is the only thing that computes at load.** Grep and glob are not
 alternatives to it, they are what it RUNS — grep the field when a subset is meaningful, glob the
 directory when it is not. Never a hand-written list either way: one falls behind the moment someone
-adds a file and nothing shows it, which is why 16 reference files across 10 skills are named by no
-SKILL.md today.
+adds a file and nothing shows it, which is why some reference files end up named by no SKILL.md; the bang finds them.
 
 A bang reaches an orchestrator skill and nothing else — see the delivery table above for the other
 three audiences. `refs` names one artefact; a bang discovers a set.
