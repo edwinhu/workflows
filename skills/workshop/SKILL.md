@@ -20,6 +20,8 @@ probe's `CON` row FAILs when no typst workshop constraint is reachable beside it
 
 !`k=slides,notes,workshop; command -v typst-rules >/dev/null 2>&1 && exec typst-rules "$k"; echo "(typst corpus unavailable: NO Typst rule is listed here — a deck graded against no corpus is not a deck that passed. Install the typst plugin, or start a new session so its bin/ reaches PATH)"`
 
+!`r=$(typst-plugin-root 2>/dev/null) && [ -n "$r" ] && echo "typstRules root: $r/rules" || echo "typstRules root: (unavailable: typst-plugin-root not on PATH; install the typst plugin, or start a new session so its bin/ reaches PATH)"`
+
 The lifecycle is [`work`](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
 This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lens,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
@@ -117,7 +119,7 @@ resolves them against no particular directory; `writablePaths` and every `mechan
 const planPath = /* the path $PLAN resolved to in Phase 2 */
 const goal = /* one sentence */
 const projectDir = /* absolute project root, from Phase 1 axis 2 */
-const typstRules = `~/.claude/skills/typst/rules`   // write the absolute path: `typst-plugin-root` prints the root (+ /rules); the corpus `typst-rules slides,notes,workshop` indexes
+const typstRules = /* the absolute path the `typstRules root:` line printed at load */
 const args = {
   projectDir, planPath, goal,   // specHash is injected by work-dispatch.sh from the plan, never written here
 
