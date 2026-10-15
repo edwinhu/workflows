@@ -665,6 +665,18 @@ describe('dispatch records the run baseline tree in args.json (runBaseline)', ()
     expect(existsSync(ro)).toBe(true)
     expect('runBaseline' in JSON.parse(readFileSync(ro, 'utf8'))).toBe(false)
   }, 900_000)
+
+  test('a readOnly git project records readOnlyBaseline, objects beside args.json and none under its .git', () => {
+    const g = fixture({ redCommand: 'bash scripts/check.sh', extraArgs: { readOnly: true } })
+    script(g.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    git(g.dir, 'init', '-q'); git(g.dir, 'add', '-A'); git(g.dir, 'commit', '-qm', 'base')
+    const before = git(g.dir, 'count-objects')
+    dispatch(g, '--run-dir', join(g.dir, 'ro-run'))
+    const ro = join(g.dir, 'ro-run', 'probe-run', 'args.json')
+    expect(JSON.parse(readFileSync(ro, 'utf8')).readOnlyBaseline).toMatch(/^[0-9a-f]{40,64}$/)
+    expect(existsSync(join(g.dir, 'ro-run', 'probe-run', 'readonly-objects'))).toBe(true)
+    expect(git(g.dir, 'count-objects')).toBe(before)
+  }, 900_000)
 })
 
 describe('dispatch injects specHash, and planHash is gone', () => {

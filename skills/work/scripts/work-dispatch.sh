@@ -1016,7 +1016,7 @@ tmp="$R/.args.lint.json"
 # them, parents included. A plan that carries its own ruleChecks keeps it; plan-lint refuses one that
 # scores a different workflow. An unknown workflow is left unfilled for plan-lint to refuse by name.
 python3 - "$run" "$tmp" "$PLUGIN_ROOT/bin/workflow-check" "$SKILL/scripts/tree-snapshot.sh" "$out" <<'PY' || exit 1
-import json, shlex, subprocess, sys
+import json, os, shlex, subprocess, sys
 run, tmp, runner, snapshot, prior = sys.argv[1:6]
 r = json.loads(run)
 a, wf = r["args"], r["workflow"]
@@ -1034,6 +1034,18 @@ if not a["runBaseline"] and not a.get("readOnly"):
     a["runBaseline"] = snap.stdout.strip() or None
 if not a["runBaseline"]:
     del a["runBaseline"]
+# readOnlyBaseline: the same snapshot for a readOnly run, its objects kept beside args.json (never under the
+# project's .git); work-result.sh re-snapshots through readonly-guard.sh and fails the run on any changed path.
+try:
+    a["readOnlyBaseline"] = json.load(open(prior)).get("readOnlyBaseline") or None
+except (OSError, ValueError):
+    a["readOnlyBaseline"] = None
+if not a["readOnlyBaseline"] and a.get("readOnly"):
+    snap = subprocess.run(["bash", snapshot, "--objects", os.path.join(os.path.dirname(prior), "readonly-objects"), a["projectDir"]],
+                          capture_output=True, text=True, check=False)
+    a["readOnlyBaseline"] = snap.stdout.strip() or None
+if not a["readOnlyBaseline"]:
+    del a["readOnlyBaseline"]
 if not a.get("ruleChecks") and wf != "work":
     ls = subprocess.run([sys.executable, runner, wf, "--list"], capture_output=True, text=True, check=False)
     try:
