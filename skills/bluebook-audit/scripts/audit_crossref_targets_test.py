@@ -1,3 +1,7 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["pytest", "lxml"]
+# ///
 """Contract tests for audit_crossref_targets.py.
 
 Only the offline paths are covered: mechanical audit, --grep, --remap, --apply and

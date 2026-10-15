@@ -1,3 +1,7 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["pytest", "lxml"]
+# ///
 """Contract tests for apply_corrections.py (journal small-caps run splitting)."""
 import subprocess
 import sys
