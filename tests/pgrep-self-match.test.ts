@@ -2,6 +2,7 @@ import { test, expect, setDefaultTimeout } from "bun:test";
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { analyze } from "../hooks/guards/pgrep.ts";
 
 setDefaultTimeout(240_000)
 
@@ -287,4 +288,18 @@ test("registered in the plugin mod as PreToolUse for Bash|Monitor, and no longer
   expect([...spec.tools].sort()).toEqual(["Bash", "Monitor"]);
   // Exactly one registration: the settings hook and the mod both running would judge every call twice.
   expect(readFileSync(join(ROOT, "hooks", "hooks.json"), "utf8")).not.toContain("pgrep-self-match.ts");
+});
+
+// ── RULE 3: shared-runtime kills by name (2026-10-15 incidents) ────────────────────────────────
+
+test("a name-selected kill of a shared runtime denies; a parent-scoped or pid kill allows", () => {
+  const r = run("pkill -x bun -u eh");
+  expect(r.decision).toBe("deny");
+  expect(r.reason).toContain("signal only PIDs you launched");
+  for (const c of ["kill -TERM $(pgrep -x -o bun)", "killall bun", "pgrep -x node | xargs kill"]) {
+    expect(analyze(c).sharedKills.length, c).toBeGreaterThan(0);
+  }
+  for (const c of ["pkill -P $$ bun", "kill $pid", "kill -TERM $!", "pgrep -x bun"]) {
+    expect(analyze(c).sharedKills, c).toEqual([]);
+  }
 });

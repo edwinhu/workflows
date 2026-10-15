@@ -1,12 +1,25 @@
 /**
- * PreToolUse (Bash|Monitor) BLOCKING GATE over Bash command TEXT. Two rules, each one a command
- * whose failure mode is a hang or a suicide rather than an error:
+ * PreToolUse (Bash|Monitor) BLOCKING GATE over Bash command TEXT. Three rules, each one a command
+ * whose failure mode is a hang, a suicide or a homicide rather than an error:
  *
  *   1. `pgrep -f` / `pkill -f` whose pattern matches the invoking shell's own command line.
  *   2. `rg` / `rga` with no path argument, in a segment nothing pipes into.
+ *   3. Signalling a shared runtime (bun, node, python, ...) by NAME.
  *
  * The file keeps its original name: rule 1 is the one with the incident history below, and the
  * hook path is wired in hooks.json and referenced by the test.
+ *
+ * ── RULE 3: SIGNALLING A SHARED RUNTIME BY NAME ────────────────────────────────────────────────
+ *
+ * A name selects every process of that name on the machine, and the user's sessions all share one
+ * uid. 2026-10-15: a farmed agent ran `pkill -x bun -u eh` and killed a concurrent canary run's bun
+ * (exit 130, 1177 leaked fixtures, a false regression report); another ran
+ * `kill -TERM $(pgrep -x -o bun)` and killed a different session's `bun test ./skills/`.
+ * `-u <user>` is therefore NOT scoping, and neither is `-s`/`-g` (a test kills its own group by pid).
+ * Only `-P <ppid>` narrows to the caller's own children. Denied: `pkill`/`killall`/`pgrep`-fed
+ * `kill` and `xargs kill` whose name, or whose `-f` pattern's first word/basename, is a shared
+ * runtime. Allowed: `-P`, a literal/`$var`/`$!` pid, a `-f` pattern naming a specific script, and a
+ * bare `pgrep` that kills nothing. This reads Bash command text only, never a test's own source.
  *
  * ── RULE 2: `rg` WITH NO PATH ───────────────────────────────────────────────────────────────────
  *
@@ -82,14 +95,17 @@ export interface Word {
  * `while pgrep -f worker.py; do ...` is a segment whose command word is pgrep. Splitting on `$(`
  * and backtick is what makes `kill $(pgrep -f x)` read as a kill segment plus a pgrep segment.
  */
-export function segments(command: string): { words: Word[]; piped: boolean }[] {
-  const out: { words: Word[]; piped: boolean }[] = [];
+export function segments(command: string): { words: Word[]; piped: boolean; sub?: boolean }[] {
+  const out: { words: Word[]; piped: boolean; sub?: boolean }[] = [];
   let words: Word[] = [];
   let cur = "";
   let curQuoted = false;
   let curStarted = false;
   let quote: '"' | "'" | null = null;
   let pipedInto = false;
+  let nextSub = false; // the next segment opens inside `$(` or a backtick
+  let inTick = false;
+  let curSub = false;
 
   const endWord = () => {
     if (curStarted) words.push({ text: cur, quoted: curQuoted && cur.length > 0 });
@@ -99,9 +115,11 @@ export function segments(command: string): { words: Word[]; piped: boolean }[] {
   };
   const endSegment = (nextPiped: boolean) => {
     endWord();
-    if (words.length) out.push({ words, piped: pipedInto });
+    if (words.length) out.push({ words, piped: pipedInto, ...(curSub ? { sub: true } : {}) });
     words = [];
     pipedInto = nextPiped;
+    curSub = nextSub;
+    nextSub = false;
   };
 
   for (let i = 0; i < command.length; i++) {
@@ -138,12 +156,19 @@ export function segments(command: string): { words: Word[]; piped: boolean }[] {
       if (isOr) i++;
       continue;
     }
-    if (ch === ";" || ch === "&" || ch === "\n" || ch === "(" || ch === ")" || ch === "`" || ch === "{" || ch === "}") {
+    if (ch === "`") {
+      inTick = !inTick;
+      nextSub = inTick;
+      endSegment(false);
+      continue;
+    }
+    if (ch === ";" || ch === "&" || ch === "\n" || ch === "(" || ch === ")" || ch === "{" || ch === "}") {
       if (ch === "&" && command[i + 1] === "&") i++;
       endSegment(false);
       continue;
     }
     if (ch === "$" && command[i + 1] === "(") {
+      nextSub = true;
       endSegment(false);
       i++;
       continue;
@@ -198,6 +223,8 @@ export interface Analysis {
   selfMatches: Invocation[];
   /** `rg`/`rga` segments with no path and no incoming pipe or redirect — they read a live stdin. */
   pathlessRg: string[];
+  /** Segments that signal a shared runtime by name — RULE 3. */
+  sharedKills: string[];
 }
 
 // ── rg FLAG TABLE (enumerated from `rg -h`, ripgrep 15.2.0) ─────────────────────────────────────
@@ -302,6 +329,84 @@ function pathlessRgSegment(seg: { words: Word[]; piped: boolean }): string | nul
   return seg.words.map(x => x.text).join(" ");
 }
 
+// ── RULE 3: SHARED-RUNTIME KILLS ────────────────────────────────────────────────────────────────
+
+const SHARED_RUNTIMES = new Set(["bun", "node", "deno", "python", "python3", "pytest", "uv", "claude", "typst", "bash", "sh", "zsh"]);
+
+/** The runtime a pgrep/pkill pattern names, or null. `-f` patterns are argv text: first word. */
+function sharedName(pattern: string | null): string | null {
+  if (pattern === null) return null;
+  const first = pattern.trim().replace(/^[\^(]+/, "").split(/\s+/)[0] ?? "";
+  const m = /^([A-Za-z0-9_]+)(?:[$)]*|[^A-Za-z0-9_.-].*)$/.exec(first.split("/").pop() ?? "");
+  return m && SHARED_RUNTIMES.has(m[1]) ? m[1] : null;
+}
+
+/** pgrep/pkill/killall arguments: the pattern(s) and whether `-P` (parent) scopes the match. */
+function nameArgs(words: Word[], ci: number): { names: string[]; parent: boolean } {
+  const names: string[] = [];
+  let parent = false;
+  const args = words.slice(ci + 1);
+  for (let i = 0; i < args.length; i++) {
+    const t = args[i].text;
+    if (t === "--") continue;
+    if (t.startsWith("--")) {
+      const long = t.split("=")[0];
+      if (long === "--parent") parent = true;
+      if ((VALUE_LONG.has(long) || long === "--user") && !t.includes("=")) i++;
+      continue;
+    }
+    if (t.length > 1 && t.startsWith("-")) {
+      if (/^-\d+$/.test(t) || /^-[A-Z]+[0-9]*$/.test(t)) continue; // signal: -9, -TERM
+      const chars = t.slice(1);
+      for (let c = 0; c < chars.length; c++) {
+        const ch = chars[c];
+        if (ch === "P") parent = true;
+        if (VALUE_SHORT.includes(ch) || ch === "u") {
+          if (c === chars.length - 1) i++;
+          break;
+        }
+      }
+      continue;
+    }
+    names.push(t);
+  }
+  return { names, parent };
+}
+
+/** Segments that select a shared runtime by name and signal it (or feed a signaller). */
+function sharedKillSegments(segs: { words: Word[]; piped: boolean; sub?: boolean }[]): string[] {
+  const out: string[] = [];
+  const cmd = (seg: { words: Word[] }) => {
+    const ci = commandWordIndex(seg.words);
+    if (ci < 0 || seg.words[ci].quoted) return null;
+    return { ci, name: seg.words[ci].text.split("/").pop() ?? "" };
+  };
+  for (let k = 0; k < segs.length; k++) {
+    const seg = segs[k];
+    const c = cmd(seg);
+    if (!c) continue;
+    const { names, parent } = nameArgs(seg.words, c.ci);
+    if (parent) continue;
+    let hit: string | null = null;
+    if (c.name === "killall") {
+      hit = names.map(n => sharedName(n)).find(Boolean) ?? null;
+    } else if (c.name === "pkill" || c.name === "pgrep") {
+      hit = sharedName(names[0] ?? null);
+      if (hit && c.name === "pgrep") {
+        // pgrep alone kills nothing: it counts only when `kill $(pgrep ..)` or `pgrep .. | xargs kill`.
+        const prev = k > 0 ? cmd(segs[k - 1]) : null;
+        const next = k + 1 < segs.length && segs[k + 1].piped ? segs[k + 1] : null;
+        const nc = next ? cmd(next) : null;
+        const feedsKill = (seg.sub && prev?.name === "kill") ||
+          (nc?.name === "xargs" && next!.words.slice(nc.ci + 1).some(w => /^(kill|pkill)$/.test(w.text.split("/").pop() ?? "")));
+        if (!feedsKill) hit = null;
+      }
+    }
+    if (hit) out.push(seg.words.map(w => w.text).join(" "));
+  }
+  return out;
+}
+
 /**
  * Compile a pgrep pattern the way pgrep does — as an extended regex.
  *
@@ -374,12 +479,13 @@ function parseInvocation(seg: { words: Word[] }): { inv: Invocation; full: boole
 export function analyze(command: string): Analysis {
   const segs = segments(command);
   const pathlessRg: string[] = [];
+  const sharedKills = sharedKillSegments(segs);
   for (const seg of segs) {
     const bad = pathlessRgSegment(seg);
     if (bad) pathlessRg.push(bad);
   }
 
-  if (excludesSelf(segs)) return { selfMatches: [], pathlessRg };
+  if (excludesSelf(segs)) return { selfMatches: [], pathlessRg, sharedKills };
   const selfMatches: Invocation[] = [];
 
   for (const seg of segs) {
@@ -390,7 +496,7 @@ export function analyze(command: string): Analysis {
     const re = compilePattern(inv.pattern);
     if (re && re.test(command)) selfMatches.push(inv);
   }
-  return { selfMatches, pathlessRg };
+  return { selfMatches, pathlessRg, sharedKills };
 }
 
 /** Truncate an untrusted pattern before echoing it back into the model's context. */
@@ -411,7 +517,7 @@ export const pgrepSelfMatch: Guard = async payload => {
   const command = typeof toolInput.command === "string" ? toolInput.command : "";
   if (!command) return {};
 
-  const { selfMatches, pathlessRg } = analyze(command);
+  const { selfMatches, pathlessRg, sharedKills } = analyze(command);
 
   // A path-less rg reads the tool's own stdin, which never closes: the process hangs rather than
   // erroring, so nothing downstream ever reports it.
@@ -421,6 +527,17 @@ export const pgrepSelfMatch: Guard = async payload => {
         "🛑 " +
         pathlessRg.map(s => `\`${show(s)}\` has no path argument.`).join("\n") +
         "\nrg reads stdin when given no path and stdin is not a terminal; pass a path, e.g. `rg PATTERN .`",
+    };
+  }
+
+  // A name-selected kill reaches every session's processes of that name, not just this agent's.
+  if (sharedKills.length) {
+    return {
+      deny:
+        "🛑 " +
+        sharedKills.map(s => `\`${show(s)}\` selects a shared runtime by name.`).join("\n") +
+        "\nIt will signal other sessions' and runs' processes of that name (`-u <user>` is not scoping). " +
+        "Fix: signal only PIDs you launched: capture $! or use pkill -P <your pid>.",
     };
   }
 
