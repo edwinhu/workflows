@@ -163,3 +163,17 @@ test('no args-fence goal or authorityExtra string carries a <placeholder> — wo
   expect(skill).toMatch(/^const goal = \/\*/m)
   expect(skill).toMatch(/^const phase4Authority = \/\*/m)
 })
+
+// The audit-only lens prompt is the Phase 4 lens prompt minus item (3) SCOPE FIDELITY; P11 exempts
+// `prompt` (lens-set-differs), so this is the only thing comparing the two hand-copied fences.
+test('audit-only lens prompt equals the Phase 4 lens prompt minus the SCOPE FIDELITY clause', () => {
+  const prompts = [...skill.matchAll(/^\s*prompt: "((?:[^"\\\n]|\\.)*)",?$/gm)]
+    .map(m => m[1])
+    .filter(p => p.startsWith('Judge the workflow against the approved plan'))
+  expect(prompts.length).toBe(2)
+  const [audit, phase4] = prompts[0].length < prompts[1].length ? prompts : [prompts[1], prompts[0]]
+  const scope = phase4.match(/\(3\) SCOPE FIDELITY .*?declared writable path\. /)
+  expect(scope).not.toBeNull()
+  expect(audit).not.toContain('SCOPE FIDELITY')
+  expect(phase4.replace(scope![0], '')).toBe(audit)
+})
