@@ -22,7 +22,7 @@
 #                under checks/authoring/constraints/ (node-check among them: `node --check` over its
 #                .js; nothing in scope when it ships none), so a constraint added there runs with no
 #                edit here. Its Jev rules are skipped: the plan's ruleChecks scores them.
-#   probe-tests  `bun test <target>/scripts/*.test.ts` — TARGET-relative, so pointing this at a
+#   probe-tests  `bun test <target>/{scripts,tests}/*.test.ts` — TARGET-relative, so pointing this at a
 #                generated skill runs THAT skill's suite; a scripts/ dir with no test file FAILS
 #
 # wc-probe has only ever judged GATE INTEGRITY, never STRUCTURE. That is how typst accumulated 16
@@ -233,21 +233,25 @@ fi
 
 # --- leg: probe-tests --------------------------------------------------------------------------
 # Target-relative on purpose: this skill's own suite is not evidence about a generated skill.
-if [ ! -d "$TARGET/scripts" ]; then
+# Suites are read from <target>/scripts/ and <target>/tests/ (same patterns); never from the repo's
+# top-level tests/ -- a skill that wants those covered ships or links its own.
+sdirs=()
+for d in "$TARGET/scripts" "$TARGET/tests"; do [ -d "$d" ] && sdirs+=("$d"); done
+suite=(); pysuite=()
+for d in "${sdirs[@]}"; do
+  for f in "$d"/*.test.ts; do [ -e "$f" ] && suite+=("$f"); done
+  for f in "$d"/*_test.py "$d"/test_*.py; do [ -e "$f" ] && pysuite+=("$f"); done
+done
+if [ "${#sdirs[@]}" -eq 0 ] || { [ ! -d "$TARGET/scripts" ] && [ "${#suite[@]}" -eq 0 ] && [ "${#pysuite[@]}" -eq 0 ]; }; then
   count_line probe-tests 0 "test(s)" "target ships no scripts/"
   report probe-tests 0 "target ships no scripts/"
 else
   # BOTH suite shapes. A workflow whose scripts are python ships pytest, and reading only
   # *.test.ts reported workshop -- 108 pytest cases beside its scripts -- as untested
   # machinery. The rule is unchanged: a scripts/ dir with no suite at all still FAILS.
-  suite=(); pysuite=()
-  for f in "$TARGET"/scripts/*.test.ts; do [ -e "$f" ] && suite+=("$f"); done
-  for f in "$TARGET"/scripts/*_test.py "$TARGET"/scripts/test_*.py; do
-    [ -e "$f" ] && pysuite+=("$f")
-  done
   if [ "${#suite[@]}" -eq 0 ] && [ "${#pysuite[@]}" -eq 0 ]; then
     echo "check.sh: $TARGET/scripts exists but ships no *.test.ts and no pytest file — a scripts dir with no suite is untested machinery" >&2
-    report probe-tests 1 "no suite under scripts/"
+    report probe-tests 1 "no suite under scripts/ or tests/"
   else
     rc=0
     # CONCURRENT. A suite whose cases spawn subprocesses adds up serially (`work`: 23 files, 136s,

@@ -91,7 +91,7 @@ const FAILING_TEST = "import { expect, test } from 'bun:test'\ntest('fixture fai
 // A fixture workflow skill. `skill` defaults to a body wc-probe reports CLEAN; `js` and `tests`
 // add the artifacts the authoring-gate (its node-check constraint) and suite legs look for.
 // `noPluginRoot` omits the marker so the pc-probe leg's could-not-look refusal is exercised.
-function target(opts: { skill?: string; js?: string; tests?: Record<string, string>; emptyScripts?: boolean; noPluginRoot?: boolean } = {}): string {
+function target(opts: { skill?: string; js?: string; tests?: Record<string, string>; testsDir?: Record<string, string>; emptyScripts?: boolean; noPluginRoot?: boolean } = {}): string {
   const d = tmp('wc-check-target-')
   if (!opts.noPluginRoot) {
     mkdirSync(join(d, '.claude-plugin'))
@@ -102,6 +102,10 @@ function target(opts: { skill?: string; js?: string; tests?: Record<string, stri
   if (opts.tests || opts.emptyScripts) {
     mkdirSync(join(d, 'scripts'))
     for (const [name, body] of Object.entries(opts.tests ?? {})) writeFileSync(join(d, 'scripts', name), body)
+  }
+  if (opts.testsDir) {
+    mkdirSync(join(d, 'tests'))
+    for (const [name, body] of Object.entries(opts.testsDir)) writeFileSync(join(d, 'tests', name), body)
   }
   return d
 }
@@ -463,4 +467,22 @@ test('python suite: a standalone script suite (module-scope sys.exit) runs as a 
   expect(countOf(ok)).toBe(1)
   const bad = run(harness(), ['--target', pyTarget({ 'bad_test.py': 'import sys\nsys.exit(3)\n' })])
   expect(legStatus(bad.stdout, 'probe-tests')).toContain('exit=1')
+})
+
+// --- a suite kept under <target>/tests/ is found the same way as one under scripts/ ------------------
+test('tests/ dir: a target whose only suite is under tests/ is counted and passes', () => {
+  const r = run(harness(), ['--target', target({ testsDir: { 'a.test.ts': PASSING_TEST, 'b_test.py': PY_PASS } })])
+  expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=0')
+  expect(countOf(r) || Number(/^probe-tests: (\d+) test/m.exec(combined(r))?.[1])).toBe(3)
+})
+
+test('tests/ dir: a file there that collects 0 tests is exit 2', () => {
+  const r = run(harness(), ['--target', target({ testsDir: { 'empty.test.ts': "import { test } from 'bun:test'\n" } })])
+  expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=2')
+  expect(r.stderr).toMatch(/^probe-tests: 0 test\(s\) examined.*empty\.test\.ts/m)
+})
+
+test('tests/ dir: scripts/ without a suite still fails when tests/ has none either', () => {
+  const r = run(harness(), ['--target', target({ emptyScripts: true })])
+  expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=1')
 })
