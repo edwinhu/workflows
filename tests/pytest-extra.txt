@@ -64,3 +64,10 @@ skills/courtlistener/scripts/bulk_fetch_test.py
 skills/look-at/scripts/look_at_test.py
 skills/paperpile/scripts/resolve_pdf_test.py
 skills/paperpile/scripts/paperpile_scripts_test.py
+skills/wrds/scripts/dual_class/tests/test_classify.py
+skills/wrds/scripts/dual_class/tests/test_extract.py
+skills/wrds/scripts/dual_class/tests/test_gate.py
+skills/wrds/scripts/dual_class/tests/test_jev.py
+skills/wrds/scripts/dual_class/tests/test_rule_v3.py
+skills/wrds/scripts/dual_class/tests/test_run_isolation.py
+skills/wrds/scripts/dual_class/tests/test_schema.py

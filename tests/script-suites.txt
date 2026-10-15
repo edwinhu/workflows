@@ -26,3 +26,5 @@ skills/writing/scripts/writing_gate_probe_test.py
 skills/writing/scripts/writing_receipt_test.py
 
 # not-gated: skills/wrds/scripts/parse_def14a_own/scorer/score_test.py -- nested tests
+skills/bmll/scripts/test_bmll_impact.py
+skills/bmll/scripts/test_bmll_scripts.py
