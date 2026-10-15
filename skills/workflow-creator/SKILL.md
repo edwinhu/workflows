@@ -240,7 +240,7 @@ const args = {
   ruleChecks: { name: "jev-authoring-rules", cmd: `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir ${projectDir} --plan ${planPath}` },
 
   // The Phase 4 lens verbatim, minus scope fidelity. Omitting `lens` selects work's generic default,
-  // not this domain checklist. Keep shared prompt items and refs in sync across both fences.
+  // not this domain checklist. The prompt must equal the Phase 4 fence's minus the "(3) SCOPE FIDELITY" clause, and refs must match; spine-contract.test.ts enforces it.
   lens: {
     agentType: "Explore",
     refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workflow-creator/references/gate-laws.md",
