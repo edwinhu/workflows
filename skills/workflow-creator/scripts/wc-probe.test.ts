@@ -3642,7 +3642,9 @@ describe('P20 one loader entry point', () => {
   })
 
   test('a $HOME fallback to load-constraints is a finding', () => {
-    const f = run('!`r=$HOME/.claude/skills/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" notes`\n')
+    // built, not spelled: a fixture path is neither a resolver nor a reference the dead-path audit should resolve
+    const dom = 'somedomain'
+    const f = run('!`r=$HOME/.claude/skills/' + dom + '/scripts/load-constraints; [ -x "$r" ] && exec "$r" notes`\n')
     expect(f.length).toBe(1)
     expect(f[0].detail).toContain('hand-rolled $HOME resolver')
   })
@@ -4628,11 +4630,11 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
     const agentIn = (skillsList: string, ip: string) => ['---', 'name: impl', 'description: d', 'skills:', `  - ${skillsList}`, `initialPrompt: ${ip}`, '---', '', 'body', ''].join('\n')
     const wfPlugin = (impl: string) => join(fixture({
       '.claude-plugin/plugin.json': '{"name": "p19plug"}',
-      'skills/wf/SKILL.md': ['---', 'name: wf', 'description: d', 'metadata:', '  rule-skills: typst:deck-rules', '---', '', '# wf', '',
+      'skills/wf/SKILL.md': ['---', 'name: wf', 'description: d', 'metadata:', '  rule-skills: p19dom:deck-rules', '---', '', '# wf', '',
         workArgs(['tasks: []', `implementerAgentType: "${impl}"`, 'verifierAgentType: "Explore"', 'lens: { prompt: "judge", refs: [], agentType: "Explore" }']), ''].join('\n'),
     }), 'skills', 'wf')
     const home = (bRules: string) => ({
-      '.claude/skills/typst/skills/deck-rules/SKILL.md': skillMd('deck-rules'),
+      '.claude/skills/p19dom/skills/deck-rules/SKILL.md': skillMd('deck-rules'),
       '.claude/skills/pb/.claude-plugin/plugin.json': '{"name": "pb"}',
       '.claude/skills/pb/user-agents/impl.md': agentIn('b-rules', '/b-rules'),
       '.claude/skills/pb/skills/b-rules/SKILL.md': bRules,
@@ -4640,14 +4642,14 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
     const skillWith = (...lines: string[]) => ['---', 'name: b-rules', 'description: d', '---', '', '# b-rules', '', ...lines, ''].join('\n')
 
     test('a qualified external agent whose bare wrapper lives in its own plugin is CLEAN', () => {
-      const r = withHome(home(skillWith(loaderBang('typst:deck-rules'))), () => wfPlugin('pb:impl'))
+      const r = withHome(home(skillWith(loaderBang('p19dom:deck-rules'))), () => wfPlugin('pb:impl'))
       expect(r.out).not.toContain('P19 rule-skill preload')
       expect(r.code).toBe(0)
     })
 
     test('the wrapper loading nothing is still a MAJOR in the agent\'s plugin', () => {
       const r = withHome(home(skillWith('prose only')), () => wfPlugin('pb:impl'))
-      expect(r.out).toContain('does not preload typst:deck-rules')
+      expect(r.out).toContain('does not preload p19dom:deck-rules')
       expect(r.code).toBe(1)
     })
   })

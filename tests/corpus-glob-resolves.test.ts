@@ -6,7 +6,7 @@ import { homedir } from "node:os";
 // An agent or skill that tells a model to Glob a constraint/rule corpus is trusting that the
 // glob still matches. When the corpus moves, the glob matches nothing, the model reads nothing,
 // and the review reads as if it graded against the rules: workshop-reviewer globbed
-// `~/.claude/skills/typst/constraints/*.md` for weeks after the rule texts moved to `rules/`.
+// the typst plugin's `constraints/*.md` for weeks after the rule texts moved to `rules/`.
 
 const REPO = resolve(import.meta.dir, "..");
 
@@ -61,9 +61,9 @@ describe("corpus globs in agents and skills", () => {
   });
 
   test("the extractor catches a stale corpus glob and ignores a non-corpus one", () => {
-    const text = "    Glob  ~/.claude/skills/typst/constraints/*.md   the rules\nsee ~/.claude/plans/*.md";
+    const text = "    Glob  ~/.claude/skills/somecorpus/constraints/*.md   the rules\nsee ~/.claude/plans/*.md";
     const g = corpusGlobs(text);
-    expect(g.map(x => x.rest)).toEqual(["/.claude/skills/typst/constraints/*.md"]);
-    expect(globSync(expand(g[0].anchor, "/.claude/skills/typst/constraints/no-such-dir/*.md", "x"))).toEqual([]);
+    expect(g.map(x => x.rest)).toEqual(["/.claude/skills/somecorpus/constraints/*.md"]);
+    expect(globSync(expand(g[0].anchor, "/.claude/skills/somecorpus/constraints/no-such-dir/*.md", "x"))).toEqual([]);
   });
 });
