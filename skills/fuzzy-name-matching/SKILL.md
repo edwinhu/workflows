@@ -34,7 +34,7 @@ Before normalizing anything, ask what identifier both sides already carry.
 Filings from one regulatory regime usually share a filer key, and it is often
 sitting in a field nobody read — a path, an accession, an exhibit header.
 
-Measured 2026-08-31 (`npx-reconcile`): a full session built a name-based
+Example (`npx-reconcile`): a full session built a name-based
 ISS→13F crosswalk reaching **59.45%** of the target universe, while the
 registrant CIK **already parsed from the filing path** reached **99.11%** with
 no name matching at all. Both filings were '40 Act filings from the same
@@ -118,8 +118,7 @@ sparse_dot_topn = ">=1.2"      # ING's fast sparse top-k matmul
 ```
 
 conda-forge tops out at `sparse_dot_topn` **0.3.1**, which predates the v1
-`sp_matmul_topn` API this recipe uses (checked against the conda-forge channel
-2026-07-22). `pixi add sparse_dot_topn` therefore installs a version without
+`sp_matmul_topn` API this recipe uses (checked against the conda-forge channel). `pixi add sparse_dot_topn` therefore installs a version without
 the function — use `pixi add --pypi sparse_dot_topn` to get ≥1.2.
 
 ## Additional Resources

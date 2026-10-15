@@ -166,7 +166,7 @@ Agent(
 
 **Why this is safe:** The Iron Law against `Read` on images exists to protect the main conversation's context window (images cost 1000-5000 tokens). Subagent context is throwaway — the tokens are discarded when the agent returns its short summary. The cost rationale does not apply.
 
-**pdftotext's role:** pdftotext is prohibited as a *replacement* for vision (the lecture 22 incident: it missed CeTZ vertical text overlap). But it is *required* as a pre-screen in step 2.5 for diagram pages — it catches horizontal adjacency violations that vision frequently misses. The two prongs complement each other: pdftotext catches fused text; vision catches spatial/vertical issues.
+**pdftotext's role:** pdftotext is prohibited as a *replacement* for vision (it misses CeTZ vertical text overlap). But it is *required* as a pre-screen in step 2.5 for diagram pages — it catches horizontal adjacency violations that vision frequently misses. The two prongs complement each other: pdftotext catches fused text; vision catches spatial/vertical issues.
 </EXTREMELY-IMPORTANT>
 
 ### Multi-Prong Verification

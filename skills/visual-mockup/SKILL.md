@@ -143,7 +143,7 @@ When approved, translate to CeTZ. For charts, the data arrays transfer directly 
 ## Mockup Facts
 
 - Morrison: the layout you "knew" had crossing arrows the user spotted instantly; skipping the mockup produced 3+ failed compile-fix cycles. A 30-second sketch beats 3 failed compiles — skipping is slower, not faster.
-- The value-line incident: editing CeTZ data arrays "real quick" without a mockup ("just shift the prices down") produced a chart that told the wrong story for weeks. Data-shape problems are invisible until compile; a 30-second matplotlib plot makes them visible to the user instantly.
+- Editing CeTZ data arrays "real quick" without a mockup ("just shift the prices down") produces a chart that tells the wrong story. Data-shape problems are invisible until compile; a 30-second matplotlib plot makes them visible to the user instantly.
 - The mockup is a throwaway sketch — 2 minutes max, boxes/arrows/labels/data shape only. Polishing it is anti-helpful: the user is waiting for a sketch, and polish delays the real diagram.
 
 ## Red Flags

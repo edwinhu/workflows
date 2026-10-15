@@ -9,7 +9,7 @@ description: This skill should be used when the user asks to "get the complaint 
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 Three commercial platforms, one job: turn a list of cases into a directory of PDFs plus a manifest
-you can defend. Verified end to end on 1,597 Delaware Chancery cases, 2026-08-30/31 — ~4,000
+you can defend. Verified end to end on 1,597 Delaware Chancery cases — ~4,000
 documents retrieved across all three.
 
 **Auth is the user's live browser session on CDP 9222.** None of these needs a password. Read the
@@ -64,7 +64,7 @@ later as a SEPARATE docket entry** (Ct. Ch. R. 5.1). Every vendor rule that stop
 complaint-tagged entry sees no document and reports failure. The public version sits **typically
 around entry 10-15, measured as deep as entry 91**, on dockets running to 277 entries.
 
-Measured 2026-08-31/09-01 on two independent Delaware populations:
+Measured on two independent Delaware populations:
 
 | population | "unavailable" cases | had a public version | rate |
 |---|---:|---:|---:|

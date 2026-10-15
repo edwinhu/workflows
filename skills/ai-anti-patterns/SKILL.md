@@ -101,12 +101,10 @@ this one. To check a phrase, run `/ai-tic <phrase>`; do not add a row here.
 - Em dash overuse (—)
 - Excessive boldface for emphasis
 
-### User-Voice Preferences (NOT AI tells — corpus-checked 2026-08-05)
+### User-Voice Preferences (NOT AI tells — corpus-checked)
 
-**This section is a personal style preference, not a linter, and the name it used to carry
-("User-Voice Lint") was doing real damage.** Nothing here was ever in an executable table, so a
-`writing-verify` pass ran every scorer and knew none of these phrases — while the heading implied
-four enforced rules. Three of the four have now been measured against 14,294,148 sentences of human
+**This section is a personal style preference, not a linter.** Nothing here is in an executable
+table, so a `writing-verify` pass knows none of these phrases. Three of the four were measured against 14,294,148 sentences of human
 scholarship (8.73M finance/accounting + 5.56M law review) and they are **normal human prose**:
 
 | phrase | finance | law | verdict |
@@ -114,7 +112,7 @@ scholarship (8.73M finance/accounting + 5.56M law review) and they are **normal 
 | `has bite` / `have more bite` | 1.9/M | 5.2/M | **human** — incl. a law review title, *"Do the SEC's New Rating Agency Rules Have Any Bite?"* |
 | `the cut` (regulatory reduction) | 8.7/M | 4.7/M | **human** — *"the cut in the corporate tax rate"* |
 | `Of course,` | 299.9/M | 523.7/M | **human** |
-| `To be sure,` ← *this section used to recommend it* | 11.5/M | **194.0/M** | **human**, and 3× commoner in law reviews than what it replaces |
+| `To be sure,` ← *not an AI tell; do not replace it* | 11.5/M | **194.0/M** | **human**, and 3× commoner in law reviews than what it replaces |
 | `Admittedly,` | 15.5/M | 63.3/M | **human** |
 | `cuts against` | 0.9/M | 13.1/M | **human** |
 

@@ -67,7 +67,7 @@ All procedural detail lives in `references/`. Read only what the job needs.
   (`--normalize-headings`), the OOXML hygiene / de-cruft rules (default on, with
   the exact strip/keep lists), body-indent normalization
   (`--normalize-body-indent`), and applying the template's body styles
-  (`--restyle-body`), plus the content-cleanup incident facts. **Read when**
+  (`--restyle-body`), plus the content-cleanup facts. **Read when**
   boxes, inconsistent headings, stray indents or XML bloat are the complaint, or
   before passing any of those flags.
 

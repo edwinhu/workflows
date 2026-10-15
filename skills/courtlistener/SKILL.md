@@ -3,6 +3,9 @@ name: courtlistener
 description: "Use when the user says 'CourtListener', 'Free Law Project', 'RECAP', 'PACER data', 'court opinions', 'get the opinion text', 'federal dockets', 'delch', 'Delaware Chancery opinions', 'state court opinions', 'demand futility opinions', 'judicial financial disclosures', 'oral arguments', or needs case law, dockets or opinion full text for empirical legal research. Also use when someone assumes CourtListener is federal-only, or hits a token or human-verification wall on it."
 ---
 
+<!-- wc-probe: ignore-narrated-history -->
+<!-- Dates here are the bulk-snapshot vintage and a worked lag example, not narrated history. -->
+
 # CourtListener for empirical legal research
 
 **What this skill carries** — grep `references/` for any subject the names below miss:

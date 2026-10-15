@@ -4,6 +4,9 @@ description: "Use when the user says 'verify my sources', 'check the citations',
 user-invocable: false
 ---
 
+<!-- wc-probe: ignore-narrated-history -->
+<!-- date 2022-08-24 appears only as a sample BibTeX field in a mapping table -->
+
 # Source Verification
 
 **What this skill carries** — grep `references/` for any subject the names below miss:

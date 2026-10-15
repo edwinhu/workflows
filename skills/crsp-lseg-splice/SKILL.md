@@ -5,6 +5,9 @@ description: 'Use when "CRSP is stale / out of date", "CRSP only goes through De
 user-invocable: true
 ---
 
+<!-- wc-probe: ignore-narrated-history -->
+<!-- Dates here are data coverage ends and the CIZ cutoff the splice depends on, not narrated history. -->
+
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
@@ -23,7 +26,7 @@ CRSP ships annually. The CIZ daily file stops at the last December close and doe
 not error when you query past it — it returns a short panel. LSEG is current to
 T-1 but is keyed on RIC, not PERMNO, so the join runs through CUSIP.
 
-Verified 2026-07-28 on WRDS PostgreSQL:
+Verified on WRDS PostgreSQL:
 
 | Source | Last date | Gap |
 |--------|-----------|-----|
@@ -155,7 +158,7 @@ the venue, which is why the check belongs before the pull, not after.
 Full numbers, denominators, and the validation method: **`references/coverage.md`**.
 
 Universe = the 3,657 CRSP CIZ common stocks (5-column `SHRCD 10/11` equivalent,
-`primaryexch IN ('N','A','Q')`) trading on 2025-12-31. Measured 2026-07-28.
+`primaryexch IN ('N','A','Q')`) trading on 2025-12-31.
 
 | Stage | count | share of universe |
 |-------|-------|-------------------|

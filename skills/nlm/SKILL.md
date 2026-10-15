@@ -21,7 +21,7 @@ the two chat paths fail differently and NEITHER says "auth": `nlm chat <id> "…
 **exits 0**, and `nlm generate-chat <id> "…"` prints `empty response from API; check 'nlm sources
 …' for source state`. Only the non-chat commands surface `exit-class=auth (exit 3)`. So an agent
 that runs only a chat command reads an auth failure as "the notebook has nothing on this topic" —
-measured 2026-08-23, and the likely cause of a 366-line Bluebook reference being written from style
+measured, and the likely cause of a 366-line Bluebook reference being written from style
 guides while its author believed the notebook had been consulted. Run `nlm source list <id>` and
 require exit 0 first; an empty chat answer is evidence of nothing until you have.
 
