@@ -23,7 +23,7 @@ const scratch: string[] = []
 afterAll(() => { for (const d of scratch) rmSync(d, { recursive: true, force: true }) })
 
 const git = (d: string, ...a: string[]) =>
-  execFileSync('git', ['-C', d, '-c', 'user.email=t@t', '-c', 'user.name=t', ...a], { encoding: 'utf8', timeout: 60_000 })
+  execFileSync('git', ['-C', d, '-c', 'user.email=t@t', '-c', 'user.name=t', ...a], { encoding: 'utf8', timeout: 10_000 })
 
 const PASS = {
   overallPass: true, verdict: 'PASS', scoreTable: {}, findings: [], tasksThatFlagged: [],
@@ -42,7 +42,7 @@ function fixture(opts: { readOnly?: boolean; baseline?: boolean } = {}) {
   const args: Record<string, unknown> = { projectDir: proj, mechanicalChecks: [] }
   if (opts.readOnly !== false) args.readOnly = true
   if (opts.baseline !== false) {
-    args.readOnlyBaseline = execFileSync('bash', [SNAP, '--objects', join(run, 'readonly-objects'), proj], { encoding: 'utf8', timeout: 60_000 }).trim()
+    args.readOnlyBaseline = execFileSync('bash', [SNAP, '--objects', join(run, 'readonly-objects'), proj], { encoding: 'utf8', timeout: 10_000 }).trim()
   }
   writeFileSync(join(run, 'args.json'), JSON.stringify(args))
   writeFileSync(join(run, 'result.json'), JSON.stringify(PASS))
@@ -50,7 +50,7 @@ function fixture(opts: { readOnly?: boolean; baseline?: boolean } = {}) {
 }
 
 const verdict = (f: { result: string }) => {
-  const r = spawnSync(RESULT, [f.result], { encoding: 'utf8', timeout: 60_000 })
+  const r = spawnSync(RESULT, [f.result], { encoding: 'utf8', timeout: 10_000 })
   expect(typeof r.status).toBe('number')
   return { code: r.status as number, out: r.stdout + r.stderr }
 }
@@ -58,10 +58,10 @@ const verdict = (f: { result: string }) => {
 describe('readOnly guard', () => {
   test('snapshotting with --objects adds nothing under the project .git', () => {
     const f = fixture()
-    const loose = execFileSync('git', ['-C', f.proj, 'count-objects'], { encoding: 'utf8', timeout: 60_000 })
+    const loose = execFileSync('git', ['-C', f.proj, 'count-objects'], { encoding: 'utf8', timeout: 10_000 })
     writeFileSync(join(f.proj, 'new.txt'), 'x\n')
-    execFileSync('bash', [SNAP, '--objects', join(f.run, 'readonly-objects'), f.proj], { timeout: 60_000 })
-    expect(execFileSync('git', ['-C', f.proj, 'count-objects'], { encoding: 'utf8', timeout: 60_000 })).toBe(loose)
+    execFileSync('bash', [SNAP, '--objects', join(f.run, 'readonly-objects'), f.proj], { timeout: 10_000 })
+    expect(execFileSync('git', ['-C', f.proj, 'count-objects'], { encoding: 'utf8', timeout: 10_000 })).toBe(loose)
     expect(existsSync(join(f.run, 'readonly-objects'))).toBe(true)
   })
 
@@ -127,6 +127,6 @@ describe('readOnly guard', () => {
     const g = fixture()
     const a = JSON.parse(readFileSync(g.args, 'utf8')); a.readOnlyBaseline = 'not-a-sha'
     writeFileSync(g.args, JSON.stringify(a))
-    expect(spawnSync(GUARD, [g.args], { encoding: 'utf8', timeout: 60_000 }).status).toBe(2)
+    expect(spawnSync(GUARD, [g.args], { encoding: 'utf8', timeout: 10_000 }).status).toBe(2)
   })
 })
