@@ -1108,6 +1108,26 @@ test('R24 credits a check.sh that reaches workflow-check through a helper functi
   }
 })
 
+// ---------------------------------------------------------------- refs are absolute paths (R26)
+// A ref goes verbatim into an agent prompt that says "Read in full"; `~/x` or a relative path
+// resolves to nothing there. Existence is not checked: a ref may be produced by an earlier task.
+const refFinds = (p: Plan) => lint(p, () => true).filter(f => f.rule === 'ref-not-absolute')
+
+test('a task ref that is not absolute is a major naming the task; a ~ ref names the expanded path', () => {
+  const home = process.env.HOME ?? ''
+  const found = refFinds(base({ tasks: [task({ refs: ['~/x.md', 'rel/y.md', '/abs/z.md'] })] }))
+  expect(found.map(f => f.evidence)).toEqual(['~/x.md', 'rel/y.md'])
+  expect(found.every(f => f.severity === 'major' && f.where === 'tasks[T1].refs')).toBe(true)
+  expect(found[0].message).toContain(`${home}/x.md`)
+})
+
+test('lens and scoredChecks refs are checked through parseArgs; absolute and absent refs are clean', () => {
+  const bad = parseArgs({ tasks: [], lens: { prompt: 'p', refs: ['~/l.md'] }, scoredChecks: [{ key: 'k', refs: ['r.md'] }] })
+  expect(refFinds(bad).map(f => f.where)).toEqual(['lens.refs', 'scoredChecks[k].refs'])
+  const ok = parseArgs({ tasks: [{ id: 'T1', refs: ['/a/b.md'] }], lens: { prompt: 'p', refs: ['/l.md'] }, scoredChecks: [{ key: 'k' }] })
+  expect(refFinds(ok)).toEqual([])
+})
+
 // ---------------------------------------------------------------- agent-type fields (R25)
 // `agentType` on a task row names the persona agent that task's implement leg runs as. A name no
 // agent file answers to makes the harness fall back to the default agent, silently dropping the
