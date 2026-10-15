@@ -102,8 +102,8 @@ def _apply_case(rendered: str, sentence_initial: bool) -> str:
 
 def rendered_citations(main: Path, root: Path) -> list[str]:
     out = subprocess.run(
-        ["typst", "eval", "query(<bb-out>).map(it => it.value)",
-         "--in", str(main), "--root", str(root), "--format", "json"],
+        ["typst", "query", str(main), "<bb-out>", "--field", "value",
+         "--root", str(root), "--format", "json"],
         capture_output=True, text=True, check=False)
     if out.returncode != 0:
         raise SystemExit(f"error: typst could not resolve citations:\n{out.stderr[:1500]}")
