@@ -61,3 +61,5 @@ skills/ui-json-capture/scripts/assemble_test.py
 skills/visual-mockup/scripts/interactive_mockup_test.py
 skills/courtlistener/scripts/bulk_fetch_test.py
 skills/look-at/scripts/look_at_test.py
+skills/paperpile/scripts/resolve_pdf_test.py
+skills/paperpile/scripts/paperpile_scripts_test.py
