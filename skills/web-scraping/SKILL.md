@@ -5,6 +5,9 @@ description: Use when "scrape this site at scale", "fetch N thousand pages", "ho
 user-invocable: false
 ---
 
+<!-- wc-probe: ignore-narrated-history -->
+<!-- vendor pricing/limits vintage (2026-09-08) is the date the figures were read -->
+
 # Web Scraping
 
 **What this skill carries** — grep `references/` for any subject the names below miss:

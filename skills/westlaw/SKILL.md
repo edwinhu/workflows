@@ -12,7 +12,7 @@ Export an opinion from Westlaw Advantage as DOCX with star pagination, for use a
 authoritative source text when excerpting. Feeds `workflows:elide-case`, whose first Iron Law
 requires authentic reporter text.
 
-Everything below was measured 2026-09-09 in a live session against Westlaw Advantage, signed in as
+Everything below was measured in a live session against Westlaw Advantage, signed in as
 a UVA law faculty account.
 
 ## Prerequisite
@@ -166,9 +166,9 @@ raise on open. Measured: 13 parts, no `word/` prefix anywhere.
 **The docx is the only artifact this skill stores.** `scripts/westlaw-docx-text.py` is a
 **projection**, not an export step: consumers import `project(path)` and read the text in memory.
 A `.txt` written beside the docx is a second copy of the same opinion that nothing diffs — and the
-one this skill used to write **discarded the docx's italic runs**, so a case name the court set in
-italics reached a 27-page compiled casebook excerpt in roman, because the cut read only the
-projection. Persisting the projection is what made that undetectable.
+one written to disk **discards the docx's italic runs**, so a case name the court set in
+italics reaches a compiled casebook excerpt in roman when the cut reads only the
+projection. Persisting the projection makes that undetectable.
 
 ```bash
 # For eyeballing only. -o writes a file, which is not how a consumer reads this.
@@ -190,7 +190,7 @@ Measured:
 
 All three are flat OPC, 13 parts. **Those counts are the `--no-emphasis` read** — the default
 emphasis read is longer by two characters per span, so a character count that does not match this
-table is the emphasis marks, not damage. Measured 2026-09-10 on Tornetta v. Musk (253,642 B, 2,467
+table is the emphasis marks, not damage. Measured on Tornetta v. Musk (253,642 B, 2,467
 paragraphs, 234 markers): 369,296 chars flat, 371,130 with emphasis, **917 spans** — including 19
 `_Weinberger_` and one `_MFW_`, every one of which the persisted `.txt` had discarded.
 

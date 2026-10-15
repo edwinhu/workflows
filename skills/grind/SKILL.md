@@ -11,7 +11,7 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob]
 
 A bash `while` loop that calls a fresh model process per iteration and keeps nothing between them.
 Cost inside a chat session is *wakes × context*, and the context only grows: measured on this
-project 2026-09-20, one orchestrator spent 1.05 billion cache-read tokens in a day across 1,816
+project, one orchestrator spent 1.05 billion cache-read tokens in a day across 1,816
 turns on a ~575K-token context, and 208 of those wakes were status reports that needed no judgement
 at all. Here nothing accumulates between iterations because nothing survives them.
 
@@ -194,17 +194,17 @@ grep '"kind":"iter_end"' "$J" | jq -r 'select(.exit != 0) | .i'
 |---|---|---|
 | Let an iteration's own report decide the run is finished | the loop would be grading itself, and one confident wrong answer ends a week of work with the goal unmet | only `--check` exiting 0 writes `done`; the agent writes records, never verdicts |
 | Point `--check` at a milestone — a file existing, a report written, an agent having reported back | it is true while the objective is unmet, so the loop stops on pass 1 | name the state the work reaches: a suite passing, a count under a number |
-| Write a `--check` that passes once the inputs are fetched or built | the loop records `done` with the deliverable missing — 209 exhibit PDFs fetched and none read, 1,404 order PDFs fetched and 0 outcomes coded (board-structuring, twice on 2026-10-08) | fail the check until the final deliverable exists and is non-empty: coded rows > 0, or every fetched file extracted; print the count so `done` shows it |
+| Write a `--check` that passes once the inputs are fetched or built | the loop records `done` with the deliverable missing — 209 exhibit PDFs fetched and none read, 1,404 order PDFs fetched and 0 outcomes coded (board-structuring, twice) | fail the check until the final deliverable exists and is non-empty: coded rows > 0, or every fetched file extracted; print the count so `done` shows it |
 | Run without `--gate` when the verdict takes hours | every pass spends a model call to learn the job is still queued — that is the whole bill | a shell precondition; while it is red the loop records `wait` and sleeps for free |
 | Hand an iteration a key an earlier one closed | it re-diagnoses the same dead family every pass, and the loop never converges | read `GRIND_FLOORS` before choosing work; file a `floor` the first time a key dies |
 | Append a whole report as one record | over the single-write bound it is refused, and splitting it would leave a log nobody can replay | a key and a one-line note; write the report to a file and name its path |
 | Add a pidfile, a progress file or a notes file beside the journal | two files that can disagree about one fact, and the tiebreak rule is the bug | append a record; derive the pid, the counter and the floors from the journal |
-| Arm a hold in a session while a grind loop works the same objective | the hold blocks that session's stop while the grind's gate waits for no round in flight: each waits for the other and neither moves (AGK 2026-09-27) | one driver per objective — grind owns a long loop, and no session holds alongside it |
+| Arm a hold in a session while a grind loop works the same objective | the hold blocks that session's stop while the grind's gate waits for no round in flight: each waits for the other and neither moves | one driver per objective — grind owns a long loop, and no session holds alongside it |
 | Foreground the loop from a chat session | the Bash tool call caps out and kills the run mid-flight, and the live session is the cost grind removes | `setsid nohup … &`, then `grind.sh status` when you want to know |
 | `kill -9` the loop to end it | the journal then ends on `iter`, and nothing can tell a kill from a crash | `grind.sh stop`, honoured at the next boundary |
 | About to write a pass prompt that says "do one chunk, commit, exit" | each pass re-reads the investigation doc and the journal, so an hour of analysis became 10+ passes (docket-outcomes reached pass 59, ~20M weighted tokens per 14 passes) | tell the pass to finish the deliverable when it can, committing at checkpoints rather than exiting at them |
 | About to ask a pass for regression tests, "contracts" or edge-case hardening beyond what `--check` reads | passes polished instead of finishing, and operator "estimate now" notes took 2-3 passes to land (s220-deterrence) | the pass prompt names the deliverable and the check, nothing else |
 | Read `iter_end` with exit 0 as progress | it says the process ran, not that anything moved | `progress` records, which are what `--stall-after` counts |
 | Launch a loop you will act on without a heartbeat | a `--resume` restores no monitor and no background task, so a resumed session never hears it end | CronCreate an hourly tick at launch, naming the standing objective; keep it past the ending |
-| About to delete the heartbeat cron because a loop/batch ended | the mandate outlives the batch; hidden-figures 2026-10-07 18:17 lost its only wake this way, and the user found it idle 3 h later | leave it; the user ends the mandate, and the delete asks them |
+| About to delete the heartbeat cron because a loop/batch ended | the mandate outlives the batch; a loop that lost its only wake this way sat idle for 3 h until the user found it | leave it; the user ends the mandate, and the delete asks them |
 | Reach for the work hold to keep this going | the hold keeps a SESSION alive, which is the thing this loop exists to avoid | the hold while a session must live; grind when none should |

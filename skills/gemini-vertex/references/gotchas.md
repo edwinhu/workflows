@@ -15,7 +15,7 @@ Use `google-genai`, `from google import genai` and one shared Client. Cloud [Int
 
 Sources: [GCS batch](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference/new-job-from-cloud-storage), [Cloud tiers](flex-inference.md). `dest` belongs inside config. Both dictionaries and documented SDK config types work; do not reinstate the old ban on CreateBatchJobConfig.
 
-## Cloud batch facts — measured 2026-10-01
+## Cloud batch facts (measured)
 
 Founder web-search pilots and M100 used `gemini-3.8-flash`, location `global`, on Gemini Enterprise Agent Platform. These observations establish that tested combination, not every model/schema/location.
 

@@ -5,6 +5,9 @@ description: Use when "CRSP CIZ", "CRSP v2", "CRSP flat file format 2.0", "crsp.
 user-invocable: false
 ---
 
+<!-- wc-probe: ignore-narrated-history -->
+<!-- Dates here are data coverage ends (CIZ 2025-12-31, SIZ 2024-12-31) and a worked-example delisting table, not narrated history. -->
+
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
@@ -27,7 +30,7 @@ CRSP's legacy Stock & Indexes Flat File Format 1.0 (SIZ) was **discontinued afte
 December 2024 data release**. The legacy tables still exist on WRDS and still answer
 queries — they just stop.
 
-Verified on WRDS PostgreSQL (2026-07-26):
+Verified on WRDS PostgreSQL:
 
 | Table | Format | `max(date)` |
 |-------|--------|-------------|
@@ -93,7 +96,7 @@ every prior paper in the literature — that is an anti-helpful result dressed a
 working query.** The one-column version is faster to type and returns plausible row
 counts, which is exactly why it survives review.
 
-Verified distribution in `crsp.stksecurityinfohist` (2026-07-26): `EQTY/COM/NS/CORP/Y`
+Verified distribution in `crsp.stksecurityinfohist`: `EQTY/COM/NS/CORP/Y`
 = 90,515 rows and `EQTY/COM/NS/ACOR/Y` = 21,682 rows are the two `SHRCD 10/11` cells;
 `EQTY/COM/AD/CORP/N` (6,279 ADR rows) and `EQTY/COM/NS/REIT/Y` (2,347 REIT rows) are
 what the sloppy filter lets in.
@@ -189,7 +192,7 @@ Most-used CIZ tables. Full catalog with verified columns: `references/tables.md`
 
 ## Canonical Queries
 
-All queries below were executed against WRDS PostgreSQL on 2026-07-26. Full set with
+All queries below were executed against WRDS PostgreSQL. Full set with
 output: `references/queries.md`.
 
 **Common-stock daily panel** (the `SHRCD 10/11` + `EXCHCD 1/2/3` equivalent):

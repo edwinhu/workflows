@@ -53,7 +53,7 @@ the output still looks authoritative. Measured on a 23-page expert report:
 
 - **every footnote gained a stray superscript `?`** — soffice writes the real
   `<w:footnoteRef/>` and then a literal `<w:t>?</w:t>` run beside it, where the
-  legacy footnote mark used to be;
+  legacy footnote mark was;
 - **the page count grew by one** (23 → 24), so pagination no longer matched what
   the sender saw.
 

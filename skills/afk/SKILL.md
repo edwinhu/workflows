@@ -37,7 +37,7 @@ the Recommended branch, state the choice in one line, and keep going.
 | About to | Why wrong | Do instead |
 |---|---|---|
 | End a turn announcing the next step | A check-less afk hold allows every stop, so nothing re-enters the session until the next tick | Take the step in the same turn |
-| Launch a grind loop on this objective | A hold beside a grind deadlocks both (AGK 2026-09-27) | One driver per objective; the heartbeat covers the grind |
-| CronDelete or re-create the heartbeat to change its prompt | The permission prompt blocks the session and silences the heartbeat (208 min, 2026-10-08) | Keep the prompt fixed; write state into the morning report |
-| Answer a tick with "nothing new" / "no change" | That is the idle night this skill exists to prevent (276 min, five empty ticks, 2026-10-08) | Take step 4: start the largest open item |
-| About to start a Bash command with `cd <dir>;` or splice quotes with `'"'"'` | Claude Code can show a permission prompt for these even in bypass mode, and nobody answers: four such calls sat 17–80 min (183 min) in an afk session on 2026-10-08 | Use absolute paths and `git -C`; pass long text through a file (`jq --rawfile`) |
+| Launch a grind loop on this objective | A hold beside a grind deadlocks both | One driver per objective; the heartbeat covers the grind |
+| CronDelete or re-create the heartbeat to change its prompt | The permission prompt blocks the session and silences the heartbeat | Keep the prompt fixed; write state into the morning report |
+| Answer a tick with "nothing new" / "no change" | That is the idle night this skill exists to prevent | Take step 4: start the largest open item |
+| About to start a Bash command with `cd <dir>;` or splice quotes with `'"'"'` | Claude Code can show a permission prompt for these even in bypass mode, and nobody answers | Use absolute paths and `git -C`; pass long text through a file (`jq --rawfile`) |

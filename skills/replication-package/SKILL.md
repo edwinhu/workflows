@@ -4,6 +4,9 @@ description: "ALWAYS use when code and data have to leave the machine as a self-
 user-invocable: true
 ---
 
+<!-- wc-probe: ignore-narrated-history -->
+<!-- python-docx file-stamp date 2013-12-23 is a literal fact the reader must recognize -->
+
 # Replication package
 
 **What this skill carries** — grep `references/` for any subject the names below miss:

@@ -20,7 +20,7 @@ response) when a filtered slice fits its cap.
 
 ## Why this route
 
-Measured 2026-09-30 against SEC EFTS, WRDS web and `wrds_sec_search`: Bloomberg matches **per
+Measured against SEC EFTS, WRDS web and `wrds_sec_search`: Bloomberg matches **per
 exhibit** (option "Exhibits Only"), runs **unstemmed** (`stemmed_search: false`), tolerates
 extraction glitches ("Non -Competition" still matched), and has Terms & Connectors: `"phrase"`,
 `^"case-sensitive"`, `!` and `*` wildcards, `N/x`, `NP/x`, `S/`, `P/`, `ATLx()`, `ATMx()`.
@@ -94,7 +94,7 @@ ambiguous / unmatched), `resolved_by` (type → exact title form → DESCRIPTION
 `EX-99: EX-99.1` is TYPE: DESCRIPTION; `EX-10.6 2` is the DESCRIPTION of the second EX-10.6;
 `Rule 425 Communications` = `425`.
 
-Measured 2026-10-01 on 295 hits: WRDS join 1–27 s; 277 submissions = 2.62 GB by rclone in 27 s;
+Measured on 295 hits: WRDS join 1–27 s; 277 submissions = 2.62 GB by rclone in 27 s;
 parse + extract ~20 s. 294 resolved, 1 unmatched (`CB/A`: absent from the WRDS tables). Exhibit
 text equals sec.gov's document minus its SGML header line in 275/275 checked.
 
@@ -109,7 +109,7 @@ A facet slice under 1,000 needs no date filter: capture it whole and filter loca
 sit under `[data-testid="date-selector-preset-dropdown-button"]` (Any, Single date, Date range,
 Last 7/30 days, Last 12 months, Last 5 years) and land as e.g. `"date_type":"last_5_years"`.
 
-Verified 2026-10-01: three-phrase query, Exhibits Only, Form 8-K → 356 hits, 8 pages captured by
+Verified: three-phrase query, Exhibits Only, Form 8-K → 356 hits, 8 pages captured by
 the pager in ~4 min, `assemble.py` exit 0 (no gaps, 356 unique ids).
 
 ## Not yet verified

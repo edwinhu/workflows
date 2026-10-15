@@ -5,6 +5,9 @@ description: 'Use when "query LSEG/Refinitiv", "fundamentals or market data from
 user-invocable: false
 ---
 
+<!-- wc-probe: ignore-narrated-history -->
+<!-- Remaining dates are data: a command-example date range and a short-interest settlement date quoted as a spot-check value. -->
+
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
@@ -60,7 +63,7 @@ Requires Chromium on CDP port 9222 with a signed-in Workspace Web tab — see th
 ## MCP Connector — installed, entitled to nothing
 
 The LSEG connector for Claude registers ~50 `mcp__claude_ai_LSEG__*` tools. **On this account
-every one of them is refused.** Measured 2026-09-09, seven tools across seven distinct scope
+every one of them is refused.** Measured: seven tools across seven distinct scope
 families, each a first call with valid arguments:
 
 | Tool | Denied scope |
@@ -108,7 +111,7 @@ This is not negotiable. Skipping result inspection is NOT HELPFUL — the user b
 - Field-name typos are common and fail silently (TR.EPS vs TR.Eps). Validate field names against the documentation before executing.
 - User-supplied RICs often carry the wrong exchange suffix. Verify against the RIC Symbology section (`.O`, `.N`, `.L`, `.T`) before querying.
 - Market data has T-1 availability — today's data arrives tomorrow. Querying through today produces silent gaps; see the Date Awareness section.
-- **ONE invalid field name in a list silently truncates the WHOLE result.** `TR.HoldingsValueHeld` does not exist: alone it raises `Unable to resolve all requested fields`. Mixed with four valid fields it raises nothing — it is dropped from the columns AND the result collapses from **8,298 holder rows to 1** (AAPL.O; 16 -> 1 on SWDR.PK). The dataframe has exactly the columns you asked for, no warning, and a fraction of a percent of the rows. Validate each field name alone before batching, and assert an expected row count. Measured 2026-09-05.
+- **ONE invalid field name in a list silently truncates the WHOLE result.** `TR.HoldingsValueHeld` does not exist: alone it raises `Unable to resolve all requested fields`. Mixed with four valid fields it raises nothing — it is dropped from the columns AND the result collapses from **8,298 holder rows to 1** (AAPL.O; 16 -> 1 on SWDR.PK). The dataframe has exactly the columns you asked for, no warning, and a fraction of a percent of the rows. Validate each field name alone before batching, and assert an expected row count.
 - **The default `http.request-timeout` is 20 seconds**, and on text-heavy content it — not a row cap or an entitlement — is what raises `ReadTimeout`. Five instruments of guidance failed at the default and returned 66,447 rows at `ld.get_config().set_param("http.request-timeout", 180)`, which must be called BEFORE the session opens. Reaching for a smaller batch first wastes the run.
 - **A 403 enumerates the platform token's entitlements.** `Insufficient scope` names the required scope, the **full `Available scopes` set**, and the missing one — so probing one unentitled endpoint (e.g. `/data/news/v1/headlines`) reveals what the account actually holds. The browser-token caveat below, that entitlements cannot be enumerated, applies to the lifted `edp-token`, not to this path.
 - Rate limits bind per session (500 requests/minute) and per request (`get_data()` 10,000 data points, `get_history()` 3,000 rows) — many small queries still hit the session cap. Batch instead of looping.
@@ -225,7 +228,7 @@ everything below documents `RDP_*`. You must map them at the call site. Reading
 this section and exporting `RDP_APP_KEY` from a file that defines `LSEG_APP_KEY`
 gets you an empty environment and a session that fails on first query.
 
-Before 2026-07-27 these existed only as plaintext in `mbp:~/projects/svb/.envrc`,
+These existed only as plaintext in `mbp:~/projects/svb/.envrc`,
 so anything running on another machine had no credentials at all. If a lookup
 comes back empty, check that host's rebuild is current before concluding the
 account is unentitled.
@@ -440,7 +443,7 @@ df = rd.news.get_headlines('R:AAPL.O AND SUGGAC', count=10)
 
 **Note**: Codebook uses `refinitiv.data` (older name) rather than `lseg.data`. Both APIs are equivalent.
 
-**Confirmed working 2026-07-27.** `rd.open_session()` there returns a
+**Confirmed working.** `rd.open_session()` there returns a
 **`DesktopSession` named `codebook`** — a different session class from the
 `PlatformSession` a local `lseg-data` script opens against the RDP machine ID.
 Two practical consequences:

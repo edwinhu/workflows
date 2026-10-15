@@ -336,7 +336,7 @@ in the book."
 ### NotebookLM — narrow, and mostly superseded
 
 The notebook (`f70a9976-b443-43d5-b5fd-43ff86b2b700`) holds a **53-page excerpt**, not the book.
-Verified 2026-08-23: the only full rule text is **Rule 1 and 1.1-1.4** (pp. 51, 53) plus the Quick
+Verified: the only full rule text is **Rule 1 and 1.1-1.4** (pp. 51, 53) plus the Quick
 Reference tables. Everything else is cover scans and cropped strips of the printed book's **thumb
 tabs** — so "rule 10", "rule 12" appear as tab labels with nothing behind them, and a model asked
 what the PDF contains will read those tabs and name rules it cannot quote. It did exactly that

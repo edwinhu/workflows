@@ -5,6 +5,9 @@ description: "Use when the user asks to 'look at', 'analyze', 'describe', 'extra
 user-invocable: false
 ---
 
+<!-- wc-probe: ignore-narrated-history -->
+<!-- Remaining dates are data: the consumer gemini binary's sunset date. -->
+
 # Look At - Multimodal File Analysis
 
 **What this skill carries.** The names and headings are the index; for a subject none of them
@@ -125,7 +128,7 @@ pooled OAuth accounts, which is the cost this backend exists to avoid.
 Only `claude` ingests PDFs directly. `agy` and `copilot` get page PNGs from `pdftoppm`; `codex`
 gets every page attached as a separate `-i`.
 
-The old `gemini` backend is gone — it billed like `api` despite being documented as bundled quota, and the consumer `gemini` binary was sunset 2026-06-18. Unmetered Gemini now comes from `agy` (Antigravity OAuth), which is the default. `gemini-code` is NOT usable here: on Claude Code 2.1.238 it exits 0 having produced no output, rejecting its own default model as `unrecognized_model` even though the proxy serves it.
+The old `gemini` backend is gone; the consumer `gemini` binary was sunset 2026-06-18. Unmetered Gemini now comes from `agy` (Antigravity OAuth), which is the default. `gemini-code` is NOT usable here: on Claude Code 2.1.238 it exits 0 having produced no output, rejecting its own default model as `unrecognized_model` even though the proxy serves it.
 
 ## Consensus Mode
 

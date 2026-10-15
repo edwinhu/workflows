@@ -5,6 +5,9 @@ description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/E
 user-invocable: false
 ---
 
+<!-- wc-probe: ignore-narrated-history -->
+<!-- remaining dates are data cutoffs and coverage ends (2024-12-31 CIZ cutoff, 2020-12-31 DealScan cap) -->
+
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
@@ -49,7 +52,7 @@ Submission patterns and working array jobs: `references/edgar.md` (§ SGE index 
 
 - Tests go through the scheduler too: `qsub -t 1-1 submit.sh`. The login-node "quick test" is the run that flags the account — one file becomes 100K when the command changes, and 173K filings over NFS is not 30 seconds.
 - The quorum parser does not run on the login node and never did — it runs via `submit_quorum.sh`. Citing it as login-node precedent is an unverified claim presented as fact.
-- A `qsub` job is not automatically a parallel job. Measured 2026-08-29 by `qacct`: **14 diagnostic scans over a 26,749-filing, 63.5 GB pile cost 9,388 s of wall clock — 2 h 37 m — every one a single serial task** because the submit script omitted `-t`. Sharded 50 ways the same scans are under 10 minutes total. The worst single scan was 1,247 s and returned a number that had to be discarded.
+- A `qsub` job is not automatically a parallel job. Measured by `qacct`: **14 diagnostic scans over a 26,749-filing, 63.5 GB pile cost 9,388 s of wall clock — 2 h 37 m — every one a single serial task** because the submit script omitted `-t`. Sharded 50 ways the same scans are under 10 minutes total. The worst single scan was 1,247 s and returned a number that had to be discarded.
 - Do not ITERATE a detection rule at corpus scale. Four header-detection passes over that pile cost 3,124 s to converge on a rule that could have been prototyped against a few hundred cached filings locally in seconds and validated at scale ONCE. Serial submission made each wrong guess cost twenty minutes instead of twenty seconds; the scans were the wrong instrument for iteration, not merely the wrong shape.
 - A filing list staged in the login node's `/tmp` is invisible to grid nodes. Stage under `/scratch`; a job that opens it will fail with FileNotFoundError inside the task, not at submit time.
 - The `wrds_clean_filings` path convention is `cik_int.zfill(10)[:6]/{cik_int}/{accession}.txt` (see `references/edgar.md`). Hand-rolled path logic gets this wrong.
@@ -384,7 +387,7 @@ Working code from real projects:
 - **`examples/sdc_ma_eda.ipynb`** - SDC M&A: annual deal counts, PE/LBO vs strategic, public vs private target trends
 - **`examples/fund_formation_eda.ipynb`** - Fund formation: Form D 3C.1/3C.7 counts, EDGAR N-2 closed-end fund IPOs, Form ADV RIA registrations
 - **`examples/pitchbook_eda.ipynb`** - PitchBook: PE deal activity, VC rounds by stage, fund formation by vintage, IRR/TVPI by strategy
-- **`npx-ownership-panel` SKILL** (promoted out of this skill's examples) - the full meeting-level proxy-voting x ownership panel: ISS N-PX fund votes reduced to (item x block) cells on the grid, joined to 13-F institutional and MF holdings. One bash command, verified end to end on 2026-07-25. Also carries the ISS->CRSP fund crosswalk. Use it for any N-PX or fund-level voting work.
+- **`npx-ownership-panel` SKILL** (promoted out of this skill's examples) - the full meeting-level proxy-voting x ownership panel: ISS N-PX fund votes reduced to (item x block) cells on the grid, joined to 13-F institutional and MF holdings. One bash command, verified end to end. Also carries the ISS->CRSP fund crosswalk. Use it for any N-PX or fund-level voting work.
 - **`examples/blockholders_pipeline/`** - 13D/13G → Volkova blockholder panel, end-to-end Python. `redo_bridge.py` is the reference implementation of TR `personid` → SEC `rptOwnerCik` name bridging (97.4% hit rate).
 - **`examples/form4_pipeline/`** - Two parallel Form 3/4/5 pipelines: the annualized SAS ownership panel and the XML owner bridge built from the raw filings.
 - **`examples/proxy_advisors_pipeline/`** - 485BPOS/485APOS scan for ISS / Glass Lewis / Egan-Jones customer relationships via the `scan_covers` Go framework + SGE.

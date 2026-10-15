@@ -3,6 +3,9 @@ name: npx-ownership-panel
 description: "ALWAYS use before building anything that joins proxy votes to ownership — 'build the N-PX panel', 'proxy voting panel', 'how did index funds vote on this item', 'passive vs active voting', 'fund-level votes with ownership attached', 'voting by block', 'link ISS funds to CRSP', 'risk.voteanalysis_npx', 'N-PX votes by meeting/agenda item', 'institutional ownership per proposal', '13F or S12 holdings joined to votes', 'build the ownership panel'. Use proactively instead of writing a local pipeline — the panel already exists end-to-end on the WRDS grid. NEGATIVE ROUTING: querying the underlying ISS, Thomson or 13F tables directly, WRDS connection patterns, and the data-defect reference are the wrds skill; generic data building, merging and profiling with no proxy-vote leg is ds — this skill owns the assembled panel and its DAG, not raw table access."
 ---
 
+<!-- wc-probe: ignore-narrated-history -->
+<!-- Remaining date is data: the N-PX votes coverage start (2003-07-01). -->
+
 # N-PX × Ownership Panel
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
@@ -11,7 +14,7 @@ description: "ALWAYS use before building anything that joins proxy votes to owne
 Builds `out.pass_npx` — item-level ownership joined to each item's per-block
 observed For/Against/Abstain split — entirely on the WRDS grid.
 
-**Verified end-to-end from a clean checkout on 2026-07-25.** One bash command,
+**Verified end-to-end from a clean checkout.** One bash command,
 WRDS credentials, nothing else: **34m 46s** wall at full scale, zero errors,
 `out.pass_npx` at 2,018,866 rows. Cold from nothing — including building the
 crosswalk and the 13F holdings — is **≈47 min**. Both are in
@@ -213,7 +216,7 @@ Both fired during verification and caught real failures. That is the point.
 ## Verification
 
 > **STALE — re-measure before quoting.** The timings and the identity digest below
-> were measured 2026-07-25, before the data-quality pass. They describe a pipeline
+> were measured before the data-quality pass. They describe a pipeline
 > that no longer matches the canonical builder: leg 2 is now EDGAR (`build_inst_own.py`)
 > rather than the Thomson SAS path, and leg 5 (short interest) did not exist.
 >
@@ -224,15 +227,15 @@ Both fired during verification and caught real failures. That is the point.
 > rows of join work, and the short-interest pull ran 9.5s.
 >
 > ~~**The identity digest WILL change and that is intended.** Re-freeze it deliberately
-> once the corrected DAG has run clean.~~ **DONE — re-frozen 2026-07-28, see below.**
+> once the corrected DAG has run clean.~~ **DONE — re-frozen, see below.**
 >
 > A timed run includes the detector sweep (`dq_panel.py`, seconds, held on the merge)
 > so the number means "a panel you can use", not "a panel that exists". This was a
 > standing instruction that nothing implemented — no script referenced
-> `ownership_dq.py` at all — so every wall time quoted before 2026-07-27 was the
+> `ownership_dq.py` at all — so every earlier wall time was the
 > time to build a panel of unmeasured quality.
 
-Clean checkout on WRDS, one `bash run_pipeline.sh`, 2026-07-25. Two runs, both clean:
+Clean checkout on WRDS, one `bash run_pipeline.sh`. Two runs, both clean:
 
 | Run | S12 scope | Wall | `ERROR` lines |
 |---|---|---:|---:|
@@ -240,12 +243,12 @@ Clean checkout on WRDS, one `bash run_pipeline.sh`, 2026-07-25. Two runs, both c
 | Full | 9 of 9, sequential PG split | 34m 46s | 0 |
 | **Full + S12 array, `build_meetings` native** | **9 of 9** | **36m 1s** | **0** |
 
-**Identity (2026-07-25 baseline, now superseded):** that run's dump was
+**Identity (earlier baseline, now superseded):** that run's dump was
 byte-identical to its frozen baseline — 2,018,866 lines,
 `sha256 22f13e7679…955`. Converting `build_meetings` from a PostgreSQL
 pass-through to a native indexed read moved **no value at 12 significant digits**.
 
-### Re-frozen 2026-07-28
+### Re-frozen
 
 ```
 sha256  8ae22b4af350be27889b26b6d09b2f3ee77b7a81a00dd55eea4cac2907f1be3a
@@ -386,7 +389,7 @@ the merge, and it reports rather than gates. Read it out of the run:
 grep -rE 'PREREQ|UNIVERSE|OPTIONAL|DQ|ERROR' logs/    # every gate, one grep
 ```
 
-Measured on the 2026-07-27 run (675,639 × 22 leg-2 panel):
+Measured on the latest run (675,639 × 22 leg-2 panel):
 
 ```
 DQ rows=675,639 coverage_end=0 duplicate_grain=0 join_coverage_tail=0
