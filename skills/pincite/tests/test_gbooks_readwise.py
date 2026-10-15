@@ -339,11 +339,9 @@ def test_load_highlights_reads_a_librarian_dump():
     assert any(h.get('location') == 1874 for h in hs)
 
 
-def test_load_highlights_accepts_a_bare_list():
-    import tempfile
-    with tempfile.NamedTemporaryFile('w', suffix='.json', delete=False) as f:
-        json.dump([{'text': H51, 'location': 1874, 'id': 1}], f)
-        path = f.name
+def test_load_highlights_accepts_a_bare_list(tmp_path):
+    path = tmp_path / 'bare.json'
+    path.write_text(json.dumps([{'text': H51, 'location': 1874, 'id': 1}]))
     assert gbooks.load_highlights(path)[0]['location'] == 1874
 
 

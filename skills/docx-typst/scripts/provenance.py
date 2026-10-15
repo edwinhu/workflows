@@ -186,11 +186,12 @@ def stamp(docx: Path, updates: dict, output: Path | None = None) -> Path:
     # [Content_Types].xml must be the first member of an OPC package.
     order.sort(key=lambda n: 0 if n == "[Content_Types].xml" else 1)
 
-    tmp = Path(tempfile.mkdtemp()) / "out.docx"
-    with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as z:
-        for name in order:
-            z.writestr(name, parts[name])
-    shutil.move(str(tmp), str(target))
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td) / "out.docx"
+        with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as z:
+            for name in order:
+                z.writestr(name, parts[name])
+        shutil.move(str(tmp), str(target))
     return target
 
 
