@@ -281,11 +281,15 @@ FARM_TASK_ESTIMATE=${FARM_TASK_ESTIMATE:-750000}
 
 session_tokens=0
 if [ -d "$EVENT_DIR" ]; then
-  if ! session_tokens=$(grep -h '"tokensW":' "$EVENT_DIR"/*.ndjson 2>/dev/null | jq -s 'map(.tokensW) | add // 0'); then
-    session_tokens=0
-  fi
-  if ! session_tokens=$(printf "%.0f" "$session_tokens" 2>/dev/null); then
-    session_tokens=0
+  # Per line, so one malformed line costs only itself. A line is a result record, optionally behind the
+  # legacy "farm: " prefix older emitters wrote; anything else mentioning tokensW is counted and warned
+  # about, never silently dropped to a zero spend (that disabled the session cap).
+  spend_out=$(grep -h '"tokensW":' "$EVENT_DIR"/*.ndjson 2>/dev/null \
+    | jq -Rr 'sub("^farm: ";"") | (try fromjson catch null) as $j | if ($j|type)=="object" and (($j.tokensW?)|type)=="number" then "ok \($j.tokensW)" else "bad" end' 2>/dev/null) || spend_out=""
+  session_tokens=$(printf '%s\n' "$spend_out" | awk '$1=="ok"{s+=$2} END{printf "%.0f", s+0}')
+  bad_lines=$(printf '%s\n' "$spend_out" | grep -c '^bad$' || true)
+  if [ "${bad_lines:-0}" -gt 0 ]; then
+    echo "farm: WARNING: $bad_lines unparseable tokensW line(s) in $EVENT_DIR skipped; session spend may be understated" >&2
   fi
 fi
 
@@ -555,7 +559,7 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
   # exits 0 having dropped its deliverable is a failure, and DONE-on-rc-alone would call it ok.
   if [ "$wd_exceeded" = "true" ]; then
     emit "DONE $(enc "$label") fail budget W=$wd_tokens/${budget:-4000000} toolCalls=${calls:-0}"
-    emit "{\"type\":\"result\",\"tokensW\":$wd_tokens,\"budgetExceeded\":true}"
+    printf '{"type":"result","tokensW":%s,"budgetExceeded":true}\n' "$wd_tokens" >>"$EVENTS" 2>/dev/null || true
   elif [ "$rc" -eq 0 ] && [ "${#missing[@]}" -eq 0 ] && [ -z "$failure" ]; then
     emit "DONE $(enc "$label") ok toolCalls=${calls:-0} W=$wd_tokens"
   else
