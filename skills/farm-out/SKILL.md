@@ -178,7 +178,7 @@ artifact is missing, whose child ended with no result (GONE), or that left a bac
 Once you have verified any other result, label it: `farm.sh --verdict <rowId> correct|wrong "<why>"`.
 `route.ts --outcomes` prints rows, wrong rate and top failing checks per kind x model.
 
-`bun scripts/lib/route.ts --refresh`, run from a checkout of this repo and never the plugin cache,
+`bun route.ts --refresh`, run in `scripts/lib/` of a checkout of this repo and never the plugin cache,
 updates availability (proxy catalog) and prices (OpenRouter) and never touches `kinds`.
 Review its `routing.json` diff before committing. `route.ts --propose` reads the refreshed signals
 and prints suggested `kinds` changes with reasons, plus newer same-family models the proxy serves
