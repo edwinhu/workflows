@@ -1,5 +1,5 @@
 import { test, expect, setDefaultTimeout } from 'bun:test'
-import { writeFileSync, readFileSync, readdirSync, mkdirSync, chmodSync } from 'node:fs'
+import { writeFileSync, readFileSync, readdirSync, mkdirSync, chmodSync, utimesSync } from 'node:fs'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { useTmp } from './helpers/tmp.ts'
@@ -63,3 +63,44 @@ test('the budget-exceeded path writes a result line jq parses', () => {
   expect(j.tokensW).toBeGreaterThan(1000)
   void res
 })
+
+test('DONE W= lines are spend: ok, fail and budget rows all sum', () => {
+  const { res } = run({
+    '555.ndjson': 'farm: START a cwd=/x\nfarm: DONE a ok toolCalls=3 W=1000.5\nfarm: DONE b fail rc=1 missing=0 orphaned=0 toolCalls=2 W=200\nfarm: DONE c ok toolCalls=0\n',
+  }, { FARM_SESSION_BUDGET: '1' })
+  expect(res.stderr).toContain('Session spend so far: 1200 tokensW')
+})
+
+test('a budget row with both a DONE W= and a tokensW record counts once', () => {
+  const { res } = run({
+    '666.ndjson': 'farm: DONE s fail budget W=4014988.1/4000000 toolCalls=206\nfarm: {"type":"result","tokensW":4014988.1,"budgetExceeded":true}\nfarm: DONE t ok toolCalls=1 W=10\n',
+  }, { FARM_SESSION_BUDGET: '1' })
+  expect(res.stderr).toContain('Session spend so far: 4014998 tokensW')
+})
+
+test('eviction folds a stale file down to its spend, so pruning never lowers the total', () => {
+  const root = mkTmp('farm-spend-evict-')
+  const tmp = join(root, 'tmp'); const ev = join(tmp, 'farm-events', SID); mkdirSync(ev, { recursive: true })
+  const f = join(ev, '991000.ndjson')   // pid that does not exist
+  writeFileSync(f, 'farm: START a cwd=/x\nfarm: DONE a ok toolCalls=3 W=1000\nfarm: DONE b fail budget W=500/400\nfarm: {"type":"result","tokensW":500,"budgetExceeded":true}\n')
+  const old = new Date(Date.now() - 3 * 3600 * 1000); utimesSync(f, old, old)
+  const first = run0(tmp)
+  expect(first).toContain('Session spend so far: 1500 tokensW')
+  const kept = readFileSync(f, 'utf8')
+  expect(kept).not.toContain('START')
+  expect(kept.split('\n').filter(Boolean).length).toBe(1)
+  expect(run0(tmp)).toContain('Session spend so far: 1500 tokensW')   // idempotent across a second prune
+}, 240_000)
+
+function run0(tmp: string): string {
+  const root = join(tmp, '..')
+  const bin = join(root, 'bin'); mkdirSync(bin, { recursive: true })
+  const out = join(root, 'result.json')
+  writeFileSync(join(bin, 'claude-code'), `#!/usr/bin/env bash\ncat >/dev/null\nprintf '{}\\n' > "${out}"\n`)
+  chmodSync(join(bin, 'claude-code'), 0o755)
+  const wf = join(root, 'wf.js'); writeFileSync(wf, 'export const meta = { name: "x", description: "x" }\n')
+  const args = join(root, 'args.json'); writeFileSync(args, '{}')
+  return spawnSync('bash', [FARM, '--provider', 'claude', '--no-cron', '--workflow', wf, '--args', args, '--out', out, '--cwd', root],
+    { encoding: 'utf8', timeout: 120_000, env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: tmp, FARM_OUT_CHILD: '1',
+      FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl'), CLAUDE_CODE_SESSION_ID: SID, FARM_SESSION_BUDGET: '1000000000' } }).stderr
+}

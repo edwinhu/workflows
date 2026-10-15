@@ -279,15 +279,26 @@ FARM_SESSION_BUDGET=${FARM_SESSION_BUDGET:-20000000}
 FARM_TASK_BUDGET=${FARM_TASK_BUDGET:-4000000}
 FARM_TASK_ESTIMATE=${FARM_TASK_ESTIMATE:-750000}
 
+# Spend lives in the event files and nowhere else. A row's spend is its DONE/GONE/FAIL `W=` value (or a
+# SPEND line, which is what eviction folds a pruned file down to); a `"tokensW"` result record is the same
+# row's spend again and counts only when no W= line in its file carries that value. Per line, so one
+# malformed line costs only itself; anything else mentioning tokensW is warned about, never dropped to zero.
+# Prints the total, then the number of unparseable lines.
+sum_spend() {
+  local out
+  out=$(jq -Rr 'sub("^farm: ";"") as $l
+    | if ($l|test("^(DONE|GONE|FAIL|SPEND) .*\\bW=[0-9]")) then "D \(input_filename) \($l|capture("\\bW=(?<n>[0-9][0-9.eE+-]*)").n|tonumber? // 0)"
+      elif ($l|contains("\"tokensW\":")) then
+        ((try ($l|fromjson) catch null) as $j | if ($j|type)=="object" and (($j.tokensW?)|type)=="number" then "T \(input_filename) \($j.tokensW)" else "bad" end)
+      else empty end' "$@" 2>/dev/null || true)
+  printf '%s\n' "$out" | awk '$1=="D"{s+=$3; d[$2" "$3+0]=1} $1=="T"{t[++n]=$2" "$3+0; v[n]=$3} $1=="bad"{b++}
+    END{for(i=1;i<=n;i++) if(!(t[i] in d)) s+=v[i]; printf "%.3f %d\n", s+0, b+0}'
+}
+
 session_tokens=0
-if [ -d "$EVENT_DIR" ]; then
-  # Per line, so one malformed line costs only itself. A line is a result record, optionally behind the
-  # legacy "farm: " prefix older emitters wrote; anything else mentioning tokensW is counted and warned
-  # about, never silently dropped to a zero spend (that disabled the session cap).
-  spend_out=$(grep -h '"tokensW":' "$EVENT_DIR"/*.ndjson 2>/dev/null \
-    | jq -Rr 'sub("^farm: ";"") | (try fromjson catch null) as $j | if ($j|type)=="object" and (($j.tokensW?)|type)=="number" then "ok \($j.tokensW)" else "bad" end' 2>/dev/null) || spend_out=""
-  session_tokens=$(printf '%s\n' "$spend_out" | awk '$1=="ok"{s+=$2} END{printf "%.0f", s+0}')
-  bad_lines=$(printf '%s\n' "$spend_out" | grep -c '^bad$' || true)
+if [ -d "$EVENT_DIR" ] && compgen -G "$EVENT_DIR/*.ndjson" >/dev/null; then
+  read -r session_tokens bad_lines < <(sum_spend "$EVENT_DIR"/*.ndjson)
+  session_tokens=$(printf '%.0f' "$session_tokens")
   if [ "${bad_lines:-0}" -gt 0 ]; then
     echo "farm: WARNING: $bad_lines unparseable tokensW line(s) in $EVENT_DIR skipped; session spend may be understated" >&2
   fi
@@ -326,17 +337,24 @@ emit() { printf 'farm: %s
 
 # Nothing else ever deletes these, and farm-alive.sh greps every file in the directory on each
 # poll -- so without eviction the cost of one liveness check grows with every dispatch ever run
-# on this machine. Drop only files whose pid is gone AND that are old enough to be no run anyone
-# is still waiting on.
+# on this machine. Fold only files whose pid is gone AND that are old enough to be no run anyone
+# is still waiting on: the file shrinks to one SPEND line (or goes, if it spent nothing), so the
+# session cap above still sees the spend after the run's record is pruned.
 evict_stale_events() {
-  local f pid
+  local f pid total
   shopt -s nullglob
   for f in "$EVENT_DIR"/*.ndjson; do
     [ "$f" = "$EVENTS" ] && continue
     [ -n "$(find "$f" -mmin +60 -print -quit 2>/dev/null)" ] || continue
     pid=$(basename "$f" .ndjson)
     case "$pid" in ''|*[!0-9]*) rm -f -- "$f"; continue ;; esac
-    kill -0 "$pid" 2>/dev/null || rm -f -- "$f"
+    kill -0 "$pid" 2>/dev/null && continue
+    total=$(sum_spend "$f" | cut -d' ' -f1)
+    if awk -v t="${total:-0}" 'BEGIN{exit !(t>0)}'; then
+      [ "$(cat -- "$f" 2>/dev/null)" = "farm: SPEND W=$total" ] || { printf 'farm: SPEND W=%s\n' "$total" >"$f.tmp" && mv -f -- "$f.tmp" "$f"; }
+    else
+      rm -f -- "$f"
+    fi
   done
 }
 evict_stale_events
