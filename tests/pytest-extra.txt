@@ -9,6 +9,7 @@
 # tests/ must be named above or declared here, and a new one is red the day it lands.
 # not-gated: skills/wrds/scripts/test_connection.py -- needs a live WRDS PostgreSQL session
 # not-gated: skills/lseg-data/scripts/test_connection.py -- needs a live LSEG Data Library session
+# not-gated: skills/crsp-lseg-splice/scripts/crsp_lseg_splice_test.py -- imports psycopg2, absent from the pixi env; check.sh runs it through its PEP 723 block
 #
 # workshop_deck_test.py IS listed. It was documented for months as failing "19 of 108 on a clean
 # tree in the WID and INV legs" — a plan scoped work around that number and told implementers it
@@ -29,3 +30,21 @@ skills/workshop/scripts/workshop_numbers_test.py
 skills/wrds/scripts/parse_def14a_own/gold/test_group_exclusions.py
 skills/wrds/scripts/parse_def14a_own/gold/test_zero_exclusions.py
 skills/wrds/scripts/parse_def14a_own/local_runner_test.py
+skills/afk/scripts/arm_test.py
+skills/ai-anti-patterns/scripts/style_metrics_test.py
+skills/bib-manage/scripts/bibman_test.py
+skills/bluebook-audit/scripts/apply_corrections_test.py
+skills/bluebook-audit/scripts/audit_crossref_targets_test.py
+skills/bluebook-audit/scripts/bluebook_signal_linter_test.py
+skills/de-ai-revise/scripts/de_ai_audit_test.py
+skills/docx-repair/scripts/check_crossrefs_test.py
+skills/docx-typst/scripts/bib_to_entries_test.py
+skills/docx-typst/scripts/canonicalize_test.py
+skills/docx-typst/scripts/expand_citations_test.py
+skills/docx-typst/scripts/provenance_test.py
+skills/docx-typst/scripts/reconcile_test.py
+skills/gemini-vertex/scripts/validate_jsonl_test.py
+skills/law-review-docx/scripts/check_widows_test.py
+skills/marimo/scripts/marimo_scripts_test.py
+skills/replication-package/scripts/scrub_metadata_test.py
+skills/westlaw/scripts/westlaw_docx_text_test.py
