@@ -155,8 +155,10 @@ grant). `doc_render` handles this transparently by dispatching the render into a
 **cmux pane** (which lives in the console GUI session and is TCC-granted). One-time
 host prerequisites:
 
+<!-- wc-probe: ignore-paths:start -->
 - cmux socket control enabled: `automation.socketControlMode` ≠ `"cmuxOnly"` in
   `~/.config/cmux/cmux.json`, then `cmux reload-config`.
+<!-- wc-probe: ignore-paths:end -->
 - Microsoft Word granted to cmux under System Settings → Privacy & Security →
   Automation, and Word in Full Disk Access.
 
