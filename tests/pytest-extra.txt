@@ -14,6 +14,7 @@
 # not-gated: skills/readwise/scripts/readwise_prune_test.py -- imports requests, absent from the pixi env; check.sh runs it through its PEP 723 block
 # not-gated: skills/readwise/scripts/readwise_to_nlm_test.py -- imports requests and html2text, absent from the pixi env; check.sh runs it through its PEP 723 block
 # not-gated: skills/permacc/scripts/permacc_test.py -- imports requests, absent from the pixi env; check.sh runs it through its PEP 723 block
+# not-gated: skills/npx-ownership-panel/scripts/npx_panel_scripts_test.py -- imports pyarrow and pyreadstat, absent from the pixi env; check.sh runs it through its PEP 723 block
 #
 # workshop_deck_test.py IS listed. It was documented for months as failing "19 of 108 on a clean
 # tree in the WID and INV legs" — a plan scoped work around that number and told implementers it
