@@ -228,11 +228,29 @@ while IFS=' ' read -r name64 cmd64; do
   fi
 done < <(jq -r '(.mechanicalChecks // [])[] | "\(.name | @base64) \(.cmd | @base64)"' -- "$ARGS")
 
+# ---- readOnly guard: a readOnly run that changed its tree FAILS, whatever the lens said ----------
+# readonly-guard.sh: exit 1 = changed paths (named on stdout), exit 2 = recorded baseline unreadable.
+set +e
+GUARD=$("$(dirname "${BASH_SOURCE[0]}")/readonly-guard.sh" "$ARGS" 2>"${TMPDIR:-/tmp}/readonly-guard.err.$$")
+GUARD_RC=$?
+set -e
+GUARD_ERR=$(cat "${TMPDIR:-/tmp}/readonly-guard.err.$$" 2>/dev/null || true); rm -f "${TMPDIR:-/tmp}/readonly-guard.err.$$"
+case "$GUARD_RC" in
+  0) ;;
+  1) OVERALL=false ;;
+  *) die "REFUSED — readOnly guard: ${GUARD_ERR:-exit $GUARD_RC}" ;;
+esac
+
 printf '%s' "$RESULT" | jq -r '
   "verdict: \(.verdict)  (overallPass=\(.overallPass))",
   "score table:",
   (.scoreTable | to_entries[] | "  \(.key): \(.value)")
 '
+
+if [ "$GUARD_RC" = 1 ]; then
+  printf '%s\n' "$GUARD"
+  echo "readOnly guard: FAIL — the run wrote to the tree it was told not to touch (route: plan)"
+fi
 
 # The verdict, carried by the exit code rather than left in a field a caller has to read.
 [ "$OVERALL" = true ] || exit 1
