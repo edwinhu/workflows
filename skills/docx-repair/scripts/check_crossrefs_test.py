@@ -1,3 +1,7 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["pytest", "lxml"]
+# ///
 """Contract tests for check_crossrefs.py (supra/infra target verification)."""
 import subprocess
 import sys
