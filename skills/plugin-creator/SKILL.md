@@ -65,6 +65,7 @@ Exit 0 clean, 1 findings, 2 argument error, 3 the probe crashed — 2 and 3 are 
 | `I8` a `<stem>.md` beside a `<stem>.py` | a RULE is markdown a model judges; a CONSTRAINT is code that decides. Never the same rule in two forms — retire the prose, or declare `<!-- pc-probe: ignore-two-representations -->` when it carries the checker's only written rationale |
 | `I9` checker outside every enumerated directory | move it under a directory a discovery runner globs, or widen the runner. Named-only reach is one rename from silence |
 | `I10` rule with no `applies-to:` | scope it, or move it out of the checker directory — unscoped, it governs zero workflows |
+| `I3`/`I9` engine a sibling plugin calls | declare `<!-- pc-probe: ignore-external-caller ~/projects/<repo>/path/caller.py -->` naming the caller (honoured by I3 and I9 only; printed SUPPRESSED; a named caller missing from a repo present here is I11, an absent repo prints NOT CHECKED) |
 | `I11` unknown exemption marker | fix the name; it suppresses nothing while reading as a suppression |
 | `NOT CHECKED` note | a check that did not run. Establish it or state it; never read it as a pass |
 | `SUPPRESSED` note | a declared exemption was applied. Every one prints on every run |

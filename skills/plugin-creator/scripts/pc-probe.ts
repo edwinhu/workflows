@@ -144,7 +144,15 @@
  *
  * In Markdown a marker inside a fenced or indented block is an EXAMPLE, not a declaration — else a
  * file documenting this syntax exempts itself. A marker naming a rule nothing honours is a FINDING
- * (I11), never a silent no-op. Every exemption applied is carried in `ProbeResult.exemptions` and
+ * (I11), never a silent no-op. A second rule, `external-caller`, is honoured by I3 and I9 ONLY, for an
+ * engine a sibling plugin calls (this probe sees one plugin). It must name the caller:
+ *
+ *     # <!-- pc-probe: ignore-external-caller ~/projects/teaching/checks/slides/constraints/x.py -->
+ *
+ * An absolute or `~` caller in a repo present on this machine must exist, else the exemption is an
+ * I11 finding and suppresses nothing; one in a repo that is absent is printed NOT CHECKED, and the
+ * exemption still applies. A bare marker, or a relative path, names nothing checkable: no caller is
+ * a finding, a relative one is NOT CHECKED. Every exemption applied is carried in `ProbeResult.exemptions` and
  * printed as a SUPPRESSED note on EVERY run, in both output modes: a suppressed check nobody can see
  * is indistinguishable from a check that passed.
  *
@@ -239,7 +247,7 @@ export interface PatternTable {
 /**
  * A DECLARED suppression of one rule, file-scoped.
  *
- * Only `two-representations` is honoured (`KNOWN_EXEMPTION_RULES`); anything else is a finding under
+ * Only `two-representations` and `external-caller` are honoured (`KNOWN_EXEMPTION_RULES`); anything else is a finding under
  * I11. Region scope is deliberately not offered: I8's subject is a PAIR of files, not a line range,
  * so a region marker would name a span no predicate consults.
  */
@@ -247,6 +255,8 @@ export interface Exemption {
   rule: string
   file: string
   line: number
+  /** Whatever followed the rule name inside the marker. `external-caller` requires it. */
+  reason?: string
 }
 
 export interface ProbeResult {
@@ -802,7 +812,7 @@ export function parseRejectedPhrases(yaml: string): string[] {
  * prevent. The rule-name alphabet is WIDER than the legal names on purpose: a name that never parses
  * is invisible in both channels, so anything name-shaped is parsed here and rejected by I11.
  */
-const EXEMPT_LINE_RE = /^(?:\/\/|#|\*)?\s*<!--\s*pc-probe:\s*ignore-([A-Za-z0-9][A-Za-z0-9_.-]*)\s*-->$/
+const EXEMPT_LINE_RE = /^(?:\/\/|#|\*)?\s*<!--\s*pc-probe:\s*ignore-([A-Za-z0-9][A-Za-z0-9_.-]*)(?:\s+([^>]*?))?\s*-->$/
 
 const FENCE_RE = /^(\s*)(`{3,}|~{3,})\s*(\S*)/
 
@@ -810,7 +820,7 @@ const FENCE_RE = /^(\s*)(`{3,}|~{3,})\s*(\S*)/
  * The rules a marker may name — the set actually HONOURED, not the set that exists. A name outside
  * it suppresses nothing while reading exactly like a suppression that works.
  */
-export const KNOWN_EXEMPTION_RULES: readonly string[] = ['two-representations']
+export const KNOWN_EXEMPTION_RULES: readonly string[] = ['two-representations', 'external-caller']
 
 /** The 1-based lines of `text` on which a declaration COUNTS. In Markdown, a marker inside a fenced
  *  or four-space-indented block is an example, not a declaration. */
@@ -843,9 +853,70 @@ export function parseExemptions(file: string, text: string): Exemption[] {
   const out: Exemption[] = []
   for (const lineNo of declarableLines(file, text)) {
     const m = EXEMPT_LINE_RE.exec(lines[lineNo - 1].trim())
-    if (m) out.push({ rule: m[1], file, line: lineNo })
+    if (m) out.push({ rule: m[1], file, line: lineNo, ...(m[2] ? { reason: m[2] } : {}) })
   }
   return out
+}
+
+/** The nearest existing ancestor of `p` sits inside a git repo (below the home directory). */
+function inPresentRepo(p: string): boolean {
+  let d = dirname(p)
+  while (!existsSync(d) && dirname(d) !== d) d = dirname(d)
+  const home = homedir()
+  for (; d !== home && dirname(d) !== d; d = dirname(d)) if (existsSync(join(d, '.git'))) return true
+  return false
+}
+
+/**
+ * `ignore-external-caller`: drop the I3/I9 findings of a file whose marker names a caller that holds
+ * up. Returns the findings to keep; applied exemptions and unverifiable callers are recorded.
+ */
+export function applyExternalCaller(
+  findings: readonly Finding[],
+  exemptionsOf: Map<string, Exemption[]>,
+  exemptions: Exemption[],
+  unresolvedRefs: UnresolvedRef[],
+): Finding[] {
+  const kept: Finding[] = []
+  const bad = new Set<Exemption>()
+  const seen = new Set<Exemption>()
+  for (const f of findings) {
+    const es = /^I[39] /.test(f.rule) ? (exemptionsOf.get(f.file) ?? []).filter(e => e.rule === 'external-caller') : []
+    if (!es.length) {
+      kept.push(f)
+      continue
+    }
+    let ok = false
+    for (const e of es) {
+      const caller = (e.reason ?? '').split(/\s+/)[0]
+      const abs = caller.startsWith('~') ? join(homedir(), caller.slice(1)) : caller
+      if (!caller) bad.add(e)
+      else if (!abs.startsWith('/')) {
+        ok = true
+        if (!seen.has(e)) unresolvedRefs.push({ rule: 'I3/I9 external caller', file: e.file, line: e.line, token: caller, reason: 'a relative caller path cannot be resolved from here, so its existence was NOT verified' })
+      } else if (existsSync(abs)) ok = true
+      else if (inPresentRepo(abs)) bad.add(e)
+      else {
+        ok = true
+        if (!seen.has(e)) unresolvedRefs.push({ rule: 'I3/I9 external caller', file: e.file, line: e.line, token: caller, reason: 'the repo holding the caller is not present on this machine, so its existence was NOT verified' })
+      }
+      if (ok && !seen.has(e)) exemptions.push(e)
+      seen.add(e)
+    }
+    if (!ok) kept.push(f)
+  }
+  for (const e of bad)
+    kept.push({
+      rule: 'I11 exemption vocabulary',
+      severity: 'major',
+      file: e.file,
+      line: e.line,
+      detail: e.reason
+        ? `ignore-external-caller names ${e.reason.split(/\s+/)[0]}, which does not exist, so it suppresses nothing`
+        : 'ignore-external-caller names no caller, so it suppresses nothing',
+      remedy: 'name the sibling-plugin file that calls this engine, as an absolute or ~ path; a suppression whose caller cannot be found is a dead engine with its alarm turned off',
+    })
+  return kept
 }
 
 /** I11: a marker naming a rule nothing honours is a finding, not a suppression. */
@@ -1533,6 +1604,7 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
 
   findings.push(...checkTwoRepresentations([...checkerDirs], filesByDir, exemptionsOf, root, exemptions))
   findings.push(...checkCheckerReach(contractFiles, new Set(i3.map(f => f.file)), root))
+  findings.splice(0, findings.length, ...applyExternalCaller(findings, exemptionsOf, exemptions, unresolvedRefs))
   findings.push(...checkRuleScope([...checkerDirs], filesByDir, textOf, root))
   // I12 judges DIRECTORY NAMES, not derived checker directories: the whole point is that a
   // rules/ directory holds no code for a runner to derive itself from, so deriving it would
@@ -1642,7 +1714,7 @@ function notesFor(result: ProbeResult): string[] {
   // Every applied exemption, on every run: a suppressed check nobody can see is indistinguishable
   // from a check that passed.
   for (const e of result.exemptions) {
-    lines.push(`  note: SUPPRESSED rule "${e.rule}" by a declared exemption at ${e.file}:${e.line}`)
+    lines.push(`  note: SUPPRESSED rule "${e.rule}" by a declared exemption at ${e.file}:${e.line}${e.reason ? ` (${e.reason})` : ''}`)
   }
   for (const u of result.unresolvedRefs) {
     lines.push(`  note: rule "${u.rule}" NOT CHECKED for ${JSON.stringify(u.token)} in ${u.file}${u.line ? `:${u.line}` : ''} — ${u.reason}`)
