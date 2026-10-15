@@ -46,6 +46,37 @@ test('a self-matching pkill is denied; a bracketed one runs', async ($, on) => {
   expect(await $.tool.call({ tool: 'Bash', command: "pkill -f '[m]yjob'" })).toEqual({ result: 'ran' })
 })
 
+test('RULE 3: signalling a shared runtime by name is denied; scoped or literal-pid signals run', async ($, on) => {
+  world(on, {})
+  const denied = [
+    'pkill -x bun -u eh',
+    'kill -TERM $(pgrep -x -o bun)',
+    'killall bun',
+    'pgrep -x node | xargs kill',
+    "kill $(pgrep -f 'python3 -m pytest')",
+    'kill `pgrep -x claude`',
+    "pkill -f 'bun test ./skills/'",
+    'pkill python3',
+  ]
+  for (const command of denied) {
+    const r = await $.tool.call({ tool: 'Bash', command })
+    expect(r.deny, command).toContain('signal only PIDs you launched')
+  }
+  const allowed = [
+    'pkill -P $$ bun',
+    'kill $pid',
+    'kill -TERM $!',
+    'kill 12345',
+    "pkill -f '/abs/path/[m]y_server.py'",
+    'pgrep -x bun',
+    'kill $(pgrep -P $$ bun)',
+    'echo "killall bun"',
+  ]
+  for (const command of allowed) {
+    expect(await $.tool.call({ tool: 'Bash', command }), command).toEqual({ result: 'ran' })
+  }
+})
+
 test('a serial multi-file bun test is denied; a parallel one and a single file run', async ($, on) => {
   world(on, {})
   expect((await $.tool.call({ tool: 'Bash', command: 'cd /w && bun test ./tests' })).deny).toContain('bun test --parallel')

@@ -27,6 +27,7 @@ import {
 import { tmpdir } from 'node:os'
 import { dirname, join, relative } from 'node:path'
 import { GUARDS, registerGuards, TOOLS, type GuardSpec } from '../hooks/guards/mod.ts'
+import { analyze } from '../hooks/guards/pgrep.ts'
 import { useTmp } from './helpers/tmp.ts'
 
 const mkTmp = useTmp()
@@ -252,11 +253,17 @@ let baseRoot: string | null = null
  *   typst-convention-guard (2026-10-02): an Edit is judged on its new_string's lines, and a finding
  *   is shown once per session (seen-set in the temp dir). Reach: an Edit carrying new_string, or
  *   any payload carrying a session id.
+ *   pgrep-self-match (2026-10-15): RULE 3 denies a name-selected kill of a shared runtime. Reach: a
+ *   command RULE 3 flags.
  */
 const CHANGED_SINCE_BASE: Record<string, (p: Record<string, unknown>) => boolean> = {
   'typst-convention-guard.ts': p =>
     typeof p.session_id === 'string' ||
     (p.tool_name === 'Edit' && typeof (p.tool_input as Record<string, unknown> | undefined)?.new_string === 'string'),
+  'pgrep-self-match.ts': p => {
+    const c = (p.tool_input as Record<string, unknown> | undefined)?.command
+    return typeof c === 'string' && analyze(c).sharedKills.length > 0
+  },
 }
 const changedSinceBase = (r: Rec): boolean => CHANGED_SINCE_BASE[r.script]?.(JSON.parse(r.stdin)) ?? false
 
