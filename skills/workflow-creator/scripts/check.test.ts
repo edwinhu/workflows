@@ -8,7 +8,7 @@ import { afterAll, expect, setDefaultTimeout, test } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync, copyFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 
 const SCRIPTS = import.meta.dir
 
@@ -91,7 +91,7 @@ const FAILING_TEST = "import { expect, test } from 'bun:test'\ntest('fixture fai
 // A fixture workflow skill. `skill` defaults to a body wc-probe reports CLEAN; `js` and `tests`
 // add the artifacts the authoring-gate (its node-check constraint) and suite legs look for.
 // `noPluginRoot` omits the marker so the pc-probe leg's could-not-look refusal is exercised.
-function target(opts: { skill?: string; js?: string; tests?: Record<string, string>; testsDir?: Record<string, string>; emptyScripts?: boolean; noPluginRoot?: boolean } = {}): string {
+function target(opts: { skill?: string; js?: string; tests?: Record<string, string>; testsDir?: Record<string, string>; emptyScripts?: boolean; noPluginRoot?: boolean; ext?: { glob: string; files: Record<string, string> } } = {}): string {
   const d = tmp('wc-check-target-')
   if (!opts.noPluginRoot) {
     mkdirSync(join(d, '.claude-plugin'))
@@ -106,6 +106,14 @@ function target(opts: { skill?: string; js?: string; tests?: Record<string, stri
   if (opts.testsDir) {
     mkdirSync(join(d, 'tests'))
     for (const [name, body] of Object.entries(opts.testsDir)) writeFileSync(join(d, 'tests', name), body)
+  }
+  if (opts.ext) {
+    // A suite kept OUTSIDE the target (the repo's top-level tests/), declared in the target's package.json.
+    const ext = `${d}-ext`
+    trash.push(ext)
+    mkdirSync(ext)
+    for (const [name, body] of Object.entries(opts.ext.files)) writeFileSync(join(ext, name), body)
+    writeFileSync(join(d, 'package.json'), JSON.stringify({ suite: [opts.ext.glob.replace('EXT', `../${basename(ext)}`)] }))
   }
   return d
 }
@@ -484,5 +492,22 @@ test('tests/ dir: a file there that collects 0 tests is exit 2', () => {
 
 test('tests/ dir: scripts/ without a suite still fails when tests/ has none either', () => {
   const r = run(harness(), ['--target', target({ emptyScripts: true })])
+  expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=1')
+})
+
+// --- a suite kept outside the target, declared in the target's package.json "suite" globs ------------
+test('declared suite: a target whose only suite is outside it, named by package.json, is counted and passes', () => {
+  const r = run(harness(), ['--target', target({ emptyScripts: true, ext: { glob: 'EXT/x-*.test.ts', files: { 'x-a.test.ts': PASSING_TEST, 'y-b.test.ts': 'throw new Error("not declared")\n' } } })])
+  expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=0')
+  expect(Number(/^probe-tests: (\d+) test/m.exec(combined(r))?.[1])).toBe(1)
+})
+
+test('declared suite: a glob that matches no file is exit 2, never a pass', () => {
+  const r = run(harness(), ['--target', target({ emptyScripts: true, ext: { glob: 'EXT/none-*.test.ts', files: { 'x-a.test.ts': PASSING_TEST } } })])
+  expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=2')
+})
+
+test('declared suite: a failing declared file fails the leg', () => {
+  const r = run(harness(), ['--target', target({ emptyScripts: true, ext: { glob: 'EXT/*.test.ts', files: { 'a.test.ts': "import { expect, test } from 'bun:test'\ntest('bad', () => { expect(1).toBe(2) })\n" } } })])
   expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=1')
 })

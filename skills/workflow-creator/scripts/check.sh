@@ -23,7 +23,11 @@
 #                .js; nothing in scope when it ships none), so a constraint added there runs with no
 #                edit here. Its Jev rules are skipped: the plan's ruleChecks scores them.
 #   probe-tests  `bun test <target>/{scripts,tests}/*.test.ts` — TARGET-relative, so pointing this at a
-#                generated skill runs THAT skill's suite; a scripts/ dir with no test file FAILS
+#                generated skill runs THAT skill's suite; a scripts/ dir with no test file FAILS.
+#                A suite living elsewhere (the repo's top-level tests/) is declared, not guessed:
+#                <target>/package.json {"suite": ["../../tests/farm-*.test.ts"]}, globs relative to
+#                the target; a glob matching nothing is exit 2. (Not symlinks: bun test follows them
+#                and scripts/test.sh would run every linked file twice.)
 #
 # wc-probe has only ever judged GATE INTEGRITY, never STRUCTURE. That is how typst accumulated 16
 # runners, a check.sh running one leg of six, and 62 checkers across four locations while passing
@@ -233,8 +237,8 @@ fi
 
 # --- leg: probe-tests --------------------------------------------------------------------------
 # Target-relative on purpose: this skill's own suite is not evidence about a generated skill.
-# Suites are read from <target>/scripts/ and <target>/tests/ (same patterns); never from the repo's
-# top-level tests/ -- a skill that wants those covered ships or links its own.
+# Suites are read from <target>/scripts/ and <target>/tests/ (same patterns) plus any globs the target
+# declares in package.json "suite"; never guessed from the repo's top-level tests/.
 sdirs=()
 for d in "$TARGET/scripts" "$TARGET/tests"; do [ -d "$d" ] && sdirs+=("$d"); done
 suite=(); pysuite=()
@@ -242,7 +246,22 @@ for d in "${sdirs[@]}"; do
   for f in "$d"/*.test.ts; do [ -e "$f" ] && suite+=("$f"); done
   for f in "$d"/*_test.py "$d"/test_*.py; do [ -e "$f" ] && pysuite+=("$f"); done
 done
-if [ "${#sdirs[@]}" -eq 0 ] || { [ ! -d "$TARGET/scripts" ] && [ "${#suite[@]}" -eq 0 ] && [ "${#pysuite[@]}" -eq 0 ]; }; then
+declared_bad=0
+if [ -f "$TARGET/package.json" ] && command -v jq >/dev/null 2>&1; then
+  while IFS= read -r g; do
+    [ -n "$g" ] || continue
+    hit=0
+    for f in $TARGET/$g; do
+      [ -e "$f" ] || continue
+      hit=1
+      case "$f" in *.test.ts) suite+=("$f") ;; *_test.py|*/test_*.py) pysuite+=("$f") ;; esac
+    done
+    [ "$hit" -eq 1 ] || { echo "probe-tests: declared suite glob matches no file: $g" >&2; declared_bad=1; }
+  done < <(jq -r '.suite[]? // empty' "$TARGET/package.json" 2>/dev/null)
+fi
+if [ "$declared_bad" -eq 1 ]; then
+  report probe-tests 2 "declared suite glob matched nothing"
+elif [ "${#suite[@]}" -eq 0 ] && [ "${#pysuite[@]}" -eq 0 ] && { [ "${#sdirs[@]}" -eq 0 ] || [ ! -d "$TARGET/scripts" ]; }; then
   count_line probe-tests 0 "test(s)" "target ships no scripts/"
   report probe-tests 0 "target ships no scripts/"
 else
