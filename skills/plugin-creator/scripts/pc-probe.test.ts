@@ -733,6 +733,76 @@ describe('I8 — one rule, one representation', () => {
   })
 })
 
+describe('ignore-external-caller — I3/I9 exemption for an engine a sibling plugin calls', () => {
+  const marker = (reason: string) => `# <!-- pc-probe: ignore-external-caller${reason ? ' ' + reason : ''} -->\n`
+  const uncalled = (reason: string) =>
+    fixture({ 'plugin.json': PLUGIN_JSON, 'scripts/prose-lint.py': marker(reason) + checkerModule('prose-lint') })
+  const reached = (reason: string) =>
+    fixture({
+      'plugin.json': PLUGIN_JSON,
+      'scripts/checks/geom-variety.py': marker(reason) + checkerModule('geom-variety'),
+      'scripts/checks/check-variety.sh': '#!/usr/bin/env bash\npython3 "$(dirname "$0")/geom-variety.py" "$@"\n',
+    })
+  /** A sibling repo on this machine: a .git directory, and the caller inside it unless `present` is false. */
+  const sibling = (present: boolean) => {
+    const repo = mkTmp('pc-probe-sibling-')
+    mkdirSync(join(repo, '.git'))
+    mkdirSync(join(repo, 'checks'), { recursive: true })
+    const caller = join(repo, 'checks', 'delegate.py')
+    if (present) writeFileSync(caller, 'import typst_main\n')
+    return caller
+  }
+
+  test('an exempted engine draws no I3 and prints SUPPRESSED with the caller named', () => {
+    const caller = sibling(true)
+    const result = probe.runProbe(uncalled(caller))
+    expect(findingsFor(result, 'I3')).toEqual([])
+    expect(findingsFor(result, 'I11')).toEqual([])
+    expect(result.exemptions.map((e: any) => e.rule)).toEqual(['external-caller'])
+    const text = probe.formatText(result)
+    expect(text).toContain('SUPPRESSED')
+    expect(text).toContain(caller)
+  })
+
+  test('an exempted checker draws no I9', () => {
+    const result = probe.runProbe(reached(sibling(true)))
+    expect(findingsFor(result, 'I9')).toEqual([])
+    expect(result.exemptions.length).toBe(1)
+  })
+
+  test('an exemption with no caller named is a finding and suppresses nothing', () => {
+    const result = probe.runProbe(uncalled(''))
+    expect(findingsFor(result, 'I3').length).toBe(1)
+    expect(findingsFor(result, 'I11').length).toBe(1)
+    expect(result.exemptions).toEqual([])
+  })
+
+  test('a named caller that is absent from a repo present on this machine is a finding', () => {
+    const result = probe.runProbe(uncalled(sibling(false)))
+    expect(findingsFor(result, 'I3').length).toBe(1)
+    expect(findingsFor(result, 'I11').length).toBe(1)
+    expect(result.exemptions).toEqual([])
+  })
+
+  test('a caller in a repo not present here is NOT CHECKED, and the exemption still applies', () => {
+    const result = probe.runProbe(uncalled('/nonexistent-pc-probe-repo/checks/delegate.py'))
+    expect(findingsFor(result, 'I3')).toEqual([])
+    expect(findingsFor(result, 'I11')).toEqual([])
+    expect(result.exemptions.length).toBe(1)
+    expect(probe.formatText(result)).toContain('NOT CHECKED')
+  })
+
+  test('it is honoured by I3 and I9 only: a two-representations pair is not exempted by it', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'constraints/run-constraints.py': runnerModule(),
+      'constraints/tables.py': checkerModule('tables'),
+      'constraints/typst-tables.md': RULE_MD + '\n<!-- pc-probe: ignore-external-caller /nonexistent-pc-probe-repo/x.py -->\n',
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I8').length).toBe(1)
+  })
+})
+
 describe('I9 — a checker must be reachable', () => {
   // Reachable means under checks/<workflow>/: bin/workflow-check runs that directory, and nothing else
   // registers a checker. One reached only because a script writes its name down is one rename from silence.
