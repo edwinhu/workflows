@@ -4,6 +4,11 @@
 #   scripts/test.sh                      # whole suite, one worker per CPU
 #   scripts/test.sh ./skills/work ./tests  # a subset; paths need ./ or bun reads them as name filters
 #   TEST_JOBS=8 scripts/test.sh          # cap the workers
+#   TEST_LEGS=pytest scripts/test.sh     # one leg only: bun | pytest (default both)
+#
+# Two legs: the bun suite and the python suites (tests/ plus every path in tests/pytest-extra.txt, with
+# the deps in tests/pytest-deps.txt), run concurrently. canary.sh runs this script as the full suite,
+# so a python suite left out of it gates no release. Paths given select a bun subset and skip pytest.
 #
 # Every worker inherits one env, so the run gets its own TMPDIR and FARM_OUTCOMES: farm-events,
 # fixtures and outcome rows never reach the caller's session dirs or ~/.local/state.
@@ -49,7 +54,15 @@ export PYTEST_XDIST_AUTO_NUM_WORKERS="${TEST_PYTEST_WORKERS:-2}" WORKFLOWS_SUITE
 # auto-installs them because no node_modules sits above the skill, but `bun test` never auto-installs,
 # so a checkout nobody ran `bun install` in (every fresh worktree) fails those suites with "Cannot
 # find module". Install from the lockfile; a failure here stops the run rather than going red later.
+# A bun subset (paths given) is a focused run, and the tests that call this script with one must not
+# each start the whole python suite: the pytest leg runs only for a whole-suite run or TEST_LEGS=pytest.
+legs=${TEST_LEGS:-$([ $# -gt 0 ] && echo bun || echo bun pytest)}
+run_bun=0; run_py=0
+[[ " $legs " == *" bun "* ]] && run_bun=1
+[[ " $legs " == *" pytest "* ]] && run_py=1
+[ $((run_bun + run_py)) -gt 0 ] || { echo "test.sh: TEST_LEGS='$legs' names no leg (bun, pytest)" >&2; exit 1; }
 for lock in skills/*/bun.lock; do
+  [ "$run_bun" = 1 ] || break
   d=$(dirname "$lock")
   [ -d "$d/node_modules" ] && continue
   bun install --cwd "$d" --frozen-lockfile --silent \
@@ -106,8 +119,36 @@ if [ ${#cap[@]} -gt 0 ] && [[ $wall =~ ^[0-9]+$ ]] && [ "$wall" -gt 2 ]; then
   ( sleep $((wall - 2)); p=$(pgrep -P $$ -x timeout | head -1); [ -n "$p" ] && cap_report "$p" > "$run_meta/cap-report.txt" ) &
   wd=$!
 fi
+# The pytest leg runs beside the bun run. Its tmp_path root is run_meta (not run_tmp), so pytest's own
+# bookkeeping never reads as a leak; its verdict needs rc 0 AND an `N passed` line, because a pytest
+# that could not collect prints neither and must not read as green.
+py_log="$run_meta/pytest.log"; py_rc="$run_meta/pytest.rc"
+if [ "$run_py" = 1 ]; then
+  py_deps=(); py_extra=()
+  while IFS= read -r l; do py_deps+=(--with "$l"); done < <(grep -vE '^\s*(#|$)' tests/pytest-deps.txt)
+  while IFS= read -r l; do py_extra+=("$l"); done < <(grep -vE '^\s*(#|$)' tests/pytest-extra.txt)
+  ( rc=0
+    ${cap[@]+"${cap[@]}"} uv run --quiet --with pytest --with pytest-xdist "${py_deps[@]}" python3 -m pytest tests/ "${py_extra[@]}" \
+      -q -p no:cacheprovider --basetemp="$run_meta/pytest-tmp" > "$py_log" 2>&1 || rc=$?
+    echo "$rc" > "$py_rc" ) &
+  py_pid=$!
+fi
 rc=0
+if [ "$run_bun" = 1 ]; then
 ${cap[@]+"${cap[@]}"} bun test --parallel${TEST_JOBS:+=$TEST_JOBS} --preload ./tests/helpers/file-timing.ts "$@" || rc=$?
+fi
+if [ "$run_py" = 1 ]; then
+  wait "$py_pid" || true
+  prc=$(cat "$py_rc" 2>/dev/null || echo missing)
+  sed 's/^/pytest: /' <(tail -40 "$py_log")
+  summary=$(grep -E '^=*\s*[0-9]+ (passed|failed)' "$py_log" | tail -1 || true)
+  if [ "$prc" != 0 ] || ! grep -qE '[0-9]+ passed' <<<"$summary"; then
+    echo "test.sh: PYTEST LEG FAILED — rc=$prc, summary: ${summary:-none (could not run)}" >&2
+    [ "$rc" = 0 ] && rc=1
+  else
+    echo "test.sh: pytest leg ok — $summary" >&2
+  fi
+fi
 if [ -n "$wd" ]; then pkill -P "$wd" 2>/dev/null || true; kill "$wd" 2>/dev/null || true; wait "$wd" 2>/dev/null || true; fi
 [ "$rc" = 124 ] && [ -s "$run_meta/cap-report.txt" ] && cat "$run_meta/cap-report.txt" >&2
 

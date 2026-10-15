@@ -18,8 +18,16 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 GUARD = REPO_ROOT / "scripts" / "writing-source-first-guard.py"
+
+
+@pytest.fixture(autouse=True)
+def _state_dir(tmp_path_factory, monkeypatch):
+    """The guard keeps its state under gettempdir(); give it a dir the run sweeps, not the caller's TMPDIR."""
+    monkeypatch.setenv("TMPDIR", str(tmp_path_factory.mktemp("guard-state")))
 
 
 def run(payload, raw: str | None = None) -> subprocess.CompletedProcess:
