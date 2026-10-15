@@ -421,9 +421,8 @@ else
     CANON_DIR="$(typst-constraints --dir 2>/dev/null)" || CANON_DIR=""
   fi
   if [[ -z "$CANON_DIR" || ! -d "$CANON_DIR" ]]; then
-    for cand in "${TYPST_CHECKERS_DIR:-}" "$HOME/.claude/skills/typst/constraints"; do
-      [[ -n "$cand" && -d "$cand" ]] && { CANON_DIR="$cand"; break; }
-    done
+    # a plain shell has no plugin bin/ on PATH, so only the explicit override can name the directory
+    [[ -n "${TYPST_CHECKERS_DIR:-}" && -d "$TYPST_CHECKERS_DIR" ]] && CANON_DIR="$TYPST_CHECKERS_DIR"
   fi
   canon_file() {  # canon_file widows.py -> its path, or nothing
     local f

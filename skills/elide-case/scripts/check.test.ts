@@ -760,7 +760,7 @@ ${scopeSection([
     const CANON_DIRS = (() => {
       const r = spawnSync("typst-constraints", ["--dir"], { timeout: 30_000, encoding: "utf8" });
       return [...(r.status === 0 && r.stdout.trim() ? [r.stdout.trim()] : []),
-              `${process.env.HOME}/.claude/skills/typst/constraints`, `${process.env.HOME}/projects/typst/constraints`];
+              `${process.env.HOME}/.claude/skills/typst/checks/_typst`, `${process.env.HOME}/projects/typst/checks/_typst`];
     })();
     function canon(name: string): string {
       const hit = LISTED.find(f => path.basename(f) === name && fs.existsSync(f))
