@@ -5,6 +5,9 @@ description: "The DS constraints C1-C6, V1-V9, A1-A6, E1-E7 as binding rule stat
 
 # DS rules
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
 These are binding on every data task, however you were launched. Each entry is the rule statement
 from its canonical file, printed at load time from the corpus itself; open that file for the
 rationale, the examples and the checker that enforces it. When this skill is invoked with arguments,
