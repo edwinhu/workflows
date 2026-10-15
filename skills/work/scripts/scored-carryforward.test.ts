@@ -34,9 +34,11 @@ const scoredCheck = (items: any[], over: any = {}) => ({
 const objItems = [{ text: 'L1', inputs: ['d/L1.typ', 'notes.md'] }, { text: 'L2', inputs: ['d/L2.typ', 'notes.md'] }]
 
 /** A readOnly (diagnose-shaped) project: two decks, a notes file, a rule file, a passing gate. */
-function project(extra: Record<string, unknown> = {}, items: any[] = objItems) {
-  const dir = mkTmp('scored-cf-')
-  scratch.push(dir)
+function project(extra: Record<string, unknown> = {}, items: any[] = objItems, reuse?: string) {
+  // The refs path is absolute, so it is part of a fingerprint: a second project that must match the
+  // first one's fingerprints reuses its directory.
+  const dir = reuse ?? mkTmp('scored-cf-')
+  if (!reuse) scratch.push(dir)
   mkdirSync(join(dir, 'd'), { recursive: true })
   mkdirSync(join(dir, 'scripts'), { recursive: true })
   writeFileSync(join(dir, 'd/L1.typ'), 'deck one')
@@ -49,7 +51,7 @@ function project(extra: Record<string, unknown> = {}, items: any[] = objItems) {
     projectDir: dir, goal: 'audit the decks', readOnly: true, tasks: [],
     mechanicalChecks: [{ name: 'gate', cmd: 'bash scripts/check.sh' }],
     lens: { agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' },
-    scoredChecks: [scoredCheck(items)],
+    scoredChecks: [scoredCheck(items, { refs: [join(dir, 'rules.md')] })],
     ...extra,
   }
   const plan = join(dir, 'plan.md')
@@ -139,7 +141,7 @@ describe('work-dispatch.sh --scored-fingerprints', () => {
     expect(dispatch(seed).code).toBe(0)
     const fps = fingerprintsOf(seed.argsPath).fps
     const prior = (item: string) => ({ key: 'slides', item, components: { coverage: 10 }, composite: 10, itemsChecked: 3, fingerprint: fps[`slides::${item}`] })
-    const f = project({ priorResults: { implemented: [], verified: [], scores: [prior('L1')] } })
+    const f = project({ priorResults: { implemented: [], verified: [], scores: [prior('L1')] } }, objItems, seed.dir)
     const r = dispatch(f)
     expect(r.code, r.out).toBe(0)
     expect(r.out).toMatch(/scored=1\b/)

@@ -65,6 +65,8 @@ type Plan = {
   projectDir?: string
   /** Every agent-type value the args carry, by field name (R25). */
   agentFields?: { field: string; value: string }[]
+  /** Every lens / scoredChecks `refs` entry the args carry, by field name (R26). Task refs are read off `tasks`. */
+  refFields?: { field: string; value: string }[]
   /** Rows whose cell count differs from their header's, recorded at parse where the count exists. */
   tableArity?: { id: string; row: number; got: number; want: number; text: string }[]
 }
@@ -297,6 +299,13 @@ const parseArgs = (j: any): Plan => ({
     ...(j.tasks ?? []).map((t: any) => [`tasks[${t.id ?? ''}].agentType`, t.agentType]),
     ...(Array.isArray(j.scoredChecks) ? j.scoredChecks : []).map((s: any) => [`scoredChecks[${s?.key ?? ''}].agentType`, s?.agentType]),
     ...(Array.isArray(j.attempts) ? j.attempts : []).map((a: any) => [`attempts[${a?.key ?? ''}].agentType`, a?.agentType]),
+  ]
+    .filter(([, v]) => typeof v === 'string')
+    .map(([field, value]) => ({ field, value })),
+  refFields: [
+    ...(Array.isArray(j.lens?.refs) ? j.lens.refs.map((v: any) => ['lens.refs', v]) : []),
+    ...(Array.isArray(j.scoredChecks) ? j.scoredChecks : []).flatMap((s: any) =>
+      Array.isArray(s?.refs) ? s.refs.map((v: any) => [`scoredChecks[${s?.key ?? ''}].refs`, v]) : []),
   ]
     .filter(([, v]) => typeof v === 'string')
     .map(([field, value]) => ({ field, value })),
@@ -1010,6 +1019,18 @@ const lint = (p: Plan, agentExists: (name: string) => boolean = n => agentResolv
     if (value && !/[<>|]/.test(value) && !BUILTIN_AGENTS.has(value) && !agentExists(value))
       add('agent-type-unresolvable', 'critical', field,
         `${field} "${value}" names no agent file (built-in, plugin user-agents/agents, ~/.claude/agents, or <projectDir>/.claude/agents), so the harness would fall back to the default agent and drop the restriction`, value)
+
+  // R26 — a ref goes verbatim into an agent prompt that says "Read in full"; only an absolute path
+  // resolves there. Existence is not checked: a ref may be produced by an earlier task.
+  const home = process.env.HOME ?? ''
+  for (const { field, value } of [
+    ...p.tasks.flatMap(t => t.refs.filter(v => typeof v === 'string').map(value => ({ field: `tasks[${t.id}].refs`, value }))),
+    ...(p.refFields ?? []),
+  ])
+    if (!value.startsWith('/'))
+      add('ref-not-absolute', 'major', field,
+        `ref "${value}" is not an absolute path, so the agent told to Read it in full cannot resolve it; ` +
+          (value === '~' || value.startsWith('~/') ? `write ${home}${value.slice(1)}` : 'write the absolute path'), value)
 
   return f
 }
