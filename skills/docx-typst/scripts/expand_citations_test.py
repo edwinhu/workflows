@@ -85,7 +85,7 @@ def test_rendered_citations_parses_json(monkeypatch):
         return P()
     monkeypatch.setattr(e.subprocess, "run", run)
     assert e.rendered_citations(Path("m.typ"), Path("/r")) == ["a", "b"]
-    assert seen["cmd"][:3] == ["typst", "eval", "query(<bb-out>).map(it => it.value)"]
+    assert seen["cmd"][:6] == ["typst", "query", "m.typ", "<bb-out>", "--field", "value"]
     assert seen["cmd"][-4:] == ["--root", "/r", "--format", "json"]
 
 

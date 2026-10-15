@@ -359,7 +359,7 @@ def emit(entries: dict[str, dict], bib_name: str,
         "// chose for `X, supra note N`.\n"
         "//\n"
         "// Values are typst SOURCE strings, not content, so the same data can be\n"
-        "// eval()'d for the PDF and spliced as markup into the docx build.\n"
+        "// imported for the PDF and spliced as markup into the docx build.\n"
         "\n"
         "#let entries = (\n"
     )
@@ -393,8 +393,9 @@ def parse_existing(path: Path) -> dict[str, dict]:
         sys.exit("error: typst not found on PATH")
     path = path.resolve()
     proc = subprocess.run(
-        [typst, "eval", f'import "{path.name}": entries; entries',
+        [typst, "query", "-", "<bb-entries>", "--field", "value", "--one",
          "--root", str(path.parent), "--format", "json"],
+        input=f'#import "/{path.name}": entries\n#metadata(entries) <bb-entries>\n',
         capture_output=True, text=True, check=False, cwd=path.parent,
     )
     if proc.returncode != 0:
