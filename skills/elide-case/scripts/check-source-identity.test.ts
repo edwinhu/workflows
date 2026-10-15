@@ -79,6 +79,44 @@ describe("check-source-identity", () => {
     expect(code).toBe(1);
   });
 
+  // A non-court reading (agency release, blog statement) carries no reporter citation; its title or
+  // release number identifies it instead.
+  const noCite = (name: string, title: string, lines: string, sourceText: string) => {
+    const dir = path.join(mkTmp("srcid-"), name);
+    fs.mkdirSync(path.join(dir, "docs"), { recursive: true });
+    const t = path.join(dir, "a.typ");
+    fs.writeFileSync(t, `#pagebreak()\n\n#align(center)[\n  #text(13pt, weight: "bold")[${title}]\n\n  ${lines}\n]\n\nBody.\n`);
+    const d = path.join(dir, "docs", "Statement-No-16.westlaw.docx");
+    docx(d, sourceText);
+    return { dir, typ: t, docx: d };
+  };
+
+  test("a reading with no reporter citation is identified by its caption title found in the source", () => {
+    const p = noCite("title", "Statement No. 16: On Shadow Trading", "Shadow SEC Committee \\\n2024", "Preface. Statement No. 16: On Shadow Trading. The Committee states.");
+    const { code, out } = run(p, "script");
+    expect(out).toContain("1 reading");
+    expect(code).toBe(0);
+  });
+
+  test("a reading with no reporter citation is identified by a release number when the title differs", () => {
+    const p = noCite("release", "POLICY STATEMENT ON MANDATORY ARBITRATION PROVISIONS", "Securities and Exchange Commission \\\n  Release Nos. 33-11389; 34-103988 \\\n  September 17, 2025", "Securities Act Release No. 33-11389; Exchange Act Release No. 34-103988. Policy statement.");
+    const { code, out } = run(p, "script");
+    expect(out).toContain("1 reading");
+    expect(code).toBe(0);
+  });
+
+  test("a release number inside a longer number does not identify the source", () => {
+    const p = noCite("embedded-rel", "STATEMENT NO. 16 ON RELEASES", "Release Nos. 33-11389", "Release 133-113890 only.");
+    expect(run(p, "script").code).toBe(1);
+  });
+
+  test("a reading with no citation fails when the mapped source is a different document", () => {
+    const p = noCite("wrongdoc", "Statement No. 16: On Shadow Trading", "Shadow SEC Committee \\\n2024", "Statement No. 8: On Something Else. The Committee states.");
+    const { code, out } = run(p, "script");
+    expect(out).toContain("neither its title nor a release number");
+    expect(code).toBe(1);
+  });
+
   test("a plain-text fallback source with no reporter citation is reported, not failed", () => {
     const p = project("slip", "87 F.3d 536", "unused");
     const txt = p.docx.replace(/\.westlaw\.docx$/, ".txt");
