@@ -279,7 +279,12 @@ else
     SHARDS="${CHECK_SHARDS:-4}"
     pids=(); pyp=()
     # Each runner's output lands in a file so its own summary can be counted after the wait.
-    tdir="$(mktemp -d)"
+    if ! tdir="$(mktemp -d)"; then
+      # No place to put the runners' output: the leg could not look, which is exit 2, not a 0-test exit 1.
+      echo "probe-tests: cannot create a temp dir (TMPDIR=${TMPDIR:-unset} is missing or unwritable)" >&2
+      report probe-tests 2 "mktemp failed; check TMPDIR"
+      exit "$FAILED"
+    fi
     if [ "${#suite[@]}" -gt 0 ]; then
       # One bun process PER FILE, at most SHARDS at once: bun reports only `Ran N tests across M
       # files`, so a file that ran nothing is visible only if no sibling shares its process.
