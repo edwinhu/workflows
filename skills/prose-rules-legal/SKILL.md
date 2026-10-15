@@ -5,6 +5,9 @@ description: "The writing-legal agent's rule skills (writing-general, writing-le
 
 # prose-rules-legal — the writing-legal agent's rules on the main thread
 
+**What this skill carries** — grep `references/` for any subject the names below miss:
+!`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
 Each register below is the skill file itself, printed at load time. When this skill is invoked with
 arguments, they are your task: do it under these rules.
 
