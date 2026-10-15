@@ -1,5 +1,5 @@
 import { test, expect } from 'bun:test'
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
@@ -27,10 +27,11 @@ function rig(): Rig {
   const agentCwd = join(root, 'agentcwd')
   const bin = join(root, 'bin')
   mkdirSync(agentCwd); mkdirSync(bin)
-  const argvLog = join(root, 'argv.log')
+  const argvLog = join(root, 'argv.d')
+  mkdirSync(argvLog)
   for (const w of ['claude-code', 'gemini-code', 'codex-code']) {
     writeFileSync(join(bin, w),
-      `#!/usr/bin/env bash\nprintf '%s\\n<<END>>\\n' "$(basename "$0") $*" >> "${argvLog}"\nprintf '{"type":"result","result":"done"}\\n'\n`)
+      `#!/usr/bin/env bash\nprintf '%s\\n' "$(basename "$0") $*" > "$(mktemp "${argvLog}/inv.XXXXXX")"\nprintf '{"type":"result","result":"done"}\\n'\n`)
     chmodSync(join(bin, w), 0o755)
   }
   const outcomes = join(root, 'outcomes.jsonl')
@@ -69,8 +70,7 @@ async function runRows(r: Rig, rows: Record<string, unknown>[], extra: string[] 
 
 /** One entry per wrapper invocation: `<wrapper> <argv...>`. */
 function invocations(r: Rig): string[] {
-  if (!existsSync(r.argvLog)) return []
-  return readFileSync(r.argvLog, 'utf8').split('<<END>>\n').map(s => s.trim()).filter(Boolean)
+  return readdirSync(r.argvLog).sort().map(f => readFileSync(join(r.argvLog, f), 'utf8').trim()).filter(Boolean)
 }
 
 function lines(r: Rig): any[] {
