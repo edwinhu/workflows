@@ -58,3 +58,4 @@ skills/research/scripts/research_test.py
 skills/tuicr/scripts/resolve_session_test.py
 skills/ui-json-capture/scripts/assemble_test.py
 skills/visual-mockup/scripts/interactive_mockup_test.py
+skills/courtlistener/scripts/bulk_fetch_test.py
