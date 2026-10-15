@@ -118,8 +118,8 @@ function target(opts: { skill?: string; js?: string; tests?: Record<string, stri
   return d
 }
 
-function run(check: string, args: string[]): { code: number; stdout: string; stderr: string } {
-  const r = spawnSync('bash', [check, ...args], { encoding: 'utf8', timeout: 120_000 })
+function run(check: string, args: string[], env?: Record<string, string>): { code: number; stdout: string; stderr: string } {
+  const r = spawnSync('bash', [check, ...args], { encoding: 'utf8', timeout: 120_000, env: env ? { ...process.env, ...env } : undefined })
   return { code: r.status ?? -1, stdout: r.stdout ?? '', stderr: r.stderr ?? '' }
 }
 
@@ -510,4 +510,17 @@ test('declared suite: a glob that matches no file is exit 2, never a pass', () =
 test('declared suite: a failing declared file fails the leg', () => {
   const r = run(harness(), ['--target', target({ emptyScripts: true, ext: { glob: 'EXT/*.test.ts', files: { 'a.test.ts': "import { expect, test } from 'bun:test'\ntest('bad', () => { expect(1).toBe(2) })\n" } } })])
   expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=1')
+})
+
+// --- a temp dir that cannot be made is a leg that COULD NOT LOOK: exit 2, naming TMPDIR -------------
+test('unusable TMPDIR: probe-tests is exit 2 naming TMPDIR, not a vacuous exit 1', () => {
+  const r = run(harness(), ['--target', target({ tests: { 'a.test.ts': PASSING_TEST } })], { TMPDIR: '/var/tmp/does-not-exist-xyz' })
+  expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=2')
+  expect(r.stderr).toMatch(/^probe-tests: .*TMPDIR/m)
+  expect(r.stderr).not.toMatch(/file\(s\) collected no test/)
+})
+
+test('unusable TMPDIR: the parity leg is exit 2 too', () => {
+  const r = run(harness(), ['--target', target({ tests: { 'a.test.ts': PASSING_TEST } })], { TMPDIR: '/var/tmp/does-not-exist-xyz' })
+  expect(legStatus(r.stdout, 'parity')).toContain('exit=2')
 })

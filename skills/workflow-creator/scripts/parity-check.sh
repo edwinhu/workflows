@@ -23,7 +23,10 @@ set -euo pipefail
 
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-d=$(mktemp -d)
+if ! d=$(mktemp -d); then
+  echo "parity-check: cannot create a temp dir (TMPDIR=${TMPDIR:-unset} is missing or unwritable)" >&2
+  exit 2
+fi
 trap 'rm -rf "$d"' EXIT
 
 mkdir -p "$d/agents"
