@@ -24,10 +24,10 @@ while IFS= read -r -d '' file; do
     if head -5 "$file" | grep -q "jupytext:"; then
         echo "Syncing: $file"
         if jupytext --sync "$file" 2>/dev/null; then
-            ((count++))
+            count=$((count + 1))
         else
             echo "  ERROR: Failed to sync $file"
-            ((errors++))
+            errors=$((errors + 1))
         fi
     fi
 done < <(find "$DIR" -name "*.py" -print0 2>/dev/null)
@@ -37,10 +37,10 @@ while IFS= read -r -d '' file; do
     if head -5 "$file" | grep -q "jupytext:"; then
         echo "Syncing: $file"
         if jupytext --sync "$file" 2>/dev/null; then
-            ((count++))
+            count=$((count + 1))
         else
             echo "  ERROR: Failed to sync $file"
-            ((errors++))
+            errors=$((errors + 1))
         fi
     fi
 done < <(find "$DIR" -name "*.R" -print0 2>/dev/null)
