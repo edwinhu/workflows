@@ -410,6 +410,7 @@ PY
 # checkout carries other sessions' uncommitted files, and one unpinned binary there blocked 6.38.0.
 # Teaching stays in its checkout (its agent-resolution test needs the real path), so a tracked-file
 # change there FAILS: a dirty tree is not what gets tagged.
+. "$ROOT/scripts/lib/init-submodules.sh"
 SUITE_WT=""
 drop_suite_wt() {   # only the worktree this invocation minted
   [ -n "$SUITE_WT" ] || return 0
@@ -427,6 +428,8 @@ run_suites() {
     && git -C "$ROOT" worktree add --detach "$SUITE_WT" "$head" >/dev/null 2>&1 \
     || { echo "FAIL [suites] could not create a clean worktree at ${head:0:12} — NO SUITE RAN"; drop_suite_wt; FAILED=1; return; }
   trap drop_suite_wt EXIT
+  init_worktree_submodules "$SUITE_WT" "$ROOT" > "$HOME_DIR/suite-submodules.log" 2>&1 \
+    || { echo "FAIL [suites] could not initialise submodules in the clean worktree — NO SUITE RAN (skills/bmll would be empty):"; sed 's/^/  /' "$HOME_DIR/suite-submodules.log"; drop_suite_wt; FAILED=1; return; }
   wf=$SUITE_WT
   echo; echo "=== canary suites: workflows at ${head:0:12} (committed HEAD, clean worktree $wf)"
   ( cd "$wf" && CANARY_NESTED=1 TEACHING_PLUGIN_ROOT="$TEACHING" bash scripts/test.sh ) > "$HOME_DIR/workflows-suite.log" 2>&1

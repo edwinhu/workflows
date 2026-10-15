@@ -6,7 +6,7 @@
  * Run: bun test tests/canary-assert.test.ts
  */
 import { afterAll, describe, expect, test, setDefaultTimeout } from 'bun:test'
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -200,6 +200,8 @@ describe('canary suites and template steps', () => {
   function workflowsRepo() {
     const wf = repo('wf', { 'scripts/test.sh': FAKE_SUITE, 'release.txt': 'committed\n' }, { 'release.txt': 'WIP\n' }, { 'test2.js': '' })
     spawnSync('cp', [CANARY, join(wf.dir, 'scripts/canary.sh')], { timeout: 10_000 })
+    mkdirSync(join(wf.dir, 'scripts/lib'), { recursive: true })
+    copyFileSync(join(CANARY, '..', 'lib', 'init-submodules.sh'), join(wf.dir, 'scripts/lib/init-submodules.sh'))
     spawnSync('chmod', ['+x', join(wf.dir, 'scripts/test.sh')], { timeout: 10_000 })
     return wf
   }
