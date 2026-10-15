@@ -61,7 +61,7 @@ So don't COPY hundreds of URLs in one query. Instead:
 
 Filter happens in the SQL (`WHERE BRAND_NAME IN (…)`), so only the filtered subset lands on
 disk — e.g. CE "Daily Spend by Brand & State" is 8.3 GB / 450M rows full, but a ~23-brand
-filtered pull is tens of MB. Worked example: `~/projects/batm/scratch/dewey_pull_ce_spend.py`.
+filtered pull is tens of MB.
 
 ---
 
