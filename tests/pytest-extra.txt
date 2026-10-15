@@ -10,6 +10,9 @@
 # not-gated: skills/wrds/scripts/test_connection.py -- needs a live WRDS PostgreSQL session
 # not-gated: skills/lseg-data/scripts/test_connection.py -- needs a live LSEG Data Library session
 # not-gated: skills/crsp-lseg-splice/scripts/crsp_lseg_splice_test.py -- imports psycopg2, absent from the pixi env; check.sh runs it through its PEP 723 block
+# not-gated: skills/blaw-edgar-search/scripts/resolve_exhibits_test.py -- imports polars and psycopg, absent from the pixi env; check.sh runs it through its PEP 723 block
+# not-gated: skills/readwise/scripts/readwise_prune_test.py -- imports requests, absent from the pixi env; check.sh runs it through its PEP 723 block
+# not-gated: skills/readwise/scripts/readwise_to_nlm_test.py -- imports requests and html2text, absent from the pixi env; check.sh runs it through its PEP 723 block
 #
 # workshop_deck_test.py IS listed. It was documented for months as failing "19 of 108 on a clean
 # tree in the WID and INV legs" — a plan scoped work around that number and told implementers it
@@ -48,3 +51,10 @@ skills/law-review-docx/scripts/check_widows_test.py
 skills/marimo/scripts/marimo_scripts_test.py
 skills/replication-package/scripts/scrub_metadata_test.py
 skills/westlaw/scripts/westlaw_docx_text_test.py
+skills/jupytext/scripts/scripts_test.py
+skills/law-econ-docx/scripts/build_le_docx_test.py
+skills/law-econ-docx/scripts/make_le_template_test.py
+skills/research/scripts/research_test.py
+skills/tuicr/scripts/resolve_session_test.py
+skills/ui-json-capture/scripts/assemble_test.py
+skills/visual-mockup/scripts/interactive_mockup_test.py
