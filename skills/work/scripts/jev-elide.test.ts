@@ -96,6 +96,58 @@ test("candidate spans are diff-scoped: changed lines that miss the defect yield 
   expect(whole.n_body_sentences_with_editor_voice_terms).toBe(2);
 });
 
+// EL-VOICE: a body sentence found verbatim in its reading's source is the court's own text.
+function voiceCase(source: string | null, body: string) {
+  const tmp = fs.mkdtempSync(join(os.tmpdir(), "jev-elide-voice-"));
+  fs.mkdirSync(join(tmp, "addenda"));
+  fs.mkdirSync(join(tmp, "docs"));
+  if (source !== null) fs.writeFileSync(join(tmp, "docs", "smith-v-jones.txt"), source);
+  const typ = join(tmp, "addenda", "05-addendum.typ");
+  fs.writeFileSync(typ, `#pagebreak()\n\n// elide-source: smith-v-jones.txt\n#align(center)[\n  #text(13pt, weight: "bold")[SMITH v. JONES]\n]\n\n${body}\n`);
+  const r = spawnSync("python3", [EVIDENCE, "--files", typ, "--root", tmp, "--rules-dir", ELIDE], { timeout: 120_000, encoding: "utf8" });
+  fs.rmSync(tmp, { recursive: true, force: true });
+  expect(r.status).toBe(0);
+  return JSON.parse(r.stdout)["EL-VOICE"].state;
+}
+const COURT = "We note that the statute is silent on the point.";
+const EDITOR = "The editors have omitted the remainder.";
+
+test("EL-VOICE: a voice-term sentence verbatim in the source is not a candidate", () => {
+  const s = voiceCase(`Prior text. We note that the statute is silent on the point. More text.`, `${COURT}`);
+  expect(s.body_sentences_with_editor_voice_terms).toEqual([]);
+  expect(s.n_body_sentences_with_editor_voice_terms).toBe(0);
+  expect(s.n_voice_term_sentences_verbatim_in_source).toBe(1);
+});
+
+test("EL-VOICE: an editor-written sentence absent from the source is still listed", () => {
+  const s = voiceCase(`Prior text. We note that the statute is silent on the point.`, `${COURT} ${EDITOR}`);
+  expect(s.body_sentences_with_editor_voice_terms.map((c: any) => c.sentence)).toEqual([EDITOR]);
+  expect(s.n_voice_term_sentences_verbatim_in_source).toBe(1);
+});
+
+test("EL-VOICE: an unresolvable source leaves every voice-term sentence listed", () => {
+  const s = voiceCase(null, `${COURT}`);
+  expect(s.n_body_sentences_with_editor_voice_terms).toBe(1);
+  expect(s.n_voice_term_sentences_verbatim_in_source).toBe(0);
+});
+
+// EL-VOICE: a bracket that, with its surrounding text, is verbatim in the source is the source's own alteration.
+const OWN_BRACKET = "The agency held that Congress, in the words of the court, was careful [in enacting the provision] to preserve the remedy for private plaintiffs.";
+
+test("EL-VOICE: a source-own bracket inside a verbatim quotation is not listed", () => {
+  const s = voiceCase(`Prior text. ${OWN_BRACKET} More text.`, OWN_BRACKET);
+  expect(s.bracketed_spans_of_four_or_more_words).toEqual([]);
+  expect(s.n_bracketed_spans_of_four_or_more_words).toBe(0);
+  expect(s.n_bracketed_spans_verbatim_in_source).toBe(1);
+});
+
+test("EL-VOICE: an editor-inserted bracket not in the source is still listed", () => {
+  const s = voiceCase(`Prior text. The agency held that Congress, in the words of the court, was careful to preserve the remedy for private plaintiffs. More text.`, OWN_BRACKET);
+  expect(s.bracketed_spans_of_four_or_more_words.map((c: any) => c.bracketed)).toEqual(["in enacting the provision"]);
+  expect(s.n_bracketed_spans_of_four_or_more_words).toBe(1);
+  expect(s.n_bracketed_spans_verbatim_in_source).toBe(0);
+});
+
 test("a file outside addenda/ is not an excerpt: no file reaches the rules", () => {
   const tmp = fs.mkdtempSync(join(os.tmpdir(), "jev-elide-notes-"));
   fs.copyFileSync(join(FIX, "EL-VOICE", "vio", TYP), join(tmp, "lecture.typ"));
