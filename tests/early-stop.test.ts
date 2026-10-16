@@ -517,6 +517,25 @@ test("ANOTHER session's live run does not count: it BLOCKS", async () => {
   expect(r.out).toContain('"decision":"block"')
 }, 30000)
 
+test('a LIVE hand-redispatched work round after its loop ENDED ALLOWS: the watcher wakes it, not the dead loop', async () => {
+  const srv = await stubDecisions(0.99)
+  const port = srv.port
+  const { dir, transcript } = fixture()
+  const R = join(dir, 'proj', '.work', '1015-x')
+  const now = Math.floor(Date.now() / 1000)
+  // Round 1's loop: started two hours ago, ended "DONE rc=2" an hour ago (its event file's mtime).
+  const loopPid = deadPid()
+  farmEvents(dir, 'es-redispatch', loopPid, [`farm: START work-loop cwd=/x out=${R}/loop.exit expect=1 t=${now - 7200}`, 'farm: DONE work-loop rc=2'])
+  utimesSync(join(dir, 'farm-events', 'es-redispatch', `${loopPid}.ndjson`), now - 3600, now - 3600)
+  // Round 2, dispatched by hand after the loop had ended, still running (the test runner's own pid).
+  farmEvents(dir, 'es-redispatch', process.pid, [`farm: START work-round cwd=/x out=${R}/result.json expect=1 t=${now - 60}`])
+  beacon(dir, 'es-redispatch')
+  const r = runHook(interactiveEnv(dir, port), stopPayload('es-redispatch', transcript))
+  srv.kill()
+  expect(r.out).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain('owned runs live, the watcher wakes the session: work-round')
+}, 30000)
+
 test('HEADLESS (entrypoint sdk-cli) with a live owned run: no watcher, so it BLOCKS', async () => {
   const srv = await stubDecisions(0.99)
   const port = srv.port

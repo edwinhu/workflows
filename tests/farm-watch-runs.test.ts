@@ -267,3 +267,66 @@ describe('WAIT lines (grind: a gate shut N passes running)', () => {
       'Status: bash /p/grind.sh status --journal /w/j.jsonl')
   })
 })
+
+// Verbatim from the typst session d233fa13's $TMPDIR/farm-events (2026-10-15, 1015-deck-scoped-render).
+// Round 1 ran under work-loop 1489772, which ended "DONE rc=2" at 20:13:48. Round 2 was redispatched by
+// hand at 20:15:15 with no loop, and its "DONE work-round ok" at 20:26:41 never woke the session: the
+// finished round-1 loop still claimed every round in the run directory. Event-file mtimes are the
+// real ones, in epoch ms.
+describe('replay: typst 1015-deck-scoped-render, a hand redispatch after the loop ended', () => {
+  const R = '/home/eh/projects/typst/.work/1015-deck-scoped-render'
+  const SID = 'd233fa13-c640-467a-b088-0127ed25bd78'
+  const files: [number, number, string][] = [
+    [1489274, 1792109582291, `farm: START work-round cwd=/home/eh/projects/typst out=${R}/result.json expect=1 t=1792108339\n` +
+      `farm: CLAIM work-round path=${R}/result.json \nfarm: DONE work-round ok\n`],
+    [1489292, 1792109525959, `farm: START workflow cwd=/home/eh/projects/typst out=${R}/raw.json expect=1 t=1792108339\n` +
+      `farm: CLAIM workflow path=${R}/raw.json \nfarm: CLAIM workflow path=${R}/raw.json \nfarm: DONE workflow ok toolCalls=7 W=380525.05\n`],
+    [1489772, 1792109628961, `farm: START work-loop cwd=/home/eh/projects/typst out=${R}/loop.exit expect=1 t=1792108341\nfarm: DONE work-loop rc=2\n`],
+    [1678839, 1792109582248, `farm: START lens cwd=/home/eh/projects/typst out= expect=1 t=1792109546\n` +
+      `farm: CLAIM lens path=${R}/lens.json \nfarm: DONE lens ok toolCalls=3 W=126177.85\n`],
+    [1721744, 1792110401031, `farm: START work-round cwd=/home/eh/projects/typst out=${R}/result.json expect=1 t=1792109715\n` +
+      `farm: CLAIM work-round path=${R}/result.json \nfarm: DONE work-round ok\n`],
+    [1721789, 1792110332473, `farm: START workflow cwd=/home/eh/projects/typst out=${R}/raw.json expect=1 t=1792109715\n` +
+      `farm: CLAIM workflow path=${R}/raw.json \nfarm: CLAIM workflow path=${R}/raw.json \nfarm: DONE workflow ok toolCalls=4 W=243298.5\n`],
+    [1795841, 1792110400973, `farm: START lens cwd=/home/eh/projects/typst out= expect=1 t=1792110356\n` +
+      `farm: CLAIM lens path=${R}/lens.json \nfarm: DONE lens ok toolCalls=6 W=143308.65\n`],
+  ]
+  const runs = files.flatMap(([pid, mtime, text]) =>
+    parseEvents(text, `/e/${pid}.ndjson`, pid, SID).map(r => ({ ...r, fileMtimeMs: mtime })))
+  const views = classify(runs, facts({
+    present: new Set([`${R}/result.json`, `${R}/raw.json`, `${R}/lens.json`]),
+    presentAt: new Map([[`${R}/result.json`, 1792110401025], [`${R}/raw.json`, 1792110327930], [`${R}/lens.json`, 1792110400970]]),
+  }))
+
+  test('round 2, started after the loop ended, wakes the session with its own finish', () => {
+    const w = wakeable(views)
+    expect(w.map(v => v.id)).toEqual([
+      `${SID}:1489772:0:work-loop:1792108341`,
+      `${SID}:1721744:0:work-round:1792109715`,
+    ])
+    const round2 = w.find(v => v.pid === 1721744)!
+    expect(round2.state).toBe('done')
+    expect(wakeText(round2, 1792110401031)).toStartWith('work run 1015-deck-scoped-render round finished: ok after 11m.')
+  })
+
+  test('round 1, started while the loop was live, still reports through the loop', () => {
+    expect(wakeable(views).some(v => v.pid === 1489274)).toBe(false)
+  })
+
+  test('a live loop still owns a round started after it (the loop redispatched it)', () => {
+    const openLoop = parseEvents(`farm: START work-loop cwd=/home/eh/projects/typst out=${R}/loop.exit expect=1 t=1792108341\n`,
+      '/e/1489772.ndjson', 1489772, SID).map(r => ({ ...r, fileMtimeMs: 1792108341000 }))
+    const live = classify(runs.filter(r => r.pid !== 1489772).concat(openLoop), facts({ alive: new Set([1489772]) }))
+    expect(wakeable(live).some(v => v.kind === 'work-round')).toBe(false)
+  })
+
+  test('a finished loop still owns a round that started before the loop ended', () => {
+    const endedLater = runs.map(r => (r.pid === 1489772 ? { ...r, fileMtimeMs: 1792110401031 + 1000 } : r))
+    expect(wakeable(classify(endedLater, facts())).some(v => v.kind === 'work-round')).toBe(false)
+  })
+
+  test('a finished loop with no known end time keeps owning its run directory', () => {
+    const noMtime = runs.map(r => (r.pid === 1489772 ? { ...r, fileMtimeMs: undefined } : r))
+    expect(wakeable(classify(noMtime, facts())).some(v => v.kind === 'work-round')).toBe(false)
+  })
+})
