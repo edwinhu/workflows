@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
-import { failingLegs, runFacts, runRounds, redispatchBlocked, lastLedgerEntry } from '../hooks/work-hold'
+import { failingLegs, runFacts, runRounds, redispatchBlocked, lastLedgerEntry, settledBy } from '../hooks/work-hold'
 import { useTmp } from './helpers/tmp.ts'
 import { startPyStub } from './helpers/stub-server.ts'
 
@@ -327,4 +327,141 @@ describe('a check-less, run-less afk hold is never judged: the ceiling clock is 
     expect(lastLedgerEntry(join(dir, 'work-hold-afk-done.releases.log'))?.verb).toBe('expired')
     expect(readFileSync(log, 'utf8')).toBe('')
   }, 120_000)
+})
+
+// typst session d233fa13, 2026-10-15, run 1015-deck-scoped-compile: the round PASSED (red T1 proven,
+// dev exit 0, lens 0 findings) on a goal of behavioural clauses — "renders the whole master exactly as
+// HEAD does without --deck", "exits 2 on a deck the master does not include". The facts named only
+// exit codes, so the judge put it at 18% twice and the hold could end only at its ceiling.
+const DECK_GOAL =
+  'run-slide-queries.sh --deck lays out only the named decks in every typst call, renders the whole master ' +
+  'exactly as HEAD does without --deck, and exits 2 on a deck the master does not include.'
+const DECK_TITLES = [
+  'gated on the deck that clips: width-clip still fails, and no call lays out the other deck',
+  'with no --deck every call lays out the whole master, as before',
+  'a --deck the master does not include is could-not-check, not a pass',
+]
+function deckSuite(dir: string): string {
+  const f = join(dir, 'deck-scope.test.ts')
+  writeFileSync(f, DECK_TITLES.map((t) => `test(${JSON.stringify(t)}, () => {})\n`).join(''))
+  return f
+}
+const passed = (cmd: string) => ({
+  verdict: 'PASS',
+  overallPass: true,
+  mechanical: [{ name: 'dev', exitCode: 0, output: 'leg tests exit=0\n' }],
+  red: [{ id: 'T1', command: cmd, verdict: 'red-proven', beforeExit: 1, afterExit: 0,
+          beforeOutput: `(fail) ${DECK_TITLES[0]} [900.73ms]\n\n 2 pass\n 1 fail\n`,
+          afterOutput: ' 3 pass\n 0 fail\n' }],
+  scoreTable: { survivingBlocking: 0, survivingMinor: 0, lensFindings: 0 },
+  lensesThatFlagged: [], rulesThatFailed: [],
+})
+/** landedRun, then the run's args.json gains `extra` — result.json rewritten after so it stays the newer file. */
+function landedWith(dir: string, res: object, extra: object) {
+  const run = landedRun(dir, res)
+  const args = JSON.parse(readFileSync(join(run, 'args.json'), 'utf8'))
+  writeFileSync(join(run, 'args.json'), JSON.stringify({ ...args, ...extra }))
+  writeFileSync(join(run, 'result.json'), JSON.stringify(res))
+  return run
+}
+
+describe('item 22: a passing red suite names the behaviour it proved', () => {
+  test('runFacts lists every test title of a red command that exited 0, from the suite it names', () => {
+    const dir = mkTmp('judgenames-')
+    const f = runFacts(landedRun(dir, passed(`bun test ${deckSuite(dir)}`)))
+    for (const t of DECK_TITLES) expect(f).toContain(t)
+    expect(f).toContain('red command T1')
+  })
+
+  test('a name-filtered red command lists only the tests it turned from fail to pass', () => {
+    const dir = mkTmp('judgenames-')
+    const f = runFacts(landedRun(dir, passed(`bun test ${deckSuite(dir)} -t clips`)))
+    expect(f).toContain(DECK_TITLES[0])
+    expect(f).not.toContain(DECK_TITLES[1])
+  })
+
+  test('the titles reach the Jev state of an undeclared run', async () => {
+    const dir = mkTmp('judgenames-')
+    const run = landedRun(dir, passed(`bun test ${deckSuite(dir)}`))
+    const log = join(dir, 'jev.log')
+    const srv = await stubJev(0.9, log)
+    stop(dir, 'names', { run, goal: DECK_GOAL }, srv.port)
+    srv.kill()
+    expect(sent(log)[0].state).toContain(DECK_TITLES[2])
+  }, 150_000)
+})
+
+describe('item 22: goalSettledBy — the facts the plan declares settle the goal, no judge', () => {
+  test('every declared fact passes: released goal-met, and Jev is never asked', async () => {
+    const dir = mkTmp('judgesettle-')
+    const run = landedWith(dir, passed(`bun test ${deckSuite(dir)}`), { goalSettledBy: ['red:T1', 'mechanical:dev', 'lens'] })
+    const log = join(dir, 'jev.log')
+    const srv = await stubJev(0.1, log)
+    const r = stop(dir, 'settled', { run, goal: DECK_GOAL }, srv.port)
+    srv.kill()
+    expect(existsSync(log)).toBe(false)
+    expect(lastLedgerEntry(join(dir, 'work-hold-settled.releases.log'))?.verb).toBe('passed-goal-met')
+    expect(r.state).toBeNull()
+  }, 150_000)
+
+  test('a declared fact that fails blocks, naming it, and Jev is never asked', async () => {
+    const dir = mkTmp('judgesettle-')
+    const res = { ...passed(`bun test ${deckSuite(dir)}`), mechanical: [{ name: 'dev', exitCode: 1, output: 'leg scope exit=1\n' }] }
+    const run = landedWith(dir, res, { goalSettledBy: ['red:T1', 'mechanical:dev'] })
+    const log = join(dir, 'jev.log')
+    const srv = await stubJev(0.99, log)
+    const r = stop(dir, 'unsettled', { run, goal: DECK_GOAL }, srv.port)
+    srv.kill()
+    expect(existsSync(log)).toBe(false)
+    const out = JSON.parse(r.stdout)
+    expect(out.decision).toBe('block')
+    expect(out.reason).toContain('mechanical:dev')
+    expect(out.reason).not.toContain('red:T1')
+  }, 150_000)
+
+  test('a declared fact the verdict does not carry is unsettled, never assumed', async () => {
+    const dir = mkTmp('judgesettle-')
+    const run = landedWith(dir, passed(`bun test ${deckSuite(dir)}`), { goalSettledBy: ['red:T1', 'mechanical:nope'] })
+    const log = join(dir, 'jev.log')
+    const srv = await stubJev(0.99, log)
+    const r = stop(dir, 'missing', { run, goal: DECK_GOAL }, srv.port)
+    srv.kill()
+    const out = JSON.parse(r.stdout)
+    expect(out.decision).toBe('block')
+    expect(out.reason).toContain('mechanical:nope')
+  }, 150_000)
+})
+
+describe('item 22: settledBy decides each token from result.json alone', () => {
+  const settle = (res: object, tokens: unknown[]) => {
+    const dir = mkTmp('judgesettle-')
+    return settledBy(landedWith(dir, res, { goalSettledBy: tokens }))
+  }
+  const green = () => passed('bun test x.test.ts')
+
+  test('red:ID settles only when the red command failed before and passes after', () => {
+    expect(settle(green(), ['red:T1'])).toEqual({ settled: ['red:T1'], unsettled: [] })
+    for (const beforeExit of [0, -1]) {
+      const res = { ...green(), red: [{ ...green().red[0], beforeExit }] }
+      expect(settle(res, ['red:T1'])).toEqual({ settled: [], unsettled: ['red:T1'] })
+    }
+    const stillRed = { ...green(), red: [{ ...green().red[0], afterExit: 1 }] }
+    expect(settle(stillRed, ['red:T1'])).toEqual({ settled: [], unsettled: ['red:T1'] })
+  })
+
+  test('lens settles only on survivingBlocking 0, rules only on an empty rulesThatFailed', () => {
+    expect(settle(green(), ['lens', 'rules'])).toEqual({ settled: ['lens', 'rules'], unsettled: [] })
+    const flagged = { ...green(), scoreTable: { survivingBlocking: 1, survivingMinor: 0, lensFindings: 1 }, rulesThatFailed: ['SHELL'] }
+    expect(settle(flagged, ['lens', 'rules'])).toEqual({ settled: [], unsettled: ['lens', 'rules'] })
+    const { scoreTable: _s, rulesThatFailed: _r, ...bare } = green() as any
+    expect(settle(bare, ['lens', 'rules'])).toEqual({ settled: [], unsettled: ['lens', 'rules'] })
+  })
+
+  test('no declaration, or no readable verdict, is not a settlement: the judge decides', () => {
+    const dir = mkTmp('judgesettle-')
+    expect(settledBy(landedRun(dir, green()))).toBeNull()
+    const run = landedWith(mkTmp('judgesettle-'), green(), { goalSettledBy: ['lens'] })
+    writeFileSync(join(run, 'result.json'), '{not json')
+    expect(settledBy(run)).toBeNull()
+  })
 })

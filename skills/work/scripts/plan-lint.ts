@@ -45,6 +45,11 @@ type Plan = {
    * one dispatch earlier than the arm would.
    */
   goalCheck?: string
+  /**
+   * `args.goalSettledBy` — the run facts that settle `args.goal` with no judge: `red:ID`,
+   * `mechanical:NAME`, `lens`, `rules`. The hold releases when all are settled (R27).
+   */
+  goalSettledBy?: string[]
   /** `args.ruleChecks` — the Jev rule runner whose verdicts gate the run as `rulesThatFailed`. */
   ruleChecks?: { name: string; cmd: string } | null
   /**
@@ -315,6 +320,7 @@ const parseArgs = (j: any): Plan => ({
   })),
   // Absent is the common case and legal; a present-but-unusable value is a finding, not a silent ''.
   goalCheck: j.goalCheck === undefined || j.goalCheck === null ? undefined : String(j.goalCheck),
+  goalSettledBy: Array.isArray(j.goalSettledBy) ? j.goalSettledBy.filter((x: any) => typeof x === 'string') : undefined,
   ruleChecks:
     j.ruleChecks && typeof j.ruleChecks === 'object' && typeof j.ruleChecks.name === 'string'
       ? { name: j.ruleChecks.name, cmd: typeof j.ruleChecks.cmd === 'string' ? j.ruleChecks.cmd : '' }
@@ -1002,6 +1008,21 @@ const lint = (p: Plan, agentExists: (name: string) => boolean = n => agentResolv
         'goalCheck is declared but empty; omit the field for a judge-only hold rather than arming on nothing',
       )
     else for (const x of holdLintCriticals(gc)) add(x.rule, 'critical', 'args.goalCheck', x.message, gc)
+  }
+
+  // R27 — `goalSettledBy` releases the hold with no judge, and a token naming nothing never settles,
+  // so a typo holds the session to its ceiling. Each must be `red:ID` (a task with a redCommand),
+  // `mechanical:NAME` (a mechanicalChecks name), `lens` or `rules`.
+  const redGated = new Set(p.tasks.filter(t => typeof t.redCommand === 'string' && t.redCommand.trim()).map(t => t.id))
+  const mechNames = new Set(p.mechanicalChecks.map(m => m.name))
+  for (const tok of p.goalSettledBy ?? []) {
+    const ok =
+      tok === 'lens' || tok === 'rules' ||
+      (tok.startsWith('red:') && redGated.has(tok.slice(4))) ||
+      (tok.startsWith('mechanical:') && mechNames.has(tok.slice(11)))
+    if (!ok)
+      add('goal-settled-by-unknown', 'major', 'args.goalSettledBy',
+        `goalSettledBy token "${tok}" names no task with a redCommand (red:ID), no mechanicalChecks name (mechanical:NAME), nor lens or rules, so it can never settle and the hold runs to its ceiling`, tok)
   }
 
   // R25 — an agent-type field is the persona the harness dispatches a leg as. A template
