@@ -302,3 +302,80 @@ test('the committed routing.json is well formed', () => {
   expect('jev' in t).toBe(false)
   expect(Object.keys(loadTable(COMMITTED).candidates).length).toBeGreaterThan(0)
 })
+
+// -------------------------------------------------------------------------------- slopalytics retired
+
+const SLOP_FIELDS = ['slopVariant', 'slopIntelligence', 'slopCost', 'onFrontier', 'slopAsOf']
+const STUB_CATALOG = [
+  { id: 'claude-sonnet-5-5', owned_by: 'anthropic' },
+  { id: 'claude-opus-5-5', owned_by: 'anthropic' },
+  { id: 'gemini-3.7-flash-high', owned_by: 'antigravity' },
+  { id: 'gpt-5.6-luna', owned_by: 'openai' },
+]
+
+/** A proxy catalog on /v1/models and HTML on `/` (where slopalytics' index would be); every path is recorded. */
+function stubProxyAndSlop() {
+  const seen: string[] = []
+  const server = Bun.serve({
+    port: 0,
+    fetch(req) {
+      const path = new URL(req.url).pathname
+      seen.push(path)
+      if (path === '/v1/models') return Response.json({ data: STUB_CATALOG })
+      if (path === '/') return new Response('<html><body>stub</body></html>', { headers: { 'content-type': 'text/html' } })
+      return new Response('not found', { status: 404 })
+    },
+  })
+  const base = `http://127.0.0.1:${server.port}`
+  return {
+    seen,
+    env: {
+      ROUTE_PROXY_URL: `${base}/v1/models`, ROUTE_SLOP_URL: `${base}/`,
+      ROUTE_PRICES_URL: DEAD, ROUTE_RANKINGS_URL: DEAD, ROUTE_AA_URL: DEAD,
+    },
+    stop: () => server.stop(true),
+  }
+}
+
+test('a table still carrying slopalytics signals is refused, naming the retirement', async () => {
+  const table = fixtureCopy(t => {
+    t.candidates.sonnet.signals = { usageRank: null, intelligenceIndex: null, asOf: '2026-10-08', slopVariant: 'x', slopIntelligence: 1, slopCost: 1, onFrontier: false, slopAsOf: '2026-10-08' }
+  })
+  expect(() => loadTable(table)).toThrow(/slopalytics is retired/)
+  const r = await decide({ prompt: 'p', kind: 'script' }, table)
+  expect(r.code).toBe(1)
+  expect(r.stdout).toBe('')
+  expect(r.stderr).toContain('slopalytics is retired')
+}, 30_000)
+
+test('route --refresh never requests slopalytics', async () => {
+  const stub = stubProxyAndSlop()
+  try {
+    const table = fixtureCopy(() => {})
+    const r = await runCli(['--refresh', '--table', table], stub.env)
+    expect(r.code).toBe(0)
+    expect(stub.seen).toContain('/v1/models')
+    expect(stub.seen).not.toContain('/')
+    const written = JSON.parse(readFileSync(table, 'utf8'))
+    for (const c of Object.values<any>(written.candidates))
+      for (const f of SLOP_FIELDS) expect(c.signals?.[f]).toBeUndefined()
+  } finally { stub.stop() }
+}, 30_000)
+
+test('route --propose fetches no slopalytics data and its --json carries only proposals and discoveries', async () => {
+  const stub = stubProxyAndSlop()
+  try {
+    const table = fixtureCopy(() => {})
+    const r = await runCli(['--propose', '--json', '--table', table], stub.env)
+    expect(r.code).toBe(0)
+    expect(stub.seen).toContain('/v1/models')
+    expect(stub.seen).not.toContain('/')
+    expect(Object.keys(JSON.parse(r.stdout.trim())).sort()).toEqual(['discoveries', 'proposals'])
+  } finally { stub.stop() }
+}, 30_000)
+
+test('the committed routing.json carries no slopalytics signals', () => {
+  const committed = JSON.parse(readFileSync(COMMITTED, 'utf8'))
+  for (const c of Object.values<any>(committed.candidates))
+    for (const f of SLOP_FIELDS) expect(c.signals?.[f]).toBeUndefined()
+})
