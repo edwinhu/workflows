@@ -15,12 +15,7 @@
       "signals": {
         "usageRank": 30,
         "intelligenceIndex": 56,
-        "asOf": "2026-10-13",
-        "slopVariant": "claude-sonnet-5-5",
-        "slopIntelligence": 56.0001286580794,
-        "slopCost": 5.4608525948098325,
-        "onFrontier": true,
-        "slopAsOf": "2026-10-13T20:47:14.735Z"
+        "asOf": "2026-10-13"
       }
     },
     "haiku": {
@@ -36,12 +31,7 @@
       "signals": {
         "usageRank": 49,
         "intelligenceIndex": 43.4,
-        "asOf": "2026-10-13",
-        "slopVariant": "claude-haiku-5-5",
-        "slopIntelligence": 43.3950199670746,
-        "slopCost": 0.21276971216992022,
-        "onFrontier": false,
-        "slopAsOf": "2026-10-13T20:47:14.735Z"
+        "asOf": "2026-10-13"
       }
     },
     "opus": {
@@ -57,12 +47,7 @@
       "signals": {
         "usageRank": 15,
         "intelligenceIndex": 57.6,
-        "asOf": "2026-10-13",
-        "slopVariant": "claude-opus-5-5",
-        "slopIntelligence": 57.6223698102963,
-        "slopCost": 5.982012019521066,
-        "onFrontier": true,
-        "slopAsOf": "2026-10-13T20:47:14.735Z"
+        "asOf": "2026-10-13"
       }
     },
     "flash": {
@@ -78,12 +63,7 @@
       "signals": {
         "usageRank": 40,
         "intelligenceIndex": 39.1,
-        "asOf": "2026-10-13",
-        "slopVariant": "gemini-3-7-flash",
-        "slopIntelligence": 39.0594566404896,
-        "slopCost": 0.9253359372385677,
-        "onFrontier": false,
-        "slopAsOf": "2026-10-13T20:47:14.735Z"
+        "asOf": "2026-10-13"
       }
     },
     "luna": {
@@ -99,12 +79,7 @@
       "signals": {
         "usageRank": 9,
         "intelligenceIndex": 38.1,
-        "asOf": "2026-10-13",
-        "slopVariant": "gpt-6-luna",
-        "slopIntelligence": 38.1245186869738,
-        "slopCost": 0.06782295669812205,
-        "onFrontier": true,
-        "slopAsOf": "2026-10-13T20:47:14.735Z"
+        "asOf": "2026-10-13"
       }
     },
     "sol": {
@@ -120,12 +95,7 @@
       "signals": {
         "usageRank": 31,
         "intelligenceIndex": 51.8,
-        "asOf": "2026-10-13",
-        "slopVariant": "gpt-6-1-sol",
-        "slopIntelligence": 51.8332597011541,
-        "slopCost": 0.7241670655535033,
-        "onFrontier": true,
-        "slopAsOf": "2026-10-13T20:47:14.735Z"
+        "asOf": "2026-10-13"
       }
     },
     "flash38": {
@@ -141,12 +111,7 @@
       "signals": {
         "usageRank": 16,
         "intelligenceIndex": 40.9,
-        "asOf": "2026-10-13",
-        "slopVariant": "gemini-3-8-flash",
-        "slopIntelligence": 40.9262321765904,
-        "slopCost": 1.2427947606950427,
-        "onFrontier": false,
-        "slopAsOf": "2026-10-13T20:47:14.735Z"
+        "asOf": "2026-10-13"
       }
     }
   },
