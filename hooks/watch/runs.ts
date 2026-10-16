@@ -49,7 +49,7 @@ export type Run = {
   claims: string[]
   /** Epoch seconds from the START line's t=, absent on lines written before it existed. */
   t?: number
-  /** The event file's mtime (ms), set by the watcher's reader; grind measures its wake horizon from it. */
+  /** The event file's mtime (ms), set by its reader; grind measures its wake horizon from it, and a finished work-loop's end is it. */
   fileMtimeMs?: number
   done?: { status: string; detail: string }
   /** The newest WAIT line (grind: a gate shut N passes running). Informational: the run is still live. */
@@ -226,10 +226,18 @@ export function classify(runs: Run[], facts: Facts): View[] {
 }
 
 /** Which views wake the session. Nested farm rows report through their work run; a work round
- *  whose run has a loop reports through the loop, which outlives every round. */
+ *  reports through a loop in its run directory that owns it: one still running, or one whose end
+ *  (its event file's mtime) is unknown or not before the round's START. */
 export function wakeable(views: View[]): View[] {
-  const looped = new Set(views.filter(v => v.kind === 'work-loop' && v.runDir).map(v => v.runDir))
-  return views.filter(v => !v.nested && !(v.kind === 'work-round' && looped.has(v.runDir)))
+  // runDir -> the latest START a loop there owns; Infinity for a running loop or one with no known end.
+  const ownedUntil = new Map<string, number>()
+  for (const v of views) {
+    if (v.kind !== 'work-loop' || !v.runDir) continue
+    const end = v.state === 'running' || v.fileMtimeMs === undefined ? Infinity : v.fileMtimeMs
+    ownedUntil.set(v.runDir, Math.max(ownedUntil.get(v.runDir) ?? -Infinity, end))
+  }
+  const owned = (v: View) => !!v.runDir && (ownedUntil.get(v.runDir) ?? -Infinity) >= v.startedMs
+  return views.filter(v => !v.nested && !(v.kind === 'work-round' && owned(v)))
 }
 
 export function elapsed(ms: number): string {

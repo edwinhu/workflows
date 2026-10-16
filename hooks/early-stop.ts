@@ -872,8 +872,11 @@ export function liveOwnedRuns(session: string, nowMs: number = Date.now()): stri
       if (!m) continue
       const file = `${dir}/${n}`
       try {
-        firstSeen.set(file, Math.min(nowMs, statSync(file).mtimeMs))
-        runs.push(...parseEvents(readFileSync(file, 'utf8'), file, Number(m[1]), session))
+        const mtimeMs = statSync(file).mtimeMs
+        firstSeen.set(file, Math.min(nowMs, mtimeMs))
+        const parsed = parseEvents(readFileSync(file, 'utf8'), file, Number(m[1]), session)
+        for (const r of parsed) r.fileMtimeMs = mtimeMs
+        runs.push(...parsed)
       } catch {
         /* an unreadable event file is a run this hook cannot vouch for */
       }
