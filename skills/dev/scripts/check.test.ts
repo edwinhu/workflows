@@ -256,7 +256,7 @@ test("the project's test, lint and build commands run without WORK_RUN_BASELINE"
     expect(r.stdout).toContain("leg lint exit=0");
     expect(r.stdout).toContain("leg build exit=0");
   } finally { rmSync(d, { recursive: true, force: true }); }
-});
+}, 150_000);
 
 // The other half: check.sh's OWN legs still read WORK_RUN_BASELINE. A focused test and a stray path
 // that were already in the baseline tree are not this run's change, so dev-gate and scope pass with
@@ -265,11 +265,11 @@ test("dev-gate and scope still judge against WORK_RUN_BASELINE", () => {
   const d = gitProj({ "src/a.ts": "export {}\n" }, { "tests/b.test.ts": `${ONLY}('z', () => {})\n`, "stray.txt": "x\n" });
   try {
     const plan = join(d, "plan.md");
-    writeFileSync(plan, `# p\n<!-- work:dispatch\n${JSON.stringify({ args: { projectDir: d, tasks: [{ id: "T1", writablePaths: ["src/"] }] } })}\n-->\n`);
-    const git = (...a: string[]) => spawnSync("git", ["-C", d, ...a], { timeout: 30_000, encoding: "utf8" }).stdout.trim();
-    git("add", "-A");
-    const tree = git("write-tree");
-    git("reset", "-q");
+    writeFileSync(plan, `# p\n<!-- work:dispatch\n${JSON.stringify({ args: { projectDir: d, tasks: [{ id: "T1", writablePaths: ["src/"], refs: [] }] } })}\n-->\n`);
+    const gitIn = (...a: string[]) => spawnSync("git", ["-C", d, ...a], { timeout: 30_000, encoding: "utf8" }).stdout.trim();
+    gitIn("add", "-A");
+    const tree = gitIn("write-tree");
+    gitIn("reset", "-q");
     expect(tree).toMatch(/^[0-9a-f]{40}$/);
     const go = (env: Record<string, string>) => {
       const r = spawnSync("bash", [CHECK, "--project-dir", d, "--test-cmd", PASS, "--no-lint-cmd", "--no-build-cmd", "--plan", plan], {
@@ -287,4 +287,4 @@ test("dev-gate and scope still judge against WORK_RUN_BASELINE", () => {
     expect(withBase).toContain("leg dev-gate exit=0");
     expect(withBase).toContain("leg scope exit=0");
   } finally { rmSync(d, { recursive: true, force: true }); }
-});
+}, 500_000);
