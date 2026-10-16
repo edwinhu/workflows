@@ -30,7 +30,8 @@
  *
  * The order, every Stop: the watched run is IN FLIGHT (allow, count nothing, clock still runs) ->
  * the check is red (block, count a round) -> the check is green or there is none (ask the judge:
- * MET releases, UNMET blocks) -> a ceiling (release, UNMET).
+ * MET releases, UNMET blocks; a run whose args.json declares goalSettledBy is decided by those facts
+ * instead, with no judge) -> a ceiling (release, UNMET).
  */
 
 import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
@@ -526,6 +527,179 @@ export function failingLegs(output: string): string[] {
   return out
 }
 
+/** The run's verdict: result.json, or its last element when it is an array. Null when unreadable. */
+function readResult(run: string): Record<string, any> | null {
+  try {
+    const raw = JSON.parse(readFileSync(join(run, 'result.json'), 'utf8'))
+    const r = Array.isArray(raw) ? raw[raw.length - 1] : raw
+    return r && typeof r === 'object' ? r : null
+  } catch {
+    return null
+  }
+}
+
+function runArgs(run: string): Record<string, any> | null {
+  try {
+    const a = JSON.parse(readFileSync(join(run, 'args.json'), 'utf8'))
+    return a && typeof a === 'object' ? a : null
+  } catch {
+    return null
+  }
+}
+
+/** The directory work-checks.sh runs a red command in — args.json's projectDir — or null. */
+function runProjectDir(run: string): string | null {
+  const d = runArgs(run)?.projectDir
+  return typeof d === 'string' && d.startsWith('/') ? d : null
+}
+
+/**
+ * The facts a run's args.json declares will settle its goal (`goalSettledBy`), each read from
+ * result.json: `red:ID` (that red entry exited non-zero before and 0 after), `mechanical:NAME` (that
+ * check exited 0), `lens` (survivingBlocking 0), `rules` (rulesThatFailed empty). Any other token, or
+ * a fact the result does not carry, is unsettled — never assumed. A beforeExit of -1 is the workflow's
+ * "no before-probe" sentinel, so it is a fact not carried. Null when the run declares no non-empty
+ * list or its result.json is unreadable: the judge decides such a run.
+ */
+export function settledBy(run: string | undefined): { settled: string[]; unsettled: string[] } | null {
+  if (!run) return null
+  const declared = runArgs(run)?.goalSettledBy
+  if (!Array.isArray(declared) || !declared.length) return null
+  const r = readResult(run)
+  if (!r) return null
+  const list = (k: string): any[] => (Array.isArray(r[k]) ? r[k].filter((x: any) => x && typeof x === 'object') : [])
+  const holds = (token: string): boolean => {
+    if (token === 'lens') return r.scoreTable?.survivingBlocking === 0
+    if (token === 'rules') return Array.isArray(r.rulesThatFailed) && r.rulesThatFailed.length === 0
+    const m = token.match(/^(red|mechanical):(.+)$/)
+    if (!m) return false
+    if (m[1] === 'mechanical') return list('mechanical').some((c) => c.name === m[2] && c.exitCode === 0)
+    return list('red').some((c) =>
+      c.id === m[2] && Number.isInteger(c.beforeExit) && c.beforeExit !== 0 && c.beforeExit !== -1 && c.afterExit === 0)
+  }
+  const settled: string[] = []
+  const unsettled: string[] = []
+  for (const t of declared) (typeof t === 'string' && holds(t) ? settled : unsettled).push(String(t))
+  return { settled, unsettled }
+}
+
+/** A command string split as the shell would, quotes removed. */
+function shellWords(cmd: string): string[] {
+  const words: string[] = []
+  let cur = ''
+  let inWord = false
+  let q: string | null = null
+  for (let i = 0; i < cmd.length; i++) {
+    const ch = cmd[i]
+    if (q) {
+      if (ch === q) q = null
+      else if (ch === '\\' && q === '"' && i + 1 < cmd.length) cur += cmd[++i]
+      else cur += ch
+    } else if (ch === "'" || ch === '"') {
+      q = ch
+      inWord = true
+    } else if (ch === '\\' && i + 1 < cmd.length) {
+      cur += cmd[++i]
+      inWord = true
+    } else if (/\s/.test(ch)) {
+      if (inWord) words.push(cur)
+      cur = ''
+      inWord = false
+    } else {
+      cur += ch
+      inWord = true
+    }
+  }
+  if (inWord) words.push(cur)
+  return words
+}
+
+const JS_TEST_FILE = /\.test\.(?:ts|js|tsx|mjs)$|\.spec\.(?:ts|js)$/
+const PY_TEST_FILE = /(?:^|\/)test_[^/]*\.py$|_test\.py$/
+const STR_AT = /\s*\(\s*(['"`])((?:\\[\s\S]|(?!\1)[^\\])*)\1/y
+const unescapeStr = (s: string) => s.replace(/\\([\s\S])/g, '$1')
+
+/** The index of the `)` closing the `(` at `open`, skipping string literals; -1 when unbalanced. */
+function closeParen(src: string, open: number): number {
+  let depth = 0
+  for (let i = open; i < src.length; i++) {
+    const ch = src[i]
+    if (ch === '"' || ch === "'" || ch === '`') {
+      for (i++; i < src.length && src[i] !== ch; i++) if (src[i] === '\\') i++
+    } else if (ch === '(') depth++
+    else if (ch === ')' && --depth === 0) return i
+  }
+  return -1
+}
+
+/** Test titles in one suite file: test( / it( / test.each(...)( first string argument, or python def test_*. */
+function titlesInFile(file: string, src: string): string[] {
+  if (PY_TEST_FILE.test(file)) return [...src.matchAll(/\bdef\s+(test_\w*)/g)].map((m) => m[1])
+  const out: string[] = []
+  for (const m of src.matchAll(/(?<![\w$.])(?:test|it)(?=\s*\()/g)) {
+    STR_AT.lastIndex = m.index! + m[0].length
+    const s = STR_AT.exec(src)
+    if (s) out.push(unescapeStr(s[2]))
+  }
+  for (const m of src.matchAll(/(?<![\w$.])test\.each\s*\(/g)) {
+    const close = closeParen(src, m.index! + m[0].length - 1)
+    if (close < 0) continue
+    STR_AT.lastIndex = close + 1
+    const s = STR_AT.exec(src)
+    if (s) out.push(unescapeStr(s[2]))
+  }
+  return out
+}
+
+const TITLES_LINE_CAP = 2000
+const SUITE_FILE_CAP = 2 * 1024 * 1024
+
+/**
+ * The test titles a red command that exited 0 proved, as one runFacts line — or ''. With no name
+ * filter (-t, --test-name-pattern, -k) exit 0 means every test in each suite file the command names
+ * passed, so all their titles; with one, only the tests its beforeOutput shows failing (bun
+ * `(fail) NAME [Nms]`, pytest `FAILED path::NAME`). Files are only READ, never run: a token counts
+ * when it is an existing regular file with a test-suite name, relative tokens resolving against the
+ * run's projectDir, where work-checks.sh ran the command. Reading stops once the line is at its cap.
+ */
+export function redTitles(id: string, command: string, beforeOutput: string, projectDir: string | null): string {
+  const words = shellWords(command)
+  const filtered = words.some((w) => /^-[tk]/.test(w) || /^--test-name-pattern(=|$)/.test(w))
+  const titles = new Set<string>()
+  let size = 0
+  const add = (t: string) => {
+    const v = t.trim()
+    if (!v || titles.has(v)) return
+    titles.add(v)
+    size += v.length + 4
+  }
+  if (filtered) {
+    const plain = beforeOutput.replace(/\x1b\[[0-9;]*m/g, '')
+    for (const m of plain.matchAll(/^\(fail\)\s+(.+?)(?:\s+\[[\d.]+\s*m?s\])?\s*$/gm)) add(m[1])
+    for (const m of plain.matchAll(/^FAILED\s+[^\s:]+::(.+?)(?:\s+-\s.*)?\s*$/gm)) add(m[1])
+  } else {
+    for (const w of words) {
+      if (size > TITLES_LINE_CAP) break
+      if (!JS_TEST_FILE.test(w) && !PY_TEST_FILE.test(w)) continue
+      const file = w.startsWith('/') ? w : projectDir ? join(projectDir, w) : null
+      if (!file) continue
+      try {
+        const st = statSync(file)
+        if (!st.isFile() || st.size > SUITE_FILE_CAP) continue
+        for (const t of titlesInFile(file, readFileSync(file, 'utf8'))) add(t)
+      } catch {
+        /* not a readable file: it names no suite */
+      }
+    }
+  }
+  if (!titles.size) return ''
+  const head = filtered
+    ? `red command ${id} is name-filtered, and these tests went from failing before the round to passing after it: `
+    : `red command ${id} exited 0, so every test in the suite file(s) it names passed — each of these held: `
+  const line = head + [...titles].map((t) => `"${t}"`).join('; ')
+  return line.length > TITLES_LINE_CAP ? line.slice(0, TITLES_LINE_CAP - 1) + '…' : line
+}
+
 /**
  * The watched run's verdict as NAMED FACTS — what a goal is written against.
  *
@@ -540,14 +714,8 @@ export function failingLegs(output: string): string[] {
  */
 export function runFacts(run: string | undefined): string {
   if (!run) return ''
-  let r: Record<string, any>
-  try {
-    const raw = JSON.parse(readFileSync(join(run, 'result.json'), 'utf8'))
-    r = Array.isArray(raw) ? raw[raw.length - 1] : raw
-    if (!r || typeof r !== 'object') return ''
-  } catch {
-    return ''
-  }
+  const r = readResult(run)
+  if (!r) return ''
   const legsOf = (output: string, exit: unknown): string => {
     const legs = failingLegs(output)
     if (legs.length) return `; failing leg(s), as the check names them: ${legs.join(', ')} — every other leg passed`
@@ -557,12 +725,18 @@ export function runFacts(run: string | undefined): string {
   for (const m of Array.isArray(r.mechanical) ? r.mechanical : [])
     if (m && typeof m === 'object')
       out.push(`mechanical check ${m.name}: exit ${m.exitCode}${legsOf(m.output, m.exitCode)}`)
+  const projectDir = runProjectDir(run)
   for (const c of Array.isArray(r.red) ? r.red : [])
-    if (c && typeof c === 'object')
+    if (c && typeof c === 'object') {
       out.push(
         `red command ${c.id} (\`${String(c.command || '').slice(0, 200)}\`): exit ${c.afterExit} after ` +
           `the round (it exited ${c.beforeExit} before)${legsOf(c.afterOutput, c.afterExit)}`,
       )
+      if (c.afterExit === 0) {
+        const proved = redTitles(String(c.id), String(c.command || ''), String(c.beforeOutput || ''), projectDir)
+        if (proved) out.push(proved)
+      }
+    }
   const t = r.scoreTable && typeof r.scoreTable === 'object' ? r.scoreTable : {}
   if (typeof t.survivingBlocking === 'number')
     out.push(
@@ -1763,6 +1937,33 @@ function main(): void {
     // The classifier's own words when it said MET; null means nobody confirmed the goal.
     let judged: string | null = null
     if (s.goal) {
+      // A run whose args.json declares goalSettledBy is decided by those facts in its result.json,
+      // and no judge is asked: the plan's author named what settles the goal.
+      const facts = settledBy(s.run)
+      if (facts) {
+        const from = join(s.run!, 'result.json')
+        if (!facts.unsettled.length)
+          release(
+            PASSED_GOAL_MET,
+            (checkless ? '' : `\`${s.check}\` exits 0 and `) +
+              `every fact the run declared settles its goal holds in ${from} (${facts.settled.join(', ')})` +
+              ` — the run's objective met, hold released. ` + HEARTBEAT_NOTE,
+          )
+        const unsettled = facts.unsettled.join(', ')
+        const c = ceilingReached(s, now)
+        if (c)
+          release(
+            'expired',
+            `${c}, with the goal's declared facts unsettled (${unsettled}). Hold released UNMET — say so. ` +
+              HEARTBEAT_NOTE,
+          )
+        block(
+          (checkless ? 'hold: ' : `hold: \`${s.check}\` exits 0 but `) +
+            `the facts this run declared settle its goal do not all hold in ${from} — unsettled: ${unsettled}. ` +
+            `No judge is asked for a run that declares goalSettledBy.\nGoal: ${s.goal}\n${roundLabel(s)}.`,
+          `unsettled: ${unsettled}`,
+        )
+      }
       const j = judgeGoal(String(payload.transcript_path || ''), s.goal, s.check, s.history, s.run)
       if (j.verdict === 'UNMET') {
         // (d) The ceilings bind here too. A judge that keeps answering UNMET over a green check is a

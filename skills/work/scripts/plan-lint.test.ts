@@ -1229,3 +1229,27 @@ test('an agent defined only in the project .claude/agents resolves; a missing on
     expect(missing[0].message).toContain('.claude/agents')
   } finally { rmSync(proj, { recursive: true, force: true }) }
 })
+
+// ---------------------------------------------------------------- goalSettledBy
+
+// The hold releases on these tokens with no judge, so one that names nothing would hold the session
+// to its ceiling on a typo. Each must name a red-gated task, a mechanical check, `lens` or `rules`.
+test('goalSettledBy naming a red-gated task, a mechanical check, lens and rules is fine', () => {
+  const p = base({ tasks: [task()], mechanicalChecks: [{ name: 'dev', cmd: 'bash check.sh' }],
+    goalSettledBy: ['red:T1', 'mechanical:dev', 'lens', 'rules'] } as any)
+  expect(rules(p)).not.toContain('goal-settled-by-unknown')
+})
+
+test('goalSettledBy naming an unknown task, a task with no redCommand, or an unknown check is MAJOR', () => {
+  const p = base({ tasks: [task(), task({ id: 'T2', redCommand: undefined, redDisposition: 'no-behaviour: docs' })],
+    mechanicalChecks: [{ name: 'dev', cmd: 'bash check.sh' }],
+    goalSettledBy: ['red:T9', 'red:T2', 'mechanical:nope', 'vibes'] } as any)
+  const f = lint(p).filter(x => x.rule === 'goal-settled-by-unknown')
+  expect(f.map(x => x.severity)).toEqual(['major', 'major', 'major', 'major'])
+  for (const tok of ['red:T9', 'red:T2', 'mechanical:nope', 'vibes']) expect(f.some(x => x.message.includes(tok))).toBe(true)
+})
+
+test('parseArgs carries goalSettledBy from the dispatch block', () => {
+  const p = parseArgs({ tasks: [], goalSettledBy: ['lens'] })
+  expect((p as any).goalSettledBy).toEqual(['lens'])
+})

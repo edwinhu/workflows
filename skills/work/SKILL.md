@@ -260,6 +260,7 @@ run that dies.
 |---|---|
 | **`args.goalCheck`** (optional) | the ONE command that settles the whole plan. Armed as the hold's check. NEVER a round verdict — `plan-lint` runs it through `hold-lint.ts` and a CRITICAL blocks the dispatch |
 | no `goalCheck` | the hold is **check-less**: the judge alone on `args.goal`, bounded by `maxRounds` and `compose-goal.sh --minutes` |
+| **`args.goalSettledBy`** (optional) | the facts that settle `args.goal` with no judge: `red:ID`, `mechanical:NAME`, `lens`, `rules`. All settled releases; any unsettled blocks naming it |
 | `--run <run-dir>` | recorded by the arm. While the round is in flight a stop is ALLOWED and costs no round: a detached process is doing the work. Once its verdict lands the judge reads only that `result.json`'s named facts (failing legs, `survivingBlocking`, failed rules) against the goal's own conditions, never the transcript |
 
 **Under the hold, a failed round advances with `work-redispatch.sh <plan> <run>/args.json --dispatch`,
