@@ -28,7 +28,11 @@ legcount_run() {
 legcount_cmd() {
   local leg="$1" dir="$2" cmd="$3" re="${4:-}" out s got
   out="$(mktemp "${TMPDIR:-/tmp}/leg-c.XXXXXX")"
+  # Unset in a wrapping subshell only: WORK_RUN_BASELINE is for check.sh's own legs, and a project
+  # suite that spawns checkers in temp repos reads nothing added under it.
+  ( unset WORK_RUN_BASELINE
   ( cd "$dir" && eval "$cmd" ) >"$out" 2>&1
+  )
   s=$?
   cat "$out" >&2
   if [ "$leg" = tests ] || [ "${leg%-tests}" != "$leg" ]; then

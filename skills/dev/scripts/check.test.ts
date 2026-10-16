@@ -236,3 +236,55 @@ test("scope: no --plan is exit 2 naming the flag; --no-plan is exit 0 declined; 
     expect(ran.out).not.toContain("leg scope exit=0 (declined)");
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
+
+// work-checks.sh exports WORK_RUN_BASELINE to every mechanical check, for check.sh's OWN legs (scope,
+// dev-gate). The project's commands must not inherit it: teaching's suite spawns its checkers in temp
+// git repos, and those honour the variable, so "lines added over HEAD" read nothing and 15 tests failed
+// only inside a work round (2026-10-15). Each project command here fails if it can see the variable.
+test("the project's test, lint and build commands run without WORK_RUN_BASELINE", () => {
+  const d = proj();
+  try {
+    const blind = (ok: string) => `if [ -n "\${WORK_RUN_BASELINE+x}" ]; then echo "saw baseline $WORK_RUN_BASELINE"; exit 7; fi; ${ok}`;
+    const r = spawnSync("bash", [CHECK, "--project-dir", d, "--test-cmd", blind(PASS), "--lint-cmd", blind("true"),
+      "--build-cmd", blind("true"), "--no-plan"], {
+      timeout: 120_000, encoding: "utf8",
+      env: { ...process.env, WORK_RUN_BASELINE: "4b825dc642cb6eb9a060e54bf8d69288fbee4904" },
+    });
+    const out = (r.stdout ?? "") + (r.stderr ?? "");
+    expect(out).not.toContain("saw baseline");
+    expect(r.stdout).toContain("leg tests exit=0");
+    expect(r.stdout).toContain("leg lint exit=0");
+    expect(r.stdout).toContain("leg build exit=0");
+  } finally { rmSync(d, { recursive: true, force: true }); }
+});
+
+// The other half: check.sh's OWN legs still read WORK_RUN_BASELINE. A focused test and a stray path
+// that were already in the baseline tree are not this run's change, so dev-gate and scope pass with
+// the baseline and fail without it.
+test("dev-gate and scope still judge against WORK_RUN_BASELINE", () => {
+  const d = gitProj({ "src/a.ts": "export {}\n" }, { "tests/b.test.ts": `${ONLY}('z', () => {})\n`, "stray.txt": "x\n" });
+  try {
+    const plan = join(d, "plan.md");
+    writeFileSync(plan, `# p\n<!-- work:dispatch\n${JSON.stringify({ args: { projectDir: d, tasks: [{ id: "T1", writablePaths: ["src/"] }] } })}\n-->\n`);
+    const git = (...a: string[]) => spawnSync("git", ["-C", d, ...a], { timeout: 30_000, encoding: "utf8" }).stdout.trim();
+    git("add", "-A");
+    const tree = git("write-tree");
+    git("reset", "-q");
+    expect(tree).toMatch(/^[0-9a-f]{40}$/);
+    const go = (env: Record<string, string>) => {
+      const r = spawnSync("bash", [CHECK, "--project-dir", d, "--test-cmd", PASS, "--no-lint-cmd", "--no-build-cmd", "--plan", plan], {
+        timeout: 120_000, encoding: "utf8", env: { ...process.env, ...env },
+      });
+      return r.stdout ?? "";
+    };
+    const { WORK_RUN_BASELINE: _drop, ...plain } = process.env as Record<string, string>;
+    const without = spawnSync("bash", [CHECK, "--project-dir", d, "--test-cmd", PASS, "--no-lint-cmd", "--no-build-cmd", "--plan", plan], {
+      timeout: 120_000, encoding: "utf8", env: plain,
+    }).stdout ?? "";
+    expect(without).toContain("leg dev-gate exit=1");
+    expect(without).toContain("leg scope exit=1");
+    const withBase = go({ WORK_RUN_BASELINE: tree });
+    expect(withBase).toContain("leg dev-gate exit=0");
+    expect(withBase).toContain("leg scope exit=0");
+  } finally { rmSync(d, { recursive: true, force: true }); }
+});
