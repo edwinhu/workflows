@@ -11,6 +11,7 @@
     "script": { "pick": "sonnet", "fallbacks": ["flash"] },
     "judgement": { "pick": "opus", "fallbacks": ["sonnet"] },
     "review": { "pick": "sonnet", "fallbacks": ["opus"] },
-    "bulk": { "pick": "flash", "fallbacks": ["sonnet"] }
+    "bulk": { "pick": "flash", "fallbacks": ["sonnet"] },
+    "vision": { "pick": "flash", "fallbacks": ["sonnet"] }
   }
 }

@@ -13,7 +13,7 @@ slot. Routing is now code that every `farm.sh --tasks` row goes through.
 ## The pieces
 
 - **`scripts/lib/routing.json`** is the one committed table. `kinds` maps each kind (`script`,
-  `judgement`, `review`, `bulk`) to a `pick` and ordered `fallbacks`; `candidates` pin a provider
+  `judgement`, `review`, `bulk`, `vision`) to a `pick` and ordered `fallbacks`; `candidates` pin a provider
   and a full model id. A table still carrying `jev` is refused (retired below).
 - **`scripts/lib/route.ts --row`** turns one row into one decision. A row naming `provider`/`model`
   passes through (`source: explicit`). Otherwise its kind's pick, or the first available fallback
