@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-GEMINI_MODELS="$(cd "$SCRIPT_DIR/../../.." && pwd)/scripts/lib/gemini_models.py"
+ROUTE_TS="$(cd "$SCRIPT_DIR/../../.." && pwd)/scripts/lib/route.ts"
 
 usage() {
   cat <<'EOF'
@@ -27,8 +27,8 @@ Backends:
   claude   claude-code -p (CLIProxyAPI wrapper over the pooled Claude OAuth
            accounts, NOT plain `claude`). Unmetered. Reads images and PDFs
            natively — prefer it for PDFs, which agy must rasterize first.
-  agy      agy -p (Antigravity CLI). DEFAULT, on the 'vision_antigravity'
-           role in scripts/lib/gemini-models.json — Gemini via Antigravity
+  agy      agy -p (Antigravity CLI). DEFAULT, on route.ts kind 'vision'
+           (scripts/lib/routing.json) — Gemini via Antigravity
            OAuth, unmetered. Reads images, PDFs and video natively. No audio:
            those auto-route to api.
   codex    codex exec (attaches the image with -i, no read tool needed).
@@ -130,18 +130,23 @@ run_copilot() {
 }
 
 run_agy() {
-  # Gemini Flash at high reasoning, via Antigravity OAuth. Unmetered. The default
-  # comes from the 'vision_antigravity' role, NOT 'vision': agy's ids spell the
-  # reasoning level into the name and the API's do not, so the two namespaces are
-  # not interchangeable. MODEL stays the cross-backend explicit override.
-  local model="$MODEL"
+  # Gemini Flash at high reasoning, via Antigravity OAuth. Unmetered. The default is the
+  # first available gemini candidate of routing.json's 'vision' kind (route.ts), the one
+  # table --refresh keeps current: agy's ids spell the reasoning level into the name, so
+  # the API's 'vision' role is not interchangeable. MODEL stays the explicit override.
+  local model="$MODEL" decision
   if [[ -z "$model" ]]; then
-    model="$(python3 "$GEMINI_MODELS" vision_antigravity || true)"
+    decision="$(bun "$ROUTE_TS" --row '{"kind":"vision","provider":"gemini"}')" || {
+      echo "Error: route.ts could not route kind 'vision' on provider gemini ($ROUTE_TS)." >&2
+      echo "Run 'bun $ROUTE_TS --refresh', or pass --model explicitly." >&2
+      return 1
+    }
+    model="$(jq -r '.model // empty' <<<"$decision")"
     # Empty is checked as well as the exit status: a bare `--model ""` would reach
     # agy as a silent fallback to whatever its own default happens to be.
     [[ -n "$model" ]] || {
-      echo "Error: could not resolve the 'vision_antigravity' model from $GEMINI_MODELS." >&2
-      echo "Pass --model explicitly, or repair the resolver." >&2
+      echo "Error: route.ts returned no model for kind 'vision': $decision" >&2
+      echo "Pass --model explicitly, or repair $ROUTE_TS." >&2
       return 1
     }
   fi

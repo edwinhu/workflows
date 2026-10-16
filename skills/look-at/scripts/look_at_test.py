@@ -234,6 +234,14 @@ def bindir(tmp_path):
                      f'echo "{name}-output"\n'
                      f'if [ "{name}" = pdftoppm ]; then eval "last=\\${{$#}}"; touch "${{last}}-1.png"; fi\n')
         p.chmod(p.stat().st_mode | stat.S_IEXEC)
+    # route.ts is reached through `bun`: record its argv apart from calls.log (which holds only
+    # backend calls), answer with $BUN_STUB_OUT, or fail with $BUN_STUB_FAIL set.
+    b = d / "bun"
+    b.write_text(f'#!/bin/sh\nprintf "%s\\n" "$*" >> "{log.parent / "bun.log"}"\n'
+                 'if [ -n "$BUN_STUB_FAIL" ]; then echo "route: boom" >&2; exit 2; fi\n'
+                 'if [ -n "$BUN_STUB_OUT" ]; then echo "$BUN_STUB_OUT"; exit 0; fi\n'
+                 """echo '{"provider":"gemini","model":"routed-model-9"}'\n""")
+    b.chmod(b.stat().st_mode | stat.S_IEXEC)
     return d
 
 
@@ -280,19 +288,33 @@ def test_sh_unknown_backend_named(bindir, img):
     assert r.returncode == 1 and "unknown backend 'nope'" in r.stderr and calls == ""
 
 
-def test_sh_default_backend_is_agy_with_resolved_role_model(bindir, img):
+def test_sh_default_backend_is_agy_with_routed_vision_model(bindir, img):
     r, calls = sh(bindir, "-f", str(img), "-g", "what is this")
     assert r.returncode == 0 and "agy-output" in r.stdout
     assert calls.startswith("agy\n")
-    assert "[gemini-3.7-flash-high]" in calls          # vision_antigravity role, not the API id
+    assert "[routed-model-9]" in calls                 # route.ts's answer, not a pinned id
     assert "[--dangerously-skip-permissions]" in calls
     assert f"[Read the file at {img}. what is this]" in calls
     assert f"[{img.parent}]" in calls                  # --add-dir is the file's directory
+    asked = (bindir.parent / "bun.log").read_text()
+    assert "scripts/lib/route.ts" in asked
+    assert '--row {"kind":"vision","provider":"gemini"}' in asked
 
 
-def test_sh_model_flag_overrides_role_for_agy(bindir, img):
+def test_sh_model_flag_overrides_route_for_agy(bindir, img):
     _, calls = sh(bindir, "-f", str(img), "-g", "g", "-m", "my-model")
-    assert "[my-model]" in calls and "gemini-3.7-flash-high" not in calls
+    assert "[my-model]" in calls and "routed-model-9" not in calls
+    assert not (bindir.parent / "bun.log").exists()    # an explicit model never consults route.ts
+
+
+def test_sh_agy_refuses_naming_route_ts_when_it_exits_nonzero(bindir, img):
+    r, calls = sh(bindir, "-f", str(img), "-g", "g", env_extra={"BUN_STUB_FAIL": "1"})
+    assert r.returncode == 1 and "route.ts" in r.stderr and calls == ""
+
+
+def test_sh_agy_refuses_an_empty_routed_model(bindir, img):
+    r, calls = sh(bindir, "-f", str(img), "-g", "g", env_extra={"BUN_STUB_OUT": '{"provider":"gemini","model":null}'})
+    assert r.returncode == 1 and "no model" in r.stderr and calls == ""
 
 
 def test_sh_claude_backend_uses_claude_code_with_read_tool_only(bindir, img):

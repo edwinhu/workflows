@@ -208,6 +208,13 @@ test('propose: a cross-provider dominator replaces bulk\'s pick, which becomes a
   expect(t.stdout).toMatch(/^kind bulk: flash38 \[sonnet, flash\] -> sol \[flash, sonnet, flash38\] — sol dominates flash38/m)
 }, 30_000)
 
+test('propose: vision stays on gemini even when a codex candidate dominates its pick', async () => {
+  const table = paretoTable(t => { t.kinds.vision = { pick: 'flash38', fallbacks: ['flash'] } })
+  const p = await proposals(table)
+  expect(p.bulk.to.pick).toBe('sol')               // the same dominator does move an unconstrained kind
+  expect(p.vision).toBeUndefined()                 // no gemini candidate dominates flash38, so no proposal
+}, 30_000)
+
 test('propose: among dominators the higher slopIntelligence wins, then the lower slopCost', async () => {
   const addSol2 = (i: number, c: number) => (t: any) => {
     t.candidates.sol2 = { ...t.candidates.sol, model: 'gpt-6.1-sol-high', signals: slopSig(i, c) }

@@ -87,7 +87,8 @@
  *              AVAILABLE candidate that DOMINATES it: slopIntelligence >= the pick's and slopCost
  *              <= the pick's, at least one strictly, both of its values known. script and review
  *              stay on a Claude model: only a candidate of provider claude may replace their pick
- *              (e.g. an Opus effort variant over Sonnet, when the table has one). Several
+ *              (e.g. an Opus effort variant over Sonnet, when the table has one); vision stays on
+ *              provider gemini, the one the agy backend serves. Several
  *              dominators: slopIntelligence descending, then slopCost ascending, then RANK ORDER.
  *              FALLBACK, only when the pick has no slop signals: the rule before 2026-10-08 —
  *              script and review PROTECTED while their pick is claude-sonnet-5-5; otherwise the
@@ -137,7 +138,7 @@ import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 
 export type Provider = 'claude' | 'codex' | 'gemini' | 'gemini-vertex'
-export type Kind = 'script' | 'judgement' | 'review' | 'bulk'
+export type Kind = 'script' | 'judgement' | 'review' | 'bulk' | 'vision'
 
 export interface Candidate {
   provider: Provider
@@ -909,6 +910,8 @@ const PROTECTED_PICKS: Partial<Record<Kind, string>> = {
 }
 /** Kinds whose pick stays on a Claude model under the Pareto rule (decided 2026-10-08). */
 const CLAUDE_ONLY: readonly string[] = ['script', 'review']
+/** Kinds whose pick may be replaced only by a candidate of one provider (vision: look-at's agy backend serves gemini only). */
+const PROVIDER_ONLY: Readonly<Record<string, Provider>> = { script: 'claude', review: 'claude', vision: 'gemini' }
 
 export interface Proposal {
   kind: string
@@ -952,7 +955,7 @@ export function propose(table: Table): Proposal[] {
       if (!(kind === 'judgement' && pc.model === PROTECTED_PICKS.judgement)) {
         const dom = Object.keys(table.candidates)
           .filter(id => id !== pick && cand(id).available && dominates(slop(id), ps) &&
-            (!CLAUDE_ONLY.includes(kind) || cand(id).provider === 'claude'))
+            (!PROVIDER_ONLY[kind] || cand(id).provider === PROVIDER_ONLY[kind]))
           .sort((a, b) => slop(b).intelligence! - slop(a).intelligence! || slop(a).cost! - slop(b).cost! || rankCmp(rank(a), rank(b)))
         if (dom.length) {
           newPick = dom[0]

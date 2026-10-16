@@ -105,6 +105,13 @@ describe('the committed routing.json', () => {
       { provider: 'gemini', model: 'gemini-3.8-flash-high', kind: 'review', candidate: 'flash38' })
   })
 
+  test("kind vision is flash38 over flash, and a gemini vision row resolves to flash38", async () => {
+    const t = JSON.parse(readFileSync(COMMITTED, 'utf8'))
+    expect(t.kinds.vision).toEqual({ pick: 'flash38', fallbacks: ['flash'] })
+    expectConstrained(parseDecision(await decide({ kind: 'vision', provider: 'gemini' }, COMMITTED)),
+      { provider: 'gemini', model: 'gemini-3.8-flash-high', kind: 'vision', candidate: 'flash38' })
+  })
+
   test('a claude review row resolves to sonnet', async () => {
     expectConstrained(parseDecision(await decide({ kind: 'review', provider: 'claude' }, COMMITTED)),
       { provider: 'claude', model: 'claude-sonnet-5-5', kind: 'review', candidate: 'sonnet' })
@@ -190,4 +197,26 @@ describe('no Decisions call on any row', () => {
       expect(jev.bodies).toHaveLength(0)
     } finally { jev.stop() }
   }, 30_000)
+})
+
+// ----------------------------------------------------------------- kind vision (look-at's agy backend)
+
+describe('kind vision with provider gemini', () => {
+  const vision = (edit: (t: any) => void = () => {}) => decide({ kind: 'vision', provider: 'gemini' }, fixtureCopy(edit))
+
+  test('resolves to the first available gemini candidate in the chain', async () => {
+    expectConstrained(parseDecision(await vision()),
+      { provider: 'gemini', model: 'gemini-3.8-flash-high', kind: 'vision', candidate: 'flash38' })
+    expectConstrained(parseDecision(await vision(t => { t.candidates.flash38.available = false })),
+      { provider: 'gemini', model: 'gemini-3.7-flash-high', kind: 'vision', candidate: 'flash' })
+  })
+
+  test('refuses, never falling back to another provider, when no gemini candidate is available', async () => {
+    const r = await vision(t => { t.candidates.flash38.available = false; t.candidates.flash.available = false })
+    expect(r.code).toBe(2)
+    expect(r.stdout).toBe('')
+    expect(r.stderr).toContain('vision')
+    expect(r.stderr).toContain('gemini')
+  })
+
 })

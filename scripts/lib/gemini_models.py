@@ -8,8 +8,6 @@ reasoning model:
     judgment            reasoning where accuracy matters
     pro                 the few sites that need a pro model
     vision              multimodal extraction from one file (OCR, charts, tables)
-    vision_antigravity  the same job through the `agy` CLI, whose ids carry a reasoning
-                        suffix and are not interchangeable with the API ids
 
 Resolution order, highest wins:
 
@@ -30,7 +28,7 @@ Usage:
 
 Shell call sites use the CLI form so they read this same table rather than hardcoding an id:
 
-    python3 scripts/lib/gemini_models.py vision_antigravity
+    python3 scripts/lib/gemini_models.py bulk
 """
 from __future__ import annotations
 

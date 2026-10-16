@@ -21,7 +21,7 @@ const FIXTURE = join(import.meta.dir, 'fixtures', 'routing', 'table.json')
 const COMMITTED = join(ROOT, 'scripts', 'lib', 'routing.json')
 /** Nothing listens here: curl cannot connect, so Jev is unavailable without any network. */
 const DEAD = 'http://127.0.0.1:1/'
-const KINDS = ['script', 'judgement', 'review', 'bulk']
+const KINDS = ['script', 'judgement', 'review', 'bulk', 'vision']
 const CANDIDATES = ['sonnet', 'opus', 'flash', 'luna']
 
 /** A copy of the fixture with `edit` applied, written to a fresh temp dir. */
@@ -150,6 +150,7 @@ test('each kind routes to its pick candidate', async () => {
     judgement: ['opus', 'claude', 'claude-opus-5-5'],
     review: ['sonnet', 'claude', 'claude-sonnet-5-5'],
     bulk: ['flash', 'gemini', 'gemini-3.7-flash-high'],
+    vision: ['flash', 'gemini', 'gemini-3.7-flash-high'],
   }
   for (const kind of KINDS) {
     const d = parseDecision(await decide({ label: kind, prompt: 'p', kind }))

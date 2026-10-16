@@ -178,6 +178,12 @@
         "sonnet",
         "flash"
       ]
+    },
+    "vision": {
+      "pick": "flash38",
+      "fallbacks": [
+        "flash"
+      ]
     }
   }
 }

@@ -18,7 +18,7 @@ const mkTmp = useTmp()
 const FARM = join(import.meta.dir, '..', 'skills', 'farm-out', 'scripts', 'farm.sh')
 const FIXTURE = join(import.meta.dir, 'fixtures', 'routing', 'table.json')
 const DEAD = 'http://127.0.0.1:1/'
-const KINDS = ['script', 'judgement', 'review', 'bulk']
+const KINDS = ['script', 'judgement', 'review', 'bulk', 'vision']
 
 type Rig = { root: string; agentCwd: string; argvLog: string; outcomes: string; env: Record<string, string> }
 
