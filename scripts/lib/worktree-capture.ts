@@ -63,6 +63,20 @@ function sameState(left: BigIntStats, right: BigIntStats): boolean {
   return sameInode(left, right) && left.size === right.size && left.mtimeNs === right.mtimeNs && left.ctimeNs === right.ctimeNs;
 }
 
+// Once the opened inode is unlinked (a rename over its name, say) the kernel's link text gains a
+// " (deleted)" suffix and resolving the link fails with ENOENT. Both mean the name moved under the
+// open descriptor, which is a change, not an absent file.
+function openedInodePath(fd: number, repositoryPath: string): string {
+  const descriptor = `/proc/self/fd/${fd}`;
+  if (readlinkSync(descriptor).endsWith(" (deleted)")) throw new Error(`worktree path changed while capturing: ${repositoryPath}`);
+  try {
+    return realpathSync(descriptor);
+  } catch (error) {
+    if (error instanceof Error && "code" in error && error.code === "ENOENT") throw new Error(`worktree path changed while capturing: ${repositoryPath}`);
+    throw error;
+  }
+}
+
 export function captureWorktreePath(canonicalRoot: string, repositoryPath: string, options: WorktreeCaptureOptions = {}): CapturedWorktreePath | undefined {
   const components = repositoryPath.split("/");
   let current = canonicalRoot;
@@ -131,7 +145,7 @@ function readPinnedLeaf(canonicalRoot: string, path: string, repositoryPath: str
     // now. On Linux /proc/self/fd/N is the descriptor's own name; elsewhere the pathname is the only
     // answer available and the identity checks below carry the weight.
     const openedPath = process.platform === "linux" && !options.forcePathnameFallback
-      ? realpathSync(`/proc/self/fd/${fd}`)
+      ? openedInodePath(fd, repositoryPath)
       : realpathSync(path);
     if (!isContained(canonicalRoot, openedPath)) throw new Error(`worktree path escapes repository: ${repositoryPath}`);
 

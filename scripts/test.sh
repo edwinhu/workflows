@@ -41,6 +41,10 @@ export OPENROUTER_CREDITS_URL=off
 # Nor the Jev spend log or reply cache: a cached reply would answer a later test's stub call.
 # tests/jev-spend.test.ts turns them on against its own stubs.
 export JEV_CALL_LOG=off JEV_CACHE=off
+# Nor tool state written into os.tmpdir(), which is the run's TMPDIR and so fails the leak guard: npm's
+# cli.js enables Node's compile cache (node-compile-cache/, from the npx hooks/lint-check.ts runs), and
+# onnxruntime, which `import pymupdf` loads, writes its telemetry session (.ses). tests/test-sh-tool-caches.test.ts.
+export NODE_DISABLE_COMPILE_CACHE=1 ORT_DISABLE_TELEMETRY=1
 # The python suites import modules that live in the tree; their bytecode would land in __pycache__/
 # beside them. Ignored by git, but still a write into the tree every run.
 export PYTHONDONTWRITEBYTECODE=1
