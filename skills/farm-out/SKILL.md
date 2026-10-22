@@ -154,9 +154,9 @@ $S/farm-team.sh --prompt-file t.txt --cwd /repo --expect /repo/a.txt --expect /r
 `--provider claude|codex|gemini` is optional on `--tasks` (omit it and every row is
 routed), required on `--workflow`, and defaults to `claude` on `farm-team.sh`.
 
-Budget defaults: `FARM_TASK_BUDGET=4000000`, `FARM_SESSION_BUDGET=20000000`,
+Budget defaults: `FARM_TASK_BUDGET=4000000`, `FARM_RUN_BUDGET=20000000` (`FARM_SESSION_BUDGET` a deprecated alias),
 `FARM_TASK_ESTIMATE=750000` per task (capped at its budget). `FARM_MAX_TURNS=250`
-on farm and grind. The pre-launch check refuses spend plus estimate at the session cap.
+on farm and grind. The pre-launch check refuses a run whose own estimate reaches the run cap.
 
 Read `reference.md` before changing a runner, debugging a 429, or hand-writing
 a proxy call — it holds the verified model-routing and failure-mode details.
