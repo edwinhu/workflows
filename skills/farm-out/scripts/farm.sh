@@ -274,8 +274,8 @@ EVENT_DIR="${TMPDIR:-/tmp}/farm-events${CLAUDE_CODE_SESSION_ID:+/$CLAUDE_CODE_SE
 mkdir -p "$EVENT_DIR" 2>/dev/null || true
 EVENTS="$EVENT_DIR/$$.ndjson"
 
-# Session budget check and estimation
-FARM_SESSION_BUDGET=${FARM_SESSION_BUDGET:-20000000}
+# Per-run budget cap and estimation (FARM_SESSION_BUDGET is a deprecated alias)
+FARM_RUN_BUDGET=${FARM_RUN_BUDGET:-${FARM_SESSION_BUDGET:-20000000}}
 FARM_TASK_BUDGET=${FARM_TASK_BUDGET:-4000000}
 FARM_TASK_ESTIMATE=${FARM_TASK_ESTIMATE:-750000}
 
@@ -323,12 +323,11 @@ fi
 
 echo "Estimate for $num_tasks task(s): $estimate tokensW" >&2
 echo "Session spend so far: $session_tokens tokensW" >&2
-echo "Cap remaining: $((FARM_SESSION_BUDGET - session_tokens)) tokensW" >&2
+echo "Run cap: $FARM_RUN_BUDGET tokensW" >&2
 
 if [ "${FARM_BUDGET_OVERRIDE:-0}" != "1" ]; then
-  total_proj=$((session_tokens + estimate))
-  if [ "$total_proj" -ge "$FARM_SESSION_BUDGET" ]; then
-    refuse "Session budget exceeded up front: $total_proj (spend + estimate) >= ${FARM_SESSION_BUDGET}. Set FARM_BUDGET_OVERRIDE=1 to bypass."
+  if [ "$estimate" -ge "$FARM_RUN_BUDGET" ]; then
+    refuse "Run budget exceeded up front: $estimate (this run's estimate) >= ${FARM_RUN_BUDGET}. Set FARM_BUDGET_OVERRIDE=1 to bypass."
   fi
 fi
 
@@ -339,7 +338,7 @@ emit() { printf 'farm: %s
 # poll -- so without eviction the cost of one liveness check grows with every dispatch ever run
 # on this machine. Fold only files whose pid is gone AND that are old enough to be no run anyone
 # is still waiting on: the file shrinks to one SPEND line (or goes, if it spent nothing), so the
-# session cap above still sees the spend after the run's record is pruned.
+# session spend line still sees the spend after the run's record is pruned.
 evict_stale_events() {
   local f pid total
   shopt -s nullglob

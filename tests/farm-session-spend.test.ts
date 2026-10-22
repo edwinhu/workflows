@@ -32,28 +32,34 @@ test('one malformed line costs only itself: the valid lines still sum', () => {
   const { res } = run({
     '111.ndjson': 'farm: {"type":"result","tokensW":4000000.5,"budgetExceeded":true}\n{"type":"result","tokensW":1000}\nbroken "tokensW": {\n',
     '222.ndjson': '{"type":"result","tokensW":2000.5,"budgetExceeded":true}\n',
-  }, { FARM_SESSION_BUDGET: '1' })
+  }, { FARM_RUN_BUDGET: '1' })
   expect(res.stderr).toContain('Session spend so far: 4003001 tokensW')
   expect(res.stderr).toMatch(/1 unparseable/)
 })
 
 test('an event set that yields nothing is warned about, not silently zero', () => {
   const { res } = run({ '333.ndjson': 'bad "tokensW": 1\nnot json "tokensW":\n' },
-    { FARM_SESSION_BUDGET: '1' })
+    { FARM_RUN_BUDGET: '1' })
   expect(res.stderr).toMatch(/2 unparseable/)
   expect(res.stderr).toContain('Session spend so far: 0 tokensW')
 })
 
 test('a clean event dir prints no warning', () => {
-  const { res } = run({ '444.ndjson': '{"type":"result","tokensW":10}\n' }, { FARM_SESSION_BUDGET: '1' })
+  const { res } = run({ '444.ndjson': '{"type":"result","tokensW":10}\n' }, { FARM_RUN_BUDGET: '1' })
   expect(res.stderr).toContain('Session spend so far: 10 tokensW')
   expect(res.stderr).not.toMatch(/unparseable/)
+})
+
+test('a session already past the old 20M cap still launches a small run', () => {
+  const { res } = run({ '777.ndjson': 'farm: DONE a ok toolCalls=3 W=25000000\n' })
+  expect(res.stderr).toContain('Session spend so far: 25000000 tokensW')
+  expect(res.status).toBe(0)
 })
 
 test('the budget-exceeded path writes a result line jq parses', () => {
   // The child emits one assistant message heavy enough to blow the row budget.
   const child = `printf '%s\\n' '{"type":"assistant","message":{"id":"m1","usage":{"output_tokens":900000}}}'; sleep 3`
-  const { res, ev } = run({}, { FARM_TASK_BUDGET: '1000', BUDGET: '1000', FARM_SESSION_BUDGET: '1000000000' }, child)
+  const { res, ev } = run({}, { FARM_TASK_BUDGET: '1000', BUDGET: '1000', FARM_RUN_BUDGET: '1000000000' }, child)
   const files = readdirSync(ev).filter(f => /^\d+\.ndjson$/.test(f))
   expect(files.length).toBe(1)
   const lines = readFileSync(join(ev, files[0]), 'utf8').split('\n').filter(l => l.includes('"tokensW"'))
@@ -67,14 +73,14 @@ test('the budget-exceeded path writes a result line jq parses', () => {
 test('DONE W= lines are spend: ok, fail and budget rows all sum', () => {
   const { res } = run({
     '555.ndjson': 'farm: START a cwd=/x\nfarm: DONE a ok toolCalls=3 W=1000.5\nfarm: DONE b fail rc=1 missing=0 orphaned=0 toolCalls=2 W=200\nfarm: DONE c ok toolCalls=0\n',
-  }, { FARM_SESSION_BUDGET: '1' })
+  }, { FARM_RUN_BUDGET: '1' })
   expect(res.stderr).toContain('Session spend so far: 1200 tokensW')
 })
 
 test('a budget row with both a DONE W= and a tokensW record counts once', () => {
   const { res } = run({
     '666.ndjson': 'farm: DONE s fail budget W=4014988.1/4000000 toolCalls=206\nfarm: {"type":"result","tokensW":4014988.1,"budgetExceeded":true}\nfarm: DONE t ok toolCalls=1 W=10\n',
-  }, { FARM_SESSION_BUDGET: '1' })
+  }, { FARM_RUN_BUDGET: '1' })
   expect(res.stderr).toContain('Session spend so far: 4014998 tokensW')
 })
 
@@ -102,5 +108,5 @@ function run0(tmp: string): string {
   const args = join(root, 'args.json'); writeFileSync(args, '{}')
   return spawnSync('bash', [FARM, '--provider', 'claude', '--no-cron', '--workflow', wf, '--args', args, '--out', out, '--cwd', root],
     { encoding: 'utf8', timeout: 120_000, env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: tmp, FARM_OUT_CHILD: '1',
-      FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl'), CLAUDE_CODE_SESSION_ID: SID, FARM_SESSION_BUDGET: '1000000000' } }).stderr
+      FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl'), CLAUDE_CODE_SESSION_ID: SID, FARM_RUN_BUDGET: '1000000000' } }).stderr
 }

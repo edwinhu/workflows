@@ -111,7 +111,7 @@ function runFanout(rows: Record<string, unknown>[], spend: number | null = 0, en
       encoding: 'utf8', cwd: root,
       env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: root,
         CLAUDE_CODE_SESSION_ID: 'estimate-test', FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl'),
-        FARM_TASK_BUDGET: '4000000', FARM_SESSION_BUDGET: '20000000',
+        FARM_TASK_BUDGET: '4000000', FARM_RUN_BUDGET: '20000000',
         FARM_TASK_ESTIMATE: '750000', FARM_BUDGET_OVERRIDE: '0', ...env },
     })
   } finally {
@@ -130,11 +130,24 @@ test('seven rows at zero spend use the median estimate, not full task budgets', 
   expect(res.stderr).not.toContain('Session spend so far: 00')
 }, 120_000)
 
-test('spend plus fan-out estimate exceeding the session cap is refused', () => {
+test('earlier session spend does not count against this run', () => {
   const res = runFanout(sevenRows, 15000000)
+  expect(res.status).toBe(0)
+  expect(res.stderr).toContain('Session spend so far: 15000000 tokensW')
+  expect(res.stderr).not.toContain('budget exceeded')
+}, 120_000)
+
+test('a fan-out whose own estimate reaches the run cap is refused', () => {
+  const res = runFanout(sevenRows, 0, { FARM_RUN_BUDGET: '5000000' })
   expect(res.status).toBe(2)
-  expect(res.stderr).toContain('Session budget exceeded up front: 20250000')
+  expect(res.stderr).toContain('Run budget exceeded up front: 5250000')
   expect(res.stdout).toBe('')
+}, 120_000)
+
+test('FARM_SESSION_BUDGET still sets the run cap when FARM_RUN_BUDGET is unset', () => {
+  const res = runFanout(sevenRows, 0, { FARM_RUN_BUDGET: '', FARM_SESSION_BUDGET: '5000000' })
+  expect(res.status).toBe(2)
+  expect(res.stderr).toContain('Run budget exceeded up front: 5250000')
 }, 120_000)
 
 test('the estimate is capped at each row budget', () => {
