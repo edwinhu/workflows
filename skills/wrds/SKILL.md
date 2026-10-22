@@ -1,7 +1,7 @@
 ---
 name: wrds
 version: 1.0
-description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/ExecuComp/Capital IQ", "Form 4 insider data", "13F institutional ownership (Thomson)", "13D/13G blockholders", "ISS governance/compensation/voting/directors", "proxy advisor recommendations", "TAQ intraday/NBBO", "SDC M&A or new issues", "DealScan syndicated loans", "PitchBook PE/VC deals", "FISD corporate bonds", "municipal bonds / muni trades / MSRB RTRS / SDC municipals", "Form D/ADV", "fund formation", "FJC court data", "linking datasets / join keys (gvkey-permno via CCM, cik-gvkey via wciklink, DealScan-Compustat)", or any WRDS PostgreSQL query or SAS ETL on the WRDS grid (qsub/qsas/SGE).
+description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/ExecuComp/Capital IQ", "Form 4 insider data", "13F institutional ownership (Thomson)", "13D/13G blockholders", "ISS governance/compensation/voting/directors", "proxy advisor recommendations", "shareholder proposals / 14a-8", "TAQ intraday/NBBO", "SDC M&A or new issues", "DealScan syndicated loans", "PitchBook PE/VC deals", "FISD corporate bonds", "municipal bonds / muni trades / MSRB RTRS / SDC municipals", "Form D/ADV", "fund formation", "FJC court data", "linking datasets / join keys (gvkey-permno via CCM, cik-gvkey via wciklink, DealScan-Compustat)", or any WRDS PostgreSQL query or SAS ETL on the WRDS grid (qsub/qsas/SGE).
 user-invocable: false
 ---
 
@@ -368,6 +368,7 @@ Detailed query patterns and table documentation:
 - **`references/execucomp.md`** - ExecuComp: CEO anncomp, legacy codirfin vs current directorcomp, firm-year aggregation
 - **`references/iss-directors.md`** - ISS Directors: risk.directors + risk.rmdirectors, type harmonization, 1996 gender backfill, S&P 1500 filter
 - **`references/iss-voting.md`** - ISS Voting Analytics: vavoteresults, voteanalysis_npx, base-conditional turnout/forpct, agenda codes
+- **`references/shareholder-proposals.md`** - Shareholder proposals (14a-8), not on WRDS: US SIF public JSON API — proposal text, withdrawn/omitted dispositions ISS lacks, SEC no-action PDFs; which questions go to ISS instead
 - **`references/tfn-ownership.md`** - Thomson 13-F (S34) institutional ownership and S12 mutual-fund holdings via MFLINKS, passive/index classification, and **Known Data Defects** (D1-D9: split mis-adjustment, post-2013 coverage collapse, 2017Q4 S12 feed change, 13F value unit break, and two that are *yours* not the vendor's — D8 silent Int8 date overflow, D9 ownership above 100%). Read the defects section before trusting any split-era or post-2013 quarter.
   - Detectors: `scripts/ownership_dq.py` (14 detectors, S12 and S34) — run these against any holdings panel before analysis. Tests: `tests/ownership_dq_test.py` (105 assertions, stdlib only).
   - Run `detect_calendar_bucket_gap` on every **reference/dimension table** at build time, not just on the output panel. It is the one detector that catches a root cause rather than a symptom: a reference table missing a whole calendar bucket makes every downstream join fall back to a default, silently, and the result looks like a vendor defect (see D8).
