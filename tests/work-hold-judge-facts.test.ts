@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
-import { failingLegs, runFacts, runRounds, redispatchBlocked, lastLedgerEntry, settledBy } from '../hooks/work-hold'
+import { failingLegs, runFacts, runRounds, redispatchBlocked, lastLedgerEntry, settledBy, FACTS_UNCHANGED } from '../hooks/work-hold'
 import { useTmp } from './helpers/tmp.ts'
 import { startPyStub } from './helpers/stub-server.ts'
 
@@ -464,4 +464,104 @@ describe('item 22: settledBy decides each token from result.json alone', () => {
     writeFileSync(join(run, 'result.json'), '{not json')
     expect(settledBy(run)).toBeNull()
   })
+})
+
+// The 1023-notes-05-sec-review2 shape (2026-10-23): a PASS with 0 findings, where `background-13d` was
+// a goal condition only the lens judged — and nothing recorded whether it was judged at all.
+const BG_GOAL = "Add notes for the two new 13(d) background slides, so check.sh exits 0 for lecture 01."
+const lensPass = (checklist?: object[]) => ({
+  verdict: 'PASS', overallPass: true,
+  mechanical: [{ name: 'notes-mech', exitCode: 0, output: 'check: PASS\n' }],
+  verified: [{ id: 'r18-cover', pass: true, byCommand: true }],
+  scoreTable: { survivingBlocking: 0, survivingMinor: 0, lensFindings: 0 },
+  lensesThatFlagged: [], rulesThatFailed: [],
+  ...(checklist ? { lensChecklist: checklist } : {}),
+})
+const CHECKLIST = [
+  { item: 'background-13d', status: 'UNCHECKED', evidence: 'the lens returned no verdict for this item' },
+  { item: 'scope-fidelity', status: 'MET', evidence: 'git diff names only notes/05-sec.typ' },
+]
+
+describe('passed lens checklist items leave a record the judge reads', () => {
+  test('runFacts lists each checklist item with its verdict and evidence', () => {
+    const f = runFacts(landedRun(mkTmp('judgelist-'), lensPass(CHECKLIST)))
+    expect(f).toContain('lens checklist background-13d: UNCHECKED — the lens returned no verdict for this item')
+    expect(f).toContain('lens checklist scope-fidelity: MET — git diff names only notes/05-sec.typ')
+  })
+
+  test('a run that predates the checklist still reads, with no checklist line', () => {
+    const f = runFacts(landedRun(mkTmp('judgelist-'), lensPass()))
+    expect(f).toContain('survivingBlocking 0')
+    expect(f).not.toContain('lens checklist')
+  })
+
+  test('the checklist verdicts reach the Jev state', async () => {
+    const dir = mkTmp('judgelist-')
+    const run = landedRun(dir, lensPass(CHECKLIST))
+    const log = join(dir, 'jev.log')
+    const srv = await stubJev(0.9, log)
+    stop(dir, 'list', { run, goal: BG_GOAL }, srv.port)
+    srv.kill()
+    expect(sent(log)[0].state).toContain('lens checklist background-13d: UNCHECKED')
+  }, 150_000)
+})
+
+describe('the hold does not re-judge a PASS run on unchanged facts', () => {
+  test('second Stop on the same facts releases UNMET, naming what the facts left open, with no second judge call', async () => {
+    const dir = mkTmp('judgesame-')
+    const run = landedRun(dir, lensPass(CHECKLIST))
+    const log = join(dir, 'jev.log')
+    const srv = await stubJev(0.7, log)
+    const first = stop(dir, 'same', { run, goal: BG_GOAL }, srv.port)
+    expect(JSON.parse(first.stdout).decision).toBe('block')
+    expect(first.state.judgedFacts.hash).toMatch(/^[0-9a-f]{64}$/)
+    expect(first.state.judgedFacts.reason).toContain('70%')
+    const second = stop(dir, 'same', { run, goal: BG_GOAL }, srv.port)
+    srv.kill()
+    expect(sent(log)).toHaveLength(1)
+    expect(second.state).toBeNull()
+    expect(lastLedgerEntry(join(dir, 'work-hold-same.releases.log'))?.verb).toBe(FACTS_UNCHANGED)
+    const out = JSON.parse(second.stdout)
+    expect(out.decision).toBeUndefined()
+    expect(out.systemMessage).toContain('released UNMET')
+    expect(out.systemMessage).toContain('lens checklist background-13d (UNCHECKED)')
+    expect(out.systemMessage).not.toContain('scope-fidelity')
+  }, 300_000)
+
+  test('an old run with no checklist is released the same way, and the note says no fact names the condition', async () => {
+    const dir = mkTmp('judgesame-')
+    const run = landedRun(dir, lensPass())
+    const log = join(dir, 'jev.log')
+    const srv = await stubJev(0.7, log)
+    stop(dir, 'old', { run, goal: BG_GOAL }, srv.port)
+    const second = stop(dir, 'old', { run, goal: BG_GOAL }, srv.port)
+    srv.kill()
+    expect(sent(log)).toHaveLength(1)
+    expect(JSON.parse(second.stdout).systemMessage).toContain('predates per-item lens verdicts')
+  }, 300_000)
+
+  test('a FAILED run is re-judged and keeps blocking', async () => {
+    const dir = mkTmp('judgesame-')
+    const run = landedRun(dir, result(['alignment (exit 1)']))
+    const log = join(dir, 'jev.log')
+    const srv = await stubJev(0.1, log)
+    stop(dir, 'failed', { run }, srv.port)
+    const second = stop(dir, 'failed', { run }, srv.port)
+    srv.kill()
+    expect(sent(log)).toHaveLength(2)
+    expect(JSON.parse(second.stdout).decision).toBe('block')
+  }, 300_000)
+
+  test('changed facts are judged again', async () => {
+    const dir = mkTmp('judgesame-')
+    const run = landedRun(dir, lensPass(CHECKLIST))
+    const log = join(dir, 'jev.log')
+    const srv = await stubJev(0.7, log)
+    stop(dir, 'moved', { run, goal: BG_GOAL }, srv.port)
+    writeFileSync(join(run, 'result.json'), JSON.stringify(lensPass([{ ...CHECKLIST[0], status: 'UNMET', evidence: 'SOURCE 20 cite is off' }])))
+    const second = stop(dir, 'moved', { run, goal: BG_GOAL }, srv.port)
+    srv.kill()
+    expect(sent(log)).toHaveLength(2)
+    expect(JSON.parse(second.stdout).decision).toBe('block')
+  }, 300_000)
 })
