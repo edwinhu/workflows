@@ -242,6 +242,14 @@ const lens = {
   // true: the lens row runs its commands in farm.sh's throwaway sandbox (skills/farm-out/scripts/sandbox.sh).
   sandbox: lensArg.sandbox === true,
 }
+// The lens prompt's checklist: one item per `- <name>:` line. A goal condition only the lens judges is
+// otherwise invisible downstream — `findings: []` reads the same whether the item was met or never
+// looked at — so each item gets a recorded verdict. Only a plan's own prompt: the default's four
+// dimensions are a review brief, not goal conditions.
+const LENS_CHECKLIST = lens.prompt === DEFAULT_LENS_PROMPT ? [] : [...new Set(String(lens.prompt).split('\n')
+  .map(l => l.match(/^-\s+([A-Za-z0-9][\w.-]*(?: [\w.-]+){0,3}):\s/))
+  .filter(Boolean)
+  .map(m => m[1]))]
 // Whole-deliverable mechanical checks: [{name, cmd}]. Optional; absent/empty skips the phase entirely.
 const mechanicalChecks = Array.isArray(args.mechanicalChecks) ? args.mechanicalChecks : []
 for (const c of mechanicalChecks) {
@@ -737,7 +745,7 @@ const VERIFY_SCHEMA = {
     failures: { type: 'array', items: { type: 'string' } },
   },
 }
-// FOUR output channels, and the split is the point.
+// FOUR output channels, and the split is the point — plus `checklist`, a per-item record that gates nothing.
 //   routes[]       — RED mode only: one entry per failure the checks already found, diagnosed and
 //                    routed to the task that owns the fix (or to 'plan'). This is M1/M2: a failure
 //                    attributable to no task forces a FULL re-run of everything.
@@ -812,6 +820,20 @@ const LENS_SCHEMA = {
           detail: { type: 'string', description: 'the evidence the check holds' },
         },
       },
+    },
+  },
+}
+// Added to the lens schema only when the prompt has a checklist, so every other run's schema is unchanged.
+const CHECKLIST_SCHEMA = {
+  type: 'array',
+  description: 'One verdict per CHECKLIST item the prompt names. A record of what was judged, never gated: an UNMET item still needs its finding or route.',
+  items: {
+    type: 'object',
+    required: ['item', 'status', 'evidence'],
+    properties: {
+      item: { type: 'string', description: 'the checklist item\'s name, verbatim from its `- <name>:` line' },
+      status: { type: 'string', enum: ['MET', 'UNMET'] },
+      evidence: { type: 'string', description: 'one line: what you read or ran that decides it' },
     },
   },
 }
@@ -901,10 +923,13 @@ const lensSpec = digest => {
   const inactiveChannel = digest.mode === MODE_RED ? 'findings' : 'routes'
   const schema = {
     ...LENS_SCHEMA,
-    required: ['carried', digest.mode === MODE_RED ? 'routes' : 'findings'],
+    // A GREEN pass judges every item, so it owes a verdict on each; a RED round is diagnosis only.
+    required: ['carried', digest.mode === MODE_RED ? 'routes' : 'findings',
+      ...(LENS_CHECKLIST.length && digest.mode === MODE_GREEN ? ['checklist'] : [])],
     properties: {
       ...LENS_SCHEMA.properties,
       [inactiveChannel]: { ...LENS_SCHEMA.properties[inactiveChannel], maxItems: 0 },
+      ...(LENS_CHECKLIST.length ? { checklist: CHECKLIST_SCHEMA } : {}),
     },
   }
   const prompt = [
@@ -921,6 +946,9 @@ const lensSpec = digest => {
     'Put a line number in the `line` field, NOT in `file`. A `file` of "src/a.go:135" matches no path in the plan\'s task table, so the fix loop cannot route it and re-runs everything.',
     'A FINDING IS A DEFECT CLAIM AND NOTHING ELSE. Every entry in `findings` must assert that something is WRONG. "I checked X and it holds", "constraint Y is satisfied", "no violation found", "recorded for completeness" — none of those are findings, and filing one as a finding fails the run on a true statement.',
     'Put every satisfied check in `dispositions` instead. It is REPORTED to the user in full, so the obligation to show what you examined is discharged there, not by inflating the findings list. Every entry in `findings` must carry a severity and gates; a `findings` entry with no severity is malformed and also gates, so a satisfied check filed there fails the run.',
+    ...(LENS_CHECKLIST.length
+      ? [`CHECKLIST VERDICTS: return one \`checklist\` entry per item you judged${digest.mode === MODE_GREEN ? ' — on this GREEN pass, every item' : ''}: ${LENS_CHECKLIST.join(', ')}. Each is the item name verbatim, MET or UNMET, and one line of evidence. A verdict gates nothing; an UNMET item still needs its finding${digest.mode === MODE_RED ? ' or route' : ''}. An item with no verdict is recorded as never checked.`]
+      : []),
   ].join('\n')
   return {
     label: LENS_KEY, kind: 'review', mode: digest.mode, prompt, schema,
@@ -932,13 +960,13 @@ const lensSpec = digest => {
   }
 }
 
-// Returns {routes, findings, dispositions, carriedRulings, reported}. `reported: false` means the
+// Returns {routes, findings, dispositions, checklist, carriedRulings, reported}. `reported: false` means the
 // lens produced nothing — the caller synthesizes the critical, and every carried finding stays open.
 const parseLens = review => {
   // A null (or non-object) result is a lens that never reported. An object with empty arrays is a
   // lens that ran and found nothing — only the first is `reported: false`.
   if (!review || typeof review !== 'object' || Array.isArray(review)) {
-    return { routes: [], findings: [], dispositions: [], carriedRulings: [], reported: false }
+    return { routes: [], findings: [], dispositions: [], checklist: [], carriedRulings: [], reported: false }
   }
 
   // A lens's own `dispositions` are taken as given and never gate. Every entry in `findings` is a
@@ -958,7 +986,10 @@ const parseLens = review => {
   }
   const routes = (review.routes || []).filter(r => r && r.failure && r.ownerTask)
   const carriedRulings = (review.carried || []).filter(c => c && typeof c.id === 'string')
-  return { routes, findings, dispositions, carriedRulings, reported: true }
+  const checklist = (Array.isArray(review.checklist) ? review.checklist : [])
+    .filter(c => c && typeof c.item === 'string' && /^(MET|UNMET)$/i.test(String(c.status)))
+    .map(c => ({ item: c.item.trim(), status: String(c.status).toUpperCase(), evidence: typeof c.evidence === 'string' ? c.evidence : '' }))
+  return { routes, findings, dispositions, checklist, carriedRulings, reported: true }
 }
 
 // ---------------------------------------------------------------- red gate (executed, never self-reported)
@@ -1416,6 +1447,7 @@ const lensResult = lensLeg && lensLeg.reported ? lensLeg : {
   routes: [],
   findings: [deadLensFinding('it produced no parseable result')],
   dispositions: [],
+  checklist: [],
   carriedRulings: [],
   reported: false,
 }
@@ -1430,6 +1462,18 @@ const routes = lensResult.routes
 // Deliberately absent from `findings` and from every conjunct in overallPass: a disposition asserts
 // nothing is wrong, so a gate must not block on it.
 const dispositionPool = lensResult.dispositions
+// One verdict per checklist item, FIRST verdict per item wins; an item the lens never ruled on is
+// UNCHECKED, so "no finding" and "never looked" stay distinguishable. Items the lens named that the
+// prompt does not are kept after them. Gates nothing.
+const verdictByItem = new Map()
+for (const c of lensResult.checklist) if (!verdictByItem.has(c.item)) verdictByItem.set(c.item, c)
+const lensChecklist = [
+  ...LENS_CHECKLIST.map(item => verdictByItem.get(item) || {
+    item, status: 'UNCHECKED',
+    evidence: lensReported ? 'the lens returned no verdict for this item' : 'the review lens never reported',
+  }),
+  ...[...verdictByItem.values()].filter(c => !LENS_CHECKLIST.includes(c.item)),
+]
 
 // ---------------------------------------------------------------- Gate (JS arithmetic — no agent asserts the verdict)
 phase('Gate')
@@ -1550,7 +1594,7 @@ log(`gate: ${overallPass ? 'PASS' : 'FAIL'} — ${judged}${redNote}${mechNote}${
 // RETURN CONTRACT (gate-laws L1 — this list, work/SKILL.md's param table, and the keys below must
 // agree; work-result.sh's CONTRACT pins the required subset):
 //   overallPass, verdict, scoreTable, judged, implemented, verified, red?, findings, carried,
-//   routes, dispositions, residue?, mechanical, scores, attempts,
+//   routes, dispositions, lensChecklist, residue?, mechanical, scores, attempts,
 //   tasksThatFlagged, mechanicalThatFailed, lensesThatFlagged, planFindings, rulesThatFailed, ruleVerdicts
 return {
   overallPass,
@@ -1641,6 +1685,9 @@ return {
   planFindings,
   // The lens's other channel, REPORTED IN FULL and never gated. [] when the lens reported no satisfied check.
   dispositions: dispositionPool,
+  // One {item, status: MET|UNMET|UNCHECKED, evidence} per `- <name>:` item of the lens prompt. Never
+  // gated. [] when the prompt has no checklist; absent on a run that predates it.
+  lensChecklist,
   // Absent entirely without freezeFindingSet. Blocking-severity lens findings raised THIS round that
   // the freeze excluded from the verdict: real, reported, and the input to a follow-up run's
   // carriedFindings — never silently dropped.
