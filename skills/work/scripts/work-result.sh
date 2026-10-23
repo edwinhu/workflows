@@ -43,7 +43,8 @@ OPTIONAL='{
   "residue": "array",
   "routes": "array",
   "planFindings": "array",
-  "ruleVerdicts": "array"
+  "ruleVerdicts": "array",
+  "lensChecklist": "array"
 }'
 
 die() { printf 'work-result.sh: %s\n' "$*" >&2; exit 2; }

@@ -2410,3 +2410,62 @@ test('carry E12: a fresh entry fingerprint is the post-agents value from checks.
   const none = await run(carryArgs({ readOnly: true, tasks: [], scoredFingerprints: fps({ 'slides::L2': 'dispatch-time' }) }), scoredReplies())
   expect(scoredFor(none.result, 'L2').fingerprint).toBeNull()
 })
+
+// ---------------------------------------------------------------- the lens checklist (a record, never a gate)
+// `findings: []` read the same whether a checklist item was met or never looked at (1023-notes-05-sec-review2:
+// the goal's `background-13d` condition had no record). Each `- <name>:` item now gets a verdict.
+const CHECKLIST_PROMPT = 'Judge with this CHECKLIST.\n\n- background-13d: the sections exist; MAJOR otherwise.\n- scope-fidelity: nothing else changed.\nChange nothing.'
+const capturing = (lensReply: any, more: any = {}) => {
+  const specs: any[] = []
+  const base = replies({ lens: lensReply, ...more })
+  return { specs, reply: (label: string, prompt: string, spec: any) => { if (label === 'lens') specs.push(spec); return base(label, prompt, spec) } }
+}
+
+test('a GREEN lens is told every checklist item and must return a verdict per item', async () => {
+  const c = capturing(undefined)
+  await run(lensOnly({ lens: { prompt: CHECKLIST_PROMPT } }), c.reply)
+  expect(c.specs[0].mode).toBe('GREEN')
+  expect(c.specs[0].schema.required).toContain('checklist')
+  expect(c.specs[0].schema.properties.checklist.items.properties.status.enum).toEqual(['MET', 'UNMET'])
+  expect(c.specs[0].prompt).toContain('CHECKLIST VERDICTS')
+  expect(c.specs[0].prompt).toContain('background-13d, scope-fidelity')
+})
+
+test('a RED lens is not required to return checklist verdicts', async () => {
+  const c = capturing({ routes: [{ failure: 'dev', ownerTask: 'plan', cause: 'c', fix: 'f' }], findings: [], carried: [] },
+    { mech: { dev: { name: 'dev', exitCode: 1, output: 'x' } } })
+  await run(lensOnly({ lens: { prompt: CHECKLIST_PROMPT }, mechanicalChecks: [{ name: 'dev', cmd: 'false' }] }), c.reply)
+  expect(c.specs[0].mode).toBe('RED')
+  expect(c.specs[0].schema.required).not.toContain('checklist')
+})
+
+test('lensChecklist records each verdict, marks an unruled item UNCHECKED, and gates nothing', async () => {
+  const { result } = await run(
+    lensOnly({ lens: { prompt: CHECKLIST_PROMPT } }),
+    reports({ checklist: [
+      { item: 'scope-fidelity', status: 'UNMET', evidence: 'git diff names refwork/x' },
+      { item: 'scope-fidelity', status: 'MET', evidence: 'a second ruling never overrides the first' },
+    ] }))
+  expect(result.overallPass).toBe(true)
+  expect(result.lensChecklist).toEqual([
+    { item: 'background-13d', status: 'UNCHECKED', evidence: 'the lens returned no verdict for this item' },
+    { item: 'scope-fidelity', status: 'UNMET', evidence: 'git diff names refwork/x' },
+  ])
+})
+
+test('a dead lens leaves every checklist item UNCHECKED, and a prompt with no checklist records none', async () => {
+  const dead = await run(lensOnly({ lens: { prompt: CHECKLIST_PROMPT } }), replies({ lens: null }))
+  expect(dead.result.lensChecklist.map((c: any) => [c.item, c.status, c.evidence])).toEqual([
+    ['background-13d', 'UNCHECKED', 'the review lens never reported'],
+    ['scope-fidelity', 'UNCHECKED', 'the review lens never reported'],
+  ])
+  const c = capturing(undefined)
+  const plain = await run(lensOnly({ lens: { prompt: 'Judge the deliverable.' } }), c.reply)
+  expect(plain.result.lensChecklist).toEqual([])
+  expect(c.specs[0].schema.required).not.toContain('checklist')
+  expect(c.specs[0].prompt).not.toContain('CHECKLIST VERDICTS')
+  // The default prompt's dimension bullets are a review brief, not a checklist.
+  const d = capturing(undefined)
+  expect((await run(lensOnly(), d.reply)).result.lensChecklist).toEqual([])
+  expect(d.specs[0].schema.required).not.toContain('checklist')
+})
