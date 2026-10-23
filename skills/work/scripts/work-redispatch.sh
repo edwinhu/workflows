@@ -14,6 +14,7 @@
 #   WORK_ROUND=PATH                                       # work-round.sh override (ARGS RESULT CWD HOST)
 #   WORK_NO_SCOPE=1                                       # plain setsid dispatch
 #   WORK_SYSTEMD_RUN=PATH                                 # scope probe override
+#   WORK_SEL_* in the environment is refused (exit 2): use --full, never WORK_SEL_FULL=1
 #
 # Selection is closed under transitive dependents: their verification predates the upstream fix.
 # Blocking findings map by ownerTask, then location-stripped file containment in writablePaths.
@@ -77,6 +78,22 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+# The selector's WORK_SEL_* env is assigned below, so an exported WORK_SEL_FULL=1 was silently
+# overwritten and the caller got a narrowed round. Refuse it, set-but-empty included, before
+# anything is staged.
+sel_vars=$(compgen -v WORK_SEL_ || true)
+if [ -n "$sel_vars" ]; then
+  printf 'work-redispatch: refusing — WORK_SEL_* is set in the environment and would be overwritten. Nothing staged, nothing spent.\n' >&2
+  for v in $sel_vars; do
+    case "$v" in
+      WORK_SEL_FULL) printf '  %s: pass --full instead\n' "$v" >&2 ;;
+      *)             printf '  %s: internal; not settable, the script derives it\n' "$v" >&2 ;;
+    esac
+  done
+  printf 'unset them and re-run.\n' >&2
+  exit 2
+fi
 
 [ -f "$PLAN" ] || die "no such plan: $PLAN"
 [ -f "$ARGS" ] || die "no such args file: $ARGS"

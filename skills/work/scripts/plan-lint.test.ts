@@ -127,6 +127,44 @@ test('every character workflow.js rejects is flagged, so tier 1 and arg-validati
     expect(rules(base({ tasks: [task({ redCommand: rc })] }))).toContain('gate-shell-operator')
 })
 
+// ---------------------------------------------------------------- regex-over-escaped
+
+// 2026-10-23, run 1023-slides-05-sec-review2: the DECODED acceptanceCmd carried two backslashes
+// before `b` inside single quotes, so grep -E saw a literal backslash and could never match.
+const INCIDENT = String.raw`bash /x/check.sh --course /c 2>&1 | awk '/^=== check:/{ran=1} END{exit !ran}' && grep -qE 'TM line 14(4(7[6-9]|[89][0-9])|5[0-4][0-9])\\b' /c/slides/05-sec/01.typ`
+const overEscaped = (cmd: string, field: 'acceptanceCmd' | 'redCommand' = 'acceptanceCmd') =>
+  lint(base({ tasks: [task({ [field]: cmd })] })).filter(f => f.rule === 'regex-over-escaped')
+
+test('the incident acceptanceCmd fires MAJOR, naming JSON over-escaping and the single-backslash fix', () => {
+  const found = overEscaped(INCIDENT)
+  expect(found).toHaveLength(1)
+  expect(found[0].severity).toBe('major')
+  expect(found[0].message).toMatch(/json\.dumps/)
+  expect(found[0].message).toMatch(/literal backslash/)
+  expect(found[0].message).toMatch(/\\b/)
+})
+
+test('parseArgs carries acceptanceCmd, so the rule reaches a dispatched args file', () => {
+  const p = parseArgs({ tasks: [{ id: 'T1', writablePaths: ['src/'], redCommand: 'bash scripts/check.sh', acceptanceCmd: INCIDENT }] })
+  expect(lint(p).map(f => f.rule)).toContain('regex-over-escaped')
+})
+
+test('a redCommand running rg with a doubled `\\d` fires too', () => {
+  expect(overEscaped(String.raw`rg -q '\\d+ passed' tests`, 'redCommand')).toHaveLength(1)
+})
+
+test('regex-over-escaped stays silent on the correct and the unrelated forms', () => {
+  for (const cmd of [
+    String.raw`grep -qE 'TM line 14\b' /c/01.typ`,             // the single-backslash fix
+    String.raw`grep -qE "TM line 14\\b" /c/01.typ`,            // bash turns "\\" into one backslash
+    String.raw`printf 'a\\nb\\b' > /dev/null`,                 // not grep or rg
+    String.raw`grep -q 'TM line 14\\b' /c/01.typ`,             // no E/P flag: not an ERE/PCRE pattern
+    String.raw`grep -qF 'C:\\bin' /c/paths.txt`,               // fixed string
+    String.raw`grep -E 'a\\(b' /c/x`,                           // doubled backslash, no escape letter
+  ])
+    expect(overEscaped(cmd)).toEqual([])
+})
+
 test('relative gate path is flagged only when mechanical checks cd absolute', () => {
   const t = [task({ redCommand: 'bash scripts/a.sh' })]
   expect(rules(base({ tasks: t }))).not.toContain('redcommand-relative-path')
