@@ -33,7 +33,9 @@ test('one malformed line costs only itself: the valid lines still sum', () => {
     '111.ndjson': 'farm: {"type":"result","tokensW":4000000.5,"budgetExceeded":true}\n{"type":"result","tokensW":1000}\nbroken "tokensW": {\n',
     '222.ndjson': '{"type":"result","tokensW":2000.5,"budgetExceeded":true}\n',
   }, { FARM_RUN_BUDGET: '1' })
-  expect(res.stderr).toContain('Session spend so far: 4003001 tokensW')
+  expect(res.stderr).toContain('Session spend so far: 4003001 tokensW (informational; not enforced)')
+  expect(res.stderr).not.toMatch(/Session spend[^\n]*cap/)
+  expect(res.stderr).toMatch(/Run estimate: \d+ tokensW for \d+ task\(s\) \(cap 1 per run\)/)
   expect(res.stderr).toMatch(/1 unparseable/)
 })
 

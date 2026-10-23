@@ -321,9 +321,8 @@ elif [ -n "$WORKFLOW" ]; then
   [ "$estimate" -le "$task_budget" ] || estimate=$task_budget
 fi
 
-echo "Estimate for $num_tasks task(s): $estimate tokensW" >&2
-echo "Session spend so far: $session_tokens tokensW" >&2
-echo "Run cap: $FARM_RUN_BUDGET tokensW" >&2
+echo "Run estimate: $estimate tokensW for $num_tasks task(s) (cap $FARM_RUN_BUDGET per run)" >&2
+echo "Session spend so far: $session_tokens tokensW (informational; not enforced)" >&2
 
 if [ "${FARM_BUDGET_OVERRIDE:-0}" != "1" ]; then
   if [ "$estimate" -ge "$FARM_RUN_BUDGET" ]; then
@@ -338,7 +337,7 @@ emit() { printf 'farm: %s
 # poll -- so without eviction the cost of one liveness check grows with every dispatch ever run
 # on this machine. Fold only files whose pid is gone AND that are old enough to be no run anyone
 # is still waiting on: the file shrinks to one SPEND line (or goes, if it spent nothing), so the
-# session spend line still sees the spend after the run's record is pruned.
+# informational session-spend line still sees the spend after the run's record is pruned.
 evict_stale_events() {
   local f pid total
   shopt -s nullglob

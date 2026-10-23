@@ -45,7 +45,7 @@ function rig(): Rig {
     FARM_OUTCOMES: outcomes,
     WORK_HOLD_DECISIONS_URL: DEAD,
     WORK_HOLD_JUDGE_TOKEN: 'test-token',
-    FARM_TASK_BUDGET: '4000000', FARM_SESSION_BUDGET: '20000000',
+    FARM_TASK_BUDGET: '4000000', FARM_RUN_BUDGET: '20000000',
     FARM_TASK_ESTIMATE: '750000', FARM_BUDGET_OVERRIDE: '0',
   }
   return { root, agentCwd, argvLog, outcomes, env }

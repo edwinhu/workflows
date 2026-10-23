@@ -22,7 +22,7 @@ const mkTmp = useTmp()
 const DISPATCH = join(import.meta.dir, 'work-dispatch.sh')
 const ROUND = join(import.meta.dir, 'work-round.sh')
 const PER_TASK = 1_000_000
-const budgetEnv = { FARM_TASK_BUDGET: String(PER_TASK), FARM_SESSION_BUDGET: '100000000' }
+const budgetEnv = { FARM_TASK_BUDGET: String(PER_TASK), FARM_RUN_BUDGET: '100000000' }
 
 function sixTaskArgs(dir: string, extra: Record<string, unknown> = {}) {
   return {
@@ -102,9 +102,17 @@ describe('the work round budget scales with the plan', () => {
     expect(budgetOf(roundFarmArgv(sixTaskArgs(f.dir, { budget: 2_500_000 })).argv)).toBe(2_500_000)
   }, 120_000)
 
-  test('FARM_SESSION_BUDGET stays the outer bound', () => {
+  test('FARM_RUN_BUDGET is the outer bound', () => {
     const f = plan()
-    const { argv } = roundFarmArgv(sixTaskArgs(f.dir), { FARM_SESSION_BUDGET: '5000000' })
+    const { argv } = roundFarmArgv(sixTaskArgs(f.dir), { FARM_RUN_BUDGET: '5000000', FARM_SESSION_BUDGET: '100000000' })
+    const b = budgetOf(argv)!
+    expect(b).toBeGreaterThan(0)
+    expect(b).toBeLessThan(5_000_000)
+  })
+
+  test('FARM_SESSION_BUDGET still works as the deprecated alias', () => {
+    const f = plan()
+    const { argv } = roundFarmArgv(sixTaskArgs(f.dir), { FARM_RUN_BUDGET: '', FARM_SESSION_BUDGET: '5000000' })
     const b = budgetOf(argv)!
     expect(b).toBeGreaterThan(0)
     expect(b).toBeLessThan(5_000_000)

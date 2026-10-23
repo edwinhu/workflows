@@ -125,8 +125,10 @@ test('seven rows at zero spend use the median estimate, not full task budgets', 
   const res = runFanout(sevenRows)
   expect(res.status).toBe(0)
   expect(JSON.parse(res.stdout)).toHaveLength(7)
-  expect(res.stderr).toContain('Estimate for 7 task(s): 5250000 tokensW')
-  expect(res.stderr).toContain('Session spend so far: 0 tokensW')
+  expect(res.stderr).toContain('Run estimate: 5250000 tokensW for 7 task(s) (cap 20000000 per run)')
+  expect(res.stderr).not.toMatch(/Session spend[^\n]*cap/)
+  expect(res.stderr).not.toContain('Run cap:')
+  expect(res.stderr).toContain('Session spend so far: 0 tokensW (informational; not enforced)')
   expect(res.stderr).not.toContain('Session spend so far: 00')
 }, 120_000)
 
@@ -153,13 +155,13 @@ test('FARM_SESSION_BUDGET still sets the run cap when FARM_RUN_BUDGET is unset',
 test('the estimate is capped at each row budget', () => {
   const res = runFanout([{ label: 'small', workflow: 'none', prompt: 'p', budget: 100000 }])
   expect(res.status).toBe(0)
-  expect(res.stderr).toContain('Estimate for 1 task(s): 100000 tokensW')
+  expect(res.stderr).toContain('Run estimate: 100000 tokensW for 1 task(s)')
 }, 120_000)
 
 test('the estimate is capped at the default task budget and accepts an override', () => {
   const res = runFanout([{ label: 'small', workflow: 'none', prompt: 'p' }], 0, { FARM_TASK_ESTIMATE: '5000000' })
   expect(res.status).toBe(0)
-  expect(res.stderr).toContain('Estimate for 1 task(s): 4000000 tokensW')
+  expect(res.stderr).toContain('Run estimate: 4000000 tokensW for 1 task(s)')
 }, 120_000)
 
 test('empty session event files display a single zero', () => {
