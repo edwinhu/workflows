@@ -737,6 +737,18 @@ export function runFacts(run: string | undefined): string {
         if (proved) out.push(proved)
       }
     }
+  // A task's acceptance is often the only fact that establishes a goal's content conditions (a
+  // regrouped deck, a title, cites into new ranges): a plan with red dispositions has no red titles.
+  const accepts = new Map<string, string>()
+  const argTasks = runArgs(run)?.tasks
+  for (const k of Array.isArray(argTasks) ? argTasks : [])
+    if (k && typeof k.id === 'string' && typeof k.acceptance === 'string') accepts.set(k.id, k.acceptance)
+  for (const v of Array.isArray(r.verified) ? r.verified : [])
+    if (v && typeof v === 'object' && typeof v.id === 'string') {
+      const how = v.byCommand ? 'its acceptance command' : 'its verifier'
+      const said = accepts.get(v.id)
+      out.push(`task ${v.id}: ${how} ${v.pass ? 'PASSED' : 'FAILED'}` + (said ? `; that acceptance states: ${said.slice(0, 600)}` : ''))
+    }
   const t = r.scoreTable && typeof r.scoreTable === 'object' ? r.scoreTable : {}
   if (typeof t.survivingBlocking === 'number')
     out.push(
