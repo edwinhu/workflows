@@ -86,6 +86,11 @@ export interface State {
    * top when the top's run is in flight and the queued one's is not, and a release promotes the next.
    */
   queued?: State[]
+  /**
+   * The facts the judge last found NOT met, hashed with the goal, and its reason. A PASS run whose
+   * facts still hash the same cannot be judged differently, so the next Stop releases instead.
+   */
+  judgedFacts?: { hash: string; reason: string }
 }
 
 /**
@@ -195,6 +200,13 @@ const HEARTBEAT_NOTE =
  * exists to change it, so holding for another round holds for nothing.
  */
 export const VERDICT_REACHED = 'verdict-reached'
+
+/**
+ * A PASS run's facts were judged NOT met and have not changed since: re-asking the judge on the same
+ * bytes returns the same answer (fad9c500 2026-10-23: identical 70% verdicts 10 s apart), so the hold
+ * releases UNMET and names what the facts did not establish.
+ */
+export const FACTS_UNCHANGED = 'facts-unchanged'
 
 /** The verb `work-abandon.sh` appends when the USER retires a run. */
 export const ABANDONED = 'abandoned by user'
@@ -755,6 +767,10 @@ export function runFacts(run: string | undefined): string {
       `lens: survivingBlocking ${t.survivingBlocking} (critical/major findings that survived the round), ` +
         `survivingMinor ${t.survivingMinor ?? '?'}, lens findings ${t.lensFindings ?? '?'}`,
     )
+  // Absent on a run that predates per-item verdicts: say nothing rather than guess.
+  for (const c of Array.isArray(r.lensChecklist) ? r.lensChecklist : [])
+    if (c && typeof c === 'object' && typeof c.item === 'string')
+      out.push(`lens checklist ${c.item}: ${c.status}${c.evidence ? ` — ${String(c.evidence).slice(0, 300)}` : ''}`)
   const names = (k: string) => (Array.isArray(r[k]) && r[k].length ? r[k].map((x: any) => (typeof x === 'string' ? x : x?.name ?? x?.id ?? JSON.stringify(x))).join(', ') : 'none')
   out.push(`lenses that flagged: ${names('lensesThatFlagged')}`)
   out.push(`rules that failed: ${names('rulesThatFailed')}`)
@@ -765,6 +781,29 @@ export function runFacts(run: string | undefined): string {
   )
   return `RUN FACTS — read from ${join(run, 'result.json')}; judge each condition the goal states against these:\n` +
     out.map((l) => `  - ${l}`).join('\n')
+}
+
+/** The hash `judgedFacts` keeps: the goal and the run facts the judge reads, or '' with no facts. */
+export function factsHash(goal: string, run: string | undefined): string {
+  const facts = runFacts(run)
+  return facts ? createHash('sha256').update(`${goal}\n${facts}`).digest('hex') : ''
+}
+
+/**
+ * The goal conditions a PASS run's facts left open, for the release note: every lens checklist item
+ * not MET and every task whose acceptance failed. Says so when the facts name none of them.
+ */
+export function unestablished(run: string): string {
+  const r = readResult(run) ?? {}
+  const open: string[] = []
+  for (const c of Array.isArray(r.lensChecklist) ? r.lensChecklist : [])
+    if (c && typeof c.item === 'string' && c.status !== 'MET') open.push(`lens checklist ${c.item} (${c.status})`)
+  for (const v of Array.isArray(r.verified) ? r.verified : [])
+    if (v && typeof v.id === 'string' && !v.pass) open.push(`task ${v.id}'s acceptance (FAILED)`)
+  if (open.length) return open.join(', ')
+  return Array.isArray(r.lensChecklist)
+    ? 'no recorded fact is short — every checklist item and acceptance passed, so the judge doubts a condition no fact records'
+    : 'no recorded fact names a goal condition the run checked — the run predates per-item lens verdicts, so a condition only the lens judged is unrecorded'
 }
 
 /**
@@ -1848,7 +1887,9 @@ function main(): void {
    * other holds queued the next is promoted instead, the window stays capped, and the ledger gets an
    * `armed` line for it, so deleting the file still restores the hold rather than escaping it.
    */
-  const release = (verb: string, message: string): void => {
+  const release = (verb: string, message: string, show = false): void => {
+    // `show`: the message is for the USER too, so it rides out as a systemMessage, not stderr alone.
+    if (show) deadNote = noted(`hold: ${message}`)
     appendFileSync(ledger, `${new Date().toISOString()}\t${verb}\t${s.check || s.goal || ''}\n`)
     if (s.queued?.length) {
       const next = nextHold(s)
@@ -1976,8 +2017,21 @@ function main(): void {
           `unsettled: ${unsettled}`,
         )
       }
+      // A PASS run whose facts are byte-identical to the ones last judged NOT met: the judge reads
+      // nothing else, so asking again only blocks again. A FAILED run, or changed facts, is judged.
+      const hash = factsHash(s.goal, s.run)
+      if (hash && s.judgedFacts?.hash === hash && readResult(s.run!)?.verdict === 'PASS')
+        release(
+          FACTS_UNCHANGED,
+          `the run ${s.run} PASSED and its facts are unchanged since the goal was judged NOT met ` +
+            `(${s.judgedFacts.reason}); another Stop cannot change that answer, so the hold is released UNMET. ` +
+            `The facts did not establish: ${unestablished(s.run!)}. Tell the user which goal conditions ` +
+            `stand unconfirmed.\nGoal: ${s.goal}\n${HEARTBEAT_NOTE}`,
+          true,
+        )
       const j = judgeGoal(String(payload.transcript_path || ''), s.goal, s.check, s.history, s.run)
       if (j.verdict === 'UNMET') {
+        if (hash) s.judgedFacts = { hash, reason: j.reason }
         // (d) The ceilings bind here too. A judge that keeps answering UNMET over a green check is a
         // hold with no clock unless this is asked before the block.
         const c = ceilingReached(s, now)
