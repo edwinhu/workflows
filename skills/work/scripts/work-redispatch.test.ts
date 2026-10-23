@@ -312,6 +312,52 @@ function dryRun(plan: string, args: string, ...extra: string[]) {
  * dispatched". So looking spent the round and destroyed the verdict the next round scopes from, and a
  * second look ran against state the first look had already moved.
  */
+// The selector's env is assigned inside the script, so an exported WORK_SEL_FULL=1 was overwritten
+// and the caller got the narrowed round they were trying to avoid.
+describe('WORK_SEL_* in the caller environment is refused, not silently overwritten', () => {
+  const cleanEnv = () => Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('WORK_SEL_')))
+  const runEnv = (f: { plan: string; args: string }, env: Record<string, string>, ...extra: string[]) => {
+    try {
+      const out = execFileSync('bash', [SCRIPT, f.plan, f.args, ...extra], { timeout: 120_000, encoding: 'utf8',
+        env: { ...cleanEnv(), ...env } })
+      return { code: 0, out }
+    } catch (e: any) {
+      return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? '') }
+    }
+  }
+
+  test('WORK_SEL_FULL=1 exits 2, names --full, and stages nothing', () => {
+    const f = fixture({ planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false' })
+    const before = readFileSync(f.args, 'utf8')
+    const r = runEnv(f, { WORK_SEL_FULL: '1', WORK_REDISPATCH_DRYRUN: '1', WORK_FARM: '/bin/false' }, '--dispatch')
+    expect(r.code).toBe(2)
+    expect(r.out).toMatch(/WORK_SEL_FULL: pass --full instead/)
+    expect(readFileSync(f.args, 'utf8')).toBe(before)
+    expect(existsSync(join(f.dir, '.args.redispatch.json'))).toBe(false)
+  })
+
+  test('WORK_SEL_ROUND=3 exits 2 even without --dispatch, and says it is internal', () => {
+    const f = fixture({ planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false' })
+    const r = runEnv(f, { WORK_SEL_ROUND: '3' })
+    expect(r.code).toBe(2)
+    expect(r.out).toMatch(/WORK_SEL_ROUND: internal; not settable, the script derives it/)
+  })
+
+  test('a set-but-empty WORK_SEL_ variable is refused too', () => {
+    const f = fixture({ planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false' })
+    const r = runEnv(f, { WORK_SEL_STAGE: '' })
+    expect(r.code).toBe(2)
+    expect(r.out).toMatch(/WORK_SEL_STAGE/)
+  })
+
+  test('a normal invocation with no WORK_SEL_* is unaffected', () => {
+    const f = fixture({ planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false' })
+    const r = runEnv(f, {}, '--provider', 'claude')
+    expect(r.code).toBe(0)
+    expect(r.out).not.toMatch(/WORK_SEL_/)
+  })
+})
+
 describe('WORK_REDISPATCH_DRYRUN writes nothing', () => {
   test('args.json and result.json are byte-identical after a dry run', () => {
     const f = gateFixture()

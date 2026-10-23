@@ -25,6 +25,8 @@ type Task = {
   writablePaths: string[]
   acceptance: string
   redCommand: string | null
+  /** The command whose exit code is the task's acceptance; only R28 reads it here. */
+  acceptanceCmd?: string | null
   /** A human's filed reason this task carries no red gate. Recorded and echoed, never graded. */
   redDisposition: string | null
   dependsOn: string[]
@@ -292,6 +294,7 @@ const parseArgs = (j: any): Plan => ({
     writablePaths: t.writablePaths ?? [],
     acceptance: t.acceptance ?? '',
     redCommand: t.redCommand ?? null,
+    acceptanceCmd: typeof t.acceptanceCmd === 'string' ? t.acceptanceCmd : null,
     redDisposition: typeof t.redDisposition === 'string' ? t.redDisposition : null,
     dependsOn: t.dependsOn == null ? [] : Array.isArray(t.dependsOn) ? t.dependsOn : [t.dependsOn],
     refs: t.refs ?? [],
@@ -496,6 +499,54 @@ const SHELL_META = /(\|\||&&|[;|><])/
 /** Verbatim workflow.js RED_COMMAND_OPERATORS — the two must not disagree about what a gate may contain. */
 const RED_COMMAND_OPERATORS = /[;&|`$><(){}\n\r]/
 
+/**
+ * The words of each simple command in `cmd`, as bash hands them to the program: single quotes keep
+ * every backslash, double quotes and bare words fold `\\` to one. Only what R28 needs — no
+ * expansion, and `|`, `&`, `;` and newline end a command.
+ */
+const shellCommands = (cmd: string): string[][] => {
+  const out: string[][] = []
+  let words: string[] = [], w: string | null = null, i = 0
+  const end = () => { if (w !== null) words.push(w); w = null }
+  while (i < cmd.length) {
+    const c = cmd[i]
+    if (c === "'") {
+      const j = cmd.indexOf("'", i + 1), k = j < 0 ? cmd.length : j
+      w = (w ?? '') + cmd.slice(i + 1, k); i = k + 1
+    } else if (c === '"') {
+      w = w ?? ''
+      for (i++; i < cmd.length && cmd[i] !== '"'; i++)
+        w += cmd[i] === '\\' && '$`"\\\n'.includes(cmd[i + 1] ?? '') ? cmd[++i] : cmd[i]
+      i++
+    } else if (c === '\\') {
+      w = (w ?? '') + (cmd[i + 1] ?? ''); i += 2
+    } else if (/[|&;\n]/.test(c)) {
+      end(); if (words.length) out.push(words); words = []; i++
+    } else if (/\s/.test(c)) {
+      end(); i++
+    } else {
+      w = (w ?? '') + c; i++
+    }
+  }
+  end(); if (words.length) out.push(words)
+  return out
+}
+
+/** Pattern-bearing words of a grep -E/-P, egrep or rg invocation that carry a doubled backslash before an escape letter. */
+const overEscapedPatterns = (cmd: string): string[] =>
+  shellCommands(cmd).flatMap(words => {
+    while (words.length && (/^\w+=/.test(words[0]) || ['!', 'command', 'env', 'time', 'sudo'].includes(words[0])))
+      words = words.slice(1)
+    const prog = (words[0] ?? '').split('/').pop()!
+    const flags = words.slice(1).filter(x => x.startsWith('-'))
+    const short = flags.filter(x => /^-[A-Za-z]+$/.test(x)).join('')
+    const fixed = /F/.test(short) || flags.includes('--fixed-strings')
+    const regex =
+      prog === 'egrep' || prog === 'rg' ||
+      (prog === 'grep' && (/[EP]/.test(short) || flags.some(x => x === '--extended-regexp' || x === '--perl-regexp')))
+    return regex && !fixed ? words.slice(1).filter(x => /\\\\[bBdDwWsS]/.test(x)) : []
+  })
+
 // ---------------------------------------------------------------- rules
 
 const BUILTIN_AGENTS = new Set(['Explore', 'Plan', 'general-purpose', 'statusline-setup', 'claude'])
@@ -699,6 +750,19 @@ const lint = (p: Plan, agentExists: (name: string) => boolean = n => agentResolv
           rc,
         )
     }
+
+    // R28 — a doubled backslash before a regex escape letter reaches grep as a literal backslash
+    // plus a plain letter, so the pattern can never match: a never-passable gate. Measured
+    // 2026-10-23, an acceptanceCmd generated through json.dumps cost a whole round this way.
+    for (const [field, cmd] of [['acceptanceCmd', t.acceptanceCmd], ['redCommand', t.redCommand]] as const)
+      for (const pat of overEscapedPatterns(cmd ?? ''))
+        add(
+          'regex-over-escaped',
+          'major',
+          `${where} ${field}`,
+          `${field} hands grep/rg a pattern with a doubled backslash before an escape letter — the program receives a literal backslash, so the pattern can never match. Likely JSON over-escaping (Python json.dumps of an already-escaped string, or \`\\\\\\\\b\` written in raw JSON); write the single-backslash form (\`\\b\` inside single quotes)`,
+          pat,
+        )
 
     // R8 — a gate the task itself writes is circular: the task grades its own homework.
     const gateArtifacts = [

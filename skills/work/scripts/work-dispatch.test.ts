@@ -360,6 +360,66 @@ describe('the redCommand probe runs at dispatch, not a round later', () => {
   })
 })
 
+// Observed 2026-10-23 (1023-slides-05-sec-review2): an acceptanceCmd over-escaped to `\\b` could
+// never pass, and nothing ran it before the round — the red probe ran redCommand only.
+describe('each acceptanceCmd runs once at baseline, beside the red probe, and never refuses', () => {
+  const accTask = (id: string, acceptanceCmd: string, redCommand?: string) => ({
+    id, name: id, work: 'w', writablePaths: [`src/${id}`], refs: [], acceptanceCmd,
+    ...(redCommand ? { redCommand } : { redDisposition: 'acceptance-only task' }),
+    acceptance: `\`${acceptanceCmd}\` exits 0`,
+  })
+
+  test('acceptanceBefore records each exit code, on the red-probe line and for an acceptance-only task', () => {
+    const f = fixture({ redCommand: 'unused', tasks: [
+      accTask('T1', 'bash scripts/acc1.sh', 'bash scripts/check.sh'),
+      accTask('T2', 'bash scripts/acc2.sh'),
+    ] })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    script(f.dir, 'acc1.sh', 'echo "acc one"\nexit 1')
+    script(f.dir, 'acc2.sh', 'echo "acc two"\nexit 2')
+    const r = dispatch(f)
+    expect(r.code).toBe(0)
+    expect(r.out).toMatch(/red-probe T1: red \(exit 1\) — .*· acceptance-before: exit 1/)
+    expect(r.out).toMatch(/acceptance-before T2: exit 2/)
+    expect(r.out).not.toMatch(/WARNING acceptance-before/)
+    const a = JSON.parse(readFileSync(f.argsPath, 'utf8'))
+    expect(a.acceptanceBefore).toEqual({
+      T1: { exitCode: 1, output: 'acc one' }, T2: { exitCode: 2, output: 'acc two' } })
+  })
+
+  test('an acceptanceCmd that exits 0 before the work WARNS and the dispatch still proceeds', () => {
+    const f = fixture({ redCommand: 'unused', tasks: [accTask('T1', 'bash scripts/acc.sh')] })
+    script(f.dir, 'acc.sh', 'echo ok\nexit 0')
+    const r = dispatch(f)
+    expect(r.code).toBe(0)
+    expect(r.out).toMatch(/WARNING acceptance-before T1: acceptanceCmd exits 0 before any work/)
+    expect(existsSync(f.argsPath)).toBe(true)
+    expect(JSON.parse(readFileSync(f.argsPath, 'utf8')).acceptanceBefore.T1.exitCode).toBe(0)
+  })
+
+  test('the acceptance probe honours WORK_RED_PROBE_TIMEOUT and records a timeout as -1, refusing nothing', () => {
+    const f = fixture({ redCommand: 'unused', tasks: [accTask('T1', 'bash scripts/slow.sh')] })
+    script(f.dir, 'slow.sh', 'sleep 30')
+    const t0 = Date.now()
+    const out = execFileSync('bash', [SCRIPT, '--provider', 'claude', f.plan], { timeout: 120_000,
+      encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1', WORK_RED_PROBE_TIMEOUT: '1' },
+    })
+    expect(Date.now() - t0).toBeLessThan(25_000)
+    expect(out).toMatch(/acceptance-before T1: n\/a/)
+    const a = JSON.parse(readFileSync(f.argsPath, 'utf8'))
+    expect(a.acceptanceBefore.T1.exitCode).toBe(-1)
+    expect(a.acceptanceBefore.T1.output).toMatch(/still running after 1s/)
+  })
+
+  test('--no-red-probe still records acceptanceBefore', () => {
+    const f = fixture({ redCommand: 'unused', tasks: [accTask('T1', 'bash scripts/acc.sh', 'bash scripts/check.sh')] })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    script(f.dir, 'acc.sh', 'exit 1')
+    expect(dispatch(f, '--no-red-probe').code).toBe(0)
+    expect(JSON.parse(readFileSync(f.argsPath, 'utf8')).acceptanceBefore).toEqual({ T1: { exitCode: 1, output: '' } })
+  })
+})
+
 describe('a probe refusal is atomic — the run is left exactly as it was', () => {
   test('nothing is dispatched and args.json is never created on a first dispatch', () => {
     const f = fixture({ redCommand: 'bash scripts/absent.sh' })

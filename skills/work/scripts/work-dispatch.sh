@@ -46,7 +46,7 @@
 #   WORK_LOOP_INTERVAL_MINUTES=30     heartbeat period, as whole minutes (default 60)
 #   WORK_NO_SCOPE=1                   force the plain setsid dispatch, skipping the transient scope
 #   WORK_SYSTEMD_RUN=PATH             the systemd-run binary the scope probe uses (default systemd-run)
-#   WORK_RED_PROBE_TIMEOUT=300        per-command probe timeout in seconds
+#   WORK_RED_PROBE_TIMEOUT=300        per-command probe timeout in seconds (redCommand and acceptanceCmd)
 #   WORK_MECH_PROBE_TIMEOUT=300       per-check mechanical baseline timeout in seconds
 #   WORK_SUITE_LINT_TIMEOUT=300       suite-lint report timeout in seconds; expiring REPORTS, never refuses
 #   WORK_SUITE_LINT_BUN=bun           the runtime the suite-lint report is executed with
@@ -64,6 +64,7 @@
 # already reports `red-not-red` and `green-not-green` — but only after the implementers, verifiers,
 # lenses and mechanical checks have run. Both are decidable from the same command at dispatch, one
 # round and ~34 agents earlier, and a command that could not run at all is not a verdict of any kind.
+# Each `acceptanceCmd` runs beside it at baseline (args.acceptanceBefore); that half reports, never refuses.
 #
 # TIER 2b GATE: every `mechanicalChecks` command is EXECUTED at BASELINE too, via plan-preflight.ts.
 # TIER 2 covers redCommands only and returns early on readOnly — where the mechanical checks ARE the
@@ -278,10 +279,17 @@ fi
 # them after the agents, and a change is CRITICAL.
 # Mode `record` (--no-red-probe, --no-lint) records the same evidence and refuses nothing: without a
 # before-run the round's red verdict can only be red-unproven.
+# The same runner also executes each active task's `acceptanceCmd` once, verbatim, concurrently with
+# the red probes, into `acceptanceBefore` {id: {exitCode, output}} (exitCode -1 = timed out or could
+# not spawn, as in redBefore). Nothing the acceptance does refuses: non-zero is the expected baseline,
+# and exit 0 prints a WARNING, since an acceptance that already passes cannot show the task did
+# anything — a never-passable one (an over-escaped `\\b`) otherwise cost a whole round to discover.
+# readOnly runs skip it: there the acceptance IS the verdict, and work-checks.sh runs it.
 # Exit 0 = launch; exit 3 = refuse, exactly like the plan-lint gate.
 red_probe_gate() {
   python3 - "$1" "${2:-gate}" <<'PY'
 import hashlib, json, os, re, shlex, subprocess, sys
+from concurrent.futures import ThreadPoolExecutor
 
 try:
     a = json.load(open(sys.argv[1]))
@@ -292,9 +300,10 @@ record_only = sys.argv[2] == "record"
 TAIL = 60
 
 
-def save(before, hashes):
+def save(before, hashes, accepted):
     a["redBefore"] = before
     a["redSuiteHashes"] = hashes
+    a["acceptanceBefore"] = accepted
     with open(sys.argv[1], "w") as fh:
         json.dump(a, fh, indent=2)
         fh.write("\n")
@@ -303,8 +312,8 @@ def save(before, hashes):
 if a.get("readOnly"):
     a.pop("redBefore", None)
     a.pop("redSuiteHashes", None)
-    save({}, {})
-    print("  red-probe: readOnly run — no redCommand is dispatched, nothing probed")
+    save({}, {}, {})
+    print("  red-probe: readOnly run — no redCommand is dispatched, nothing probed (acceptanceCmds included)")
     raise SystemExit(0)
 
 tasks = a.get("tasks") or []
@@ -398,16 +407,67 @@ for f in sorted(suite):
     except OSError:
         pass
 
-if not gated:
-    save({}, hashes)
-    print("  red-probe: no active task needs a probe — none declares redCommand, or every one carries a proven pair")
-    print(f"  red-suite: {len(hashes)} file(s) hashed")
-    raise SystemExit(0)
-
 try:
     timeout = float(os.environ.get("WORK_RED_PROBE_TIMEOUT", "300"))
 except ValueError:
     timeout = 300.0
+
+
+def run(cmd):
+    try:
+        p = subprocess.run(["bash", "-c", cmd], cwd=cwd, capture_output=True, text=True,
+                           errors="replace", timeout=timeout)
+        return p.returncode, (p.stdout or "") + (p.stderr or "")
+    except subprocess.TimeoutExpired:
+        return None, f"(still running after {timeout:g}s)"
+    except OSError as exc:
+        return None, f"(could not spawn a shell: {exc})"
+
+
+# Every probe at once: they are subprocesses, so the added cost is the slowest, not the sum.
+accepting = [t for t in tasks if t.get("acceptanceCmd")]
+with ThreadPoolExecutor(max_workers=max(1, min(16, len(gated) + len(accepting)))) as pool:
+    red_runs = [pool.submit(run, t["redCommand"]) for t in gated]
+    acc_runs = [pool.submit(run, t["acceptanceCmd"]) for t in accepting]
+    red_runs = {t.get("id", "(unnamed)"): f.result() for t, f in zip(gated, red_runs)}
+    acc_runs = {t.get("id", "(unnamed)"): f.result() for t, f in zip(accepting, acc_runs)}
+
+accepted, acc_green = {}, []
+for tid, (code, out) in acc_runs.items():
+    accepted[tid] = {"exitCode": -1 if code is None else code, "output": "\n".join(out.splitlines()[-TAIL:])}
+    if code == 0:
+        acc_green.append(tid)
+
+
+def acc_exit(tid):
+    code = accepted[tid]["exitCode"]
+    return "n/a (timed out or could not run)" if code == -1 else f"exit {code}"
+
+
+def acc_note(tid):
+    return f"  · acceptance-before: {acc_exit(tid)}" if tid in accepted else ""
+
+
+def acc_report():
+    for t in tasks:
+        tid = t.get("id", "(unnamed)")
+        if tid in accepted and tid not in red_runs:
+            print(f"  acceptance-before {tid}: {acc_exit(tid)}")
+    if accepted:
+        print(f"  acceptanceBefore recorded for {len(accepted)} task(s)")
+    later = isinstance(a.get("rounds"), int) and a["rounds"] >= 2
+    for tid in acc_green:
+        print(f"  WARNING acceptance-before {tid}: acceptanceCmd exits 0 before any work, so it cannot show "
+              "the task did anything" + (" (or a previous round already did it)" if later else "")
+              + ". Reported, not refused.")
+
+
+if not gated:
+    save({}, hashes, accepted)
+    print("  red-probe: no active task needs a probe — none declares redCommand, or every one carries a proven pair")
+    print(f"  red-suite: {len(hashes)} file(s) hashed")
+    acc_report()
+    raise SystemExit(0)
 
 # What a run that actually reached a test result prints. Absent every one of these, the command
 # produced no test output at all, which is the case the table calls could-not-run.
@@ -461,27 +521,21 @@ def classify(cmd, code, out):
 before, refusals, not_red = {}, [], []
 for t in gated:
     cmd, tid = t["redCommand"], t.get("id", "(unnamed)")
-    try:
-        p = subprocess.run(["bash", "-c", cmd], cwd=cwd, capture_output=True, text=True,
-                           errors="replace", timeout=timeout)
-        code, out = p.returncode, (p.stdout or "") + (p.stderr or "")
-    except subprocess.TimeoutExpired:
-        code, out = None, f"(still running after {timeout:g}s)"
-    except OSError as exc:
-        code, out = None, f"(could not spawn a shell: {exc})"
+    code, out = red_runs[tid]
     verdict, why = classify(cmd, code, out)
     shown = "n/a" if code is None else code
     # could-not-run is -1 whatever the shell said: the gate reads -1 as unproven, never as red.
     before[tid] = {"exitCode": -1 if verdict == "could-not-run" else code,
                    "output": "\n".join(out.splitlines()[-TAIL:])}
-    print(f"  red-probe {tid}: {verdict} (exit {shown}) — {why}")
+    print(f"  red-probe {tid}: {verdict} (exit {shown}) — {why}{acc_note(tid)}")
     if verdict == "red-not-red":
         not_red.append(tid)
     elif verdict != "red":
         refusals.append((tid, verdict, shown, why, cmd, out[-800:].strip()))
 
-save(before, hashes)
+save(before, hashes, accepted)
 print(f"  red-suite: {len(hashes)} file(s) hashed; redBefore recorded for {len(before)} task(s)")
+acc_report()
 if not_red:
     print(f"  red-probe: REPORTED, not refused — {', '.join(not_red)} already exit 0 before the work, so "
           "the round will score them red-not-red. Launching anyway.")
