@@ -1,7 +1,8 @@
 """Scored AI-tic patterns — GENERATED from the ai-tic linter's tics.yaml.
 Do not hand-edit; regenerate via emit_patterns.py. Label carries severity
 (sev1-5); every entry passed the ~0-human-rate gate against the law +
-finance control corpora, so these flag AI defaults real authors don't write.
+finance control corpora, so these flag AI defaults real authors don't write,
+except entries carrying an owner `override:` in tics.yaml.
 """
 
 # (regex, label) — label format: 'ai-tic·sev{N}·{id}'
@@ -23,6 +24,8 @@ _TIC_PATTERNS = [
     ('\\bthe gradient (in|across)\\b', 'ai-tic·sev3·gradient-in-across'),
     ('\\b(Start|Begin) with (what|why|how|who|the (question|fact|premise|observation|basics|obvious))\\b', 'ai-tic·sev3·start-with-abstraction'),
     ('\\bholds? the (weight|tension|shape|through-line|throughline|thread)\\b', 'ai-tic·sev3·hold-the-abstract'),
+    ('\\b(?:(?:[Ss]tart|[Bb]egin)s? with a (?:puzzle|riddle|paradox)|[Hh]ere(?:.s| is) (?:the|a) (?:puzzle|riddle|paradox)|(?:[Cc]onsider|[Tt]ake) (?:a|this) (?:puzzle|riddle))\\b', 'ai-tic·sev3·announce-puzzle'),
+    ('(?:^|(?<=[.!?]\\s))(?:Start|Begin) with (?:[\\w-]+ ){0,3}[\\w-]+[.:]', 'ai-tic·sev3·start-with-x'),
     ('\\bsharpest version of\\b', 'ai-tic·sev2·sharpest-version'),
     ('\\bbounds?\\s+(all of|the whole|everything|the entirety|the entire|the analysis|the inquiry|the conclusion|the discussion|much of)\\b', 'ai-tic·sev2·bound-abstraction'),
     ('\\b(?:panel|data|dataset|sample|table|record)(?:[\\x27’]s)?\\s+grain\\b|\\bgrain of the (?:data|panel|dataset|sample|table|analysis)\\b', 'ai-tic·sev2·data-grain'),
@@ -35,7 +38,7 @@ _TIC_PATTERNS = [
     ('\\b(turn|move)(s|ed)? to [^.]{1,60}, starting with\\b', 'ai-tic·sev2·turn-to-starting-with'),
 ]
 
-# The constraint CLI (_writing.py). Hand-added: emit_patterns.py must emit this tail, or regenerating drops it.
+# The constraint CLI (_writing.py).
 if __name__ == "__main__":
     import sys
     from pathlib import Path
