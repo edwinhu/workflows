@@ -355,6 +355,7 @@ uvx --with marimo-lens agent-plugins read marimo-lens               # full brief
 
 - It uses private marimo runtime APIs with no upper version bound: after a marimo upgrade, confirm the dock still mounts before relying on it.
 - Selections, images and notes reach the agent exactly as rendered; Lens redacts password/file widgets only. Treat a notebook on confidential expert data like any other agent read of that data.
+- **A review round (tablet marks to be ledgered):** open Lens selections, and molabel `SimpleLabel` Yes/No/Skip verdicts with notes, live only in the kernel. Export them there with `${CLAUDE_PLUGIN_ROOT}/scripts/lib/notebook_marks_export.py` (`export_lens`, `export_molabel`; its docstring has the marimo-pair call), read each export with `doc-marks --lens` / `--molabel`, and ledger every round's exports with `review-ledger ledger` so each mark gets one outcome.
 
 ## Data and Visualization
 
