@@ -250,6 +250,15 @@ is grading. The lens returns schema-validated JSON through StructuredOutput, and
 `work`'s Phase 5 unchanged, over the plan's `## Review Surfaces` — the rendered deck and the rendered
 notes. A clean deck gate is evidence for that conversation, not human acceptance.
 
+**On the tablet** (the user marks the PDFs in Xodo), each round is four tools, all in `${CLAUDE_PLUGIN_ROOT}/bin`:
+`review-deliver deliver --name "<Talk>" --slides presentation/slides.pdf --notes presentation/notes.pdf` puts
+the next-letter copies in `~/notes/Inbox/Reading/<Talk> Review/` with a daily-note to-do; once synced back,
+`review-ledger ledger <every copy, oldest first>` gives each mark an id (marks left on earlier copies stay in it);
+the fixes go back through this workflow with one outcome per id; `review-ledger verify --outcomes <file>
+--check-cmd "review-check-deck --deck presentation/slides.pdf --notes presentation/notes.pdf --copies-dir
+<vault folder>"` refuses a missing outcome or an applied mark that changed nothing; then deliver the next round and
+`review-deliver tick --file "<copy name>"`. A review copy is never re-copied or overwritten: its ink exists only there.
+
 ## Red flags
 
 | Situation | Wrong move | Right move |
