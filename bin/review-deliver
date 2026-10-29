@@ -1,0 +1,4 @@
+#!/bin/sh
+# Deliver a deck's slides and notes review copies to the Obsidian vault and tick the round's to-do; see scripts/lib/review_deliver.py.
+script_dir=$(CDPATH= cd -P "${0%/*}" && pwd)
+exec uv run --no-project --quiet --with pymupdf python3 "$script_dir/../scripts/lib/review_deliver.py" "$@"
