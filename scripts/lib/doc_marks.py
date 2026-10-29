@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""One reader for a document's marks: PDF tablet annotations, docx comments, Drive comments -> one JSON schema.
+"""One reader for a document's marks: PDF tablet annotations, docx comments, Drive comments, marimo Lens
+selections and molabel annotations -> one JSON schema.
 
     doc_marks.py FILE.pdf|FILE.docx [--drive FILE_ID] [--drive-json RECORDED.json] [--png-dir DIR]
                  [--deck PDF] [--pad PT] [--dpi N] [--brief]
+    doc_marks.py --lens EXPORT.json | --molabel EXPORT.json [--brief]
 
 Launched by bin/doc-marks, which supplies pymupdf and lxml. Every backend emits
 
-    {"source": "pdf"|"docx"|"drive", "file", "mtime",
+    {"source": "pdf"|"docx"|"drive"|"lens"|"molabel", "file", "mtime",
      "marks": [{"id", "kind", "author", "created", "text", "quoted", "resolved", "replies",
                 "where": {"page", "heading", "heading_source", "rect"}, "strokes", "png"}]}
 
@@ -21,8 +23,14 @@ mark's top; else the --deck outline matched by page text; else the page's bold o
 first line. Every marked page is rendered with its ink to --png-dir (default <tmpdir>/doc-marks/<stem>).
 docx/Drive: skills/docx-typst/scripts/comments.py's reader, mapped onto the schema; a docx mark's
 heading is the nearest preceding Heading/Title paragraph of its anchor.
+Lens/molabel: the JSON scripts/lib/notebook_marks_export.py writes from the live kernel. A Lens mark is
+one open selection (id its label, kind `lens-point`/`lens-rect`, rect its normalized [x, y, width,
+height]); a molabel mark is one SimpleLabel annotation in example order (id `i<index>`, kind the
+yes/no/skip label, heading and quoted the export's title_key/text_key fields). An example's `_html` is
+never read.
 
-Exit: 0 marks found · 1 none (`NO MARKS` on stderr; the JSON, empty, still prints) · 2 could not run.
+Exit: 0 marks found · 1 none (`NO MARKS` on stderr; the JSON, empty, still prints) · 2 could not run
+(an unreadable or malformed export, or one from the other tool, included).
 """
 
 from __future__ import annotations
@@ -310,6 +318,111 @@ def drive_marks(file_id: str, recorded: Path | None) -> dict:
     return from_comments(res, {})
 
 
+# ── marimo Lens / molabel exports ─────────────────────────────────────────────
+
+class Malformed(Exception):
+    """An export record the schema cannot be built from; CouldNotRun names it."""
+
+
+def export_records(path: Path, tool: str, key: str) -> tuple[dict, list[dict]]:
+    """The export and its `key` records, once it is readable JSON written for `tool`."""
+    try:
+        s = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, ValueError) as e:
+        raise CouldNotRun(f"{path}: not a readable export ({e})") from None
+    got = s.get("tool") if isinstance(s, dict) else None
+    if got != tool:
+        raise CouldNotRun(f"{path}: not a {tool} export (tool {got!r})")
+    records = s.get(key)
+    if not isinstance(records, list) or not all(isinstance(r, dict) for r in records):
+        raise CouldNotRun(f"{path}: `{key}` is not a list of records")
+    return s, records
+
+
+def opt_str(d: dict, key: str) -> str:
+    """d[key] when a string, "" when absent or null; Malformed for any other type."""
+    v = d.get(key)
+    if v is None:
+        return ""
+    if not isinstance(v, str):
+        raise Malformed(f"`{key}` is not a string")
+    return v
+
+
+def is_num(v) -> bool:
+    return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+
+def lens_mark(sel: dict) -> dict:
+    ident = sel.get("label") or sel.get("id")
+    if not isinstance(ident, str):
+        raise Malformed("no string `label` or `id`")
+    anchor = sel.get("anchor")
+    if not isinstance(anchor, dict) or anchor.get("kind") not in ("point", "rect"):
+        raise Malformed("`anchor` is not a point or rect")
+    dims = ("x", "y", "width", "height") if anchor["kind"] == "rect" else ("x", "y")
+    if not all(is_num(anchor.get(k)) for k in dims):
+        raise Malformed(f"a {anchor['kind']} `anchor` needs numeric {', '.join(dims)}")
+    target, desc, hint = sel.get("target") or {}, sel.get("description") or {}, sel.get("domHint") or {}
+    if not all(isinstance(d, dict) for d in (target, desc, hint)):
+        raise Malformed("`target`, `description` or `domHint` is not an object")
+    cells = target.get("cellIds") or []
+    if not isinstance(cells, list) or not all(isinstance(c, str) for c in cells):
+        raise Malformed("`target.cellIds` is not a list of strings")
+    png = sel.get("png")
+    if png is not None and not isinstance(png, str):
+        raise Malformed("`png` is not a path or null")
+    if opt_str(desc, "label"):
+        heading, source = desc["label"], "lens-description"
+    elif cells:
+        heading, source = f"cell {cells[0]}", "lens-cell"
+    else:  # a DOM target may name no cell
+        heading, source = None, None
+    x, y = anchor["x"], anchor["y"]
+    return mark(
+        id=ident, kind=f"lens-{anchor['kind']}", author=None, created=None, text=opt_str(sel, "note"),
+        quoted=opt_str(hint, "text") or opt_str(desc, "detail"), resolved=False, replies=[], page=None,
+        heading=heading, heading_source=source,
+        rect=[x, y, anchor["width"], anchor["height"]] if anchor["kind"] == "rect" else [x, y, 0, 0],
+        strokes=None, png=png)
+
+
+def molabel_mark(rec: dict, title_key: str | None, text_key: str | None) -> dict:
+    index, example, label = rec.get("index"), rec.get("example"), rec.get("_label")
+    if not isinstance(index, int) or isinstance(index, bool):
+        raise Malformed("`index` is not an integer")
+    if not isinstance(example, dict):
+        raise Malformed("`example` is not an object")
+    if not isinstance(label, str) or not label:
+        raise Malformed("`_label` is not a label")
+    example = {k: v for k, v in example.items() if k != "_html"}  # rendered HTML is never a field
+    title = example.get(title_key) if title_key else None
+    quoted = example.get(text_key) if text_key else None
+    return mark(
+        id=f"i{index}", kind=label, author=None, created=opt_str(rec, "_timestamp") or None,
+        text=opt_str(rec, "_notes"), quoted="" if quoted is None else str(quoted), resolved=None, replies=[],
+        page=None, heading=f"example {index}" if title in (None, "") else str(title),
+        heading_source="molabel-example", rect=None, strokes=None, png=None)
+
+
+def notebook_marks(path: Path, source: str) -> dict:
+    """A --lens or --molabel export mapped onto the schema; a malformed record is CouldNotRun, naming it."""
+    tool, key = ("marimo-lens", "selections") if source == "lens" else ("molabel", "annotations")
+    s, records = export_records(path, tool, key)
+    keys = s.get("title_key"), s.get("text_key")
+    if not all(k is None or isinstance(k, str) for k in keys):
+        raise CouldNotRun(f"{path}: `title_key`/`text_key` is not a string or null")
+    marks = []
+    for n, r in enumerate(records):
+        try:
+            marks.append(lens_mark(r) if source == "lens" else molabel_mark(r, *keys))
+        except Malformed as e:
+            raise CouldNotRun(f"{path}: {key}[{n}] is malformed: {e}") from None
+    if source == "molabel":  # get_annotations() lists in labelling order, not example order
+        marks = [mk for _, mk in sorted(zip((r["index"] for r in records), marks), key=lambda p: p[0])]
+    return {"source": source, "file": str(path), "mtime": mtime_of(path), "marks": marks}
+
+
 # ── brief ─────────────────────────────────────────────────────────────────────
 
 def brief_md(s: dict) -> str:
@@ -348,9 +461,12 @@ def brief_md(s: dict) -> str:
 
 def parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="doc-marks", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("file", nargs="?", help="a .pdf or .docx (omit with --drive)")
+    ap.add_argument("file", nargs="?", help="a .pdf or .docx (omit with --drive, --lens or --molabel)")
     ap.add_argument("--drive", metavar="FILE_ID", help="read the comments of a Google Drive file instead")
     ap.add_argument("--drive-json", type=Path, metavar="JSON", help="with --drive: map a recorded comments.list response")
+    ap.add_argument("--lens", metavar="EXPORT.json", help="read a marimo Lens export (notebook_marks_export.export_lens)")
+    ap.add_argument("--molabel", metavar="EXPORT.json",
+                    help="read a molabel SimpleLabel export (notebook_marks_export.export_molabel)")
     ap.add_argument("--png-dir", help="where the PDF page PNGs go (default: <tmpdir>/doc-marks/<stem>)")
     ap.add_argument("--deck", help="the deck a PDF copy was cut from; names slides on a copy that carries no outline")
     ap.add_argument("--pad", type=float, default=INK_PAD, help=f"points of padding around a non-text mark (default {INK_PAD:g})")
@@ -360,12 +476,18 @@ def parser() -> argparse.ArgumentParser:
 
 
 def read(a) -> dict:
+    notebook = [(flag, v) for flag, v in (("lens", a.lens), ("molabel", a.molabel)) if v]
+    if notebook and (len(notebook) > 1 or a.file or a.drive):
+        raise CouldNotRun("--lens and --molabel each read one export: give no file, --drive or other export with it")
     if a.drive:
         return drive_marks(a.drive, a.drive_json)
     if a.drive_json:
         raise CouldNotRun("--drive-json needs --drive FILE_ID (the id recorded in `file`)")
+    if notebook:
+        source, export = notebook[0]
+        return notebook_marks(Path(export).expanduser(), source)
     if not a.file:
-        raise CouldNotRun("no file named: give a .pdf or .docx, or --drive FILE_ID")
+        raise CouldNotRun("no file named: give a .pdf or .docx, --drive FILE_ID, --lens or --molabel EXPORT.json")
     path = Path(a.file).expanduser()
     if not path.is_file():
         raise CouldNotRun(f"{path}: no such file")
