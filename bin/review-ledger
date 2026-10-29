@@ -1,0 +1,4 @@
+#!/bin/sh
+# Ledger review copies' marks under stable ids and verify an outcomes file covers them; see scripts/lib/review_ledger.py.
+script_dir=$(CDPATH= cd -P "${0%/*}" && pwd)
+exec uv run --no-project --quiet --with pymupdf --with lxml python3 "$script_dir/../scripts/lib/review_ledger.py" "$@"
