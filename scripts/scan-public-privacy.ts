@@ -83,6 +83,7 @@ const UNREVIEWED_BINARY_DISPOSITION = "unreviewed";
 // An unstaged working-tree rebuild is skipped instead; see classifyBinary for why.
 const PRESERVED_BINARIES: ReadonlyArray<{ path: string; digest: string }> = [
   { path: "skills/law-econ-docx/examples/sample/figure1.png", digest: "70a977e0f296010321ccf92afa731b46d9e66dc52efbb7067474efaccb21f775" },
+  { path: "tests/fixtures/doc-marks/marked.pdf", digest: "c492a4c8f9436b4fcaf2cefc45e561994a69ae4241538f983169fd3bade8930c" },
   { path: "skills/workshop/fixtures/clean/presentation/notes.pdf", digest: "2d68662fb757cc6c16e3b228867d1b227f0b515cea49535760b61d7c7025f314" },
   { path: "skills/workshop/fixtures/clean/presentation/slides.pdf", digest: "0f979920cac91db740a3a8c3542063f133e5a50668d90449e9a688031f043098" },
   { path: "skills/wrds/scripts/parse_13f/parse_13f_go/parse_13f_go", digest: "f09563d7e6625cd777a8d597538ebd26ba0cd2578961b149ffa648c92d80887f" },
