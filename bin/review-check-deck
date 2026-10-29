@@ -1,0 +1,4 @@
+#!/bin/sh
+# Decide whether one applied review mark's slide or notes entry changed in the new build; see scripts/lib/review_check_deck.py.
+script_dir=$(CDPATH= cd -P "${0%/*}" && pwd)
+exec uv run --no-project --quiet --with pymupdf python3 "$script_dir/../scripts/lib/review_check_deck.py" "$@"
