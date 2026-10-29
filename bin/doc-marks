@@ -1,0 +1,4 @@
+#!/bin/sh
+# Read a document's marks (PDF tablet annotations, docx/Drive comments) as one JSON schema; see scripts/lib/doc_marks.py.
+script_dir=$(CDPATH= cd -P "${0%/*}" && pwd)
+exec uv run --no-project --quiet --with pymupdf --with lxml python3 "$script_dir/../scripts/lib/doc_marks.py" "$@"
