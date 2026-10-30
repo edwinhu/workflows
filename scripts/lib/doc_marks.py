@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """One reader for a document's marks: PDF tablet annotations, docx comments, Drive comments, marimo Lens
-selections, molabel annotations and GitHub pull request reviews -> one JSON schema.
+selections, molabel annotations, GitHub pull request reviews and Claude Docs comment threads -> one JSON schema.
 
     doc_marks.py FILE.pdf|FILE.docx [--drive FILE_ID] [--drive-json RECORDED.json] [--png-dir DIR]
                  [--deck PDF] [--pad PT] [--dpi N] [--brief]
-    doc_marks.py --lens EXPORT.json | --molabel EXPORT.json [--brief]
+    doc_marks.py --lens EXPORT.json | --molabel EXPORT.json | --claude-docs EXPORT.json [--brief]
     doc_marks.py --github-pr OWNER/REPO#N [--github-json RECORDED.json] [--include-bots] [--brief]
 
 Launched by bin/doc-marks, which supplies pymupdf and lxml. Every backend emits
 
-    {"source": "pdf"|"docx"|"drive"|"lens"|"molabel"|"github-pr", "file", "mtime",
+    {"source": "pdf"|"docx"|"drive"|"lens"|"molabel"|"github-pr"|"claude-docs", "file", "mtime",
      "marks": [{"id", "kind", "author", "created", "text", "quoted", "resolved", "replies",
                 "where": {"page", "heading", "heading_source", "rect"}, "strokes", "png"}]}
 
@@ -34,6 +34,10 @@ recorded as {"comments": [...], "reviews": [...]}). A top-level inline comment i
 diff hunk, page its line, heading its path, replies its thread oldest first); a submitted review with a body is a
 mark (id `r<id>`, kind `review-<state>`). Marks run in time order; a Bot's comment, review or reply is dropped
 unless --include-bots.
+Claude Docs: an export the agent records from the MCP connector, {"tool": "claude-docs", "doc", "tab", "rows": [the
+query(utterance) rows], "anchors": {thread root id: its read(utterance).anchor}}. A create row whose parent is a node
+is a mark (id the utterance id, quoted its anchor's quote, "" for a whole-tab note, heading the tab); create rows whose
+parent is that utterance are its replies and a resolve row on it sets resolved. Marks and replies run in `seq` order.
 
 Exit: 0 marks found · 1 none (`NO MARKS` on stderr; the JSON, empty, still prints) · 2 could not run
 (an unreadable or malformed export, or one from the other tool, included).
@@ -435,6 +439,67 @@ def notebook_marks(path: Path, source: str) -> dict:
     return {"source": source, "file": str(path), "mtime": mtime_of(path), "marks": marks}
 
 
+# ── Claude Docs comment export ────────────────────────────────────────────────
+
+def claude_docs_row(r: dict) -> tuple[dict, str, str]:
+    """(payload.value, parent object, parent id) of one query row; Malformed for a missing `id`/`seq`/`payload.value`
+    or a field of the wrong type (an uncaught TypeError would exit 1, which reads as NO MARKS)."""
+    payload = r.get("payload")
+    value = payload.get("value") if isinstance(payload, dict) else None
+    if not isinstance(r.get("id"), str) or not r["id"] or not is_int(r.get("seq")) or not isinstance(value, dict):
+        raise Malformed("no string `id`, integer `seq` or object `payload.value`")
+    parent, actor = value.get("parent") or {}, r.get("actor") or {}
+    if not isinstance(parent, dict) or not isinstance(actor, dict):
+        raise Malformed("`payload.value.parent` or `actor` is not an object")
+    for d, k in ((r, "at"), (r, "verb"), (value, "body"), (value, "kind"), (actor, "name")):
+        opt_str(d, k)
+    return value, opt_str(parent, "object"), opt_str(parent, "id")
+
+
+def claude_docs_marks(path: Path) -> dict:
+    """A --claude-docs export onto the schema: a create row whose parent is a node is a thread root and a mark; create
+    rows whose parent is that utterance are its replies; a resolve row on it sets resolved. All in `seq` order."""
+    s, records = export_records(path, "claude-docs", "rows")
+    doc, anchors = s.get("doc"), s.get("anchors") or {}
+    if not isinstance(doc, str) or not doc:
+        raise CouldNotRun(f"{path}: `doc` is not the doc's URL or id")
+    if s.get("tab") is not None and not isinstance(s["tab"], str):
+        raise CouldNotRun(f"{path}: `tab` is not a string")
+    if not isinstance(anchors, dict) or not all(
+            isinstance(a, dict) and (a.get("quote") is None or isinstance(a["quote"], str)) for a in anchors.values()):
+        raise CouldNotRun(f"{path}: `anchors` is not an object of read() anchors, each quote a string")
+    rows = []
+    for n, r in enumerate(records):
+        try:
+            rows.append((r, *claude_docs_row(r)))
+        except Malformed as e:
+            raise CouldNotRun(f"{path}: rows[{n}] is malformed: {e}") from None
+    rows.sort(key=lambda row: row[0]["seq"])
+    tab = s.get("tab") or None
+    roots, replies, resolved = [], {}, set()
+    for r, value, on, parent_id in rows:
+        if value.get("kind") == "resolve":
+            if on == "utterance":
+                resolved.add(parent_id)
+        elif r.get("verb") != "create":
+            continue
+        elif on == "node":
+            roots.append((r, value))
+        elif on == "utterance":
+            replies.setdefault(parent_id, []).append({"author": opt_str(r.get("actor") or {}, "name") or None,
+                                                      "created": opt_str(r, "at") or None,
+                                                      "text": opt_str(value, "body")})
+    marks = [mark(
+        id=r["id"], kind="comment", author=opt_str(r.get("actor") or {}, "name") or None,
+        created=opt_str(r, "at") or None, text=opt_str(value, "body"),
+        quoted=opt_str(anchors.get(r["id"]) or {}, "quote"), resolved=r["id"] in resolved,
+        replies=replies.get(r["id"], []), page=None, heading=tab,
+        heading_source="claude-docs-tab" if tab else None, rect=None, strokes=None, png=None)
+        for r, value in roots]
+    times = [opt_str(r, "at") for r, *_ in rows if opt_str(r, "at")]
+    return {"source": "claude-docs", "file": doc, "mtime": max(times, default=None), "marks": marks}
+
+
 # ── GitHub pull request ───────────────────────────────────────────────────────
 
 # GitHub's own name rules, ASCII only; matched whole before any part reaches gh's argv or the API path.
@@ -597,7 +662,8 @@ def brief_md(s: dict) -> str:
 
 def parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="doc-marks", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("file", nargs="?", help="a .pdf or .docx (omit with --drive, --lens, --molabel or --github-pr)")
+    ap.add_argument("file", nargs="?",
+                    help="a .pdf or .docx (omit with --drive, --lens, --molabel, --github-pr or --claude-docs)")
     ap.add_argument("--drive", metavar="FILE_ID", help="read the comments of a Google Drive file instead")
     ap.add_argument("--drive-json", type=Path, metavar="JSON", help="with --drive: map a recorded comments.list response")
     ap.add_argument("--lens", metavar="EXPORT.json", help="read a marimo Lens export (notebook_marks_export.export_lens)")
@@ -608,6 +674,8 @@ def parser() -> argparse.ArgumentParser:
     ap.add_argument("--github-json", type=Path, metavar="JSON",
                     help='with --github-pr: map a recording {"comments": [...], "reviews": [...]} instead of calling gh')
     ap.add_argument("--include-bots", action="store_true", help="with --github-pr: keep Bot authors' comments and reviews")
+    ap.add_argument("--claude-docs", metavar="EXPORT.json",
+                    help="read a recorded Claude Docs comment export (query rows plus read anchors)")
     ap.add_argument("--png-dir", help="where the PDF page PNGs go (default: <tmpdir>/doc-marks/<stem>)")
     ap.add_argument("--deck", help="the deck a PDF copy was cut from; names slides on a copy that carries no outline")
     ap.add_argument("--pad", type=float, default=INK_PAD, help=f"points of padding around a non-text mark (default {INK_PAD:g})")
@@ -617,6 +685,13 @@ def parser() -> argparse.ArgumentParser:
 
 
 def read(a) -> dict:
+    if a.claude_docs:
+        others = [flag for flag, v in (("a file", a.file), ("--drive", a.drive), ("--drive-json", a.drive_json),
+                                        ("--lens", a.lens), ("--molabel", a.molabel), ("--github-pr", a.github_pr),
+                                        ("--github-json", a.github_json), ("--include-bots", a.include_bots)) if v]
+        if others:
+            raise CouldNotRun(f"--claude-docs reads one export: give no {', '.join(others)} with it")
+        return claude_docs_marks(Path(a.claude_docs).expanduser())
     if a.github_pr:
         others = [flag for flag, v in (("a file", a.file), ("--drive", a.drive), ("--drive-json", a.drive_json),
                                         ("--lens", a.lens), ("--molabel", a.molabel)) if v]
@@ -636,8 +711,8 @@ def read(a) -> dict:
         source, export = notebook[0]
         return notebook_marks(Path(export).expanduser(), source)
     if not a.file:
-        raise CouldNotRun("no file named: give a .pdf or .docx, --drive FILE_ID, --lens or --molabel EXPORT.json, "
-                          "or --github-pr OWNER/REPO#N")
+        raise CouldNotRun("no file named: give a .pdf or .docx, --drive FILE_ID, --lens, --molabel or --claude-docs "
+                          "EXPORT.json, or --github-pr OWNER/REPO#N")
     path = Path(a.file).expanduser()
     if not path.is_file():
         raise CouldNotRun(f"{path}: no such file")
