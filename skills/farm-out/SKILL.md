@@ -58,11 +58,14 @@ append it automatically. Do not hand-roll a delegation that skips it.
 
 **Do NOT arm a `Monitor` or an `until test -s` loop to be woken.** The watcher mod
 (`hooks/watch/watcher.ts`) reads every farm run, work round and grind loop this session launches from
-`$TMPDIR/farm-events/<session>/`, keeps one status line while any runs (`farm: 2 running (ds-rules
-43m, …) · work <run> round 2/3 2/5 checks`), and wakes YOU — not the user — ONCE per run on `DONE`
-and on a run whose process is gone with no verdict (`GONE`), naming its report path. `/farm` prints
-the table: label, state, elapsed, artifact, report. Its timer restarts with every session start and
-reload, which the retired `farm-runs` monitor never did — a finished run once woke nobody for hours.
+`$TMPDIR/farm-events/<session>/` and wakes YOU — not the user — ONCE per run on `DONE` and on a run
+whose process is gone with no verdict (`GONE`), naming its report path. `farm-status`, run as a
+statusLine command, prints the running line from the same files (`farm: 2 running (ds-rules 43m, …) ·
+work <run> round 2/3 2/5 checks`); set it with
+`{"statusLine":{"type":"command","command":"farm-status","refreshInterval":5}}`, or a composing
+script that calls it. `/farm` prints the table: label, state, elapsed, artifact, report. Its timer
+restarts with every session start and reload, which the retired `farm-runs` monitor never did — a
+finished run once woke nobody for hours.
 
 **Arm a task-specific wait ONLY when a run's finish must trigger a follow-up COMMAND** — a wake is
 not your next step. Background that step: `until test -s <expect>; do sleep 20; done; <next step>`.

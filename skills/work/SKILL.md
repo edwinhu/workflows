@@ -407,9 +407,11 @@ beside the wave graph.
 A Stop hook reaches nothing when no turn is running, so the hold alone cannot restart a session that
 has gone quiet. The **watcher mod** (`hooks/watch/watcher.ts`) does: it reads
 `$TMPDIR/farm-events/$CLAUDE_CODE_SESSION_ID`, where `work-round.sh`, `work-loop.sh` and their
-`farm.sh` file themselves, shows the round and phase in the status line, and wakes the main chat ONCE
-on the loop's exit (the round's verdict when no loop runs) and on a run that dies without one.
-`/farm` prints the table.
+`farm.sh` file themselves, and wakes the main chat ONCE on the loop's exit (the round's verdict when
+no loop runs) and on a run that dies without one. `farm-status`, run as a statusLine command, prints
+the round and phase from the same files; set it with
+`{"statusLine":{"type":"command","command":"farm-status","refreshInterval":5}}`, or a composing
+script that calls it. `/farm` prints the table.
 
 **Nothing wakes a session that is not running.** A run that finishes while no session is open is
 reported only when the session next starts, so a restarted loop can sit with nothing
