@@ -857,6 +857,17 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/human-review-gate.sh -w --no-upda
 # or: -r <range> / pr <N> per the plan's review surface
 ```
 
+### On the tablet — a draft PR instead of tuicr
+
+When the user reviews away from the terminal, the review surface is a draft PR read in the GitHub app.
+Push the branch and open it with `gh pr create --draft`; once the user says the review is in, save
+`doc-marks --github-pr <owner/repo>#<N>` (bot authors dropped; `--include-bots` keeps them) to
+`<repo> PR <N> review <YYYYMMDD><letter>.json`, a new file per round. `review-ledger ledger <every round's
+file, oldest first>` gives each inline comment and review summary an id; the fixes go through this
+workflow with one outcome per id, and `review-ledger verify --outcomes <file>` refuses a missing one.
+A review summary that only approves carries no text and is not a mark; the PR's approval is the user's
+verdict, as tuicr's is.
+
 ### The read-only path — review the findings file, not the tree
 
 A `readOnly` run changes no files, so `-w` opens an empty diff and tuicr returns `unreviewed`, which
