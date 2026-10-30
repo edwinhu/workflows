@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """One reader for a document's marks: PDF tablet annotations, docx comments, Drive comments, marimo Lens
-selections and molabel annotations -> one JSON schema.
+selections, molabel annotations and GitHub pull request reviews -> one JSON schema.
 
     doc_marks.py FILE.pdf|FILE.docx [--drive FILE_ID] [--drive-json RECORDED.json] [--png-dir DIR]
                  [--deck PDF] [--pad PT] [--dpi N] [--brief]
     doc_marks.py --lens EXPORT.json | --molabel EXPORT.json [--brief]
+    doc_marks.py --github-pr OWNER/REPO#N [--github-json RECORDED.json] [--include-bots] [--brief]
 
 Launched by bin/doc-marks, which supplies pymupdf and lxml. Every backend emits
 
-    {"source": "pdf"|"docx"|"drive"|"lens"|"molabel", "file", "mtime",
+    {"source": "pdf"|"docx"|"drive"|"lens"|"molabel"|"github-pr", "file", "mtime",
      "marks": [{"id", "kind", "author", "created", "text", "quoted", "resolved", "replies",
                 "where": {"page", "heading", "heading_source", "rect"}, "strokes", "png"}]}
 
@@ -28,6 +29,11 @@ one open selection (id its label, kind `lens-point`/`lens-rect`, rect its normal
 height]); a molabel mark is one SimpleLabel annotation in example order (id `i<index>`, kind the
 yes/no/skip label, heading and quoted the export's title_key/text_key fields). An example's `_html` is
 never read.
+GitHub PR: `gh api --paginate` of pulls/N/comments and pulls/N/reviews (or --github-json, the two responses
+recorded as {"comments": [...], "reviews": [...]}). A top-level inline comment is a mark (id `c<id>`, quoted its
+diff hunk, page its line, heading its path, replies its thread oldest first); a submitted review with a body is a
+mark (id `r<id>`, kind `review-<state>`). Marks run in time order; a Bot's comment, review or reply is dropped
+unless --include-bots.
 
 Exit: 0 marks found · 1 none (`NO MARKS` on stderr; the JSON, empty, still prints) · 2 could not run
 (an unreadable or malformed export, or one from the other tool, included).
@@ -39,6 +45,8 @@ import argparse
 import datetime as dt
 import json
 import re
+import shutil
+import subprocess
 import sys
 import tempfile
 import zipfile
@@ -353,6 +361,10 @@ def is_num(v) -> bool:
     return isinstance(v, (int, float)) and not isinstance(v, bool)
 
 
+def is_int(v) -> bool:
+    return isinstance(v, int) and not isinstance(v, bool)
+
+
 def lens_mark(sel: dict) -> dict:
     ident = sel.get("label") or sel.get("id")
     if not isinstance(ident, str):
@@ -423,6 +435,130 @@ def notebook_marks(path: Path, source: str) -> dict:
     return {"source": source, "file": str(path), "mtime": mtime_of(path), "marks": marks}
 
 
+# ── GitHub pull request ───────────────────────────────────────────────────────
+
+# GitHub's own name rules, ASCII only; matched whole before any part reaches gh's argv or the API path.
+GITHUB_PR = re.compile(r"([A-Za-z0-9][A-Za-z0-9-]{0,38})/([A-Za-z0-9._-]{1,100})#([1-9][0-9]{0,9})")
+
+
+def github_pr_ref(ref: str) -> tuple[str, str, str]:
+    m = GITHUB_PR.fullmatch(ref)
+    if not m or m.group(2) in (".", ".."):
+        raise CouldNotRun(f"--github-pr {ref!r}: not OWNER/REPO#N")
+    return m.group(1), m.group(2), m.group(3)
+
+
+def gh_api(endpoint: str) -> list:
+    """Every item of a paginated list endpoint, through `gh api --paginate` run without a shell."""
+    gh = shutil.which("gh")
+    if gh is None:
+        raise CouldNotRun("gh is not on PATH: install the GitHub CLI, or give --github-json RECORDED.json")
+    cmd = [gh, "api", "--paginate", endpoint]
+    shown = f"gh api --paginate {endpoint}"
+    try:
+        p = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    except OSError as e:
+        raise CouldNotRun(f"`{shown}` could not start ({e})") from None
+    if p.returncode:
+        raise CouldNotRun(f"`{shown}` exited {p.returncode}: {p.stderr.strip()}")
+    items, dec, i, out = [], json.JSONDecoder(), 0, p.stdout
+    while True:  # without --slurp, --paginate prints one JSON array per page
+        while i < len(out) and out[i].isspace():
+            i += 1
+        if i == len(out):
+            return items
+        try:
+            page, i = dec.raw_decode(out, i)
+        except ValueError as e:
+            raise CouldNotRun(f"`{shown}` printed no JSON array ({e})") from None
+        if not isinstance(page, list):
+            raise CouldNotRun(f"`{shown}` printed a {type(page).__name__}, not a list")
+        items += page
+
+
+def github_marks(ref: str, comments: list[dict], reviews: list[dict], include_bots: bool) -> dict:
+    """pulls/N/comments and pulls/N/reviews items onto the schema. A top-level inline comment (its replies attached,
+    oldest first) and a submitted review with a body are marks, in time order; a Bot's comment, review or reply is
+    dropped unless include_bots. A record without an integer `id`, a `body` or a `user` is Malformed."""
+    def kept(records: list[dict], name: str, strs: tuple, ints: tuple) -> list[tuple[dict, str | None]]:
+        """(record, author login) of each record not dropped as a Bot's, every record checked first."""
+        out = []
+        for n, r in enumerate(records):
+            user = r.get("user")
+            try:
+                if not is_int(r.get("id")) or "body" not in r or "user" not in r:
+                    raise Malformed("no integer `id`, `body` or `user`")
+                if user is not None and not (isinstance(user, dict) and isinstance(user.get("login"), str)):
+                    raise Malformed("`user` has no string `login`")  # null is GitHub's deleted account
+                for k in strs:
+                    opt_str(r, k)
+                bad = [k for k in ints if r.get(k) is not None and not is_int(r[k])]
+                if bad:
+                    raise Malformed(f"`{bad[0]}` is not an integer")
+            except Malformed as e:
+                raise Malformed(f"{name}[{n}]: {e}") from None
+            if include_bots or user is None or user.get("type") != "Bot":
+                out.append((r, user["login"] if user else None))
+        return out
+
+    comments = kept(comments, "comments", ("body", "created_at", "path", "diff_hunk"),
+                    ("in_reply_to_id", "line", "original_line"))
+    reviews = kept(reviews, "reviews", ("body", "submitted_at", "state"), ())
+    replies: dict[int, list[dict]] = {}
+    for r, author in comments:
+        if r.get("in_reply_to_id") is not None:
+            replies.setdefault(r["in_reply_to_id"], []).append(
+                {"author": author, "created": opt_str(r, "created_at") or None, "text": opt_str(r, "body")})
+    marks = []
+    for r, author in comments:
+        if r.get("in_reply_to_id") is not None:
+            continue
+        path = opt_str(r, "path") or None
+        marks.append(mark(
+            id=f"c{r['id']}", kind="review-comment", author=author, created=opt_str(r, "created_at") or None,
+            text=opt_str(r, "body"), quoted=opt_str(r, "diff_hunk"), resolved=None,
+            replies=sorted(replies.get(r["id"], []), key=lambda x: x["created"] or ""),
+            page=r["line"] if r.get("line") is not None else r.get("original_line"),
+            heading=path, heading_source="github-path" if path else None, rect=None, strokes=None, png=None))
+    for r, author in reviews:
+        state = opt_str(r, "state")
+        if not state:
+            raise Malformed(f"review {r['id']} has no `state`")
+        if state == "PENDING" or not opt_str(r, "body").strip():
+            continue
+        marks.append(mark(
+            id=f"r{r['id']}", kind=f"review-{state.lower()}", author=author,
+            created=opt_str(r, "submitted_at") or None, text=opt_str(r, "body"), quoted="", resolved=None, replies=[],
+            page=None, heading="(review summary)", heading_source="github-review", rect=None, strokes=None, png=None))
+    marks.sort(key=lambda mk: mk["created"] or "")
+    times = [t for mk in marks for t in (mk["created"], *(x["created"] for x in mk["replies"])) if t]
+    return {"source": "github-pr", "file": ref, "mtime": max(times, default=None), "marks": marks}
+
+
+def github_pr_marks(ref: str, recorded: Path | None, include_bots: bool) -> dict:
+    owner, repo, number = github_pr_ref(ref)
+    if recorded:
+        origin = str(recorded)
+        try:
+            data = json.loads(recorded.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, ValueError) as e:
+            raise CouldNotRun(f"{recorded}: not a readable recording ({e})") from None
+        if not isinstance(data, dict):
+            raise CouldNotRun(f"{recorded}: not a {{\"comments\": [...], \"reviews\": [...]}} recording")
+        comments, reviews = data.get("comments"), data.get("reviews")
+    else:
+        origin = ref
+        base = f"repos/{owner}/{repo}/pulls/{number}"
+        comments, reviews = gh_api(f"{base}/comments"), gh_api(f"{base}/reviews")
+    for name, records in (("comments", comments), ("reviews", reviews)):
+        if not isinstance(records, list) or not all(isinstance(r, dict) for r in records):
+            raise CouldNotRun(f"{origin}: `{name}` is not a list of records")
+    try:
+        return github_marks(ref, comments, reviews, include_bots)
+    except Malformed as e:
+        raise CouldNotRun(f"{origin}: {e}") from None
+
+
 # ── brief ─────────────────────────────────────────────────────────────────────
 
 def brief_md(s: dict) -> str:
@@ -461,12 +597,17 @@ def brief_md(s: dict) -> str:
 
 def parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="doc-marks", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("file", nargs="?", help="a .pdf or .docx (omit with --drive, --lens or --molabel)")
+    ap.add_argument("file", nargs="?", help="a .pdf or .docx (omit with --drive, --lens, --molabel or --github-pr)")
     ap.add_argument("--drive", metavar="FILE_ID", help="read the comments of a Google Drive file instead")
     ap.add_argument("--drive-json", type=Path, metavar="JSON", help="with --drive: map a recorded comments.list response")
     ap.add_argument("--lens", metavar="EXPORT.json", help="read a marimo Lens export (notebook_marks_export.export_lens)")
     ap.add_argument("--molabel", metavar="EXPORT.json",
                     help="read a molabel SimpleLabel export (notebook_marks_export.export_molabel)")
+    ap.add_argument("--github-pr", metavar="OWNER/REPO#N",
+                    help="read a GitHub pull request's inline review comments and review summaries, through gh")
+    ap.add_argument("--github-json", type=Path, metavar="JSON",
+                    help='with --github-pr: map a recording {"comments": [...], "reviews": [...]} instead of calling gh')
+    ap.add_argument("--include-bots", action="store_true", help="with --github-pr: keep Bot authors' comments and reviews")
     ap.add_argument("--png-dir", help="where the PDF page PNGs go (default: <tmpdir>/doc-marks/<stem>)")
     ap.add_argument("--deck", help="the deck a PDF copy was cut from; names slides on a copy that carries no outline")
     ap.add_argument("--pad", type=float, default=INK_PAD, help=f"points of padding around a non-text mark (default {INK_PAD:g})")
@@ -476,6 +617,14 @@ def parser() -> argparse.ArgumentParser:
 
 
 def read(a) -> dict:
+    if a.github_pr:
+        others = [flag for flag, v in (("a file", a.file), ("--drive", a.drive), ("--drive-json", a.drive_json),
+                                        ("--lens", a.lens), ("--molabel", a.molabel)) if v]
+        if others:
+            raise CouldNotRun(f"--github-pr reads one pull request: give no {', '.join(others)} with it")
+        return github_pr_marks(a.github_pr, a.github_json, a.include_bots)
+    if a.github_json or a.include_bots:
+        raise CouldNotRun("--github-json and --include-bots need --github-pr OWNER/REPO#N")
     notebook = [(flag, v) for flag, v in (("lens", a.lens), ("molabel", a.molabel)) if v]
     if notebook and (len(notebook) > 1 or a.file or a.drive):
         raise CouldNotRun("--lens and --molabel each read one export: give no file, --drive or other export with it")
@@ -487,7 +636,8 @@ def read(a) -> dict:
         source, export = notebook[0]
         return notebook_marks(Path(export).expanduser(), source)
     if not a.file:
-        raise CouldNotRun("no file named: give a .pdf or .docx, --drive FILE_ID, --lens or --molabel EXPORT.json")
+        raise CouldNotRun("no file named: give a .pdf or .docx, --drive FILE_ID, --lens or --molabel EXPORT.json, "
+                          "or --github-pr OWNER/REPO#N")
     path = Path(a.file).expanduser()
     if not path.is_file():
         raise CouldNotRun(f"{path}: no such file")
