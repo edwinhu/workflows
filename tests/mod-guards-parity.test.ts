@@ -4,7 +4,7 @@
  *
  * WHERE THE INPUTS COME FROM. The existing suites, run here with GUARD_PARITY_RECORD set: the golden
  * cases of the five guards that have them, plus the spawn-based tests of pgrep-self-match,
- * bun-parallel-guard, cron-delete-guard (both halves), read-guard, work-abandon and typst-convention-guard. Each script invocation records its
+ * bun-parallel-guard, farm-detach-guard, cron-delete-guard (both halves), read-guard, work-abandon and typst-convention-guard. Each script invocation records its
  * stdin, cwd, environment and every file it observed (hooks/guards/cli.ts). Nothing here restates a
  * fixture.
  *
@@ -48,7 +48,7 @@ const tape = join(mkTmp('parity-tape-', P), 'tape.jsonl')
 const recEnv = { ...process.env, GUARD_PARITY_RECORD: tape }
 const sources: [string, string[]][] = [
   ['bun', ['scripts/hook-golden.ts', 'image-read-guard', 'suggest-compact', 'atomic-constraint-guard', 'typst-convention-guard', 'validate-skill-paths', '--quiet']],
-  ['bun', ['test', '--parallel', 'tests/pgrep-self-match.test.ts', 'tests/bun-parallel-guard.test.ts', 'tests/cron-delete-guard.test.ts', 'hooks/read-guard.test.ts', 'tests/work-abandon.test.ts']],
+  ['bun', ['test', '--parallel', 'tests/pgrep-self-match.test.ts', 'tests/bun-parallel-guard.test.ts', 'tests/farm-detach-guard.test.ts', 'tests/cron-delete-guard.test.ts', 'hooks/read-guard.test.ts', 'tests/work-abandon.test.ts']],
   // The typst goldens all assert silence; this harness holds the cases that report.
   ['bun', ['tests/typst-convention-guard.test.mjs']],
 ]

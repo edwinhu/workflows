@@ -1,7 +1,8 @@
 // The watcher mod, registered from hooks/watch/watcher.ts: the farm-out runs and work rounds THIS session launched, read from files only.
 //
 //   status line   one compact line while anything runs; cleared when nothing does
-//   wake          $.prompt.submit ONCE per run that reaches DONE or GONE, remembered in $.store
+//   wake          $.prompt.submit ONCE per run that reaches DONE or GONE, remembered in $.store; a finished
+//                 one carries its report heads or its work verdict
 //   /farm         a table of this session's runs, printed at once, no turn
 //   beacon        <TMPDIR>/farm-events/<session>/watcher.alive, rewritten by every tick that completes:
 //                 the one thing outside this module that can tell a session whose mods never loaded
@@ -12,8 +13,8 @@
 // waking itself about its own runs would loop.
 import type { EngineInterface, On } from 'claude-code'
 import {
-  BEACON, classify, parseEvents, statusLine, table, TICK_MS, pastHorizon, wakeable, wakeText, waitText, workPhase, workRound,
-  type Facts, type Run, type View,
+  artifactsOf, BEACON, classify, dirname, HEAD_FILES, parseEvents, statusLine, table, TICK_MS, pastHorizon, wakeable, wakeText, waitText,
+  workPhase, workRound, type ArtifactHead, type Facts, type Outcome, type Run, type View,
 } from './runs.ts'
 import { setForecastCache } from '../jev/forecast-mod.ts'
 
@@ -132,6 +133,25 @@ async function snapshot($: EngineInterface): Promise<{ views: View[]; nowMs: num
   return { views: classify(runs, await gather($, runs)), nowMs }
 }
 
+/** What a finished run delivered, read once, just before its wake: a work loop's result.json, or the
+ *  first HEAD_FILES artifacts of a farm or grind run that are regular, non-empty, absolute files written
+ *  at or after its START (classify's present-and-fresh rule). A dead run gets nothing. */
+async function outcome($: EngineInterface, v: View): Promise<Outcome | undefined> {
+  if (v.state !== 'done') return undefined
+  if (v.kind === 'work-loop') return { resultJson: (await readText($, `${v.runDir ?? dirname(v.out)}/result.json`)) ?? null }
+  if (v.kind !== 'farm' && v.kind !== 'grind') return undefined
+  const heads: ArtifactHead[] = []
+  for (const p of artifactsOf(v)) {
+    if (heads.length >= HEAD_FILES) break
+    if (!p.startsWith('/')) continue
+    const s = await $.fs.stat(p).catch(() => undefined)
+    if (!s || s.kind !== 'file' || s.size === 0 || s.mtimeMs < v.startedMs) continue
+    const text = await readText($, p)
+    if (text !== undefined) heads.push({ path: p, size: s.size, text })
+  }
+  return { heads }
+}
+
 async function wake($: EngineInterface, views: View[], nowMs: number) {
   for (const v of wakeable(views)) {
     // A live run's newest WAIT alert wakes once per waits value: the run stays running.
@@ -152,10 +172,12 @@ async function wake($: EngineInterface, views: View[], nowMs: number) {
     const key = `notified:${v.id}`
     if (await $.store.get(key)) continue
     if (pastHorizon(v, nowMs)) continue
+    // Read before the record, so a reload mid-read retries the wake rather than losing it.
+    const text = wakeText(v, nowMs, await outcome($, v))
     // Recorded BEFORE the submit: a reload between the two must not wake twice.
     await $.store.set(key, nowMs)
     // Never awaited: submit resolves when the turn starts, and this tick may run mid-turn.
-    void $.prompt.submit({ text: wakeText(v, nowMs) })
+    void $.prompt.submit({ text })
   }
 }
 

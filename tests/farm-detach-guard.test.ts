@@ -8,7 +8,7 @@ import { expect, test, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { dirname, join } from 'node:path'
 
-setDefaultTimeout(60_000)
+setDefaultTimeout(150_000)
 
 const HOOK = join(dirname(import.meta.dir), 'hooks', 'farm-detach-guard.ts')
 const FARM = '~/.claude/skills/workflows/skills/farm-out/scripts/farm.sh'

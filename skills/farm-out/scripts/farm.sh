@@ -31,6 +31,8 @@
 #                                            # "schema" becomes --json-schema (see run_one);
 #                                            # "sandbox": true runs the row's commands in a
 #                                            # throwaway bubblewrap overlay (sandbox.sh).
+#   farm.sh --tasks tasks.json --detach      # watcher alive: relaunch in the background and return
+#                                            # at once, log path on stdout; else run in the foreground
 #   farm.sh --workflow /abs/wf.js --args /abs/args.json --out /abs/result.json
 #   farm.sh --provider claude|codex|gemini   # legacy whole-run override: that wrapper for every
 #                                            # row, route.ts never consulted (--workflow needs it)
@@ -127,10 +129,12 @@ finally:
 sys.exit(0 if n == len(data) else 1)' "$OUTCOMES"
 }
 
-PROVIDER="" CWD=$PWD TASKS= WORKFLOW= ARGSFILE= OUT= CRON=1 BUDGET="" ; EXPECT=()
+PROVIDER="" CWD=$PWD TASKS= WORKFLOW= ARGSFILE= OUT= CRON=1 BUDGET="" DETACH=0 ; EXPECT=()
 VERDICT_MODE=0 VERDICT_ID= VERDICT= VERDICT_WHY=
+ARGV=("$@")   # what a --detach relaunch passes on, minus --detach
 while [ $# -gt 0 ]; do
   case "$1" in
+    --detach)   DETACH=1; shift ;;
     --no-cron)  CRON=0; shift ;;
     --cron)     CRON=1; shift ;;   # accepted no-op alias -- the cron is the default
     --verdict)  [ $# -ge 4 ] || refuse "usage: farm.sh --verdict <rowId> correct|wrong \"<why>\""
@@ -146,6 +150,8 @@ while [ $# -gt 0 ]; do
     *) refuse "unknown argument: $1" ;;
   esac
 done
+# A --workflow run is detached by its caller (work-dispatch.sh), which also owns its wake.
+[ "$DETACH" = 0 ] || { [ -n "$TASKS" ] && [ -z "$WORKFLOW" ]; } || refuse "--detach needs --tasks"
 
 # A verdict labels a row that already ran; it never runs anything. Only a row line can be judged,
 # so an id with no row line is refused -- a label for a row nobody can find is noise in the holdout.
@@ -794,6 +800,30 @@ for r in json.load(open(sys.argv[1], encoding="utf-8")):
       || { rm -rf -- "$rdir"; refuse "task $i: could not read its routing decision"; }
   done
   rm -rf -- "$rdir"
+
+  # --detach: hand the run to a relaunch of ourselves and return, so the watcher's wake on its DONE is
+  # the run's ONE wake (a run_in_background caller is woken by the harness as well). Decided here, after
+  # every refusal, so a refused run still fails in front of its caller; the relaunch re-validates and
+  # re-routes, both cheap. It keeps CLAUDE_CODE_SESSION_ID and TMPDIR, so its events land where the
+  # watcher reads, and the caller's own FARM_OUT_CHILD, so it runs exactly as a foreground call would.
+  if [ "$DETACH" = 1 ]; then
+    alive=0
+    bash "$PLUGIN_ROOT/skills/work/scripts/farm-alive.sh" --watcher || alive=$?
+    if [ "$alive" = 0 ]; then
+      relaunch=()
+      for a in "${ARGV[@]}"; do [ "$a" = --detach ] || relaunch+=("$a"); done
+      dlog=$(mktemp "${TMPDIR:-/tmp}/farm-detach.XXXXXX") || { printf 'farm: --detach: could not create a log under %s\n' "${TMPDIR:-/tmp}" >&2; exit 1; }
+      if [ -n "$CALLER_IS_CHILD" ]; then caller_env=(env FARM_OUT_CHILD="$CALLER_IS_CHILD"); else caller_env=(env -u FARM_OUT_CHILD); fi
+      setsid nohup "${caller_env[@]}" bash "$PLUGIN_ROOT/skills/farm-out/scripts/farm.sh" "${relaunch[@]}" > "$dlog" 2>&1 < /dev/null &
+      printf 'farm: detached; %s row(s) run in the background and the watcher wakes this session once, on the DONE. Log: %s\n' "$n" "$dlog"
+      exit 0
+    fi
+    case "$alive" in
+      2) why="no CLAUDE_CODE_SESSION_ID, so no session watcher can be named" ;;
+      *) why="this session's watcher is not ticking (no fresh farm-events beacon), so only this command's own end reports the run" ;;
+    esac
+    printf 'farm: --detach ignored: %s; running in the foreground\n' "$why" >&2
+  fi
 
   # Fan out. Each task writes its object to its own file so parallel writers
   # cannot interleave on stdout.
