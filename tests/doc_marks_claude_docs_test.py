@@ -139,6 +139,13 @@ def test_could_not_run(tmp_path):
     assert run("--claude-docs", FIXTURE, MARKED).returncode == 2
 
 
+def test_claude_docs_is_exclusive_with_every_other_source():
+    for extra in (["--drive", "abc"], ["--drive-json", FIXTURE], ["--lens", FIXTURE], ["--molabel", FIXTURE],
+                  ["--github-pr", "edwinhu/workflows#1"], ["--github-json", FIXTURE], ["--include-bots"]):
+        p = run("--claude-docs", FIXTURE, *extra)
+        assert p.returncode == 2 and "--claude-docs reads one export" in p.stderr, extra
+
+
 # ── round trip ────────────────────────────────────────────────────────────────
 
 def test_round_trip_through_review_ledger(tmp_path):
