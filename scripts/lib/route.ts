@@ -44,8 +44,10 @@
  *                      days, top 50 per day). A permaslug's `:variant` and trailing date suffix are
  *                      folded into its base slug before summing; the `other` row is never ranked.
  *   intelligenceIndex  evaluations.artificial_analysis_intelligence_index from Artificial Analysis
- *                      ($ROUTE_AA_URL, default GET /api/v2/data/llms/models). Matched when the AA
- *                      creator slug equals the slug's prefix and the AA model slug has the same
+ *                      ($ROUTE_AA_URL, default GET /api/v2/language/models/free, every page).
+ *                      Matched when the AA creator (its slug, else its name; the Free tier sends
+ *                      only the name), reduced to [a-z0-9], equals the slug's prefix reduced the
+ *                      same way, and the AA model slug has the same
  *                      tokens (lowercase, split on - . _ /) as the slug's model part, in any order;
  *                      the highest index wins when several AA entries match.
  *   asOf               the date of the last refresh in which any source answered.
@@ -386,6 +388,19 @@ async function fetchListing(url: string, timeoutMs: number, headers: Record<stri
   return (await fetchBody(url, timeoutMs, headers)).data
 }
 
+/** Every page of a listing that says `pagination.has_more` (Artificial Analysis V2), as one array. */
+async function fetchPages(url: string, timeoutMs: number, headers: Record<string, string> = {}): Promise<unknown[]> {
+  const out: unknown[] = []
+  for (let page = 1; page <= 50; page++) {
+    const u = new URL(url)
+    if (page > 1) u.searchParams.set('page', String(page))
+    const body = await fetchBody(u.href, timeoutMs, headers)
+    out.push(...body.data)
+    if (body.pagination?.has_more !== true) return out
+  }
+  throw new Error('more than 50 pages')
+}
+
 function toCatalog(data: unknown[]): CatalogEntry[] {
   return data.filter((m): m is CatalogEntry => isObj(m) && typeof m.id === 'string' && typeof m.owned_by === 'string')
 }
@@ -439,7 +454,7 @@ function applyRefresh(
 //   https://openrouter.ai/docs/api/api-reference/datasets/get-rankings-daily.md (30 req/min, 500/day)
 //   https://artificialanalysis.ai/documentation (1000 req/day)
 const DEFAULT_RANKINGS_URL = 'https://openrouter.ai/api/v1/datasets/rankings-daily'
-const DEFAULT_AA_URL = 'https://artificialanalysis.ai/api/v2/data/llms/models'
+const DEFAULT_AA_URL = 'https://artificialanalysis.ai/api/v2/language/models/free'
 const DEFAULT_OPENROUTER_KEY_REF = 'op://Shared with Agents/OpenRouter/credential'
 const DEFAULT_AA_KEY_REF = 'op://Shared with Agents/Artificial Analysis/credential'
 
@@ -483,7 +498,7 @@ function readKey(envVar: string, refVar: string, defaultRef: string, file?: stri
 export function slugKey(slug: string): string {
   const s = slug.toLowerCase().replace(/:.*$/, '').replace(/-(\d{8}|\d{4}-\d{2}-\d{2})$/, '')
   const cut = s.indexOf('/')
-  const creator = cut < 0 ? '' : s.slice(0, cut)
+  const creator = cut < 0 ? '' : s.slice(0, cut).replace(/[^a-z0-9]/g, '')
   const tokens = s.slice(cut + 1).split(/[-._/]+/).filter(Boolean).sort()
   return `${creator}/${tokens.join(' ')}`
 }
@@ -506,11 +521,12 @@ function toUsageRanks(data: unknown[]): Map<string, number> {
 function toIntelligence(data: unknown[]): Map<string, number> {
   const out = new Map<string, number>()
   for (const e of data) {
-    if (!isObj(e) || typeof e.slug !== 'string' || !isObj(e.model_creator) || typeof e.model_creator.slug !== 'string')
-      continue
+    if (!isObj(e) || typeof e.slug !== 'string' || !isObj(e.model_creator)) continue
+    const creator = typeof e.model_creator.slug === 'string' ? e.model_creator.slug : e.model_creator.name
+    if (typeof creator !== 'string') continue
     const v = isObj(e.evaluations) ? e.evaluations.artificial_analysis_intelligence_index : undefined
     if (typeof v !== 'number') continue
-    const k = slugKey(`${e.model_creator.slug}/${e.slug}`)
+    const k = slugKey(`${creator.toLowerCase().replace(/[^a-z0-9]/g, '')}/${e.slug}`)
     if (!out.has(k) || v > out.get(k)!) out.set(k, v)
   }
   return out
@@ -573,7 +589,7 @@ async function fetchSignals(): Promise<{ ranks: Map<string, number> | null; inte
   if ('missing' in aaKey) warn(`intelligenceIndex left unchanged: ${aaKey.missing}`)
   else {
     try {
-      intelligence = toIntelligence(await fetchListing(aaUrl, 30_000, { 'x-api-key': aaKey.key }))
+      intelligence = toIntelligence(await fetchPages(aaUrl, 30_000, { 'x-api-key': aaKey.key }))
       process.stdout.write('Source: Artificial Analysis (https://artificialanalysis.ai/).\n')
     } catch (e) {
       warn(`intelligenceIndex left unchanged: ${aaUrl} failed (${(e as Error).message})`)
@@ -828,7 +844,7 @@ async function discoverySources(
   if ('missing' in aaKey) return skip(`Artificial Analysis: ${aaKey.missing}`)
   const aaUrl = process.env.ROUTE_AA_URL || DEFAULT_AA_URL
   try {
-    const intelligence = toIntelligence(await fetchListing(aaUrl, 30_000, { 'x-api-key': aaKey.key }))
+    const intelligence = toIntelligence(await fetchPages(aaUrl, 30_000, { 'x-api-key': aaKey.key }))
     const usage = (await fetchRanks(msg => process.stderr.write(`route --propose: ${msg}\n`)))?.ranks ?? new Map<string, number>()
     return [catalog, prices, intelligence, usage]
   } catch (e) {

@@ -55,20 +55,21 @@ function tableCopy(edit: (t: any) => void = () => {}): string {
   return p
 }
 
-type Seen = { path: string; auth: string | null; apiKey: string | null }
+type Seen = { path: string; page: number; auth: string | null; apiKey: string | null }
 
-function stubAll(opts: { aaStatus?: number; rankingsStatus?: number } = {}) {
+function stubAll(opts: { aaStatus?: number; rankingsStatus?: number; aa?: (page: number) => unknown } = {}) {
   const seen: Seen[] = []
   const server = Bun.serve({
     port: 0,
     fetch(req) {
       const path = new URL(req.url).pathname
-      seen.push({ path, auth: req.headers.get('authorization'), apiKey: req.headers.get('x-api-key') })
+      const page = Number(new URL(req.url).searchParams.get('page') ?? 1)
+      seen.push({ path, page, auth: req.headers.get('authorization'), apiKey: req.headers.get('x-api-key') })
       if (path === '/v1/models') return Response.json({ data: CATALOG })
       if (path === '/prices') return Response.json({ data: [] })
       if (path === '/rankings')
         return opts.rankingsStatus ? new Response('no', { status: opts.rankingsStatus }) : Response.json(RANKINGS)
-      if (path === '/aa') return opts.aaStatus ? new Response('no', { status: opts.aaStatus }) : Response.json(AA)
+      if (path === '/aa') return opts.aaStatus ? new Response('no', { status: opts.aaStatus }) : Response.json(opts.aa ? opts.aa(page) : AA)
       return new Response('not found', { status: 404 })
     },
   })
@@ -158,6 +159,50 @@ test('refresh records usageRank and intelligenceIndex, one request per source, k
     expect(t.candidates.luna.signals).toBeUndefined()
     expect(r.stdout).toContain('Source: OpenRouter (openrouter.ai/rankings), as of 2026-10-01T00:00:00Z.')
     noKeyLeaks(r, table)
+  } finally { s.stop() }
+}, 30_000)
+
+const aaEntry = (slug: string, creator: Record<string, string>, v: number) =>
+  ({ id: slug, name: slug, slug, model_creator: creator, evaluations: { artificial_analysis_intelligence_index: v } })
+
+test('refresh follows pagination.has_more via ?page=N and reads Free-tier creators that carry only a name', async () => {
+  const pages: Record<number, unknown> = {
+    1: {
+      data: [aaEntry('claude-sonnet-5-5', { id: 'x1', name: 'Anthropic' }, 70), aaEntry('gemini-3-7-flash', { id: 'x2', name: 'Google' }, 61)],
+      pagination: { page: 1, page_size: 2, total_pages: 2, has_more: true },
+    },
+    2: {
+      data: [aaEntry('claude-5-5-opus', { id: 'x1', name: 'Anthropic' }, 74), aaEntry('claude-sonnet-5-5', { id: 'x3', name: 'Someone Else' }, 99)],
+      pagination: { page: 2, page_size: 2, total_pages: 2, has_more: false },
+    },
+  }
+  const s = stubAll({ aa: p => pages[p] })
+  const table = tableCopy()
+  try {
+    const r = await run(['--refresh', '--table', table], { ...s.env, ...KEYS })
+    expect(r.code).toBe(0)
+    expect(s.seen.filter(x => x.path === '/aa').map(x => x.page)).toEqual([1, 2])
+    const t = read(table)
+    expect(t.candidates.sonnet.signals.intelligenceIndex).toBe(70)
+    expect(t.candidates.flash.signals.intelligenceIndex).toBe(61)
+    // opus exists only on page 2.
+    expect(t.candidates.opus.signals.intelligenceIndex).toBe(74)
+    // sonnet staying 70 (not 99) shows the name-only "Someone Else" entry did not match.
+    noKeyLeaks(r, table)
+  } finally { s.stop() }
+}, 30_000)
+
+test('a page that fails after page 1 leaves intelligenceIndex unchanged', async () => {
+  const s = stubAll({ aa: p => p === 1
+    ? { data: [aaEntry('claude-sonnet-5-5', { name: 'Anthropic' }, 70)], pagination: { has_more: true } }
+    : { nodata: true } })
+  const prior = { usageRank: 9, intelligenceIndex: 42, asOf: '2026-01-01' }
+  const table = tableCopy(t => { t.candidates.sonnet.signals = prior })
+  try {
+    const r = await run(['--refresh', '--table', table], { ...s.env, ...KEYS })
+    expect(r.code).toBe(0)
+    expect(r.stderr).toMatch(/intelligenceIndex left unchanged: .*no data array/)
+    expect(read(table).candidates.sonnet.signals.intelligenceIndex).toBe(42)
   } finally { s.stop() }
 }, 30_000)
 
@@ -437,3 +482,9 @@ test('propose rank: fallbacks on an index tie order by usage, then price, then t
   const review = JSON.parse(r.stdout).proposals.find((p: any) => p.kind === 'review')
   expect(review.to.fallbacks).toEqual(['opus', 'flash39', 'flash38', 'flash'])
 }, 30_000)
+
+test('slugKey folds punctuation in the creator so openrouter "z-ai" meets AA\'s "Z AI"', async () => {
+  const { slugKey } = await import('../scripts/lib/route.ts')
+  expect(slugKey('z-ai/glm-5')).toBe(slugKey('zai/glm-5'))
+  expect(slugKey('z-ai/glm-5')).not.toBe(slugKey('other/glm-5'))
+})
