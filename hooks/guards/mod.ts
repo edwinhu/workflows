@@ -10,6 +10,7 @@ import { absolute, crashDeny, guardNow, type EnvName, type FileStat, type Guard,
 import { atomicConstraintGuard } from './atomic-constraint.ts'
 import { bunParallelGuard } from './bun-test.ts'
 import { cronDeleteGuard, cronRecord } from './cron-delete.ts'
+import { farmDetachGuard } from './farm-detach.ts'
 import { imageReadGuard } from './image-read.ts'
 import { pgrepSelfMatch } from './pgrep.ts'
 import { readGuard } from './read-guard.ts'
@@ -36,6 +37,7 @@ export const GUARDS: GuardSpec[] = [
   { script: 'suggest-compact.ts', gate: 'SUGGEST COMPACT', event: 'PreToolUse', tools: ['Edit', 'Write'], guard: suggestCompact },
   { script: 'pgrep-self-match.ts', gate: 'PGREP GUARD', event: 'PreToolUse', tools: ['Bash', 'Monitor'], guard: pgrepSelfMatch },
   { script: 'bun-parallel-guard.ts', gate: 'BUN PARALLEL GUARD', event: 'PreToolUse', tools: ['Bash'], guard: bunParallelGuard },
+  { script: 'farm-detach-guard.ts', gate: 'FARM DETACH GUARD', event: 'PreToolUse', tools: ['Bash'], guard: farmDetachGuard },
   { script: 'cron-delete-guard.ts', gate: 'CRON DELETE GUARD', event: 'PreToolUse', tools: ['CronDelete'], guard: cronDeleteGuard },
   { script: 'atomic-constraint-guard.ts', gate: 'ATOMIC CONSTRAINT GUARD', event: 'PostToolUse', tools: ['Edit', 'Write'], guard: atomicConstraintGuard },
   { script: 'typst-convention-guard.ts', gate: 'TYPST CONVENTION GUARD', event: 'PostToolUse', tools: ['Edit', 'Write'], guard: typstConventionGuard },

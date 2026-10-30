@@ -313,8 +313,53 @@ export function waitText(v: View): string {
     `Status: bash ${w.script || 'grind.sh'} status --journal ${v.out}`
 }
 
-/** The prompt that wakes the session for a finished or dead run. */
-export function wakeText(v: View, nowMs: number): string {
+/** One artifact as wake() read it: `size` is the stat's byte count, `text` the UTF-8 read. */
+export type ArtifactHead = { path: string; size: number; text: string }
+
+/** What wake() read for a finished run. `resultJson` is a work loop's result.json, null when the read failed. */
+export type Outcome = { heads?: ArtifactHead[]; resultJson?: string | null }
+
+/** How much a wake pastes: the first HEAD_FILES artifacts, HEAD_LINES lines each, each line cut at HEAD_WIDTH characters. */
+export const HEAD_FILES = 3
+export const HEAD_LINES = 15
+export const HEAD_WIDTH = 200
+
+/** A report's head for the wake. A file holding a NUL byte is named by size, never pasted. */
+export function headText(h: ArtifactHead): string {
+  const top = `\n--- ${h.path}, first ${HEAD_LINES} lines ---\n`
+  if (h.text.includes('\0')) return `${top}(binary, ${h.size} bytes)`
+  // Walked by indexOf, so a long report costs a count, not a copy of every line.
+  const shown: string[] = []
+  let lines = 0
+  for (let i = 0; i < h.text.length; lines++) {
+    let j = h.text.indexOf('\n', i)
+    if (j < 0) j = h.text.length
+    if (shown.length < HEAD_LINES) shown.push(j - i > HEAD_WIDTH ? h.text.slice(i, i + HEAD_WIDTH) + '…' : h.text.slice(i, j))
+    i = j + 1
+  }
+  const more = lines - shown.length
+  return top + shown.join('\n') + (more > 0 ? `\n(… ${more} more lines)` : '')
+}
+
+/** A work loop's verdict line from its result.json text, unwrapping the Workflow tool envelope
+ *  (`.result`) as work-result.sh does. Anything without a boolean overallPass is unreadable. */
+export function verdictText(json: string | null): string {
+  const unreadable = '\nVerdict: result.json unreadable'
+  let r: any
+  try { r = JSON.parse(json ?? '') } catch { return unreadable }
+  const isObj = (x: unknown) => typeof x === 'object' && x !== null && !Array.isArray(x)
+  if (isObj(r) && !('overallPass' in r) && isObj(r.result) && 'overallPass' in r.result) r = r.result
+  if (!isObj(r) || typeof r.overallPass !== 'boolean') return unreadable
+  // mechanicalThatFailed holds {name, exitCode}; the other selectors hold ids. A missing selector is unknown, not empty.
+  const ids = (a: unknown) => !Array.isArray(a) ? '?' : !a.length ? 'none'
+    : a.map((x: any) => (typeof x === 'string' ? x : x?.name ?? x?.id ?? JSON.stringify(x))).join(', ')
+  return `\nVerdict: ${r.overallPass ? 'PASS' : 'FAIL'} · flagged tasks: ${ids(r.tasksThatFlagged)} · ` +
+    `failed checks: ${ids(r.mechanicalThatFailed)} · lenses flagged: ${ids(r.lensesThatFlagged)} · rules failed: ${ids(r.rulesThatFailed)}`
+}
+
+/** The prompt that wakes the session for a finished or dead run; `outcome` appends what a finished
+ *  one delivered — report heads for a farm or grind run, the verdict for a work loop. */
+export function wakeText(v: View, nowMs: number, outcome?: Outcome): string {
   const took = elapsed(nowMs - v.startedMs)
   const ev = `events: ${v.file}`
   if (v.kind === 'work-loop' || v.kind === 'work-round') {
@@ -326,7 +371,8 @@ export function wakeText(v: View, nowMs: number): string {
     if (v.kind === 'work-loop') {
       const code = v.loopExit ?? v.done?.detail.match(/rc=(\d+)/)?.[1] ?? '?'
       return `work run ${basename(dir)} loop finished: exit ${code} (${LOOP_EXITS[code] ?? 'see loop.log'}) after ${took}. ` +
-        `Result: ${dir}/result.json; loop log: ${dir}/loop.log. ${ev}`
+        `Result: ${dir}/result.json; loop log: ${dir}/loop.log. ${ev}` +
+        (outcome && outcome.resultJson !== undefined ? verdictText(outcome.resultJson) : '')
     }
     return `work run ${basename(dir)} round finished: ${v.done?.detail || 'result present'} after ${took}. ` +
       `Result: ${dir}/result.json; run log: ${dir}/run.log. ${ev}`
@@ -338,5 +384,6 @@ export function wakeText(v: View, nowMs: number): string {
       (arts.length ? `; expected artifact ${v.artifactsStale ? 'stale (older than START)' : 'missing'}: ${arts.join(', ')}` : '') + `. ${ev}`
   }
   return `${what} ${v.label} finished: ${v.done?.detail || 'artifact present, no DONE line'} after ${took}.` +
-    (arts.length ? ` Report: ${arts.join(', ')} (${v.artifactsPresent ? 'present' : v.artifactsStale ? 'STALE, older than START' : 'MISSING'}).` : '') + ` ${ev}`
+    (arts.length ? ` Report: ${arts.join(', ')} (${v.artifactsPresent ? 'present' : v.artifactsStale ? 'STALE, older than START' : 'MISSING'}).` : '') + ` ${ev}` +
+    (outcome?.heads ?? []).slice(0, HEAD_FILES).map(headText).join('')
 }

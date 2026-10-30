@@ -128,7 +128,7 @@ S=~/.claude/skills/workflows/skills/farm-out/scripts
 
 # Build the task file with jq, never by hand-quoting a heredoc.
 jq -n '[{prompt:"…", expect:"/repo/out.md", label:"count", kind:"script", agent:"ds"}]' > /tmp/t.json
-bash $S/farm.sh --tasks /tmp/t.json --cwd /repo
+bash $S/farm.sh --tasks /tmp/t.json --cwd /repo --detach
 
 # Rows run in PARALLEL. Per row: prompt (required), workflow (required unless the persona
 # implies it), kind (or provider/model), expect (string or array), label, agent.
@@ -150,6 +150,10 @@ setsid nohup bash $S/farm.sh --workflow /abs/wf.js --out /abs/result.json --cwd 
 # team: named teammates that message each other, one result back
 $S/farm-team.sh --prompt-file t.txt --cwd /repo --expect /repo/a.txt --expect /repo/b.txt
 ```
+
+**In the main thread, run `--tasks` with `--detach` and never with `run_in_background`:** it returns at
+once with the log path and the watcher's wake on the run's `DONE` is its one wake; with no watcher
+ticking it prints `farm: --detach ignored` and runs in the foreground.
 
 `--provider claude|codex|gemini` is optional on `--tasks` (omit it and every row is
 routed), required on `--workflow`, and defaults to `claude` on `farm-team.sh`.
