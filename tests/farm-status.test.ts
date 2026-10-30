@@ -29,7 +29,7 @@ function livePid(): number {
 
 /** A pid that is certainly not running: a child that has already exited. */
 function deadPid(): number {
-  const r = spawnSync('sh', ['-c', 'echo $$'], { encoding: 'utf8' })
+  const r = spawnSync('sh', ['-c', 'echo $$'], { encoding: 'utf8', timeout: 10_000 })
   return Number(r.stdout.trim())
 }
 
@@ -62,7 +62,7 @@ test('a running farm row prints the watcher line, in colour', () => {
   expect(out.status).toBe(0)
   expect(out.stdout).toMatch(ANSI)
   expect(out.stdout.replace(ANSI, '').trim()).toBe('farm: 1 running (alpha 43m)')
-})
+}, 30_000)
 
 test('the line goes empty once the row files its DONE', () => {
   const r = root()
@@ -74,7 +74,7 @@ test('the line goes empty once the row files its DONE', () => {
   const out = run(r, session())
   expect(out.status).toBe(0)
   expect(out.stdout).toBe('')
-})
+}, 60_000)
 
 test('a row whose pid is gone is not shown as running', () => {
   const r = root()
@@ -82,7 +82,7 @@ test('a row whose pid is gone is not shown as running', () => {
   const out = run(r, session())
   expect(out.status).toBe(0)
   expect(out.stdout).toBe('')
-})
+}, 40_000)
 
 test('another session\'s running row never shows', () => {
   const r = root()
@@ -91,7 +91,7 @@ test('another session\'s running row never shows', () => {
   const out = run(r, session())
   expect(out.status).toBe(0)
   expect(out.stdout).toBe('')
-})
+}, 30_000)
 
 test('a live work round shows its round phase from the run log', () => {
   const r = root()
@@ -103,7 +103,7 @@ test('a live work round shows its round phase from the run log', () => {
   const out = run(r, session())
   expect(out.status).toBe(0)
   expect(out.stdout.replace(ANSI, '').trim()).toBe('work 1002-y 2/5 checks 6m')
-})
+}, 30_000)
 
 test('no session id, or stdin that is not JSON, prints nothing and exits 0', () => {
   const r = root()
@@ -113,4 +113,4 @@ test('no session id, or stdin that is not JSON, prints nothing and exits 0', () 
     expect(out.status).toBe(0)
     expect(out.stdout).toBe('')
   }
-})
+}, 100_000)

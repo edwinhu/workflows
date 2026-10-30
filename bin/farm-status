@@ -1,0 +1,4 @@
+#!/bin/sh
+# The statusLine segment for this session's farm runs, work rounds and grind loops; see scripts/lib/farm-status.ts.
+script_dir=$(CDPATH= cd -P "${0%/*}" && pwd)
+exec bun "$script_dir/../scripts/lib/farm-status.ts" "$@"
