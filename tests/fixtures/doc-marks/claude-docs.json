@@ -1,0 +1,26 @@
+{
+ "tool": "claude-docs",
+ "doc": "https://claude.ai/artifact/KL1Bhs5MaEU7cUXaurGV3N",
+ "tab": "Tab 1",
+ "rows": [
+  {"seq": 6, "at": "2026-10-30T02:08:38.120Z", "verb": "create", "id": "231a8bab-15e1",
+   "actor": {"principal": "u_PLACEHOLDER", "channel": "external", "via": "mcp", "self": true, "name": "Edwin Hu"},
+   "payload": {"value": {"body": "Say what a stable id looks like here.",
+    "parent": {"id": "4fd6df38-f36e", "anchor": {"kind": "chars", "range": ["mprwvdsgyg2.174", "mprwvdsgyg2.200"]}, "object": "node"}}}},
+  {"seq": 7, "at": "2026-10-30T02:08:38.294Z", "verb": "create", "id": "e521f537-a14f",
+   "actor": {"principal": "u_PLACEHOLDER", "channel": "external", "via": "mcp", "self": true, "name": "Edwin Hu"},
+   "payload": {"value": {"body": "Cut \"or an applied mark changed nothing\"?",
+    "parent": {"id": "4fd6df38-f36e", "anchor": {"kind": "chars", "range": ["mprwvdsgyg2.256", "mprwvdsgyg2.286"]}, "object": "node"}}}},
+  {"seq": 8, "at": "2026-10-30T02:08:46.761Z", "verb": "create", "id": "5a690f53-3150",
+   "actor": {"principal": "u_PLACEHOLDER", "channel": "external", "via": "mcp", "self": true, "name": "Edwin Hu"},
+   "payload": {"value": {"body": "Copy stem, #, the mark id: Lecture 27 slides review 20261027a#p2.1.",
+    "parent": {"id": "231a8bab-15e1", "object": "utterance"}}}},
+  {"seq": 9, "at": "2026-10-30T02:08:46.942Z", "verb": "create", "id": "74bb885f-f6d3",
+   "actor": {"principal": "u_PLACEHOLDER", "channel": "external", "via": "mcp", "self": true, "name": "Edwin Hu"},
+   "payload": {"value": {"kind": "resolve", "parent": {"id": "e521f537-a14f", "object": "utterance"}}}}
+ ],
+ "anchors": {
+  "231a8bab-15e1": {"kind": "chars", "state": "attached", "block": "mprwvdsgyg2.121", "quote": "gives each mark a stable id", "range": ["mprwvdsgyg2.174", "mprwvdsgyg2.200"]},
+  "e521f537-a14f": {"kind": "chars", "state": "attached", "block": "mprwvdsgyg2.202", "quote": "an applied mark changed nothing", "range": ["mprwvdsgyg2.256", "mprwvdsgyg2.286"]}
+ }
+}
