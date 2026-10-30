@@ -130,11 +130,11 @@ test('after a reload the store keeps a finished run from waking again', async ($
   expect(seen.submits).toEqual([])
 })
 
-test('the status line names the running runs, and /farm lists only this session\'s', async ($, on) => {
+test('a running run draws no mod status line, and /farm lists only this session\'s', async ($, on) => {
   const { seen, clock } = world(on, farmTree(), { alive: [100] })
   await start($)
   await clock.settle()
-  expect(seen.statuses.at(-1)).toBe('farm: 1 running (alpha 43m)')
+  expect(seen.statuses).toEqual([])
   expect(seen.commands).toEqual(['farm'])
   const out = await $.command.run({ command: 'farm', args: '' })
   const lines = out.text!.split('\n')
@@ -145,17 +145,17 @@ test('the status line names the running runs, and /farm lists only this session\
   expect(out.text).not.toContain('theirs')
 })
 
-test('the status line clears when nothing is running', async ($, on) => {
+test('a run that finishes still wakes, and never draws a mod status line', async ($, on) => {
   const tree = farmTree()
   const { seen, clock } = world(on, tree, { alive: [100] })
   await start($)
   await clock.settle()
-  expect(seen.statuses.at(-1)).toBe('farm: 1 running (alpha 43m)')
+  expect(seen.statuses).toEqual([])
   // alpha finishes: its DONE line lands, and the next tick clears the line
   tree[`${dir(SID)}/100.ndjson`] += 'farm: DONE alpha ok toolCalls=4 W=10\n'
   tree['/w/alpha.md'] = '# alpha'
   await clock.advance(15_000)
-  expect(seen.statuses.at(-1)).toBeUndefined()
+  expect(seen.statuses).toEqual([])
   expect(seen.submits.some(s => s.startsWith('farm run alpha finished: ok toolCalls=4'))).toBe(true)
 })
 
@@ -171,11 +171,11 @@ test('a work run wakes once through its loop; its round and nested rows stay qui
   expect(out.text).toContain('↳ workflow')
 })
 
-test('a live work round shows its round phase in the status line', async ($, on) => {
+test('a live work round neither wakes nor draws a mod status line', async ($, on) => {
   const { seen, clock } = world(on, liveWorkTree(), { alive: [600] })
   await start($)
   await clock.settle()
-  expect(seen.statuses.at(-1)).toBe('work 1002-y 2/5 checks 6m')
+  expect(seen.statuses).toEqual([])
   expect(seen.submits).toEqual([])
 })
 
@@ -349,7 +349,7 @@ test('a loop.exit older than the loop\'s START never classifies the live loop as
   await clock.settle()
   await clock.advance(15_000)
   expect(seen.submits).toEqual([])
-  expect(seen.statuses.at(-1)).toContain('work 1004-x round 1/3')
+  expect(seen.statuses).toEqual([])
 })
 
 test('a live grind loop\'s WAIT wakes once per new waits value, never twice for the same one', async ($, on) => {
@@ -373,7 +373,7 @@ test('a live grind loop\'s WAIT wakes once per new waits value, never twice for 
   await clock.advance(15_000)
   expect(seen.submits.length).toBe(2)
   // still live: no DONE-style wake
-  expect(seen.statuses.at(-1)).toContain('grind j.jsonl')
+  expect(seen.statuses).toEqual([])
 })
 
 const DAY = 24 * 3600_000
