@@ -418,6 +418,21 @@ no preloaded register skill reaches it. The lens returns schema-validated JSON t
 `work`'s Phase 5 unchanged, over the plan's `## Review Surfaces`. A clean technical verification is
 evidence for that conversation, not human acceptance.
 
+### On the tablet — a Claude Doc
+
+When the user reviews the draft away from the terminal, the review surface is a Claude Doc made with the
+Claude Docs connector, and the professor comments there. A Python CLI cannot reach the doc: the agent records
+an export through the connector and `doc-marks` maps it. Once the user says the review is in, per tab: list
+tabs with `read(ref={"object":"project","id":<doc id>})`; `query(object="utterance", container={"kind":"project","id":<doc id>}, payload={"under":{"object":"node","id":<tab body node id>}})`
+gives the rows; for every thread root (a create row whose `payload.value.parent.object` is `"node"`) call
+`read(ref={"object":"utterance","id":<root id>}, container=...)` and keep its `.anchor`. Write
+`{"tool": "claude-docs", "doc": <doc URL or id>, "tab": <tab name>, "rows": [the query rows, as returned], "anchors": {<root id>: <the read anchor, as returned>}}`,
+rows and anchors verbatim, one export per tab. Save `doc-marks --claude-docs EXPORT.json` to
+`<doc> review <YYYYMMDD><letter>.json`, a new file per round. `review-ledger ledger <every round's file, oldest
+first>` gives each thread the id `<file stem>#<utterance id>`; the fixes go through this workflow with one
+outcome per id, and `review-ledger verify --outcomes <file>` refuses a missing one. A resolved thread still
+comes through, marked resolved; replies ride on their thread; a resolve row is never a mark.
+
 ## Red flags
 
 | Situation | Wrong move | Right move |
