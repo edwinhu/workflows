@@ -900,6 +900,23 @@ def test_start_with_abstraction_leaves_the_concrete_opener_alone(tmp_path, verdi
     assert ("start-with-abstraction" in labels) == (verdict == "fire"), f"{sentence!r} -> {labels}"
 
 
+# lets-start-with: the first-person-plural announcement `let's start with|by` is 0/14,294,148
+# human sentences. The negatives are the attested neighbours the pattern must never touch: the
+# declarative `We start with the premise` and the conditional `If you start with $1 million`.
+@pytest.mark.parametrize(("verdict", "sentence"), [
+    ("fire",  "So let's start with the facts."),
+    ("fire",  "Let's start by asking who sold."),
+    ("fire",  "Let’s start with the statute."),
+    ("clean", "We start with the premise that Congress meant merger enforcement."),
+    ("clean", "If you start with $1 million at 10% growth"),
+])
+def test_lets_start_with_fires_on_the_announcement_only(tmp_path, verdict, sentence):
+    draft = tmp_path / f"letsstart-{abs(hash(sentence))}.md"
+    draft.write_text(sentence + "\n")
+    labels = _labels(PA.audit_document(draft))
+    assert ("lets-start-with" in labels) == (verdict == "fire"), f"{sentence!r} -> {labels}"
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))
 

@@ -26,6 +26,7 @@ _TIC_PATTERNS = [
     ('\\bholds? the (weight|tension|shape|through-line|throughline|thread)\\b', 'ai-tic·sev3·hold-the-abstract'),
     ('\\b(?:(?:[Ss]tart|[Bb]egin)s? with a (?:puzzle|riddle|paradox)|[Hh]ere(?:.s| is) (?:the|a) (?:puzzle|riddle|paradox)|(?:[Cc]onsider|[Tt]ake) (?:a|this) (?:puzzle|riddle))\\b', 'ai-tic·sev3·announce-puzzle'),
     ('(?:^|(?<=[.!?]\\s))(?:Start|Begin) with (?:[\\w-]+ ){0,3}[\\w-]+[.:]', 'ai-tic·sev3·start-with-x'),
+    ('\\blet.?s start (with|by)\\b', 'ai-tic·sev3·lets-start-with'),
     ('\\bsharpest version of\\b', 'ai-tic·sev2·sharpest-version'),
     ('\\bbounds?\\s+(all of|the whole|everything|the entirety|the entire|the analysis|the inquiry|the conclusion|the discussion|much of)\\b', 'ai-tic·sev2·bound-abstraction'),
     ('\\b(?:panel|data|dataset|sample|table|record)(?:[\\x27’]s)?\\s+grain\\b|\\bgrain of the (?:data|panel|dataset|sample|table|analysis)\\b', 'ai-tic·sev2·data-grain'),
