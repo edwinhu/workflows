@@ -71,3 +71,4 @@ skills/wrds/scripts/dual_class/tests/test_jev.py
 skills/wrds/scripts/dual_class/tests/test_rule_v3.py
 skills/wrds/scripts/dual_class/tests/test_run_isolation.py
 skills/wrds/scripts/dual_class/tests/test_schema.py
+skills/batch-router/scripts/batch_router_test.py

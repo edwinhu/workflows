@@ -1,0 +1,43 @@
+# Batch accounts: personal CONFIG, never state. Copy to ~/.config/batch-router/accounts.toml
+# (or point $BATCH_ACCOUNTS at it). Never record a balance here: pass --balance <name>=<usd>.
+#
+# key = "<path to a file holding the key>" | "op://<Vault>/<Item>/<field>" | "env:<VAR>" | "none"
+# credit_linked: true only once the console shows the monthly credit applied to THIS key's org.
+# cycle_renews: next renewal date = the day the current credit expires (no rollover).
+
+# Used for op:// keys when OP_SERVICE_ACCOUNT_TOKEN is unset.
+# op_token_file = "/path/to/op-service-account-token"
+
+[accounts.personal]
+provider = "anthropic"
+label = "Personal org"
+org_id_prefix = "00000000"
+monthly_credit_usd = 200
+cycle_renews = 2026-01-01
+key = "/path/to/claude-api-key"
+credit_linked = true
+default = true
+
+[accounts.work]
+provider = "anthropic"
+label = "Work org"
+org_id_prefix = "11111111"
+monthly_credit_usd = 200
+cycle_renews = 2026-01-01
+key = "none"          # no key yet: the router reports it blocked, scripts exit with "no key"
+credit_linked = true
+
+[accounts.openai]
+provider = "openai"
+label = "OpenAI org"
+org_id_prefix = "org-0000"
+monthly_credit_usd = 100
+key = "/path/to/openai-api-key"
+credit_linked = false # pay-per-token until the subscription credit is confirmed on this org
+default = true
+
+# Optional: the Gemini fallback needs no entry (Vertex, pay-per-token, ADC).
+# [accounts.vertex]
+# provider = "gemini"
+# label = "Vertex AI"
+# key = "adc"

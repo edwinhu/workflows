@@ -7,8 +7,8 @@ applies-to: [ds]
 
 ## Rule
 
-When `/ds` expects a task to use an external skill or provider — for example WRDS, gemini-vertex,
-LSEG, NLM, Readwise, document tooling, or an API — perform discovery before entering native Plan
+When `/ds` expects a task to use an external skill or provider — for example WRDS, batch-router
+(claude-batch, openai-batch, gemini-vertex), LSEG, NLM, Readwise, document tooling, or an API — perform discovery before entering native Plan
 mode. Rule references describe syntax; domain references explain the data recipe; examples preserve
 working implementations. All three can change the plan.
 

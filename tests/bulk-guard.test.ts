@@ -97,13 +97,13 @@ test("rereads do not count", async () => {
   for (let i = 0; i < 20; i++) expect((await h.call({ tool: "Read", file_path: docs[i % 9] })).deny).toBeUndefined();
 });
 
-test("warns once at 5 documents, through context, naming gemini-vertex", async () => {
+test("warns once at 5 documents, through context, naming batch-router", async () => {
   const h = harness();
   const docs = filings(7);
   const notes = [];
   for (const p of docs) notes.push((await h.call({ tool: "Read", file_path: p })).context ?? []);
   expect(notes.map((n) => n.length)).toEqual([0, 0, 0, 0, 1, 0, 0]);
-  expect(notes[4][0]).toContain("gemini-vertex");
+  expect(notes[4][0]).toContain("workflows:batch-router");
   expect(h.events().map((e) => e.kind)).toEqual(["warn"]);
 });
 
@@ -270,15 +270,17 @@ test("one model call, a retry loop, and an Edit that adds the loop", async () =>
   expect((await h.call(edit)).deny).toBe(DENY_MESSAGE);
 });
 
-test("the repo's gemini-vertex examples and scripts are allowed", async () => {
+test("the repo's batch skills' examples and scripts are allowed", async () => {
   const h = harness();
-  const dir = join(ROOT, "skills", "gemini-vertex");
-  const files = [...new Bun.Glob("**/*.{py,sh,ts,js}").scanSync({ cwd: dir })];
-  expect(files.length).toBeGreaterThanOrEqual(6);
-  for (const f of files) {
-    const content = readFileSync(join(dir, f), "utf8");
-    const r = await h.call({ tool: "Write", file_path: join(SCRATCH, "gb", f.replace(/\//g, "_")), content });
-    expect([f, r.deny]).toEqual([f, undefined]);
+  for (const [skill, min] of [["gemini-vertex", 6], ["batch-router", 2], ["claude-batch", 1], ["openai-batch", 1]] as const) {
+    const dir = join(ROOT, "skills", skill);
+    const files = [...new Bun.Glob("**/*.{py,sh,ts,js}").scanSync({ cwd: dir })];
+    expect([skill, files.length >= min]).toEqual([skill, true]);
+    for (const f of files) {
+      const content = readFileSync(join(dir, f), "utf8");
+      const r = await h.call({ tool: "Write", file_path: join(SCRATCH, skill, f.replace(/\//g, "_")), content });
+      expect([skill, f, r.deny]).toEqual([skill, f, undefined]);
+    }
   }
 });
 
