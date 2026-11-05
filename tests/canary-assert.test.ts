@@ -126,6 +126,29 @@ describe('canary --assert', () => {
     expect(ok.status).toBe(0)
   })
 
+  // secreg lecture 17 (2026-11-05): a clean deck prints its 62 slide-render warnings after the
+  // american-english line, so the 60-line tail no longer holds it; `legs` (the full output) does.
+  const warned = Array.from({ length: 60 }, (_, i) => `warning: 17.typ:${i}: title_overflow`).join('\n')
+  const aeLeg = (n: number) => ({ name: 'american-english', exit: null, examined: n, unit: 'line(s)', text: `american-english: 1 file(s), ${n} line(s) read (whole file), clean` })
+  test('a --mech-count line cut from the tail is found in `legs`', () => {
+    const r = assertRun('count-in-legs', { ...good, mechOut: warned, mechLegs: [aeLeg(997)] })
+    expect(r.out).not.toContain('no count line matching')
+    expect(r.status).toBe(0)
+  })
+
+  test('a --mech-count line in `legs` that counted 0 is still vacuous', () => {
+    const r = assertRun('count-in-legs-zero', { ...good, mechOut: warned, mechLegs: [aeLeg(0)] })
+    expect(r.status).toBe(1)
+    expect(r.out).toContain('counted 0 — vacuous')
+  })
+
+  test('a --mech-count line in neither the tail nor `legs` fails', () => {
+    const r = assertRun('count-nowhere', { ...good, mechOut: warned, mechLegs: [
+      { name: 'cut', exit: 0, examined: 3, unit: 'line(s)', text: 'cut: 3 line(s) examined' }] })
+    expect(r.status).toBe(1)
+    expect(r.out).toContain('no count line matching')
+  })
+
   test('a run with no DONE in the watcher stream fails', () => {
     const r = assertRun('nodone', { ...good, events: good.events.filter(l => !l.startsWith('farm: DONE work-loop')) })
     expect(r.status).toBe(1)

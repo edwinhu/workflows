@@ -161,6 +161,8 @@ for m in mech:
     # `legs` is read from the full output; the tail can hold a header whose count line was cut.
     for f in (audit_records(m["legs"]) if m.get("legs") else leg_audit(out)):
         fail(f"mechanical {m.get('name')}: {f}")
+    # The count lines too: a long warning run in the leg pushes them out of the tail.
+    out += "".join("\n" + str(l.get("text") or "") for l in m.get("legs") or [])
     for rx in counts:
         hits = [int(x) for x in re.findall(rx, out)]
         if not hits:
