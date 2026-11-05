@@ -622,7 +622,7 @@ const lint = (p: Plan, agentExists: (name: string) => boolean = n => agentResolv
         'per-document-batch-extraction',
         'major',
         where,
-        'Per-document LLM coding or extraction must be launched via gemini-vertex on pre-cut excerpts, not agents reading each document.',
+        'Per-document LLM coding or extraction must be launched as a batch job (batch-router: claude-batch, openai-batch or gemini-vertex) on pre-cut excerpts, not agents reading each document.',
         t.work
       )
     }

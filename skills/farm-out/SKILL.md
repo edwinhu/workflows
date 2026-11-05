@@ -197,7 +197,7 @@ Design: `docs/DESIGN-routing.md`.
 
 | Situation | Wrong move | Right move |
 |---|---|---|
-| Per-document LLM coding/extraction over many files | Use `--tasks` fan-out to have agents read each document | Use `gemini-vertex` for large-scale extraction |
+| Per-document LLM coding/extraction over many files | Use `--tasks` fan-out to have agents read each document | Use `batch-router`, which picks the Claude, OpenAI or Gemini batch job |
 | Writing style (fonts, hex colours, "X-style look") into a chart brief | The child follows the brief over its rules; `farm.sh` refuses the row | The subagent's rules own style; the brief says what to show. Only the user's verbatim style words go in a row's `userStyle` |
 | A row with no `"workflow"` | `farm.sh` refuses the run at launch (exit 2) and nothing spends: a row's output is gated by its workflow's checks, so it must say which | Set `"workflow": "<wf>"` (any workflow `bin/workflow-check <wf> --list` resolves: `ds`, `dev`, `writing`, `writing/legal`, …) or `"workflow": "none"` out loud. A persona implies one: its name with `/` for `-` (`writing-legal` is `writing/legal`); a read-only persona implies none |
 | Treating a farmed row as done on its own report | The child can ship a join with no audit, a figure in the wrong face, a test that asserts only on a mock or a meta-commentary topic sentence | `farm.sh` runs `bin/workflow-check <wf>` after the row on the files it touched: every constraint and Jev rule under `checks/<wf>/` and its parents'; findings or an unrunnable check mark the row `wrong` |

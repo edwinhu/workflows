@@ -21,6 +21,9 @@ SEVERITY = "hard"
 EXTERNAL_SKILLS = [
     "wrds",
     "gemini-vertex",
+    "batch-router",
+    "claude-batch",
+    "openai-batch",
     "lseg-data",
     "nlm",
     "readwise",
