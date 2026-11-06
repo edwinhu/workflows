@@ -5,10 +5,20 @@ footnote block or endnotes), heading, break (a centred `* * *`), body (the court
 looks only at the spans it is about, each with file:line. The court's text is `body`; the editors'
 voice is `note`. The parse is line-based on purpose: it is what the addenda in the course repos look
 like, and a candidate pinned to a line is one the judge and the author can both find.
+
+An editorial summary (`#emph[[Summary: ...]]`) is masked to an elision mark before a line is classified:
+it IS the elision there, so the rules that read marks see it as one and none reads its text as the court's.
 """
+import importlib.util
 import re
+from pathlib import Path
 
 from _common import _read
+
+_spec = importlib.util.spec_from_file_location(
+    '_elide_summary', Path(__file__).resolve().parent.parent / 'constraints' / '_summary.py')
+_summary = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_summary)
 
 # an addendum fragment or an assembled addendum; anything else in a changed set is not an excerpt
 ADDENDUM_RX = re.compile(r'(^|/)addenda/[^/]+\.typ$|addendum[^/]*\.typ$', re.IGNORECASE)
@@ -51,13 +61,15 @@ def _depth(s):
 
 
 def parse(lines):
-    """{'preamble': [(n, kind, text)], 'readings': [{'title', 'line', 'lines': [(n, kind, text)]}]}."""
+    """{'preamble': [(n, kind, text)], 'readings': [{'title', 'line', 'lines': [(n, kind, text)]}],
+    'summaries': [(n, inner)]}."""
     readings, cur = [], None
-    preamble = []
+    preamble, summaries = [], []
     block, block_kind = 0, None      # an open #text(10pt)[ / #align(center)[ / #emph[ block
     zone = None                      # 'footnote' once a reading's footnote zone begins
     for i, raw in enumerate(lines):
-        n, s = i + 1, raw.rstrip()
+        summaries += [(i + 1, inner) for _, _, inner, ok in _summary.spans(raw) if ok]
+        n, s = i + 1, _summary.mask(raw).rstrip()
         st = s.strip()
         m = CAPTION_RX.search(s)
         if m:
@@ -124,7 +136,7 @@ def parse(lines):
             target.append((n, 'heading', (h.group('h') or h.group('b')).strip()))
             continue
         target.append((n, 'body' if cur else 'preamble', st))
-    return {'preamble': preamble, 'readings': readings}
+    return {'preamble': preamble, 'readings': readings, 'summaries': summaries}
 
 
 def sentences(text):
