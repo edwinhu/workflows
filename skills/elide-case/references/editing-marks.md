@@ -15,7 +15,8 @@ body in the `*[Retained footnote]*` block.
 
 ## Bracket conventions
 
-- `[ ]` marks **editorial insertion or alteration** — nothing else.
+- `[ ]` marks **editorial insertion or alteration** — nothing else, save the editorial
+  summary below.
 - Retained quotations are reproduced exactly, including the court's own internal
   punctuation.
 - A case change is bracketed at the changed letter: `[T]he`.
@@ -25,6 +26,26 @@ body in the `*[Retained footnote]*` block.
 kept without its brackets (a case change) — and a match either way counts as found. That
 tolerance exists so correct bracketing does not read as a miss; it is not a licence to
 bracket loosely.
+
+## The editorial summary
+
+An elided passage may be replaced by a bracketed summary, in exactly one form, on one line:
+`#emph[[Summary: <text>]]`. It IS the elision mark at that point — never set `[. . .]` beside
+it. Any other wrapping of a summary label (`[Summary: ...]`, `#emph[Summary: ...]`,
+`[Editors' summary: ...]`) is a FAIL.
+
+- At most 40 words.
+- Between sentences, or a paragraph of its own — never inside a sentence.
+- No elision mark immediately before or after it, nor ending the line above or opening the
+  line below when it stands alone.
+- No quotation marks, no figure (amount, percent, million/billion), and no holding word
+  (`held`, `ruled`, `concluded`, `finds that`, ...): it describes what was cut; a holding or
+  rule stays in the court's words.
+- Only in a reading's body — never in the preamble or an editors' note.
+
+`check-marks.py` enforces all of it. `check-quotes.py` skips the span explicitly as an
+elision and FAILS one sharing 8+ consecutive words with the source. The fidelity score counts
+a summary that misstates, slants or adds to what it replaces (`misstatedSummary`, advisory).
 
 ## Never alter subject, tense, or sentence boundary
 

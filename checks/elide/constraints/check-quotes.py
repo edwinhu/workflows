@@ -28,6 +28,12 @@ A bracketed span is tried both ways: dropped (an editorial insertion, `[, for ex
 and kept without its brackets (a case change, `[T]he`). Each span in a sentence is decided
 independently, so a sentence carrying both shapes still matches.
 
+An editorial summary (`#emph[[Summary: ...]]`, editing-marks.md) is the editors' and IS the
+elision at its point, so it is masked to an elision mark before matching and its count is
+reported. A summary sharing a run of SUMMARY_MAX_SOURCE_RUN normalised words with the source
+FAILS: that is court text passed off as the editors'. A malformed one is not masked and fails
+as any other unmatched text does.
+
 Sentences carrying an INTERNAL elision are additionally checked for integrity: every
 fragment of >= 25 characters must be real source text, and the fragments must appear in
 increasing, non-overlapping source order.
@@ -123,6 +129,28 @@ def strip_furniture(text: str) -> str:
 
 # --------------------------------------------------------------- typ parsing
 
+
+def _sibling(name: str):
+    """A module beside this one, by path: this script is itself loaded by path from elsewhere."""
+    spec = importlib.util.spec_from_file_location(name, Path(__file__).resolve().parent / f"{name}.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+_summary = _sibling("_summary")
+SUMMARY_MAX_SOURCE_RUN = 8
+
+
+def summary_lines(body: str) -> list[tuple[int, str]]:
+    """(0-based line within body, inner text) for each well-formed editorial summary."""
+    return [(i, inner) for i, ln in enumerate(body.split("\n"))
+            for _, _, inner, ok in _summary.spans(ln) if ok]
+
+
+def mask_summaries(body: str) -> str:
+    return "\n".join(_summary.mask(ln) for ln in body.split("\n"))
+
 CAPTION_RE = re.compile(
     r"#align\(center\)\s*\[\s*#text\(13pt,\s*weight:\s*\"bold\"\)\s*\[",
     re.DOTALL,
@@ -209,6 +237,9 @@ ELIDE_DIRECTIVE_LINE = re.compile(r"^[ \t]*//[ \t]*elide-.*$", re.MULTILINE)
 
 
 def strip_typ_markup(body: str, skip_editorial: bool = False) -> str:
+    # An editorial summary is the elision at its point: masked first, so contiguity breaks there
+    # and its text never reaches matching, the editors'-note removal or MAX_BRACKET_SPANS.
+    body = mask_summaries(body)
     if skip_editorial:
         body = drop_editorial_blocks(body)
     body = ELIDE_DIRECTIVE_LINE.sub("", body)
@@ -634,6 +665,9 @@ def resolve(typ: Path, docs_dir: Path, plan_declared: list[tuple[str, str]]) -> 
     return out
 
 
+SUMMARY_COUNT = re.compile(r"^(\d+) editorial summary span\(s\) skipped as elisions", re.M)
+
+
 def gap_block(text: str) -> list[str]:
     """The gap-match block this script prints on SUCCESS as well as failure: a sentence matched
     across a source gap may have been fused across dropped holding rather than across a footnote
@@ -658,7 +692,7 @@ def quotes_leg(typ: Path, docs_dir: Path, plan_declared: list[tuple[str, str]]) 
         fails.append(msg[0].strip())
         lines.extend(msg)
 
-    n_readings = n_verified = n_unchecked = n_lossy = 0
+    n_readings = n_verified = n_unchecked = n_lossy = n_summaries = 0
     try:
         resolved = resolve(typ, docs_dir, plan_declared)
     except Exception:  # noqa: BLE001 - the leg reports what stopped it; an unrun leg is a FAIL
@@ -691,6 +725,7 @@ def quotes_leg(typ: Path, docs_dir: Path, plan_declared: list[tuple[str, str]]) 
             r = subprocess.run([sys.executable, __file__, str(typ), src, "--caption", caption, "--skip-editorial"],
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False)
             q_out = r.stdout.rstrip("\n")
+            n_summaries += sum(int(m.group(1)) for m in SUMMARY_COUNT.finditer(q_out))
             if r.returncode == 0:
                 n_verified += 1
                 lines.append(f"  {label}: PASS [{mode}] — verbatim against {Path(src).name}")
@@ -725,12 +760,13 @@ def quotes_leg(typ: Path, docs_dir: Path, plan_declared: list[tuple[str, str]]) 
     # that verified nothing has no verdict to report. Zero verified is a FAIL.
     if not fails and n_verified == 0:
         fail(f"  NOTHING VERIFIED: 0 of {n_readings} reading(s) were checked against a source ({n_unchecked} declared unchecked)")
+    summ = f"; {n_summaries} editorial summary span(s) skipped as elisions" if n_summaries else ""
     if not fails:
         lossy = f"; ITALICS NOT CHECKED on {n_lossy} reading(s) with a plain-text source" if n_lossy else ""
         lines.append(f"LEG quotes: PASS — {n_verified} of {n_readings} reading(s) verified verbatim, "
-                     f"{n_unchecked} declared unchecked{lossy}")
+                     f"{n_unchecked} declared unchecked{lossy}{summ}")
     else:
-        lines.append(f"LEG quotes: FAIL — at least one of {n_readings} reading(s) is not verified")
+        lines.append(f"LEG quotes: FAIL — at least one of {n_readings} reading(s) is not verified{summ}")
     return (1 if fails else 0), lines, fails
 
 
@@ -822,7 +858,18 @@ def main() -> int:
     integrity_fails: list[tuple[str, str]] = []
     advisories: list[tuple[str, str]] = []
     capped_sents: list[tuple[str, str]] = []
+    n_summaries = 0
+    copied: list[tuple[str, int, str]] = []
     for title, body in found:
+        base = src.count("\n", 0, src.index(body))
+        for i, inner in summary_lines(body):
+            n_summaries += 1
+            w = norm(" ".join(_summary.words(inner))).split()
+            for k in range(len(w) - SUMMARY_MAX_SOURCE_RUN + 1):
+                run = " ".join(w[k : k + SUMMARY_MAX_SOURCE_RUN])
+                if f" {run} " in f" {haystack.text} ":
+                    copied.append((title, base + i + 1, run))
+                    break
         before = checked
         prose = strip_typ_markup(body, skip_editorial=args.skip_editorial)
         for seg in segments(prose):
@@ -886,6 +933,12 @@ def main() -> int:
         print(f"  {sent}")
         print()
 
+    for title, line, run in copied:
+        print(f"FAIL summary quotes the source in {title[:60]!r} at line {line}:")
+        print(f"  {SUMMARY_MAX_SOURCE_RUN}+ consecutive words are the court's: {run!r} — a summary is")
+        print("  the editors' description of what was cut; the court's words stay in the excerpt")
+        print()
+
     if gapped:
         print("matched across a source gap (likely a footnote block) — verify:")
         for title, sent, gap_head in gapped:
@@ -899,7 +952,7 @@ def main() -> int:
             print(f"  in {title[:60]!r}: {sent.strip()}")
         print()
 
-    ok = not misses and not integrity_fails and not empty_readings
+    ok = not misses and not integrity_fails and not empty_readings and not copied
 
     # Say what the source could and could not carry, on every run. `norm()` folds `_` away
     # on both sides, so emphasis never affects the verbatim verdict either way — which is
@@ -918,7 +971,9 @@ def main() -> int:
           + (f", {len(integrity_fails)} failed sentence integrity"
              if integrity_fails else "")
           + (f", {len(empty_readings)} reading(s) checked nothing"
-             if empty_readings else ""))
+             if empty_readings else "")
+          + (f", {len(copied)} summary span(s) quote the source" if copied else ""))
+    print(f"{n_summaries} editorial summary span(s) skipped as elisions")
     if ok and provenance == "docx":
         print(
             "NOTE: a match proves fidelity to the publisher-keyed export, which for a "

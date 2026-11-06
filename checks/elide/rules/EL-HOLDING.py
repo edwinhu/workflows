@@ -1,5 +1,5 @@
 from _common import _search, render_json
-from _elide import ELISION_RX, addendum_files, body_lines, clean, plan_target, sentences
+from _elide import ELISION_RX, addenda, addendum_files, body_lines, clean, plan_target, sentences
 
 DELIVERABLE = 'casebook-excerpt'
 SUBJECT = 'one casebook excerpt (a court opinion cut into a student reading)'
@@ -51,6 +51,7 @@ def evidence(files, plan_lines=None, changed=None):
         'n_marks_inside_a_sentence': len(inside),
         'marks_between_sentences': between[:12],
         'n_marks_between_sentences': len(between),
+        'n_editorial_summaries': sum(len(p['summaries']) for _, p in addenda(files)),
     }
     af = addendum_files(files)
     s = _search(af, ELISION_RX.pattern, 'every bracketed elision mark', keep=5)

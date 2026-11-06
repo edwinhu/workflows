@@ -478,14 +478,15 @@ else
 fi
 
 # ---------------------------------------------------------------- leg: marks
-# Decided from the .typ alone, so it needs no PDF and no source: a mixed elision mark, or a
-# retained footnote left at its original number or without its pair, is a FAIL naming the line.
+# Decided from the .typ alone, so it needs no PDF and no source: a mixed elision mark, a
+# retained footnote left at its original number or without its pair, or an editorial summary
+# outside its form, is a FAIL naming the line.
 echo "--- leg marks"
 python3 "$CHECKS_DIR/check-marks.py" "$ADDENDUM"
 case $? in
-  0) echo "LEG marks: PASS — one elision mark; retained footnotes renumbered and paired" ;;
+  0) echo "LEG marks: PASS — one elision mark; retained footnotes renumbered and paired; editorial summaries in form" ;;
   1) fail_marks=1
-     echo "LEG marks: FAIL — mixed elision marks, or a footnote marker not renumbered or not paired" ;;
+     echo "LEG marks: FAIL — mixed elision marks, a footnote marker not renumbered or not paired, or an editorial summary out of form" ;;
   *) fail_marks=1
      echo "LEG marks: FAIL — check-marks.py could not run; a check that did not run is not a pass" ;;
 esac

@@ -12,7 +12,8 @@ PROPOSITION = ('Editorial text is presented as the court\'s: inside the opinion 
                'a sentence or clause speaks in the editors\' voice -- it addresses the student, describes the excerpt '
                'or what was cut, or summarizes or comments on the case -- without brackets; or a bracketed span '
                'carries such commentary or summary instead of a minimal insertion or alteration that slots into '
-               'the court\'s own sentence ([T]he, [the issuer], [That representation], [, for example,]).')
+               'the court\'s own sentence ([T]he, [the issuer], [That representation], [, for example,]). '
+               'A #emph[[Summary: ...]] span is editorial by construction and is excluded.')
 
 CRITERIA = {
     'VIOLATED': 'at least one listed span is editorial commentary, summary or direction to the reader set as the '
@@ -152,6 +153,7 @@ def evidence(files, plan_lines=None, changed=None):
         'n_body_sentences_with_editor_voice_terms': len(voice),
         'n_voice_term_sentences_verbatim_in_source': verbatim,
         'n_bracketed_spans_verbatim_in_source': verbatim_brackets,
+        'n_editorial_summaries_excluded': sum(len(p['summaries']) for _, p in addenda(files)),
         'voice_terms_searched': VOICE_RX.pattern,
     }
     return render_json('EL-VOICE', addendum_files(files), inventory, [])

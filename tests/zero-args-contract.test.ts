@@ -59,6 +59,8 @@ const EXCLUSIONS: Record<string, string> = {
     "NO ENTRY POINT: the constraint CLI contract (options, count line, exit codes) the ds checkers import.",
   "checks/elide/constraints/_elide_contract.py":
     "NO ENTRY POINT: the elide checkers' shared CLI contract. bin/workflow-check never runs a _ module.",
+  "checks/elide/constraints/_summary.py":
+    "NO ENTRY POINT: the editorial-summary parser check-marks, check-quotes and the elide rules import. No __main__.",
   "checks/writing/constraints/_writing.py":
     "NO ENTRY POINT: the writing checkers' shared CLI contract and file predicates. No __main__.",
   "scripts/prose_extract.py":
