@@ -57,7 +57,9 @@ never from memory; the price table the script uses is in [limits and prices](ref
   account that submitted. A UVA or NYU account with `key = "none"` exits with "no key"; never create a key.
 - **Limits:** 100,000 requests or 256 MB per batch; most finish within 1h; unfinished requests expire at
   24h; results kept 29 days; only `succeeded` rows are billed. `stream`, `speed`, `fallbacks` and
-  `max_tokens: 0` are rejected in batch.
+  `max_tokens: 0` are rejected in batch. PDFs past the cap: `upload` under the SAME `--account` as
+  `submit` and reference the `file_id` (proven in a batch 2026-11-05; another org's key gets 404) —
+  [Files API](references/message-batches.md#files-api-documents-by-file_id).
 - **Shared prefix:** use 1-hour prompt caching (`cache_control` with `ttl: "1h"`); a 5-minute cache entry
   expires before most batch rows run.
 - **Spend counts toward the org's monthly spend cap** (resets on the 1st), and a batch can overshoot the
