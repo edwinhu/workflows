@@ -74,8 +74,8 @@ came back `status: incomplete` with no text. **Batch answer proven 2026-11-06:**
 on 48 / 51 input tokens; `results --input` exit 0; created 02:27 UTC, completed 04:47 UTC (2 h 20 min).
 
 **Gotchas from that pilot:** (1) reasoning models spend a small `max_output_tokens` on reasoning
-first, so budget hundreds of tokens even for a one-word answer; (2) `results` counts any HTTP 200 row
-as succeeded, including `incomplete` bodies, so check `body.status` before trusting exit 0;
+first, so budget hundreds of tokens even for a one-word answer; (2) a 200 row can still be
+`status: incomplete` with no text; `results` lists it under `incomplete`, keeps it out of `--out`, exits 1;
 (3) the 2-row batch sat `in_progress` 8 h 27 min (created 15:49 UTC, completed 00:17 UTC).
 
 **Account scoping:** files belong to the key's project, so upload with the same `--account` as
