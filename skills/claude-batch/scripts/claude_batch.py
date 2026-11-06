@@ -234,7 +234,7 @@ def cmd_results(a) -> int:
     wanted = []
     if a.input:
         wanted = [json.loads(line)["custom_id"] for line in a.input.read_text().splitlines() if line.strip()]
-    by_type, seen, problems, cost = {}, set(), [], 0.0
+    by_type, seen, problems, incomplete, cost = {}, set(), [], [], 0.0
     with open(a.out, "w") as out:
         for line in blob.splitlines():
             if not line.strip():
@@ -245,17 +245,26 @@ def cmd_results(a) -> int:
             by_type[res["type"]] = by_type.get(res["type"], 0) + 1
             if res["type"] == "succeeded":
                 msg = res["message"]
-                out.write(json.dumps({"custom_id": cid, "message": msg}) + "\n")
                 cost += price(msg.get("model", ""), msg.get("usage", {}), sync=False) or 0.0
+                stop = msg.get("stop_reason")
+                has_text = any(blk.get("type") == "text" and blk.get("text") for blk in msg.get("content") or [])
+                if stop == "max_tokens" or (stop == "end_turn" and not has_text):
+                    incomplete.append({"custom_id": cid, "stop_reason": stop,
+                                       "reason": "max_tokens reached" if stop == "max_tokens" else "no text block"})
+                    continue
+                out.write(json.dumps({"custom_id": cid, "message": msg}) + "\n")
             else:
                 problems.append({"custom_id": cid, "type": res["type"], "error": res.get("error")})
     missing = [cid for cid in wanted if cid not in seen]
     unexpected = sorted(seen - set(wanted)) if wanted else []
     summary = {"batch": a.batch_id, "account": c.acct.name, "results": by_type, "succeeded_written": str(a.out),
-               "est_cost_usd": round(cost, 6), "not_succeeded": problems, "missing": missing,
-               "unexpected": unexpected, "input_checked": bool(wanted)}
+               "est_cost_usd": round(cost, 6), "not_succeeded": problems, "incomplete": incomplete,
+               "missing": missing, "unexpected": unexpected, "input_checked": bool(wanted)}
     print(json.dumps(summary, indent=2))
-    return 1 if problems or missing or unexpected else 0
+    if incomplete:
+        print(f"{len(incomplete)} row(s) incomplete (not written to --out): max_tokens was likely exhausted by thinking; raise it",
+              file=sys.stderr)
+    return 1 if problems or incomplete or missing or unexpected else 0
 
 
 def cmd_cancel(a) -> int:

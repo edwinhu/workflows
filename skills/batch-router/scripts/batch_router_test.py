@@ -201,3 +201,73 @@ def test_bare_invocation_is_usage_error():
     for rel in ("claude-batch/scripts/claude_batch.py", "openai-batch/scripts/openai_batch.py"):
         out = subprocess.run([sys.executable, str(SKILLS / rel)], capture_output=True, text=True, check=False)
         assert out.returncode == 2 and "usage" in out.stderr
+
+
+def _run_results(mod, tmp_path, monkeypatch, capsys, blob, batch):
+    class Fake:
+        acct = type("A", (), {"name": "t"})()
+
+        def __init__(self, account):
+            pass
+
+        def call(self, method, url, body=None, raw=False, **kw):
+            return blob.encode() if raw else batch
+
+    monkeypatch.setattr(mod, "Client", Fake)
+    out = tmp_path / "out.jsonl"
+    rc = mod.main(["results", "bid", "--out", str(out)])
+    summary = json.loads(capsys.readouterr().out)
+    return rc, summary, out.read_text()
+
+
+def _claude_row(cid, stop, content):
+    msg = {"model": "claude-haiku-5-5", "stop_reason": stop, "content": content,
+           "usage": {"input_tokens": 10, "output_tokens": 10}}
+    return json.dumps({"custom_id": cid, "result": {"type": "succeeded", "message": msg}})
+
+
+CLAUDE_BATCH = {"processing_status": "ended", "results_url": "https://x/results"}
+
+
+def test_claude_max_tokens_no_text_is_incomplete(tmp_path, monkeypatch, capsys):
+    blob = _claude_row("a", "max_tokens", [{"type": "thinking", "thinking": "..."}])
+    rc, s, written = _run_results(claude, tmp_path, monkeypatch, capsys, blob, CLAUDE_BATCH)
+    assert rc == 1 and written == ""
+    assert s["incomplete"][0]["custom_id"] == "a" and s["incomplete"][0]["stop_reason"] == "max_tokens"
+    assert s["est_cost_usd"] > 0
+
+
+def test_claude_normal_and_tool_use_rows_are_clean(tmp_path, monkeypatch, capsys):
+    blob = "\n".join([_claude_row("a", "end_turn", [{"type": "text", "text": "hi"}]),
+                      _claude_row("b", "tool_use", [{"type": "tool_use", "id": "t", "name": "n", "input": {}}])])
+    rc, s, written = _run_results(claude, tmp_path, monkeypatch, capsys, blob, CLAUDE_BATCH)
+    assert rc == 0 and s["incomplete"] == [] and len(written.splitlines()) == 2
+
+
+def _oai_row(cid, body):
+    return json.dumps({"custom_id": cid, "error": None, "response": {"status_code": 200, "body": body}})
+
+
+OAI_BATCH = {"status": "completed", "output_file_id": "f1"}
+
+
+def test_openai_incomplete_status_is_incomplete(tmp_path, monkeypatch, capsys):
+    body = {"object": "response", "status": "incomplete", "incomplete_details": {"reason": "max_output_tokens"},
+            "output": [{"type": "reasoning", "content": []}]}
+    rc, s, written = _run_results(openai, tmp_path, monkeypatch, capsys, _oai_row("a", body), OAI_BATCH)
+    assert rc == 1 and written == ""
+    assert s["incomplete"][0]["status"] == "incomplete"
+    assert s["incomplete"][0]["reason"] == {"reason": "max_output_tokens"}
+
+
+def test_openai_completed_with_text_is_clean(tmp_path, monkeypatch, capsys):
+    body = {"object": "response", "status": "completed",
+            "output": [{"type": "message", "content": [{"type": "output_text", "text": "hi"}]}]}
+    rc, s, written = _run_results(openai, tmp_path, monkeypatch, capsys, _oai_row("a", body), OAI_BATCH)
+    assert rc == 0 and s["incomplete"] == [] and len(written.splitlines()) == 1
+
+
+def test_openai_embeddings_body_not_flagged(tmp_path, monkeypatch, capsys):
+    body = {"object": "list", "data": [{"object": "embedding", "embedding": [0.1]}]}
+    rc, s, written = _run_results(openai, tmp_path, monkeypatch, capsys, _oai_row("a", body), OAI_BATCH)
+    assert rc == 0 and s["incomplete"] == [] and len(written.splitlines()) == 1

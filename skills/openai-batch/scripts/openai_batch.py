@@ -217,13 +217,27 @@ def cmd_status(a) -> int:
         time.sleep(a.interval)
 
 
+def _incomplete_reason(body: dict) -> dict | None:
+    """A 200 /v1/responses row that carries no usable answer; None for clean rows and other endpoints."""
+    if body.get("object") != "response":
+        return None
+    status = body.get("status")
+    if status is not None and status != "completed":
+        return {"status": status, "reason": body.get("incomplete_details")}
+    has_text = any(blk.get("type") == "output_text" and blk.get("text")
+                   for item in body.get("output") or [] for blk in item.get("content") or [])
+    if not has_text:
+        return {"status": status, "reason": "no output_text content"}
+    return None
+
+
 def cmd_results(a) -> int:
     c = Client(a.account)
     b = c.call("GET", f"/v1/batches/{a.batch_id}")
     if b["status"] not in TERMINAL:
         print(f"batch {a.batch_id} is {b['status']}; wait for a terminal status", file=sys.stderr)
         return 1
-    seen, problems, ok = set(), [], 0
+    seen, problems, incomplete, ok = set(), [], [], 0
     with open(a.out, "w") as out:
         for fid in (b.get("output_file_id"), b.get("error_file_id")):
             if not fid:
@@ -236,6 +250,11 @@ def cmd_results(a) -> int:
                 seen.add(cid)
                 resp = r.get("response") or {}
                 if r.get("error") is None and resp.get("status_code") == 200:
+                    body = resp.get("body") or {}
+                    bad = _incomplete_reason(body)
+                    if bad:
+                        incomplete.append({"custom_id": cid, **bad})
+                        continue
                     ok += 1
                     out.write(json.dumps({"custom_id": cid, "body": resp.get("body")}) + "\n")
                 else:
@@ -246,10 +265,13 @@ def cmd_results(a) -> int:
         wanted = [json.loads(line)["custom_id"] for line in a.input.read_text().splitlines() if line.strip()]
     missing = [cid for cid in wanted if cid not in seen]
     summary = {"batch": a.batch_id, "status": b["status"], "succeeded": ok, "succeeded_written": str(a.out),
-               "not_succeeded": problems, "missing": missing, "input_checked": bool(wanted),
-               "request_counts": b.get("request_counts")}
+               "not_succeeded": problems, "incomplete": incomplete, "missing": missing,
+               "input_checked": bool(wanted), "request_counts": b.get("request_counts")}
     print(json.dumps(summary, indent=2))
-    return 1 if problems or missing else 0
+    if incomplete:
+        print(f"{len(incomplete)} row(s) incomplete (not written to --out): max_output_tokens was likely exhausted by reasoning; raise it",
+              file=sys.stderr)
+    return 1 if problems or incomplete or missing else 0
 
 
 def cmd_cancel(a) -> int:
