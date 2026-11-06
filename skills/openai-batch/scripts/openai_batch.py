@@ -13,7 +13,11 @@ Usage:
   openai_batch.py submit requests.jsonl --run [--account NAME]         # Files upload + batch create
   openai_batch.py status BATCH_ID [--wait] [--account NAME]
   openai_batch.py results BATCH_ID --input requests.jsonl --out results.jsonl [--account NAME]
+  openai_batch.py upload PATH [PATH ...] [--purpose user_data] [--expires SECONDS] [--account NAME]
+  openai_batch.py delete-file FILE_ID [FILE_ID ...] [--account NAME]
   openai_batch.py cancel BATCH_ID | list [--limit 20] | accounts
+A file id resolves only under the account (project key) that uploaded it: upload with the same
+--account as submit. --expires is 3600..2592000 s; files are capped at 512 MB.
 Exit codes: 0 ok, 1 invalid input / API error / unreconciled rows, 2 usage error.
 """
 
@@ -23,7 +27,6 @@ import sys
 import time
 import urllib.error
 import urllib.request
-import uuid
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "batch-router" / "scripts"))
@@ -33,6 +36,7 @@ from batchlib import (
     accounts_path,
     key_status,
     load_accounts,
+    multipart,
     pick_account,
     resolve_key,
 )
@@ -41,6 +45,8 @@ API = "https://api.openai.com"
 ENDPOINTS = {"/v1/responses", "/v1/chat/completions", "/v1/embeddings", "/v1/completions",
              "/v1/moderations", "/v1/images/generations", "/v1/images/edits"}
 MAX_REQ, MAX_BYTES = LIMITS["openai"]
+MAX_FILE_BYTES = 512 * 2**20
+EXPIRES_RANGE = (3600, 2_592_000)
 TERMINAL = {"failed", "completed", "expired", "cancelled"}
 
 
@@ -119,17 +125,13 @@ class Client:
             raise SystemExit(f"HTTP {exc.code} from {method} {path} [account {self.acct.name}]{hint}: {text}") from None
         return payload if raw else json.loads(payload)
 
-    def upload(self, path: Path) -> dict:
-        boundary = uuid.uuid4().hex
-        parts = [
-            f'--{boundary}\r\nContent-Disposition: form-data; name="purpose"\r\n\r\nbatch\r\n'.encode(),
-            (f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="{path.name}"\r\n'
-             "Content-Type: application/jsonl\r\n\r\n").encode(),
-            path.read_bytes(),
-            f"\r\n--{boundary}--\r\n".encode(),
-        ]
-        return self.call("POST", "/v1/files", data=b"".join(parts),
-                         ctype=f"multipart/form-data; boundary={boundary}")
+    def upload(self, path: Path, purpose: str = "batch", expires: int | None = None) -> dict:
+        fields = {"purpose": purpose}
+        if expires is not None:
+            fields["expires_after[anchor]"] = "created_at"
+            fields["expires_after[seconds]"] = str(expires)
+        body, ctype = multipart(fields, path, "application/jsonl" if purpose == "batch" else None)
+        return self.call("POST", "/v1/files", data=body, ctype=ctype)
 
 
 def cmd_validate(a) -> int:
@@ -167,11 +169,40 @@ def cmd_submit(a) -> int:
         return 2
     c = Client(a.account)
     print(f"billing: {c.billing()}", file=sys.stderr)
-    f = c.upload(a.jsonl)
+    f = c.upload(a.jsonl)  # purpose batch
     b = c.call("POST", "/v1/batches", {"input_file_id": f["id"], "endpoint": rows[0]["url"],
                                         "completion_window": "24h"})
     print(json.dumps({"account": c.acct.name, "id": b["id"], "status": b["status"],
                       "input_file_id": f["id"]}, indent=2))
+    return 0
+
+
+def cmd_upload(a) -> int:
+    lo, hi = EXPIRES_RANGE
+    if a.expires is not None and not lo <= a.expires <= hi:
+        print(f"--expires must be {lo}..{hi} seconds", file=sys.stderr)
+        return 1
+    for p in a.paths:
+        if not p.is_file():
+            print(f"{p}: not a file", file=sys.stderr)
+            return 1
+        if p.stat().st_size > MAX_FILE_BYTES:
+            print(f"{p}: {p.stat().st_size / 2**20:.1f} MB exceeds the {MAX_FILE_BYTES // 2**20} MB file limit",
+                  file=sys.stderr)
+            return 1
+    c = Client(a.account)
+    for p in a.paths:
+        f = c.upload(p, a.purpose, a.expires)
+        print(json.dumps({"account": c.acct.name, "path": str(p), "file_id": f["id"], "bytes": f.get("bytes"),
+                          "purpose": f.get("purpose"), "expires_at": f.get("expires_at")}))
+    return 0
+
+
+def cmd_delete_file(a) -> int:
+    c = Client(a.account)
+    for fid in a.file_ids:
+        r = c.call("DELETE", f"/v1/files/{fid}")
+        print(json.dumps({"account": c.acct.name, "file_id": fid, "deleted": r.get("deleted")}))
     return 0
 
 
@@ -275,6 +306,11 @@ def main(argv=None) -> int:
     rs = add("results", cmd_results, batch=True)
     rs.add_argument("--input", type=Path, help="the submitted JSONL, to reconcile every custom_id")
     rs.add_argument("--out", type=Path, required=True)
+    up = add("upload", cmd_upload)
+    up.add_argument("paths", nargs="+", type=Path, metavar="PATH")
+    up.add_argument("--purpose", default="user_data")
+    up.add_argument("--expires", type=int, metavar="SECONDS", help="3600..2592000")
+    add("delete-file", cmd_delete_file).add_argument("file_ids", nargs="+", metavar="FILE_ID")
     add("cancel", cmd_cancel, batch=True)
     add("list", cmd_list).add_argument("--limit", type=int, default=20)
     add("accounts", cmd_accounts)

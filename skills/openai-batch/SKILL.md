@@ -55,7 +55,9 @@ time; the snapshot is in [batch API reference](references/batch-api.md).
   report it; a retry loop on 429 just re-sends to an empty balance.
 - **Limits:** 50,000 requests and 200 MB per input file, one model and one endpoint per file;
   `completion_window` is only `24h`; 2,000 batch creations per hour; per-model enqueued-token caps on the
-  org limits page. Over a limit: shard.
+  org limits page. Over a limit: shard. PDFs past the cap: `upload` (purpose `user_data`) under the
+  SAME `--account` as `submit` and reference it as `input_file` (proven in a batch 2026-11-06) —
+  [Files API](references/batch-api.md#files-api-documents-by-file_id).
 - **Output:** out of order (match on `custom_id`); failures go to `error_file_id`; expired rows carry
   code `batch_expired`; output files are deleted 30 days after completion.
 - **Web search works in Batch:** `tools=[{"type":"web_search"}]` in a `/v1/responses` row searched and

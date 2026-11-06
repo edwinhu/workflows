@@ -13,7 +13,11 @@ Usage:
   claude_batch.py submit requests.jsonl --run [--account NAME]
   claude_batch.py status BATCH_ID [--wait] [--account NAME]
   claude_batch.py results BATCH_ID --input requests.jsonl --out results.jsonl [--account NAME]
+  claude_batch.py upload PATH [PATH ...] [--expires SECONDS] [--account NAME]
+  claude_batch.py delete-file FILE_ID [FILE_ID ...] [--account NAME]
   claude_batch.py cancel BATCH_ID | list [--limit 20] | accounts
+A file id resolves only under the account (workspace key) that uploaded it: upload with the same
+--account as submit. --expires is 3600..7776000 s; files are capped at 500 MB.
 Exit codes: 0 ok, 1 invalid input / API error / unreconciled rows, 2 usage error.
 """
 
@@ -33,6 +37,7 @@ from batchlib import (
     accounts_path,
     key_status,
     load_accounts,
+    multipart,
     pick_account,
     resolve_key,
 )
@@ -42,6 +47,8 @@ VERSION = "2026-10-21"
 CUSTOM_ID = re.compile(r"^[a-zA-Z0-9_-]{1,64}$")
 FORBIDDEN = ("stream", "speed", "fallbacks")
 MAX_REQ, MAX_BYTES = LIMITS["anthropic"]
+MAX_FILE_BYTES = 500 * 2**20
+EXPIRES_RANGE = (3600, 7_776_000)
 
 
 def validate(path: Path) -> tuple[list[dict], list[str]]:
@@ -94,13 +101,15 @@ class Client:
         self.acct = pick_account(accounts, "anthropic", account)
         self.key = resolve_key(self.acct, settings)
 
-    def call(self, method: str, url: str, body: dict | None = None, raw: bool = False):
-        data = json.dumps(body).encode() if body is not None else None
+    def call(self, method: str, url: str, body: dict | None = None, raw: bool = False,
+             data: bytes | None = None, ctype: str = "application/json"):
+        if body is not None:
+            data = json.dumps(body).encode()
         req = urllib.request.Request(url if url.startswith("http") else API + url, data=data, method=method)
         req.add_header("x-api-key", self.key)
         req.add_header("anthropic-version", VERSION)
         if data is not None:
-            req.add_header("content-type", "application/json")
+            req.add_header("content-type", ctype)
         try:
             with urllib.request.urlopen(req, timeout=300) as r:
                 payload = r.read()
@@ -169,6 +178,38 @@ def cmd_submit(a) -> int:
     resp = c.call("POST", "/messages/batches", {"requests": rows})
     print(json.dumps({"account": c.acct.name, "id": resp["id"], "processing_status": resp["processing_status"],
                       "request_counts": resp["request_counts"], "expires_at": resp.get("expires_at")}, indent=2))
+    return 0
+
+
+def cmd_upload(a) -> int:
+    lo, hi = EXPIRES_RANGE
+    if a.expires is not None and not lo <= a.expires <= hi:
+        print(f"--expires must be {lo}..{hi} seconds", file=sys.stderr)
+        return 1
+    for p in a.paths:
+        if not p.is_file():
+            print(f"{p}: not a file", file=sys.stderr)
+            return 1
+        if p.stat().st_size > MAX_FILE_BYTES:
+            print(f"{p}: {p.stat().st_size / 2**20:.1f} MB exceeds the {MAX_FILE_BYTES // 2**20} MB file limit",
+                  file=sys.stderr)
+            return 1
+    c = Client(a.account)
+    fields = {"expires_in_seconds": str(a.expires)} if a.expires is not None else {}
+    for p in a.paths:
+        body, ctype = multipart(fields, p)
+        f = c.call("POST", "/files", data=body, ctype=ctype)
+        print(json.dumps({"account": c.acct.name, "path": str(p), "file_id": f["id"],
+                          "bytes": f.get("size_bytes"), "mime_type": f.get("mime_type"),
+                          "expires_at": f.get("expires_at")}))
+    return 0
+
+
+def cmd_delete_file(a) -> int:
+    c = Client(a.account)
+    for fid in a.file_ids:
+        r = c.call("DELETE", f"/files/{fid}")
+        print(json.dumps({"account": c.acct.name, "file_id": r.get("id", fid), "type": r.get("type")}))
     return 0
 
 
@@ -269,6 +310,10 @@ def main(argv=None) -> int:
     rs = add("results", cmd_results, batch=True)
     rs.add_argument("--input", type=Path, help="the submitted JSONL, to reconcile every custom_id")
     rs.add_argument("--out", type=Path, required=True)
+    up = add("upload", cmd_upload)
+    up.add_argument("paths", nargs="+", type=Path, metavar="PATH")
+    up.add_argument("--expires", type=int, metavar="SECONDS", help="3600..7776000")
+    add("delete-file", cmd_delete_file).add_argument("file_ids", nargs="+", metavar="FILE_ID")
     add("cancel", cmd_cancel, batch=True)
     add("list", cmd_list).add_argument("--limit", type=int, default=20)
     add("accounts", cmd_accounts)

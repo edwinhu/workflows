@@ -8,6 +8,7 @@ import json
 import math
 import os
 import subprocess
+import uuid
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
@@ -214,3 +215,23 @@ def measure_jsonl(path: Path) -> dict:
         "in_tokens": chars / 4 / rows if rows else 0,
         "out_tokens": sum(outs) / len(outs) if outs else None,
     }
+
+
+# ---- uploads: multipart bodies for the providers' Files APIs ----
+
+MIME = {".pdf": "application/pdf", ".txt": "text/plain", ".md": "text/plain",
+        ".jsonl": "application/jsonl", ".png": "image/png", ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg", ".gif": "image/gif", ".webp": "image/webp"}
+
+
+def multipart(fields: dict[str, str], path: Path, mime: str | None = None) -> tuple[bytes, str]:
+    """multipart/form-data body (text fields, then one `file` part) and its Content-Type header."""
+    boundary = uuid.uuid4().hex
+    ctype = mime or MIME.get(path.suffix.lower(), "application/octet-stream")
+    parts = [f'--{boundary}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode()
+             for k, v in fields.items()]
+    parts.append((f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="{path.name}"\r\n'
+                  f"Content-Type: {ctype}\r\n\r\n").encode())
+    parts.append(path.read_bytes())
+    parts.append(f"\r\n--{boundary}--\r\n".encode())
+    return b"".join(parts), f"multipart/form-data; boundary={boundary}"

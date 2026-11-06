@@ -155,3 +155,49 @@ def test_dates_are_dates():
     accts, _ = batchlib.load_accounts(SKILLS / "batch-router/references/accounts.example.toml")
     assert isinstance(accts["personal"].cycle_renews, date)
     assert accts["openai"].prepaid is False and accts["personal"].prepaid is True
+
+
+def test_multipart_body_and_boundary(tmp_path):
+    import batchlib
+    f = tmp_path / "doc.pdf"
+    f.write_bytes(b"%PDF-1.4 tiny")
+    body, ctype = batchlib.multipart({"purpose": "user_data", "expires_in_seconds": "3600"}, f)
+    boundary = ctype.split("boundary=")[1]
+    assert ctype.startswith("multipart/form-data; boundary=")
+    assert body.startswith(f"--{boundary}\r\n".encode()) and body.endswith(f"--{boundary}--\r\n".encode())
+    assert b'name="purpose"\r\n\r\nuser_data' in body and b'name="expires_in_seconds"\r\n\r\n3600' in body
+    assert b'name="file"; filename="doc.pdf"' in body and b"Content-Type: application/pdf" in body
+    assert b"%PDF-1.4 tiny" in body
+    (tmp_path / "x.bin").write_bytes(b"1")
+    other, _ = batchlib.multipart({}, tmp_path / "x.bin")
+    assert b"application/octet-stream" in other
+
+
+def _no_client(monkeypatch, mod):
+    def boom(*a, **k):
+        raise AssertionError("Client constructed before validation")
+    monkeypatch.setattr(mod, "Client", boom)
+
+
+def test_upload_rejects_out_of_range_expires(tmp_path, monkeypatch):
+    f = tmp_path / "a.pdf"
+    f.write_bytes(b"x")
+    for mod, bad in ((claude, ["100", "7776001"]), (openai, ["3599", "2592001"])):
+        _no_client(monkeypatch, mod)
+        for v in bad:
+            assert mod.main(["upload", str(f), "--expires", v]) != 0
+
+
+def test_upload_rejects_oversize_file(tmp_path, monkeypatch):
+    f = tmp_path / "a.pdf"
+    f.write_bytes(b"xx")
+    for mod in (claude, openai):
+        _no_client(monkeypatch, mod)
+        monkeypatch.setattr(mod, "MAX_FILE_BYTES", 1)
+        assert mod.main(["upload", str(f)]) != 0
+
+
+def test_bare_invocation_is_usage_error():
+    for rel in ("claude-batch/scripts/claude_batch.py", "openai-batch/scripts/openai_batch.py"):
+        out = subprocess.run([sys.executable, str(SKILLS / rel)], capture_output=True, text=True, check=False)
+        assert out.returncode == 2 and "usage" in out.stderr
