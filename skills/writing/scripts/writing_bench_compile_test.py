@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import os
+import subprocess
 import importlib
 import json
 import sys
@@ -14,6 +16,8 @@ sys.path.insert(0, str(ROOT))
 
 wbc = importlib.import_module("writing_bench_compile")
 wsi = importlib.import_module("writing_section_index")
+sys.path.insert(0, str(ROOT / "lib"))
+plan_hash_mod = importlib.import_module("plan_hash")
 
 
 BENCH: dict = {
@@ -106,7 +110,11 @@ def write_bench(tmp_path: Path, mutate=None) -> Path:
 def project(tmp_path: Path) -> Path:
     proj = tmp_path / "proj"
     (proj / "references").mkdir(parents=True)
-    (proj / "references" / "sources.bib").write_text("@article{smith2019, title={Smith}}\n")
+    (proj / "references" / "sources.bib").write_text(
+        "@article{smith2019, title={Smith}}\n@book{jones2020, title={Jones}}\n"
+    )
+    for name in ("smith2019.pdf", "jones2020.pdf"):
+        (proj / "references" / name).write_bytes(b"%PDF")
     return proj
 
 
@@ -134,8 +142,8 @@ def test_compiles_a_plan_the_real_parser_accepts(tmp_path: Path) -> None:
 
     plan_path = proj / ".planning" / "bench-article.md"
     plan_text = plan_path.read_text(encoding="utf-8")
-    plan_hash = hashlib.sha256(plan_path.read_bytes()).hexdigest()
-    assert plan_text.startswith("# Bench Article\n")
+    plan_hash = plan_hash_mod.plan_hash(plan_path.read_bytes())
+    assert plan_text.startswith("---\nworkflow: writing\n---\n\n# Bench Article\n")
     assert "- **Domain**: legal" in plan_text
     assert "- **CLAIM-01**: The current rule creates a predictable gap." in plan_text
     assert "| CLAIM-02 | Part II. The Repair |" in plan_text
@@ -353,4 +361,257 @@ def test_force_overwrites(tmp_path: Path) -> None:
 
     code, _ = run(tmp_path, "--force")
     assert code == 0
-    assert plan_path.read_text().startswith("# bench-article\n")
+    assert plan_path.read_text().startswith("---\nworkflow: writing\n---\n\n# bench-article\n")
+
+
+# ── helpers for the sections below ───────────────────────────────────────────
+
+ARM = b'\n<!-- work:dispatch\n{"runId":"x"}\n-->\n'
+
+
+def approve(proj: Path, slug: str, plan_hash: str) -> None:
+    state = proj / ".planning" / ".state"
+    state.mkdir(exist_ok=True)
+    (state / "review.json").write_text(
+        json.dumps(
+            {
+                "workflow": "writing",
+                "plan_file": f"{slug}.md",
+                "plan_hash": plan_hash,
+                "approved_session_id": "approval-session",
+                "approved_at": "2026-09-09T10:00:00.000Z",
+                "status": "APPROVED",
+                "reviewer_session_id": "review-session",
+                "reviewed_at": "2026-09-09T10:01:00.000Z",
+            }
+        )
+    )
+
+
+# ── 1. plan hash ignores the work:dispatch block ─────────────────────────────
+
+
+def test_plan_hash_without_a_block_is_the_raw_sha256() -> None:
+    raw = b"# Plan\n\n## Claims\n- x\n"
+    assert plan_hash_mod.plan_hash(raw) == hashlib.sha256(raw).hexdigest()
+
+
+def test_plan_hash_ignores_an_appended_dispatch_block(tmp_path: Path) -> None:
+    code, proj = run(tmp_path)
+    assert code == 0
+    plan = (proj / ".planning" / "bench-article.md").read_bytes()
+    assert plan_hash_mod.plan_hash(plan + ARM) == plan_hash_mod.plan_hash(plan) == hashlib.sha256(plan).hexdigest()
+
+
+def test_plan_hash_ignores_a_leading_block() -> None:
+    body = b"# Plan\n"
+    assert plan_hash_mod.plan_hash(b"<!-- work:dispatch {} -->\n" + body) == hashlib.sha256(body).hexdigest()
+
+
+def test_plan_hash_cli(tmp_path: Path) -> None:
+    plan = tmp_path / "p.md"
+    plan.write_bytes(b"# Plan\n" + ARM)
+    script = ROOT / "lib" / "plan_hash.py"
+    out = subprocess.run([sys.executable, str(script), str(plan)], capture_output=True, text=True)
+    assert out.returncode == 0
+    assert out.stdout.strip() == hashlib.sha256(b"# Plan\n").hexdigest()
+    assert subprocess.run([sys.executable, str(script)], capture_output=True).returncode == 2
+
+
+def test_armed_plan_still_indexes(tmp_path: Path) -> None:
+    code, proj = run(tmp_path)
+    assert code == 0
+    plan_path = proj / ".planning" / "bench-article.md"
+    unarmed = plan_hash_mod.plan_hash(plan_path.read_bytes())
+    plan_path.write_bytes(plan_path.read_bytes() + ARM)
+    approve(proj, "bench-article", unarmed)
+    result = wsi.build_index(proj)
+    assert result.ok, result.violations
+    assert not any("stale" in v.lower() or "hash" in v.lower() for v in result.violations)
+
+
+# ── 2. frontmatter ───────────────────────────────────────────────────────────
+
+
+def test_plan_opens_with_workflow_frontmatter_and_the_parser_accepts_it(tmp_path: Path) -> None:
+    code, proj = run(tmp_path)
+    assert code == 0
+    plan_path = proj / ".planning" / "bench-article.md"
+    assert plan_path.read_text().startswith("---\nworkflow: writing\n---\n\n# bench-article\n")
+    approve(proj, "bench-article", plan_hash_mod.plan_hash(plan_path.read_bytes()))
+    assert wsi.build_index(proj).ok
+
+
+# ── 4. filename length and short titles ──────────────────────────────────────
+
+
+LONG = "Part I. " + "Background " * 27  # 300+ chars
+
+
+def test_refuses_an_overlong_section_name_and_writes_nothing(capsys, tmp_path: Path) -> None:
+    err = refusal(capsys, tmp_path, lambda bench: bench["outline"][1].update({"text": LONG}))
+    assert "outline position 2" in err
+    assert "short title" in err
+    proj = tmp_path / "proj"
+    assert not (proj / ".planning").exists()
+    assert not (proj / "outlines").exists()
+
+
+def test_short_title_makes_an_overlong_section_compile(tmp_path: Path) -> None:
+    code, proj = run(tmp_path, mutate=lambda bench: bench["outline"][1].update({"text": LONG, "short": "Part I"}))
+    assert code == 0
+    plan = (proj / ".planning" / "bench-article.md").read_text(encoding="utf-8")
+    assert "### Part I\n" + LONG.strip() + " Establishes CLAIM-01." in plan
+    assert "| CLAIM-01 | Part I |" in plan
+    assert "| Part I | outlines/Part I.md | drafts/Part I (Draft).md | Introduction |" in plan
+    assert (proj / "outlines" / "Part I.md").is_file()
+
+
+def test_short_title_obeys_the_forbidden_character_rule(capsys, tmp_path: Path) -> None:
+    err = refusal(capsys, tmp_path, lambda bench: bench["outline"][1].update({"short": "Part/I"}))
+    assert "short title" in err
+    assert "cannot appear in an outline filename" in err
+
+
+def test_section_uniqueness_is_on_the_effective_name(capsys, tmp_path: Path) -> None:
+    def mutate(bench: dict) -> None:
+        bench["outline"][1].update({"short": "Same"})
+        bench["outline"][2].update({"short": "Same"})
+
+    assert "two sections share the name 'Same'" in refusal(capsys, tmp_path, mutate)
+
+
+# ── 5. --force sweeps stale outlines ─────────────────────────────────────────
+
+
+def test_force_removes_outlines_the_old_plan_named_and_only_those(capsys, tmp_path: Path) -> None:
+    code, proj = run(tmp_path)
+    assert code == 0
+    capsys.readouterr()
+    (proj / "outlines" / "Unrelated.md").write_text("mine\n")
+    (proj / "drafts").mkdir()
+    (proj / "drafts" / "Part II. The Repair (Draft).md").write_text("draft\n")
+
+    code, _ = run(tmp_path, "--force", mutate=lambda bench: bench["outline"][2].update({"text": "Part II. Renamed"}))
+    assert code == 0
+    out = capsys.readouterr().out
+    old = proj / "outlines" / "Part II. The Repair.md"
+    assert f"removed: {old}" in out
+    assert not old.exists()
+    assert (proj / "outlines" / "Part II. Renamed.md").is_file()
+    assert (proj / "outlines" / "Unrelated.md").read_text() == "mine\n"
+    assert (proj / "outlines" / "Part I. The Gap.md").is_file()
+    assert (proj / "drafts" / "Part II. The Repair (Draft).md").is_file()
+
+
+# ── 6. level-1 claims in heads-are-claims genres ─────────────────────────────
+
+
+def _level_one_claim(bench: dict) -> None:
+    bench["outline"].append(
+        {"id": "nX", "text": "The Court should reverse.", "status": "agreed", "source": "", "kind": "claim", "cid": "CLAIM-09", "children": []}
+    )
+
+
+@pytest.mark.parametrize("genre", ["amicus", "expert", "comment"])
+def test_level_one_claim_compiles_in_heads_are_claims_genres(tmp_path: Path, genre: str) -> None:
+    def mutate(bench: dict) -> None:
+        bench["intent"]["genre"] = genre
+        _level_one_claim(bench)
+
+    code, proj = run(tmp_path, mutate=mutate)
+    assert code == 0
+    plan_path = proj / ".planning" / "bench-article.md"
+    plan = plan_path.read_text(encoding="utf-8")
+    assert "- **CLAIM-09**: The Court should reverse." in plan
+    assert "| CLAIM-09 | The Court should reverse. |" in plan
+    assert "implements: [CLAIM-09]" in (proj / "outlines" / "The Court should reverse..md").read_text()
+    approve(proj, "bench-article", plan_hash_mod.plan_hash(plan_path.read_bytes()))
+    result = wsi.build_index(proj)
+    assert result.ok, result.violations
+
+
+def test_level_one_claim_still_refused_in_other_genres(capsys, tmp_path: Path) -> None:
+    err = refusal(capsys, tmp_path, _level_one_claim)
+    assert "claim CLAIM-09 at outline position 4 is a level-1 node" in err
+    assert "amicus, expert and comment" in err
+
+
+# ── 7. source gate ───────────────────────────────────────────────────────────
+
+
+def test_refuses_an_open_source_request(capsys, tmp_path: Path) -> None:
+    err = refusal(capsys, tmp_path, lambda bench: bench["outline"][1]["children"][1].update({"needs": True}))
+    assert "open source request" in err
+    assert "outline position 2.2" in err
+    assert "Why courts do not notice" in err
+    assert "run the librarian for it" in err
+
+
+def test_plain_unpinned_leaf_does_not_refuse(tmp_path: Path) -> None:
+    code, _ = run(tmp_path)  # Introduction's "Previews both claims" is unpinned, needs unset
+    assert code == 0
+
+
+def test_refuses_a_missing_artifact(capsys, tmp_path: Path) -> None:
+    project(tmp_path)
+    (tmp_path / "proj" / "references" / "smith2019.pdf").unlink()
+    err = refusal(capsys, tmp_path)
+    assert "artifact references/smith2019.pdf for smith2019 does not exist; recall is not a source" in err
+
+
+def test_absolute_artifact_path_is_allowed(tmp_path: Path) -> None:
+    project(tmp_path)
+    elsewhere = tmp_path / "elsewhere.pdf"
+    elsewhere.write_bytes(b"%PDF")
+    code, _ = run(tmp_path, mutate=lambda bench: bench["sources"][0].update({"artifact": str(elsewhere)}))
+    assert code == 0
+
+
+def test_refuses_a_missing_bibliography_file(capsys, tmp_path: Path) -> None:
+    project(tmp_path)
+    (tmp_path / "proj" / "references" / "sources.bib").unlink()
+    assert "references/sources.bib does not exist" in refusal(capsys, tmp_path)
+
+
+def test_refuses_a_pinned_key_absent_from_the_bibliography(capsys, tmp_path: Path) -> None:
+    proj = project(tmp_path)
+    (proj / "references" / "sources.bib").write_text("@article{smith2019, title={Smith}}\n")
+    err = refusal(capsys, tmp_path)
+    assert "'jones2020'" in err
+    assert "no entry in references/sources.bib" in err
+
+
+def test_names_the_other_bib_that_holds_the_key(capsys, tmp_path: Path) -> None:
+    proj = project(tmp_path)
+    (proj / "references" / "sources.bib").write_text("@article{smith2019, title={Smith}}\n")
+    (proj / "references" / "run2").mkdir()
+    (proj / "references" / "run2" / "extra.bib").write_text("@book{jones2020, title={Jones}}\n")
+    err = refusal(capsys, tmp_path)
+    assert "extra.bib" in err
+    assert "append the entry to the one bibliography" in err
+
+
+# ── 8. --source-requests ─────────────────────────────────────────────────────
+
+
+def test_source_requests_lists_open_requests_in_outline_order(capsys, tmp_path: Path) -> None:
+    def mutate(bench: dict) -> None:
+        bench["outline"][0]["needs"] = True  # level 1, unpinned: requested only because flagged
+        bench["outline"][2]["children"][2]["status"] = "claude"  # unpinned leaf, unaccepted: skipped
+        bench["outline"][2]["children"][1]["needs"] = True  # a counter, flagged
+
+    bench = write_bench(tmp_path, mutate)
+    assert wbc.main(["--bench", str(bench), "--source-requests"]) == 0
+    items = json.loads(capsys.readouterr().out)
+    assert [item["position"] for item in items] == ["1", "1.2", "2.2", "3.2"]
+    assert items[0] == {"id": "n1", "position": "1", "text": "Introduction", "path": [], "needs": True}
+    assert items[1]["path"] == ["Introduction"] and items[1]["needs"] is False
+    assert items[3]["path"] == ["Part II. The Repair"] and items[3]["needs"] is True
+    assert not (tmp_path / "proj").exists()
+
+
+def test_source_requests_still_needs_project_otherwise(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit) as exit_info:
+        wbc.main(["--bench", str(write_bench(tmp_path))])
+    assert exit_info.value.code == 2

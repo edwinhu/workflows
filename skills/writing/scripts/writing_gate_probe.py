@@ -9,12 +9,13 @@ OUTLINE.md and never upgrades its advisory numeric check into dataset provenance
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from plan_hash import plan_hash as _plan_hash  # noqa: E402
 from writing_section_index import _frontmatter, _read_regular_bytes, build_index
 
 _BIBKEY_DEF = re.compile(r"@\w+\s*\{\s*([^,\s]+)", re.MULTILINE)
@@ -100,7 +101,7 @@ def probe(
             bib_bytes = _read_regular_bytes(bib_path, root)  # type: ignore[arg-type]
         except (OSError, UnicodeDecodeError):
             authentication_errors.append("plan, draft, and exact Source Plan bibliography must be stable project-contained regular non-symlink files")
-    plan_hash = hashlib.sha256(plan_bytes).hexdigest() if plan_bytes else ""
+    plan_hash = _plan_hash(plan_bytes) if plan_bytes else ""
     if authentication_errors:
         return {
             "section": draft_path.stem,

@@ -17,6 +17,16 @@ breaks the hash contract — hence `--force`.
 CLI:
   writing_bench_compile.py --bench <bench.json> --project <proj> --slug <slug>
                            [--title <str>] [--force]
+  writing_bench_compile.py --bench <bench.json> --source-requests
+
+The second form writes nothing: it prints a JSON array of the open source requests (nodes
+marked `needs` with no pin, and unpinned leaves below level 1 that are not scaffold/claude),
+each {id, position, text, path, needs}, for the librarian to take one at a time.
+
+Compiling refuses, before writing anything, a bench with an open source request, a pin whose
+artifact is missing on disk, a pinned key absent from the one bibliography named by
+srcmeta.bibliography, or a section name too long for the filesystem. `--force` also deletes the
+outline files the OLD plan named that the new plan does not (printed as `removed: <path>`).
 
 Exit 0 on success, 1 with every reason it refused, 2 on usage error.
 """
@@ -24,14 +34,20 @@ Exit 0 on success, 1 with every reason it refused, 2 on usage error.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
+import os
 import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from plan_hash import plan_hash as _plan_hash  # noqa: E402
+
 INTENT_FIELDS = ("thesis", "audience", "purpose", "hook", "scope", "domain")
 DOMAINS = ("legal", "econ", "general")
+# Genres whose argument headings ARE the claims, so a level-1 node may be a claim.
+HEADS_ARE_CLAIMS = ("amicus", "expert", "comment")
+_BIB_KEY_RE = re.compile(r"@\w+\s*[{(]\s*([^,\s]+)\s*,")
 # Only text the user has accepted may compile. "scaffold" is the bench's own
 # placeholder and "claude" is an unreviewed suggestion; both are proposals.
 UNACCEPTED = {"scaffold": "still scaffold text", "claude": "still an unaccepted Claude suggestion"}
@@ -56,7 +72,7 @@ class Refusal(Exception):
 
 
 class Node:
-    __slots__ = ("children", "cid", "kind", "position", "source", "status", "text")
+    __slots__ = ("children", "cid", "id", "kind", "needs", "position", "short", "source", "status", "text")
 
     def __init__(self, raw: object, position: str) -> None:
         data = raw if isinstance(raw, dict) else {}
@@ -65,12 +81,20 @@ class Node:
         self.source = str(data.get("source") or "").strip()
         self.kind = str(data.get("kind") or "").strip().lower()
         self.cid = str(data.get("cid") or "").strip()
+        self.id = str(data.get("id") or "").strip()
+        self.needs = data.get("needs") is True
+        self.short = str(data.get("short") or "").strip()
         self.position = position
         children = data.get("children")
         self.children = [
             Node(child, f"{position}.{index + 1}")
             for index, child in enumerate(children if isinstance(children, list) else [])
         ]
+
+    @property
+    def name(self) -> str:
+        """The section name for a level-1 node: the short title when set, else the text."""
+        return self.short or self.text
 
     def walk(self):
         yield self
@@ -80,6 +104,9 @@ class Node:
     def descendants(self):
         for child in self.children:
             yield from child.walk()
+
+    def claim_nodes(self, heads_are_claims: bool):
+        return self.walk() if heads_are_claims else self.descendants()
 
 
 def _legacy_node(raw: object, position: str) -> dict:
@@ -156,8 +183,77 @@ def _obj(bench: dict, key: str) -> dict:
     return value if isinstance(value, dict) else {}
 
 
-def validate(bench: dict, sections: list[Node]) -> list[str]:
+def _heads_are_claims(bench: dict) -> bool:
+    return str(_obj(bench, "intent").get("genre") or "").strip().lower() in HEADS_ARE_CLAIMS
+
+
+def _name_max(project: Path) -> int:
+    probe = project.absolute()
+    while not probe.exists() and probe != probe.parent:
+        probe = probe.parent
+    try:
+        return int(os.pathconf(probe, "PC_NAME_MAX"))
+    except (OSError, ValueError):
+        return 255
+
+
+def _bib_keys(path: Path) -> set[str]:
+    return set(_BIB_KEY_RE.findall(path.read_text(encoding="utf-8", errors="replace")))
+
+
+def _check_sources(
+    bench: dict, sections: list[Node], sources: dict[str, str], project: Path, reasons: list[str]
+) -> None:
+    pinned: dict[str, str] = {}
+    for section in sections:
+        for node in section.walk():
+            if node.source in sources:
+                pinned.setdefault(node.source, node.position)
+
+    for key, position in pinned.items():
+        artifact = sources[key]
+        if artifact and not (project / artifact).exists():
+            reasons.append(
+                f"artifact {artifact} for {key} does not exist; recall is not a source "
+                f"(pinned at outline position {position})."
+            )
+
+    bibliography = str(_obj(bench, "srcmeta").get("bibliography") or "").strip()
+    if not bibliography or not pinned:
+        return
+    bib_path = project / bibliography
+    if not bib_path.is_file():
+        reasons.append(
+            f"bibliography {bibliography} does not exist; the librarian appends every entry to the "
+            "one bibliography srcmeta.bibliography names."
+        )
+        return
+    have = _bib_keys(bib_path)
+    others = [
+        path
+        for path in sorted((project / "references").rglob("*.bib"))
+        if path.resolve() != bib_path.resolve()
+    ]
+    for key, position in pinned.items():
+        if key in have:
+            continue
+        elsewhere = next((path for path in others if key in _bib_keys(path)), None)
+        if elsewhere is not None:
+            reasons.append(
+                f"pinned key {key!r} (outline position {position}) is not in {bibliography} but is in "
+                f"{elsewhere}; append the entry to the one bibliography {bibliography}."
+            )
+        else:
+            reasons.append(
+                f"pinned key {key!r} (outline position {position}) has no entry in {bibliography}; "
+                "recall is not a source."
+            )
+
+
+def validate(bench: dict, sections: list[Node], project: Path | None = None) -> list[str]:
     reasons: list[str] = []
+    project = project if project is not None else Path(".")
+    heads = _heads_are_claims(bench)
 
     intent = _obj(bench, "intent")
     for field in INTENT_FIELDS:
@@ -181,23 +277,34 @@ def validate(bench: dict, sections: list[Node]) -> list[str]:
     if not sections:
         reasons.append("the bench has no sections; outline[] must contain at least one level-1 node.")
 
+    name_max = _name_max(project)
     seen_names: dict[str, str] = {}
     for section in sections:
         if not section.text:
             reasons.append(f"section at outline position {section.position} has empty text.")
             continue
-        if any(bad in section.text for bad in ("|", "/", "\\", "\n")):
+        for label, value in (("section", section.text), ("short title of section", section.short)):
+            if any(bad in value for bad in ("|", "/", "\\", "\n")):
+                reasons.append(
+                    f"{label} {value!r} contains a character that cannot appear in an "
+                    "outline filename or a Markdown table cell (one of | / \\)."
+                )
+        name = section.name
+        if name in seen_names:
             reasons.append(
-                f"section {section.text!r} contains a character that cannot appear in an "
-                "outline filename or a Markdown table cell (one of | / \\)."
-            )
-        if section.text in seen_names:
-            reasons.append(
-                f"two sections share the name {section.text!r} "
-                f"(outline positions {seen_names[section.text]} and {section.position})."
+                f"two sections share the name {name!r} "
+                f"(outline positions {seen_names[name]} and {section.position})."
             )
         else:
-            seen_names[section.text] = section.position
+            seen_names[name] = section.position
+        for basename in (f"{name}.md", f"{name} (Draft).md"):
+            if len(basename.encode("utf-8")) > name_max:
+                reasons.append(
+                    f"section at outline position {section.position} would need the file name "
+                    f"{basename[:40]!r}… of {len(basename.encode('utf-8'))} bytes, over the "
+                    f"filesystem limit of {name_max}; set a short title for it in the bench."
+                )
+                break
 
     claim_positions: dict[str, list[str]] = {}
     for section in sections:
@@ -206,6 +313,11 @@ def validate(bench: dict, sections: list[Node]) -> list[str]:
                 reasons.append(
                     f"node at outline position {node.position} is {UNACCEPTED[node.status]} "
                     f"(status {node.status!r}): {node.text!r} — accept it in the bench before compiling."
+                )
+            if node.needs and not node.source:
+                reasons.append(
+                    f"node at outline position {node.position} is an open source request "
+                    f"({node.text!r}); run the librarian for it, or clear the flag in the bench."
                 )
             if node.source:
                 if node.source not in sources:
@@ -227,13 +339,17 @@ def validate(bench: dict, sections: list[Node]) -> list[str]:
                 else:
                     claim_positions.setdefault(node.cid, []).append(node.position)
 
-    # A claim that IS a level-1 node has no level-1 ancestor to map it to.
-    for section in sections:
-        if section.kind == "claim":
-            reasons.append(
-                f"claim {section.cid or '(no cid)'} at outline position {section.position} is a "
-                "level-1 node and so has no section to map it to; nest it under a section."
-            )
+    _check_sources(bench, sections, sources, project, reasons)
+
+    # Outside the heads-are-claims genres a level-1 claim has no section to map to.
+    if not heads:
+        for section in sections:
+            if section.kind == "claim":
+                reasons.append(
+                    f"claim {section.cid or '(no cid)'} at outline position {section.position} is a "
+                    "level-1 node and so has no section to map it to; nest it under a section "
+                    "(the amicus, expert and comment genres allow a level-1 claim)."
+                )
 
     for cid, positions in sorted(claim_positions.items()):
         if len(positions) > 1:
@@ -244,6 +360,31 @@ def validate(bench: dict, sections: list[Node]) -> list[str]:
     return reasons
 
 
+def source_requests(sections: list[Node]) -> list[dict]:
+    """Open source requests in outline order, for the librarian."""
+    found: list[dict] = []
+
+    def visit(node: Node, path: list[str], level: int) -> None:
+        if not node.source:
+            leaf = not node.children and level > 1 and node.status not in UNACCEPTED
+            if node.needs or leaf:
+                found.append(
+                    {
+                        "id": node.id,
+                        "position": node.position,
+                        "text": node.text,
+                        "path": list(path),
+                        "needs": node.needs,
+                    }
+                )
+        for child in node.children:
+            visit(child, [*path, node.text], level + 1)
+
+    for section in sections:
+        visit(section, [], 1)
+    return found
+
+
 # ── Rendering ────────────────────────────────────────────────────────────────
 
 
@@ -252,6 +393,8 @@ def _cited(node: Node) -> str:
 
 
 def _gloss(section: Node, claims: list[str]) -> str:
+    if section.short and section.short != section.text:
+        return " ".join([section.text, *([f"Establishes {', '.join(claims)}."] if claims else [])])
     if claims:
         return f"Establishes {', '.join(claims)}."
     first = next((child for child in section.descendants() if child.text), None)
@@ -268,14 +411,15 @@ def render_plan(bench: dict, sections: list[Node], title: str) -> str:
     claim_map: list[tuple[str, str]] = []
     counters: list[str] = []
     pinned: list[str] = []
+    heads = _heads_are_claims(bench)
     for section in sections:
         for node in section.walk():
             if node.source and node.source not in pinned:
                 pinned.append(node.source)
-        for node in section.descendants():
+        for node in section.claim_nodes(heads):
             if node.kind == "claim":
                 claim_defs.append((node.cid, node.text))
-                claim_map.append((node.cid, section.text))
+                claim_map.append((node.cid, section.name))
             elif node.kind == "counter":
                 counters.append(node.text)
 
@@ -283,7 +427,7 @@ def render_plan(bench: dict, sections: list[Node], title: str) -> str:
     for cid, name in claim_map:
         by_section.setdefault(name, []).append(cid)
 
-    lines: list[str] = [f"# {title}", ""]
+    lines: list[str] = ["---", "workflow: writing", "---", "", f"# {title}", ""]
 
     lines.append("## Writing Intent")
     for field in INTENT_FIELDS:
@@ -303,8 +447,8 @@ def render_plan(bench: dict, sections: list[Node], title: str) -> str:
 
     lines.append("## Document Structure")
     for section in sections:
-        lines.append(f"### {section.text}")
-        lines.append(_gloss(section, by_section.get(section.text, [])))
+        lines.append(f"### {section.name}")
+        lines.append(_gloss(section, by_section.get(section.name, [])))
         lines.append("")
 
     lines.append("## Claim → Section Map")
@@ -325,9 +469,9 @@ def render_plan(bench: dict, sections: list[Node], title: str) -> str:
     lines.append("| Section | Outline | Draft | Depends On |")
     lines.append("|---|---|---|---|")
     for index, section in enumerate(sections):
-        depends = sections[index - 1].text if index else "-"
+        depends = sections[index - 1].name if index else "-"
         lines.append(
-            f"| {section.text} | {outline_rel(section.text)} | {draft_rel(section.text)} | {depends} |"
+            f"| {section.name} | {outline_rel(section.name)} | {draft_rel(section.name)} | {depends} |"
         )
     lines.append("")
 
@@ -345,9 +489,9 @@ def draft_rel(name: str) -> str:
     return f"drafts/{name} (Draft).md"
 
 
-def render_outline(section: Node, plan_hash: str) -> str:
+def render_outline(section: Node, plan_hash: str, heads: bool = False) -> str:
     claims = sorted(
-        {node.cid for node in section.descendants() if node.kind == "claim" and node.cid},
+        {node.cid for node in section.claim_nodes(heads) if node.kind == "claim" and node.cid},
         key=lambda cid: int(cid.split("-")[1]),
     )
     body: list[str] = []
@@ -369,18 +513,33 @@ def render_outline(section: Node, plan_hash: str) -> str:
 # ── CLI ──────────────────────────────────────────────────────────────────────
 
 
+def _old_outlines(plan_path: Path, project: Path) -> list[Path]:
+    """Outline files the existing plan's Section Outputs table names, under <proj>/outlines/ only."""
+    try:
+        text = plan_path.read_text(encoding="utf-8")
+    except OSError:
+        return []
+    match = re.search(r"(?ms)^##\s+Section Outputs\s*$(.*?)(?=^##\s|\Z)", text)
+    if not match:
+        return []
+    root = (project / "outlines").resolve()
+    found: list[Path] = []
+    for line in match.group(1).splitlines():
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 2 or not cells[1].startswith("outlines/") or not cells[1].endswith(".md"):
+            continue
+        path = (project / cells[1]).resolve()
+        if path.is_relative_to(root) and path != root:
+            found.append(path)
+    return found
+
+
 def compile_bench(
     bench_path: Path, project: Path, slug: str, title: str | None, force: bool
-) -> list[Path]:
+) -> tuple[list[Path], list[Path]]:
+    """Return (written, removed). Every check runs before the first write."""
+    bench = _load_bench(bench_path)
     reasons: list[str] = []
-    try:
-        bench = json.loads(bench_path.read_text(encoding="utf-8"))
-    except OSError as error:
-        raise Refusal([f"cannot read bench {bench_path}: {error}"]) from error
-    except json.JSONDecodeError as error:
-        raise Refusal([f"bench {bench_path} is not valid JSON: {error}"]) from error
-    if not isinstance(bench, dict):
-        raise Refusal([f"bench {bench_path} must be a JSON object, not {type(bench).__name__}."])
 
     if not _SLUG_RE.fullmatch(slug):
         reasons.append(f"--slug {slug!r} is not a safe plan basename ([A-Za-z0-9][A-Za-z0-9._-]*).")
@@ -395,22 +554,43 @@ def compile_bench(
         )
 
     sections = load_outline(bench)
-    reasons.extend(validate(bench, sections))
+    reasons.extend(validate(bench, sections, project))
     if reasons:
         raise Refusal(reasons)
 
     plan_text = render_plan(bench, sections, title.strip() if title and title.strip() else slug)
-    plan_hash = hashlib.sha256(plan_text.encode("utf-8")).hexdigest()
+    plan_hash = _plan_hash(plan_text.encode("utf-8"))
+    heads = _heads_are_claims(bench)
+    old = _old_outlines(plan_path, project) if force else []
 
     plan_path.parent.mkdir(parents=True, exist_ok=True)
     (project / "outlines").mkdir(parents=True, exist_ok=True)
     plan_path.write_text(plan_text, encoding="utf-8")
     written = [plan_path]
     for section in sections:
-        path = project / outline_rel(section.text)
-        path.write_text(render_outline(section, plan_hash), encoding="utf-8")
+        path = project / outline_rel(section.name)
+        path.write_text(render_outline(section, plan_hash, heads), encoding="utf-8")
         written.append(path)
-    return written
+
+    kept = {path.resolve() for path in written}
+    removed: list[Path] = []
+    for path in old:
+        if path not in kept and path.is_file():
+            path.unlink()
+            removed.append(path)
+    return written, removed
+
+
+def _load_bench(bench_path: Path) -> dict:
+    try:
+        bench = json.loads(bench_path.read_text(encoding="utf-8"))
+    except OSError as error:
+        raise Refusal([f"cannot read bench {bench_path}: {error}"]) from error
+    except json.JSONDecodeError as error:
+        raise Refusal([f"bench {bench_path} is not valid JSON: {error}"]) from error
+    if not isinstance(bench, dict):
+        raise Refusal([f"bench {bench_path} must be a JSON object, not {type(bench).__name__}."])
+    return bench
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -419,14 +599,20 @@ def main(argv: list[str] | None = None) -> int:
         description="Compile a writing-bench JSON document into the canonical writing plan.",
     )
     parser.add_argument("--bench", required=True, type=Path)
-    parser.add_argument("--project", required=True, type=Path)
-    parser.add_argument("--slug", required=True)
+    parser.add_argument("--project", type=Path)
+    parser.add_argument("--slug")
     parser.add_argument("--title", default=None)
     parser.add_argument("--force", action="store_true")
+    parser.add_argument("--source-requests", action="store_true")
     args = parser.parse_args(argv)
+    if not args.source_requests and (args.project is None or not args.slug):
+        parser.error("--project and --slug are required unless --source-requests is given")
 
     try:
-        written = compile_bench(args.bench, args.project, args.slug, args.title, args.force)
+        if args.source_requests:
+            print(json.dumps(source_requests(load_outline(_load_bench(args.bench))), indent=2))
+            return 0
+        written, removed = compile_bench(args.bench, args.project, args.slug, args.title, args.force)
     except Refusal as refusal:
         print(
             "writing_bench_compile: refusing to compile this bench.\n"
@@ -436,6 +622,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     for path in written:
         print(path)
+    for path in removed:
+        print(f"removed: {path}")
     return 0
 
 

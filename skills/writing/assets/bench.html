@@ -224,17 +224,8 @@ footer.compilebar{position:fixed;bottom:0;left:0;right:360px;background:var(--pa
     </section>
 
     <section class="block">
-      <div class="blockhead"><h2>Sources on hand</h2><span class="n">§2 · from the librarian</span></div>
-      <p class="blocknote">What was actually fetched before outlining started. You pin bullets to these keys as you outline — a key with no artifact is a document nobody opened, and the outline cannot lean on it.</p>
-      <div id="sources"></div>
-      <div class="addrow"><button class="btn sm" id="addsource">+ Source</button>
-        <button class="btn sm" id="togglesrcmeta">bibliography path…</button></div>
-      <div id="sourcemeta" hidden style="margin-top:10px"></div>
-    </section>
-
-    <section class="block">
       <div class="blockhead">
-        <h2>Outline</h2><span class="n">§3 · the table of contents, top down</span>
+        <h2>Outline</h2><span class="n">§2 · the table of contents, top down</span>
         <div class="depthbar">
           <span class="n">show</span>
           <button class="btn sm" data-depth="1">I</button>
@@ -258,6 +249,14 @@ footer.compilebar{position:fixed;bottom:0;left:0;right:360px;background:var(--pa
       </div>
     </section>
 
+    <section class="block">
+      <div class="blockhead"><h2>Sources on hand</h2><span class="n">§3 · gathered per outline node, after the outline</span></div>
+      <p class="blocknote">Sources arrive after the outline is set, one outline node at a time. Mark a node <b>needs src</b> (or leave a leaf unpinned) and the Claude Code session runs the librarian for it; the results land here and come back as pin proposals in the Claude rail for you to accept. A key with no artifact is a document nobody opened, and the outline cannot lean on it.</p>
+      <div id="sources"></div>
+      <div class="addrow"><button class="btn sm" id="addsource">+ Source</button>
+        <button class="btn sm" id="togglesrcmeta">bibliography path…</button></div>
+      <div id="sourcemeta" hidden style="margin-top:10px"></div>
+    </section>
 
   </main>
 
@@ -352,7 +351,7 @@ function removeNode(id){
   const L=locate(id); if(!L) return null;
   L.siblings.splice(L.index,1); return L.n;
 }
-function newNode(text,status){ return {id:uid(),text:text||"",status:status||"you",source:"",collapsed:false,children:[]}; }
+function newNode(text,status){ return {id:uid(),text:text||"",status:status||"you",source:"",needs:false,collapsed:false,children:[]}; }
 
 /* ============================ persistence ============================ */
 const DOC="plan/bench";
@@ -422,7 +421,7 @@ function adopt(d){
         source:b.source||"",collapsed:false,children:[]}))}));
   }
   walk(S.outline,n=>{ n.children=n.children||[]; n.status=n.status||"you"; n.source=n.source||"";
-    n.kind=n.kind||""; });
+    n.kind=n.kind||""; n.needs=!!n.needs; });
   // legacy: a separate claims/counters registry becomes marks on the tree, or loose bullets
   (d.claims||[]).forEach(c=>{
     const L=c.node?locate(c.node):null;
@@ -632,10 +631,12 @@ function renderOutline(){
       <span class="num">${esc(r.full)}</span>
       <span class="dot ${n.status}"></span>
       <span class="rtext"><textarea data-nt="${n.id}" rows="1"
-        placeholder="${r.depth===0?"Part title":r.depth===1?"What this section does":"One move the prose makes"}">${esc(n.text)}</textarea></span>
+        placeholder="${r.depth===0?"Part title":r.depth===1?"What this section does":"One move the prose makes"}">${esc(n.text)}</textarea>${r.depth===0?`<input class="ed shortt" data-short="${n.id}" value="${esc(n.short||"")}" placeholder="short title (file name)" style="display:block;width:100%;margin-top:3px;font-size:12px">`:""}</span>
       <span class="rmeta">
         ${n.kind==="claim"?`<span class="cl">${esc(n.cid||"claim")}</span>`:""}
         ${n.kind==="counter"?'<span class="chip open">objection</span>':""}
+        ${n.needs&&!n.source?'<span class="chip open">needs sources</span>':""}
+        ${r.depth===0&&String(n.text||"").length>80&&!String(n.short||"").trim()?'<span class="chip open">long heading — set a short title</span>':""}
         ${hidden?`<span class="kidcount">${kids}</span>`:""}
         ${isLeaf&&r.depth>=1?`<select class="srcpin${(!n.source||bad)?" missing":""}" data-ns="${n.id}">
             <option value="">unpinned</option>
@@ -643,6 +644,7 @@ function renderOutline(){
           </select>`:""}
         <span class="rowacts">
           <button class="iact" data-kind="${n.id}" title="Mark as a claim the document argues, or an objection it must meet">${n.kind==="claim"?"claim":n.kind==="counter"?"obj":"mark"}</button>
+          <button class="iact" data-needs="${n.id}" title="Ask the session to fetch sources for this node">${n.needs?"✓ needs src":"needs src"}</button>
           <button class="iact" data-expand="${n.id}" title="Ask Claude to expand this">↳ expand</button>
           ${n.status!=="agreed"?`<button class="iact" data-nag="${n.id}" title="Agree">✓</button>`:""}
           <button class="iact danger" data-ndel="${n.id}" title="Delete">×</button>
@@ -672,6 +674,14 @@ function wireOutline(el){
     const L=locate(n.dataset.tw); L.n.collapsed=!L.n.collapsed; save(); renderOutline();}));
   el.querySelectorAll("[data-ns]").forEach(n=>n.addEventListener("change",()=>{
     locate(n.dataset.ns).n.source=n.value; save(); renderOutline(); paintReady();}));
+  el.querySelectorAll("[data-needs]").forEach(n=>n.addEventListener("click",()=>{
+    const L=locate(n.dataset.needs); if(!L)return;
+    L.n.needs=!L.n.needs; save(); renderOutline(); paintReady();}));
+  el.querySelectorAll("[data-short]").forEach(n=>{
+    n.addEventListener("input",()=>{
+      const L=locate(n.dataset.short); if(!L)return;
+      L.n.short=n.value; save(); paintReady();});
+    n.addEventListener("blur",()=>renderOutline());});
   el.querySelectorAll("[data-kind]").forEach(n=>n.addEventListener("click",()=>{
     const L=locate(n.dataset.kind); if(!L)return;
     L.n.kind = L.n.kind==="claim" ? "counter" : L.n.kind==="counter" ? "" : "claim";
@@ -791,7 +801,7 @@ function renderSources(){
   m.querySelectorAll("[data-sm]").forEach(n=>{autosize(n);
     n.addEventListener("input",()=>{S.srcmeta[n.dataset.sm]=n.value;autosize(n);save();paintReady();});});
   const el=document.getElementById("sources");
-  if(!S.sources.length){el.innerHTML='<div class="empty">No sources yet. The librarian fills this — a key typed from memory is not a source.</div>';return;}
+  if(!S.sources.length){el.innerHTML='<div class="empty">No sources yet, by design: the bench opens without them. They arrive per outline node once the outline settles. A key typed from memory is not a source.</div>';return;}
   el.innerHTML=S.sources.map(s=>`<div class="card">
     <div class="cardtop"><span class="cid">${esc(s.key||"(no key)")}</span>
       ${s.artifact?'<span class="chip agreed">✓ artifact on disk</span>':'<span class="chip open">no artifact</span>'}
@@ -842,9 +852,12 @@ function checks(){
   const unpinned=leaves.filter(r=>r.depth>=1&&!r.n.source);
   out.push({ok:leaves.length>0&&!unpinned.length,t:"Every leaf pins a source",
     d:unpinned.length?`${unpinned.length} unpinned. A leaf with no source is a claim written anyway.`:"Nothing is asserted without a source behind it."});
+  const openReq=all.filter(r=>r.n.needs&&!r.n.source);
+  out.push({ok:!openReq.length,t:"No open source requests",
+    d:openReq.length?`${openReq.length} node${openReq.length===1?"":"s"} marked needs-sources and still unpinned: ${openReq.map(r=>r.full+" "+(r.n.text||"(untitled)")).join("; ")}. The session fetches them per node.`:"No node is waiting on the librarian."});
   const ghost=S.sources.filter(s=>s.key&&!s.artifact);
   out.push({ok:S.sources.length>0&&!ghost.length,t:"Every source has an artifact",
-    d:ghost.length?`No file yet: ${ghost.map(s=>s.key).join(", ")}. Recall is not a source.`:"Each key resolves to a file on disk."});
+    d:!S.sources.length?"No sources yet — they arrive per outline node once the outline settles.":ghost.length?`No file yet: ${ghost.map(s=>s.key).join(", ")}. Recall is not a source.`:"Each key resolves to a file on disk."});
   out.push({ok:ne(S.srcmeta.bibliography),t:"Bibliography path set",d:"The file every CITE check resolves keys against."});
   out.push({ok:objs.length>0,t:"The document meets an objection",
     d:objs.length?`${objs.length} marked, each already in the outline where it gets answered.`:"Nothing marked as an objection — the COUNTER check will find nothing."});
@@ -881,13 +894,16 @@ function planContext(){
     "OUTLINE:",outlineMd()||"  (empty)","",
     "CLAIMS MARKED IN THE OUTLINE:",...marked("claim").map(r=>`  ${r.n.cid} @ ${r.full}: ${r.n.text}`),
     "","OBJECTIONS MARKED IN THE OUTLINE:",...marked("counter").map(r=>`  - @ ${r.full}: ${r.n.text}`),
-    "","SOURCES AVAILABLE:",...S.sources.map(s=>`  ${s.key}: ${s.cite}${s.artifact?"":"  (NO ARTIFACT ON DISK)"}`),
+    "","OPEN SOURCE REQUESTS (nodes marked needs-sources, unpinned; the Claude Code session fetches these via the librarian):",
+    ...allFlat().filter(r=>r.n.needs&&!r.n.source).map(r=>`  @ ${r.full}: ${r.n.text}`),
+    "","SOURCES AVAILABLE:",...(S.sources.length?S.sources.map(s=>`  ${s.key}: ${s.cite}${s.artifact?"":"  (NO ARTIFACT ON DISK)"}`):["  (none yet — sources are gathered per outline node after the outline is set)"]),
   ].join("\n");
 }
 const HOUSE=`You are the co-author at a shared writing bench. The human is a law-and-finance academic.
 Be concrete and brief; never flatter; never restate their point back to them; disagree when you have
-grounds and say why. Never invent a citation — reference only the sources listed. If something has no
-source behind it, say so rather than writing around it. No bold-lead sentences, no em-dash tricolons,
+grounds and say why. Never invent a citation or a source key — reference only the sources listed. The
+bench opens with no sources; when none are on hand, propose outline text with source null rather than
+refusing, and say what each node would need. Sources are fetched per node after the outline is set. No bold-lead sentences, no em-dash tricolons,
 no "it's not just X, it's Y". Plain declarative prose.`;
 /* Proposals are declarative so co-authors see the same cards. */
 function applyOp(op){
@@ -915,6 +931,16 @@ function applyOp(op){
     const n=newNode(op.text,"claude"); n.kind=op.kind||"";
     if(n.kind==="claim") n.cid=nextClaimId();
     orphans().children.push(n);
+  }
+  else if(op.type==="pinSource"){
+    const src=op.source||{}, key=String(src.key||"").trim();
+    if(key){
+      let e=S.sources.find(x=>x.key===key);
+      if(!e){ e={id:uid(),key,cite:src.cite||"",artifact:src.artifact||""}; S.sources.push(e); }
+      else{ if(!e.cite&&src.cite) e.cite=src.cite; if(!e.artifact&&src.artifact) e.artifact=src.artifact; }
+      const t=locate(op.nodeId);
+      if(t){ t.n.source=key; t.n.needs=false; }
+    }
   }
   else if(op.type==="setText"){
     const t=locate(op.nodeId); if(!t) return;
@@ -983,7 +1009,7 @@ async function proposeChildren(L){
 ${kids.length?`It already has: ${kids.join("; ")}. Propose only what is MISSING, and say if one of the existing ones should be cut.`:""}
 ${L.depth===0?"These are the sections of a Part: each says what that section does."
              :"These are the moves the prose makes, in order."}
-Pin each to a source key from the list above, or null when nothing on hand supports it — never invent a key.
+Pin each to a source key from the list above, or null when nothing on hand supports it (always null when no sources are listed; do not refuse) — never invent a key.
 Reply as JSON: {"children":[{"text":"...","source":"key-or-null"}]}`,true);
   if(!r||!r.children)return; S.msgs.pop();
   const keys=new Set(S.sources.map(x=>x.key));

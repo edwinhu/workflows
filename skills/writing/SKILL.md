@@ -40,14 +40,23 @@ attach it to.
 `work`'s Phase 1, on these axes.
 
 <EXTREMELY-IMPORTANT>
-**ASK BEFORE YOU DRAFT, AND GATHER SOURCES BEFORE YOU CLAIM. This is not negotiable.**
+**ASK BEFORE YOU DRAFT. NO CLAIM WITHOUT A FETCHED SOURCE — AND SOURCES ARE GATHERED PER OUTLINE
+NODE, AFTER THE OUTLINE, NEVER BEFORE IT. This is not negotiable.**
 
 Prose written before the thesis is settled anchors the argument to whatever sentence came out first,
-and every later correction has to fight it. **Training-data recall is not a source.** A citation you
-remember is a claim about a document nobody opened; source gathering goes through the
-`librarian` agent and must materialise real artifacts under the writing project's
-`references/`, with a bibliography file the gate can resolve keys against.
+and every later correction has to fight it. Sources gathered before the outline do the same: you do
+not know what the argument needs until it exists, so a pre-outline pile anchors the outline to
+whatever was fetched and spends fetches on material the argument never uses. **Training-data recall
+is not a source.** A citation you remember is a claim about a document nobody opened; source
+gathering goes through the `librarian` agent and must materialise real artifacts under the writing
+project's `references/`, with a bibliography file the gate can resolve keys against.
 </EXTREMELY-IMPORTANT>
+
+- In the controller-information rebuttal expert report every source run that got used
+  was driven by a settled outline node — "II.C needs controlled-mindset articles and DE opinions"
+  produced 43 Delaware opinions; "principle 3: bad-actor disqualifications" produced Rule 506(d) and
+  its release; the opposing expert's scholarship came once the critique section existed. The one
+  pre-outline librarian run fetched a broad pile, much of it never read or used.
 
 | Axis | Establish with the user |
 |---|---|
@@ -57,7 +66,7 @@ remember is a claim about a document nobody opened; source gathering goes throug
 | Scope | Length, venue, format, deadline, and what the document covers |
 | Exclusions | What is deliberately out of the argument, and must not creep in |
 | Domain | `legal` \| `econ` \| `general` — selects the style guide each drafting task loads and the prose gate's `--style` |
-| Sources | What must be cited, what already exists, and what the librarian must go find |
+| Inputs | The one or two documents the argument responds to (e.g. the opposing expert report) — inputs, not sources; they go to `references/` now. Everything else is fetched per node in Phase 2 |
 | Deliverables | The outline files, the draft files, and the assembled document |
 | Evidence | What makes each section credible: a pinned source, a quoted authority, or user judgment |
 | Review surfaces | What the user will actually read at Phase 5 |
@@ -76,10 +85,9 @@ the venue decides the length, and the length decides the section count.
 — whose command strings become `mechanicalChecks` verbatim; `work` axis 6 (which provider runs the
 review lens) is answered **routed**, so no `lensProvider` key is passed.
 
-Then gather sources — **through the librarian, never from recall**. Dispatch the
-`librarian` agent for each source area the plan will rely on, and have it leave real files
-under the writing project's `references/` plus the bibliography entries the Source Plan will name. A
-source area the librarian could not fill is a planned evidence task, not a claim you write anyway.
+CLARIFY gathers no sources. It dispatches the `librarian` only for the inputs, and only if they are
+not already under `references/`. A node the per-node source round could not fill is a planned
+evidence task, not a claim you write anyway.
 
 ## Phase 2 — PLAN
 
@@ -164,22 +172,35 @@ Main chat, in order:
    `capabilities: {"db": {}, "sample": {}}`. Persona agents hold no `Artifact` tool, so this is
    main-chat work by construction, not a delegation you forgot to make.
 2. **Seed it** — `write_db` to collection `plan`, doc `bench`: the CLARIFY answers as `intent`
-   (`thesis`, `audience`, `purpose`, `hook`, `scope`, `domain`, `genre`), the librarian's returned
-   sources as `sources` `[{id, key, cite, artifact}]`, and `srcmeta.bibliography`. **The user never
-   retypes the interview into the bench.**
+   (`thesis`, `audience`, `purpose`, `hook`, `scope`, `domain`, `genre`), `srcmeta.bibliography`,
+   and the inputs as `sources` `[{id, key, cite, artifact}]` if there are any. No other sources.
+   **The user never retypes the interview into the bench.**
 3. **Hand over the URL and STOP.** The user outlines level 1, then level 2; Claude proposes in-page;
    the user accepts. This is a real wait for a human — not a poll, not a loop, not a timeout.
-4. **On the user's go-ahead**, `read_db` the doc to a file and compile:
+4. **Source round, per node.** `read_db` the bench to a file, then
+   `uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_bench_compile.py --bench <file> --source-requests`
+   prints the open requests `[{id, position, text, path, needs}]` (needs-flagged nodes with no
+   source, unpinned non-level-1 leaves) and writes nothing. Dispatch one `librarian` Agent task per
+   request, in parallel, briefed with the node `text` plus its ancestor `path`: artifacts under
+   `<proj>/references/`, BibTeX **appended** to the one `srcmeta.bibliography` — never a new `.bib`.
+   Then `read_db` doc `plan/chat`, append to `props` one `{id, author:"session", title, text,
+   op:{type:"pinSource", nodeId, source:{key, cite, artifact}}}` per result, and `write_db` it back,
+   never overwriting `props` or `msgs`. The user accepts in the rail. STOP and wait; repeat when the
+   user marks more nodes "needs sources". The compile refuses any open request, so the gate holds.
+5. **On the user's go-ahead**, `read_db` the doc to a file and compile:
 
    ```bash
    uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_bench_compile.py \
      --bench <file> --project <proj> --slug <slug>
    ```
 
-   A non-zero exit is **not a failure to work around**. It names the unaccepted nodes, unpinned
-   sources or missing artifacts by outline position; the answer is to tell the user what to fix in
-   the bench and wait again.
-5. **Verify and approve** — `writing_section_index.py` exits 0 for the project, then ExitPlanMode on
+   A non-zero exit is **not a failure to work around**. By outline position it names unaccepted
+   nodes, an open source request, a missing artifact, a key not in `srcmeta.bibliography` (naming
+   any other `references/**/*.bib` holding it), or a name over NAME_MAX — set a short title in the
+   bench (a level-1 `short` is the section name; the full text becomes the gloss). Tell the user and
+   wait. In genres `amicus`/`expert`/`comment` a level-1 claim maps to its own section. `--force`
+   removes outline files the previous plan named and the new one does not.
+6. **Verify and approve** — `writing_section_index.py` exits 0 for the project, then ExitPlanMode on
    the **compiled** plan.
 
 The bench URL is recorded as a `Bench URL:` line in the body of
@@ -214,11 +235,13 @@ project root.
 | `<proj>/outlines/…`, `<proj>/drafts/…` | the `Outline` and `Draft` paths `## Section Outputs` names **verbatim** |
 | `<proj>/<bib>.bib` | the Source Plan `Bibliography:` path |
 
-The receipt shim, run once after ExitPlanMode and before the work dispatch:
+The receipt shim, run once after ExitPlanMode and before the work dispatch. Every `--plan-hash` in
+this skill is the writing plan hash — SHA-256 of the plan minus its `<!-- work:dispatch ... -->`
+block, printed by `uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/lib/plan_hash.py <plan>`:
 
 ```bash
 uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_receipt.py \
-  --project <proj> --plan <planPath> --plan-hash <work plan hash> \
+  --project <proj> --plan <planPath> --plan-hash <writing plan hash> \
   --approved-session <the ExitPlanMode approval's session id> \
   --reviewer-session <the work run id that authorizes implementation> --domain <legal|econ|general>
 ```
@@ -234,7 +257,7 @@ uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_section_inde
 defect, not a content failure** — the check did not run, and an unrun check is never a pass.
 
 ```
-uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_gate_probe.py "<proj>/drafts/<Section>.md" --bib "<proj>/<bib>.bib" --plan "<proj>/.planning/<slug>.md" --plan-hash <work plan hash>
+uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_gate_probe.py "<proj>/drafts/<Section>.md" --bib "<proj>/<bib>.bib" --plan "<proj>/.planning/<slug>.md" --plan-hash <writing plan hash>
 ```
 `0` = pass; `1` = fail, with the offending keys and line numbers under `evidence`. One invocation per
 section; the draft argument is the `Draft` cell of that section's `## Section Outputs` row, verbatim.
@@ -274,9 +297,11 @@ result handling and the return shape too, and `work-result.sh` reads the verdict
 `--run-dir` override applies. There is no built-in `Workflow` call — the guard at
 `~/.claude/hooks/main-thread-guard.sh` denies that tool outright.
 
-**Pass `$PLAN` explicitly.** Bare, `work-dispatch.sh` resolves the armed plan through
-`work-pending.sh`, which now reads `plansDirectory` — so a writing project's `./.planning` plan is
-found. Naming the path still beats relying on that resolution when you already know it.
+**The arming block goes into the compiled plan at `<proj>/.planning/<slug>.md`, and you pass that
+path explicitly.** The writing plan hash (`plan_hash.py`, above) excises the
+`<!-- work:dispatch ... -->` block, so arming does not stale the outlines' `plan_hash`. The explicit
+path works even when the repo-root `plansDirectory` is not the writing project's `.planning` (e.g.
+`paper/.planning`) — never write a wrapper plan at the repo root.
 
 ```bash
 PLAN=<proj>/.planning/<slug>.md
@@ -293,7 +318,7 @@ Omitting it silently runs the user's codex request on claude.
 const proj = /* the manuscript project directory */
 const bib = /* the bibliography path, relative to proj */
 const planPath = /* the armed plan's path, .planning/<slug>.md under proj */
-const planHash = /* the work plan hash */
+const planHash = /* the writing plan hash (scripts/lib/plan_hash.py) */
 const domain = /* the plan's Domain: "general", "legal" or "econ" — it is also the --style */
 const goal = /* one sentence */
 const args = {
@@ -319,7 +344,7 @@ const args = {
   tasks: [
     { id: "T1",
       name: "Section: <Section>",
-      work: "Write <proj>/outlines/<Section>.md against the plan's Document Structure entry, pinning a Source Plan source to every beat, then expand it into <proj>/drafts/<Section>.md carrying the claims the Claim → Section Map assigns this section and citing only bibliography keys its outline pinned. DRAFT FRONTMATTER CONTRACT — the draft OPENS with YAML frontmatter carrying `implements: [CLAIM-NN, ...]`, exactly the claim set this section's Claim → Section Map row assigns it, and `plan_hash: <the work skill's current plan hash>`. writing_gate_probe.py enforces both (implementsMismatch / claimIdsMissing) and fails the section otherwise.",
+      work: "Write <proj>/outlines/<Section>.md against the plan's Document Structure entry, pinning a Source Plan source to every beat, then expand it into <proj>/drafts/<Section>.md carrying the claims the Claim → Section Map assigns this section and citing only bibliography keys its outline pinned. DRAFT FRONTMATTER CONTRACT — the draft OPENS with YAML frontmatter carrying `implements: [CLAIM-NN, ...]`, exactly the claim set this section's Claim → Section Map row assigns it, and `plan_hash: <the writing plan hash (scripts/lib/plan_hash.py)>`. writing_gate_probe.py enforces both (implementsMismatch / claimIdsMissing) and fails the section otherwise.",
       writablePaths: ["<proj>/outlines/<Section>.md", "<proj>/drafts/<Section>.md"],
       acceptance: "writing_section_index.py exits 0 for the project, writing_gate_probe.py exits 0 for this section's draft, and writing_prose_gate.py exits 0 for the project.",
       refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md",
@@ -373,12 +398,12 @@ const args = {
 
   authorityExtra: [
     "THE WRITING CONSTRAINT CORPUS IS NOT IN YOUR REFS. Its rules are `${CLAUDE_PLUGIN_ROOT}/checks/writing/constraints/` and, for a register, `checks/writing/legal/constraints/` or `checks/writing/econ/constraints/` — read the ones governing what you are about to write. Their executable twins run in the gate whether or not you read them, so the gate is the verdict and this is how you avoid earning one.",
-    "IRON LAW OF WRITING PLANNING — ask before you draft, and gather sources before you claim. Training-data recall is NOT a source: every citation resolves to a real artifact under the project's references/ and to a key in the Source Plan Bibliography.",
+    "IRON LAW OF WRITING PLANNING — ask before you draft; no claim without a fetched source, and sources are gathered per outline node, after the outline, never before it. Training-data recall is NOT a source: every citation resolves to a real artifact under the project's references/ and to a key in the Source Plan Bibliography.",
     "IRON LAW OF WRITING VERIFICATION — no check result without the runner's own output. A mechanical check reported from reading the plan or the draft is the model certifying its own work. Every COMPUTED result is an exit code observed on this run.",
     "Never report GRAMMAR, CITE, CLAIM or PROSE-HARD from reading the code, and never report COVER, FIDELITY, TRANSITION or COUNTER as PASS — those four are MODEL-EVALUATED judgements and are reported as such, with the evidence read.",
     "The approved plan at .planning/<slug>.md is the authority and work hashes it in place. It is never copied, never renamed to PLAN.md, and never edited mid-run — the runners re-verify its hash and stop on mismatch.",
     "The generated .planning/.state/review.json receipt is derived from `work`'s own two approvals. It is an artifact of work's authority, never a competing one; do not treat it as a second gate and do not hand-edit it.",
-    "DRAFT FRONTMATTER CONTRACT — every draft OPENS with YAML frontmatter carrying `implements: [CLAIM-NN, ...]`, exactly matching the claim set the plan's Claim → Section Map assigns that section, and `plan_hash: <the work skill's current plan hash>`. writing_gate_probe.py enforces both and fails the section otherwise; a draft with prose above its frontmatter has no frontmatter at all.",
+    "DRAFT FRONTMATTER CONTRACT — every draft OPENS with YAML frontmatter carrying `implements: [CLAIM-NN, ...]`, exactly matching the claim set the plan's Claim → Section Map assigns that section, and `plan_hash: <the writing plan hash (scripts/lib/plan_hash.py)>`. writing_gate_probe.py enforces both and fails the section otherwise; a draft with prose above its frontmatter has no frontmatter at all.",
     "Every command naming a draft QUOTES that path. Section names carry spaces and parentheses, and an unquoted path dies in bash before python runs — and a probe's cmd is run verbatim, with no corrected re-run.",
     "A section absent from the plan's ## Section Outputs is one nothing will check and cannot be claimed as drafted.",
     "The document is written by dispatched agents. Main chat writes nothing under the project's drafts/, outlines/ or references/, by any tool including Bash heredocs — the sole exception being writing_bench_compile.py, a compiler emitting the user's own accepted outline.",
@@ -437,7 +462,9 @@ comes through, marked resolved; replies ride on their thread; a resolve row is n
 
 | Situation | Wrong move | Right move |
 |---|---|---|
-| Getting CLARIFY answers and sources into the bench | ask the user to retype the interview | `write_db` them as `intent`, `sources` and `srcmeta.bibliography` — the user never re-enters what they already told you |
+| Getting CLARIFY answers into the bench | ask the user to retype the interview, or seed an up-front source pile | `write_db` them as `intent` and `srcmeta.bibliography` (plus the inputs, if any) — the user never re-enters what they already told you |
+| Outline not yet at level 2 | dispatch the librarian for "background" | sources follow the argument: fetch per node once it exists |
+| A librarian run | writes its own new `.bib` | append to the one `srcmeta.bibliography`; the compile resolves keys against that file alone |
 | `writing_bench_compile.py` exits 1 | hand-edit the bench JSON to flip nodes to accepted | that forges the user's acceptance — report the named nodes and wait for them to accept in the bench |
 | A drafter needing a beat the outline lacks | add it to `outlines/<Section>.md` | the outline is the user's work — stop and raise it; a drafting row's `writablePaths` is `drafts/` only in bench mode |
 | Returning to the bench later in the run | publish a second bench artifact | republish the URL recorded in `.planning/ACTIVE_WORKFLOW.md` — a second artifact is a second, divergent outline |

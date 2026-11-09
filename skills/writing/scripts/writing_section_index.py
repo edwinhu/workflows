@@ -34,6 +34,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 
 # The TOCTOU discipline is shared with every other domain authenticator rather than
 # copied per workflow: a weakened copy in one is a hole in all of them.
+from plan_hash import plan_hash as _plan_hash
 from artifact_snapshot import (
     ArtifactAuthError,
     snapshot_artifact,
@@ -363,7 +364,7 @@ def _select_plan(
     except (OSError, UnicodeDecodeError):
         result.violations.append(f"Cannot read authenticated generated plan `{plan_file}` as a regular UTF-8 file.")
         return None, b""
-    actual = hashlib.sha256(plan_bytes).hexdigest()
+    actual = _plan_hash(plan_bytes)
     if actual != receipt["plan_hash"]:
         result.violations.append(
             f"Generated plan `{plan_file}` hash does not match `.planning/.state/review.json`."
@@ -449,10 +450,25 @@ def _safe_relative(path_text: str) -> bool:
     return bool(path_text) and not path.is_absolute() and ".." not in path.parts and "\\" not in path_text
 
 
-def _split_dependencies(value: str) -> list[str]:
+def _split_dependencies(value: str, known: list[str] | None = None) -> list[str]:
+    """Split a Depends On cell; section names that themselves contain commas survive intact."""
     if not value or value.strip().lower() in {"-", "none", "n/a"}:
         return []
-    return [piece.strip() for piece in re.split(r"\s*(?:,|;)\s*", value) if piece.strip()]
+    known_set = set(known or [])
+    if value.strip() in known_set:
+        return [value.strip()]
+    spans = [m.span() for m in re.finditer(r"[^,;]+", value) if m.group().strip()]
+    pieces: list[str] = []
+    i = 0
+    while i < len(spans):
+        take = 1
+        for j in range(len(spans), i, -1):
+            if j - i > 1 and value[spans[i][0] : spans[j - 1][1]].strip() in known_set:
+                take = j - i
+                break
+        pieces.append(value[spans[i][0] : spans[i + take - 1][1]].strip())
+        i += take
+    return pieces
 
 
 def _frontmatter(text: str) -> tuple[list[str], str, list[str]]:
@@ -631,7 +647,7 @@ def build_index(project_or_planning: Path) -> IndexResult:
             result.violations.append(f"Section `{name}` has invalid outline output `{outline_rel}`.")
         if not _safe_relative(draft_rel) or not draft_rel.startswith("drafts/"):
             result.violations.append(f"Section `{name}` has invalid draft output `{draft_rel}`.")
-        dependencies = _split_dependencies(row["depends on"])
+        dependencies = _split_dependencies(row["depends on"], order)
         for dependency in dependencies:
             if dependency not in order_index:
                 result.violations.append(f"Section `{name}` depends on unknown section `{dependency}`.")

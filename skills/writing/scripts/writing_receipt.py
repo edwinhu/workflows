@@ -38,12 +38,14 @@ emit a receipt the parser would reject.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path, PurePosixPath
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from plan_hash import plan_hash as _plan_hash  # noqa: E402
 
 DOMAINS = ("legal", "econ", "general")
 
@@ -153,7 +155,7 @@ def build_receipt(
 
     if not isinstance(plan_hash, str) or not _HASH_RE.fullmatch(plan_hash):
         raise ReceiptRefusal(f"--plan-hash must be a lowercase 64-hex SHA-256; got {plan_hash!r}.")
-    actual = hashlib.sha256(plan.resolve().read_bytes()).hexdigest()
+    actual = _plan_hash(plan.resolve().read_bytes())
     if actual != plan_hash:
         raise ReceiptRefusal(
             f"--plan-hash does not match the bytes of {plan_file}: expected {actual}, got {plan_hash}."
