@@ -331,3 +331,35 @@ def test_receipt_and_plan_symlinks_are_rejected(tmp_path: Path) -> None:
     plan.unlink()
     plan.symlink_to(plan_target)
     assert not wsi.build_index(tmp_path).ok
+
+
+def test_dependency_named_with_commas_is_one_section(tmp_path: Path) -> None:
+    comma = "Part I. Background, Introduction, and Summary"
+    plan = PLAN.replace("Part I. The Gap", comma)
+    root = write_project(tmp_path, plan)
+    for folder, suffix in (("outlines", ""), ("drafts", " (Draft)")):
+        (root / folder / f"Part I. The Gap{suffix}.md").rename(root / folder / f"{comma}{suffix}.md")
+    result = wsi.build_index(root)
+    assert result.ok, result.violations
+    by_name = {section.name: section for section in result.sections}
+    assert by_name["Part II. The Repair"].dependencies == [comma]
+
+
+def test_unknown_dependency_next_to_a_comma_name_still_fires(tmp_path: Path) -> None:
+    comma = "Part I. Background, Introduction, and Summary"
+    plan = PLAN.replace("Part I. The Gap", comma).replace(
+        f"| {comma} |\n| Conclusion", f"| {comma}, Phantom |\n| Conclusion"
+    )
+    plan = plan.replace(f"drafts/Part II. The Repair (Draft).md | {comma} |", f"drafts/Part II. The Repair (Draft).md | {comma}, Phantom |")
+    root = write_project(tmp_path, plan)
+    result = wsi.build_index(root)
+    assert any("depends on unknown section `Phantom`" in v for v in result.violations), result.violations
+    assert not any(comma in v and "unknown section" in v for v in result.violations)
+
+
+def test_split_dependencies_unit() -> None:
+    known = ["A, B", "C"]
+    assert wsi._split_dependencies("A, B", known) == ["A, B"]
+    assert wsi._split_dependencies("A, B; C", known) == ["A, B", "C"]
+    assert wsi._split_dependencies("A, X", known) == ["A", "X"]
+    assert wsi._split_dependencies("-", known) == []

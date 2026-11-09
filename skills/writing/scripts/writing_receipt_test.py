@@ -361,5 +361,19 @@ ok("fixtures/clean: parser reports no review.json violation",
 ok("fixtures/clean: parser authenticates the plan against the receipt",
    index.plan_hash == plan_hash, f"{index.plan_hash!r} != {plan_hash!r}: {index.violations}")
 
+# An armed plan (work:dispatch appended) still binds to the hash of the unarmed plan.
+_ARMED = pathlib.Path(tempfile.mkdtemp(prefix="wr-armed-")) / "clean"
+atexit.register(shutil.rmtree, _ARMED.parent, True)
+shutil.copytree(FIXTURE, _ARMED)
+_armed_plan = fixture_plan(_ARMED)
+_unarmed_hash = hashlib.sha256(_armed_plan.read_bytes()).hexdigest()
+_armed_plan.write_bytes(_armed_plan.read_bytes() + b'\n<!-- work:dispatch\n{"runId":"x"}\n-->\n')
+code = wr.main([
+    "--project", str(_ARMED), "--plan", str(_armed_plan), "--plan-hash", _unarmed_hash,
+    "--approved-session", APPROVED_SESSION, "--reviewer-session", REVIEWER_SESSION,
+    "--domain", style, "--approved-at", APPROVED_AT, "--reviewed-at", REVIEWED_AT,
+])
+ok("armed plan: receipt binds the hash that excludes the work:dispatch block", code == 0, f"exit {code}")
+
 print(f"\n{_p} passed, {_f} failed")
 sys.exit(1 if _f else 0)
