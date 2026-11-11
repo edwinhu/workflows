@@ -54,6 +54,35 @@ for (const [rel, file, bad, why] of TABLES) {
   })
 }
 
+// Quoted text is someone else's prose: a report that must quote an opposing expert verbatim can never fix a tic inside
+// the quotation. A `>` block quote (and its lazy continuation line) and an inline "…" span of three or more words are
+// skipped by prose_extract; a one- or two-word scare quote or defined term is the author's own diction and stays graded.
+const QUOTED_ONLY = '# Part II\n\nThe report opines:\n\n> I do not find the fact that the directors had ties surprising.\ncontinuing the quotation, the fact that they met is ordinary.\n\nThe expert also wrote that "the fact that they met proves nothing," which we dispute.\nThe expert also wrote that “the fact that they met proves nothing,” which we dispute.\n'
+test('strunk-elements-of-style: a phrase inside a > block quote or a 3+-word quotation passes; the same phrase in the author\'s prose fails at its line', () => {
+  const p = project({ 'drafts/q.md': QUOTED_ONLY, 'drafts/own.md': QUOTED_ONLY + '\nWe do not dispute the fact that they met.\n' })
+  const q = constraint('constraints/strunk-elements-of-style.py', p, 'drafts/q.md')
+  expect(q.status, q.stdout + q.stderr).toBe(0)
+  expect(q.stdout).not.toMatch(/the fact that/)
+  const own = constraint('constraints/strunk-elements-of-style.py', p, 'drafts/own.md')
+  expect(own.status, own.stdout + own.stderr).toBe(1)
+  expect(own.stdout).toMatch(/^drafts\/own\.md:11: \S+ S&W Rule 13: 'the fact that'/m)
+  expect(own.stdout.match(/the fact that/g)?.length, own.stdout).toBe(1)
+})
+
+test('writing-style and register-crossing skip a > block quote and a 3+-word quotation, but grade a short scare quote', () => {
+  const p = project({
+    'drafts/q.md': '> Due to the fact that the board met, see supra note 4.\n\nThe filing said "due to the fact that the board met," as quoted.\n',
+    'drafts/scare.md': 'The so-called "utilize" rule is the author\'s own diction.\n',
+  })
+  for (const rel of ['constraints/writing-style.py', 'general/constraints/register-crossing.py']) {
+    const q = constraint(rel, p, 'drafts/q.md')
+    expect(q.status, `${rel}\n${q.stdout}${q.stderr}`).toBe(0)
+  }
+  const scare = constraint('constraints/writing-style.py', p, 'drafts/scare.md')
+  expect(scare.status, scare.stdout + scare.stderr).toBe(1)
+  expect(scare.stdout).toMatch(/^drafts\/scare\.md:1: writing-style SHIP-DICTION: `utilize`/m)
+})
+
 test('writing-anchored-numbers: the same number with a Table reference in its subsection passes', () => {
   const p = project({ 'drafts/a.md': '# Part I\n\n## A. Setup\n\nThe rate rose 45.3% over the period (Table 1).\n' })
   const r = constraint('constraints/writing-anchored-numbers.py', p, 'drafts/a.md')

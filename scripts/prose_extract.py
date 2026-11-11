@@ -1,10 +1,12 @@
 """Prose extraction for writing-skill constraint checks.
 
-Two responsibilities:
+Three responsibilities:
   1. Find draft files in a project (`drafts/`, `outlines/`) — both .md and
      .docx, since later-stage drafts are often .docx (Word, Google Docs export).
   2. Yield (lineno, text) tuples for either format. For .docx the "lineno" is
      a 1-based paragraph index across document.xml and footnotes.xml.
+  3. Blank quotations (`mask_quotations`) in every line it yields: quoted text is
+     someone else's prose, and no grader may score it as the author's.
 
 `is_docx` sniffs the ZIP magic + `word/document.xml` entry rather than the
 file suffix, so `.docx.bak` / `.docx.bak3` / numbered backups still detect
@@ -13,6 +15,7 @@ correctly.
 
 from __future__ import annotations
 
+import re
 import zipfile
 from pathlib import Path
 from typing import Iterator
@@ -21,6 +24,54 @@ W_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 
 DRAFT_GLOBS = ("*.md", "*.markdown", "*.docx", "*.txt", "*.typ")
 DRAFT_SUBDIRS = ("drafts", "outlines")
+
+# QUOTED TEXT IS NOT THE AUTHOR'S PROSE. A report that must quote an opposing expert verbatim can never
+# fix a tic inside the quotation, so every grader reading through this module sees it blanked:
+#   * a Markdown block quote: a line opening with `>` (any indentation), plus its lazy continuation
+#     lines up to the next blank line, heading or fence (.md, .markdown, .txt);
+#   * an inline span in double quotes, curly or straight, of QUOTE_MIN_WORDS or more words (every
+#     format). Curly pairs may wrap within a paragraph; straight pairs stay on one line, since an
+#     unpaired inch mark must not swallow a paragraph.
+# A one- or two-word span ("NYSE bar", a scare quote, a word under discussion) is the author's own
+# diction and stays graded; otherwise wrapping a tic in quotes would hide it. Single quotes are left
+# alone: they cannot be told from apostrophes. Blanking turns characters to spaces, so line numbers
+# and columns stay exact.
+QUOTE_MIN_WORDS = 3
+_BLOCKQUOTE = re.compile(r"^\s*>")
+_CURLY_QUOTE = re.compile(r"“[^“”]*”")
+_STRAIGHT_QUOTE = re.compile(r'"[^"\n]*"')
+_PARA_BREAK = re.compile(r"\n[ \t]*\n")
+_QUOTE_WORD = re.compile(r"[^\W_][\w'’-]*")
+_BLOCKQUOTE_SUFFIXES = (".md", ".markdown", ".txt")
+
+
+def _blank(s: str) -> str:
+    return re.sub(r"[^\n]", " ", s)
+
+
+def mask_quotations(text: str, suffix: str = ".md") -> str:
+    """`text` with its quotations blanked to spaces (see QUOTE_MIN_WORDS), same length and lines."""
+    if suffix.lower() in _BLOCKQUOTE_SUFFIXES:
+        out, in_quote, in_fence = [], False, False
+        for line in text.split("\n"):
+            st = line.strip()
+            if st.startswith(("```", "~~~")):
+                in_fence, in_quote = not in_fence, False
+            elif not in_fence:
+                if _BLOCKQUOTE.match(line):
+                    in_quote = True
+                elif not st or st.startswith("#"):
+                    in_quote = False
+            out.append(_blank(line) if in_quote and not in_fence else line)
+        text = "\n".join(out)
+
+    def blank_quotation(m: re.Match) -> str:
+        s = m.group(0)
+        if _PARA_BREAK.search(s) or len(_QUOTE_WORD.findall(s)) < QUOTE_MIN_WORDS:
+            return s
+        return _blank(s)
+
+    return _STRAIGHT_QUOTE.sub(blank_quotation, _CURLY_QUOTE.sub(blank_quotation, text))
 
 
 def find_draft_files(cwd: Path) -> list[Path]:
@@ -67,14 +118,14 @@ def _iter_docx_paragraphs(path: Path) -> Iterator[tuple[int, str]]:
                 text = "".join(t.text or "" for t in p.iter(W_NS + "t"))
                 if text.strip():
                     counter += 1
-                    yield counter, text
+                    yield counter, mask_quotations(text, ".docx")
 
 
 def _iter_text_lines(path: Path) -> Iterator[tuple[int, str]]:
-    """Yield (lineno, line) for a .md / .txt file. Skips fenced code blocks
+    """Yield (lineno, line) for a .md / .txt file, quotations blanked. Skips fenced code blocks
     (```...```) since constraint checks are about prose, not code samples."""
     try:
-        content = path.read_text(encoding="utf-8", errors="ignore")
+        content = mask_quotations(path.read_text(encoding="utf-8", errors="ignore"), path.suffix)
     except OSError:
         return
     in_fence = False
@@ -115,7 +166,7 @@ def _iter_typ_lines(path: Path) -> Iterator[tuple[int, str]]:
     remaining prose text. Everything else is yielded verbatim.
     """
     try:
-        content = path.read_text(encoding="utf-8", errors="ignore")
+        content = mask_quotations(path.read_text(encoding="utf-8", errors="ignore"), ".typ")
     except OSError:
         return
     in_block_comment = False

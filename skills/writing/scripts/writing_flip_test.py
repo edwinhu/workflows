@@ -181,5 +181,37 @@ for label, check, apply_break, marker in CASES:
        f"— exited {broken_rc} but never mentioned {marker!r}, so the flip is attributable to "
        f"something else. Output: {broken_out[:200]!r}")
 
+# SCOPE: check.sh's constraint leg grades the plan's drafts, not every file in the project. A research
+# note under references/ that no section owns must not fail the gate; the same hit in a draft must.
+CHECK_SH = HERE / "check.sh"
+HIT = "Certainly! Here is a summary of the opinion.\n\n**Holding.** The court held the rule applies.\n"
+
+
+def check_gate(proj: Path) -> tuple[int, str]:
+    proc = subprocess.run(
+        ["bash", str(CHECK_SH), "--project", str(proj), "--bib", str(proj / "references" / "sources.bib"),
+         "--plan", str(plan_of(proj)), "--plan-hash", plan_hash(proj), "--style", "legal"],
+        capture_output=True, text=True)
+    return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+
+
+scope_proj = fresh()
+(scope_proj / "references" / "notes.md").write_text("# Research notes\n\n" + HIT, encoding="utf-8")
+scope_rc, scope_out = check_gate(scope_proj)
+ok("SCOPE: a hard hit in an unplanned references/ file does not fail check.sh", scope_rc == 0,
+   f"exit {scope_rc}: " + "; ".join(ln for ln in scope_out.splitlines() if "references/notes.md" in ln)[:300])
+
+scope_proj = fresh()
+(scope_proj / "references" / "notes.md").write_text("# Research notes\n\n" + HIT, encoding="utf-8")
+d = scope_proj / "drafts" / "Introduction (Draft).md"
+d.write_text(d.read_text(encoding="utf-8").rstrip("\n") + "\n\n" + HIT, encoding="utf-8")
+scope_rc, scope_out = check_gate(scope_proj)
+ok("SCOPE: the same hit in a planned draft fails the constraint leg",
+   scope_rc != 0 and re.search(r"^leg writing-legal-gate exit=1$", scope_out, re.M) is not None,
+   f"exit {scope_rc}")
+ok("SCOPE: the draft's finding is reported and the reference file's is not",
+   "Introduction (Draft).md:" in scope_out and "writing-no-bold-lead" in scope_out
+   and "references/notes.md:" not in scope_out, scope_out[-300:])
+
 print(f"\n{_p} passed, {_f} failed")
 sys.exit(1 if _f else 0)

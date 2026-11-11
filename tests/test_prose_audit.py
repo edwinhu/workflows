@@ -986,3 +986,25 @@ def test_turn_to_starting_with_leaves_the_human_near_misses_alone(tmp_path, verd
     draft.write_text(sentence + "\n")
     labels = _labels(PA.audit_document(draft))
     assert ("turn-to-starting-with" in labels) == (verdict == "fire"), f"{sentence!r} -> {labels}"
+
+
+def test_quoted_text_is_not_the_authors_prose(tmp_path):
+    """A rebuttal must quote the opposing expert verbatim, so a tell inside a quotation can never be
+    fixed. A `>` block quote (lazy continuation included) and an inline “…” or "…" span of three or
+    more words are blanked before scoring; an em-dash outside the quotes is still the author's, and
+    line numbers stay exact because the quotation is blanked, not deleted."""
+    draft = tmp_path / "rebuttal.md"
+    draft.write_text(
+        "> Moreover, the board—not the holder—decides every question.\n"
+        "Accordingly, the holder—who owns half—does not control.\n"
+        "\n"
+        "The expert wrote “the board—not the holder—decides,” and we disagree.\n"
+        'The expert wrote "the board—not the holder—decides," and we disagree.\n'
+        "\n"
+        "Our view is plain—the holder decides.\n")
+    res = PA.audit_document(draft)
+    style = [s for s in res["spans"] if s["system"] == "style"]
+    dash = [s for s in style if any("em_dash" in label for label in s["labels"])]
+    assert [s["line"] for s in dash] == [7], res["spans"]
+    assert all(s["severity"] == "soft" for s in dash), dash
+    assert not [s for s in style if any("opener_transition" in label for label in s["labels"])], style

@@ -56,6 +56,7 @@ skills/westlaw/scripts/westlaw_docx_text_test.py
 skills/jupytext/scripts/scripts_test.py
 skills/law-econ-docx/scripts/build_le_docx_test.py
 skills/law-econ-docx/scripts/make_le_template_test.py
+skills/expert-report-docx/scripts/build_docx_test.py
 skills/research/scripts/research_test.py
 skills/tuicr/scripts/resolve_session_test.py
 skills/ui-json-capture/scripts/assemble_test.py

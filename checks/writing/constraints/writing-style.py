@@ -16,8 +16,10 @@ rules are Jev's, under checks/writing/rules, and the reviewer's):
   INLINE-CITE        (legal) a full citation — volume, reporter or journal, page — in the body
                      text of a law review draft. Footnotes carry the citations.
 
-Quoted text is skipped — a quotation reproduces someone else's diction. Frontmatter, code,
-tables and headings are not prose and are skipped too. Every .md, .typ and .tex file handed in is read.
+Quoted text is skipped — a quotation reproduces someone else's diction — by prose_extract.mask_quotations,
+the blanking every writing grader shares: a `>` block quote and a quoted span of three or more words; a one- or
+two-word scare quote is the author's and is graded. Frontmatter, code, tables and headings are not prose and are
+skipped too. Every .md, .typ and .tex file handed in is read.
 
 The general register (comment letters, memos, briefs) is its own level, checks/writing/general/: a check in
 checks/writing/constraints/ is inherited by every register, so it could not hold general's crossing rules.
@@ -89,14 +91,12 @@ def body_only(line: str) -> str:
         i = j
     return out + line[i:]
 
-QUOTED = re.compile(r"“[^”]*”|\"[^\"\n]*\"")
-
-
 def prose_lines(path: Path):
     """(line_no, text) for each prose line: no frontmatter, code, table, heading or comment."""
     ext = path.suffix.lower()
     fence = front = False
-    for i, raw in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines()):
+    text = _writing.prose_extract.mask_quotations(path.read_text(encoding="utf-8", errors="replace"), ext)
+    for i, raw in enumerate(text.splitlines()):
         st = raw.strip()
         if i == 0 and st == "---" and ext == ".md":
             front = True
@@ -113,8 +113,7 @@ def prose_lines(path: Path):
                 or (ext == ".typ" and st.startswith(("=", "#", "//", "<", "@"))) \
                 or (ext == ".tex" and st.startswith(("%", "\\section", "\\subsection", "\\label"))):
             continue
-        text = re.sub(r"`[^`]*`", " ", raw)
-        yield i + 1, QUOTED.sub(" ", text)
+        yield i + 1, re.sub(r"`[^`]*`", " ", raw)
 
 
 def _findings(path: Path, rules, inline_cite: bool):

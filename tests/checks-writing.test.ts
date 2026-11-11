@@ -136,10 +136,16 @@ test('writing check.sh runs workflow-check for the plan\'s register: --style leg
     'checks/writing/legal/constraints/zzl.py': FIRES('zzl'),
     'checks/writing/econ/constraints/zze.py': FIRES('zze'),
   })
+  // The constraint leg grades the plan's section drafts, so a stub `uv` names drafts/s.md as the one section and
+  // hands every other call to the real uv.
+  const realUv = sh('bash', ['-c', 'command -v uv']).stdout.trim()
   const check = (style: string) => {
-    const p = project({ 'notes/x.md': 'A plain note.\n', 'refs.bib': '', 'plan.md': '# Plan\n' })
+    const p = project({ 'drafts/s.md': 'A plain draft.\n', 'refs.bib': '', 'plan.md': '# Plan\n' })
+    const sections = JSON.stringify([{ name: 'S', draftFile: join(p, 'drafts', 's.md') }])
+    put(p, { 'bin/uv': `#!/usr/bin/env bash\ncase "$*" in\n  *writing_section_index.py*) echo '{"ok": true, "style": "${style}", "sections": ${sections}}'; exit 0 ;;\n  *) exec '${realUv}' "$@" ;;\nesac\n` })
+    chmodSync(join(p, 'bin', 'uv'), 0o755)
     return sh('bash', [join(ROOT, 'skills', 'writing', 'scripts', 'check.sh'), '--project', p, '--bib', join(p, 'refs.bib'), '--plan', join(p, 'plan.md'),
-      '--plan-hash', 'h', '--style', style], { WORKFLOW_CHECKS_PATH: `${ROOT}:${dropped}` })
+      '--plan-hash', 'h', '--style', style], { WORKFLOW_CHECKS_PATH: `${ROOT}:${dropped}`, PATH: `${join(p, 'bin')}:${process.env.PATH}` })
   }
   const legal = check('legal'); const out = legal.stdout + legal.stderr
   expect(legal.status, out).toBeGreaterThanOrEqual(1) // other legs of this thin fixture may exit 2; the marker's finding alone is exit 1

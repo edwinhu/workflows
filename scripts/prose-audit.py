@@ -729,6 +729,9 @@ def extract_lines(path: Path, mask: bool = True
         masked = mask_footnotes(masked)
         if suffix == ".typ":
             masked = mask_typst_footnotes(masked)
+    # Quotations are someone else's prose (prose_extract.mask_quotations). Blanked here, not only in
+    # iter_lines, because stylometrics, the em-dash budget and emphasis read `masked` directly.
+    masked = prose_extract.mask_quotations(masked, suffix)
     # HARVEST BEFORE NEUTRALISING. Neutralisation blanks the delimiters, so this is the last
     # moment at which emphasis exists in the text at all. Footnotes are already masked above.
     emphasis = collect_emphasis(masked, suffix)
