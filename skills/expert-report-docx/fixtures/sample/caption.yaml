@@ -1,0 +1,13 @@
+court: |
+  UNITED STATES DISTRICT COURT
+  DISTRICT OF DELAWARE
+plaintiffs:
+  - ACME WIDGET CO., ET AL.,
+defendants:
+  - GLOBEX INDUSTRIAL CORP., ET AL.,
+case_number: "CASE NO. 1:24-cv-00999-UNA"
+report_title: |
+  REBUTTAL REPORT OF
+  PROFESSOR JANE Q. PUBLIC
+expert: "Jane Q. Public"
+date: "November 10, 2026"

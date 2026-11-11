@@ -1,0 +1,301 @@
+% Synthetic fixture bib. Field conventions: ../../references/bib-conventions.md
+% Every `note` below is an internal remark that must NEVER print.
+
+@jurisdiction{smith1990,
+  title       = {Smith v. Jones},
+  shorttitle  = {Smith},
+  volume      = {900},
+  journaltitle = {F.2d},
+  pages       = {100},
+  institution = {2d Cir.},
+  date        = {1990-05-01},
+  note        = {Internal verification note that must never print in footnotes.}
+}
+
+@jurisdiction{acme2019wl,
+  title        = {In re Acme Widget Co. Stockholder Litigation},
+  shorttitle   = {Acme Widget},
+  number       = {No. 2019-0123-VCL},
+  volume       = {2019},
+  journaltitle = {WL},
+  pages        = {1234567},
+  institution  = {Del. Ch.},
+  date         = {2019-03-14},
+  note         = {slip-opinion pagination unused.}
+}
+
+@report{relresale1997,
+  title        = {Proposed Amendments to the Resale Safe Harbor},
+  shorttitle   = {Resale Release},
+  type         = {Securities Act Release},
+  number       = {33-7391},
+  volume       = {1997},
+  journaltitle = {WL},
+  pages        = {70601},
+  date         = {1997-02-20},
+  note         = {internal archive note.}
+}
+
+@legislation{stat15usc77o,
+  title = {15 U.S.C. {\S} 77o},
+  note  = {Retrieved from LII; internal note.}
+}
+
+@report{srep1933,
+  type   = {S. Rep.},
+  number = {73-47},
+  date   = {1933},
+  note   = {Dummy-director passages at 5--6.}
+}
+
+@report{memo2025,
+  author     = {{Smith \& Partners LLP}},
+  title      = {Resales Under the Safe Harbor: A Client Guide},
+  shorttitle = {Smith \& Partners Guide},
+  type       = {Client Memorandum},
+  date       = {2025-02},
+  note       = {Month from upload path; internal note.}
+}
+
+@article{doe2001shelf,
+  author       = {Doe, Alex},
+  title        = {Shelf Registration and Due Diligence},
+  journaltitle = {Virginia Law Review},
+  shortjournal = {Va. L. Rev.},
+  volume       = {87},
+  pages        = {1001--1050},
+  date         = {2001},
+  note         = {Verified on PDF p. 1.}
+}
+
+@report{roe2026report,
+  title      = {Expert Report of Professor Richard Roe},
+  shorttitle = {Roe Report},
+  eventtitle = {In re Acme Widget Co. Securities Litigation},
+  number     = {No. 1:24-cv-00999-UNA},
+  date       = {2026-10-15},
+  note       = {served on behalf of Defendants; internal.}
+}
+
+@report{roedep2026,
+  title      = {Deposition of Richard Roe},
+  shorttitle = {Roe Deposition},
+  eventtitle = {In re Acme Widget Co. Securities Litigation},
+  number     = {No. 1:24-cv-00999-UNA},
+  date       = {2026-11-01},
+  annote     = {Annotation that must never print.}
+}
+
+@legislation{deltit8s144,
+  title = {Del. Code Ann. tit. 8, \S~144},
+  note  = {Section already in the title; a pin repeats or replaces it.}
+}
+
+@report{roe2021example,
+  title       = {Expert Report of Professor Richard Roe},
+  shorttitle  = {Roe Example Report},
+  eventtitle  = {Doe v. Example Corp.},
+  number      = {C.A. No. 2019-0001-ABC},
+  institution = {Del. Ch.},
+  date        = {2021-11-02}
+}
+
+@report{example2022memo,
+  author = {{Example \& Partners LLP}},
+  title  = {Who Is a Controlling Person?},
+  type   = {Firm publication},
+  date   = {2022-05-17},
+  note   = {Generic genre label in type; must never print.}
+}
+
+@book{author2001book,
+  author  = {Author, A.},
+  title   = {Corporate Control},
+  edition = {2},
+  date    = {2001}
+}
+
+% ---- Legacy-shaped entries and their clean-shape twins (build_docx.py normalize_csl).
+% Each legacy entry keeps the fields an older builder read (@misc, reporter, author,
+% howpublished, organization, full titles with captions and version dates, note); its twin
+% is written per bib-conventions.md. The two must render identically.
+
+@jurisdiction{legacycase,
+  title       = {Brown v. Green},
+  shorttitle  = {Brown},
+  reporter    = {F.3d}, volume = {50}, pages = {200},
+  institution = {3d Cir.},
+  number      = {No. 94-5555},
+  date        = {1995-06-01},
+  note        = {Reporter cite checked; docket kept for an older builder.}
+}
+
+@jurisdiction{cleancase,
+  title        = {Brown v. Green},
+  shorttitle   = {Brown},
+  volume       = {50},
+  journaltitle = {F.3d},
+  pages        = {200},
+  institution  = {3d Cir.},
+  date         = {1995-06-01}
+}
+
+@misc{legacywl,
+  title        = {In re Delta Gadget Co. Litigation},
+  shorttitle   = {Delta Gadget},
+  institution  = {Del. Ch.},
+  number       = {C.A. No. 2020-0456-XYZ},
+  date         = {2020-12-29},
+  volume       = {2020},
+  journaltitle = {WL},
+  pages        = {7654321},
+  note         = {2020 WL 7654321, aff'd, 250 A.3d 100 (Del. 2021) (table). Must never print.}
+}
+
+@jurisdiction{cleanwl,
+  title        = {In re Delta Gadget Co. Litigation},
+  shorttitle   = {Delta Gadget},
+  number       = {C.A. No. 2020-0456-XYZ},
+  volume       = {2020},
+  journaltitle = {WL},
+  pages        = {7654321},
+  institution  = {Del. Ch.},
+  date         = {2020-12-29}
+}
+
+@misc{legacyhrep,
+  title  = {H.R. Rep. No. 73-85 (1933) (Federal Securities Act)},
+  author = {{U.S. House of Representatives, Committee on Interstate and Foreign Commerce}},
+  year   = {1933},
+  type   = {H.R. Rep.},
+  number = {73-85},
+  note   = {Control passage at 13--14.}
+}
+
+@report{cleanhrep,
+  type   = {H.R. Rep.},
+  number = {73-85},
+  date   = {1933}
+}
+
+@misc{legacyrelease,
+  title        = {Proposed Rule on Example Resales},
+  shorttitle   = {Example Release},
+  author       = {{U.S. Securities and Exchange Commission}},
+  note         = {Securities Act Release No. 33-9999 (Mar. 1, 2001); internal.},
+  year         = {2001},
+  type         = {Securities Act Release},
+  number       = {33-9999},
+  volume       = {2001},
+  journaltitle = {WL},
+  pages        = {111111},
+  date         = {2001-03-01}
+}
+
+@report{cleanrelease,
+  title        = {Proposed Rule on Example Resales},
+  shorttitle   = {Example Release},
+  type         = {Securities Act Release},
+  number       = {33-9999},
+  volume       = {2001},
+  journaltitle = {WL},
+  pages        = {111111},
+  date         = {2001-03-01}
+}
+
+@misc{legacycfr,
+  title  = {17 C.F.R. {\S} 230.144 (Persons deemed not to be engaged in a distribution), current through Nov. 5, 2026},
+  author = {{U.S. Securities and Exchange Commission}},
+  year   = {2026},
+  note   = {eCFR XML; internal.}
+}
+
+@legislation{cleancfr,
+  title = {17 C.F.R. {\S} 230.144},
+  date  = {2026}
+}
+
+@misc{legacyusc,
+  title  = {15 U.S.C. {\S} 78t (Securities Exchange Act of 1934 {\S} 20, Liability of controlling persons)},
+  author = {{Legal Information Institute}},
+  year   = {2026},
+  note   = {LII page; internal.}
+}
+
+@legislation{cleanusc,
+  title = {15 U.S.C. {\S} 78t},
+  date  = {2026}
+}
+
+@misc{legacyexpert,
+  author     = {Roe, Richard},
+  title      = {Expert Report of Professor Richard Roe},
+  note       = {Doe v. Sample Corp., No. 1:25-cv-00123-ABC (D. Del.), Sept. 1, 2025, served on behalf of Defendants},
+  year       = {2025},
+  shorttitle = {Roe Sample Report},
+  eventtitle = {Doe v. Sample Corp.},
+  number     = {1:25-cv-00123-ABC},
+  institution = {D. Del.},
+  date       = {2025-09-01}
+}
+
+@report{cleanexpert,
+  title       = {Expert Report of Professor Richard Roe},
+  shorttitle  = {Roe Sample Report},
+  eventtitle  = {Doe v. Sample Corp.},
+  number      = {No. 1:25-cv-00123-ABC},
+  institution = {D. Del.},
+  date        = {2025-09-01}
+}
+
+@misc{legacymemo,
+  author       = {{Example \& Partners LLP}},
+  title        = {Control Under the Securities Laws},
+  howpublished = {Client Alert No. 4455},
+  date         = {2024-02-21},
+  url          = {https://example.com/alert-4455.pdf},
+  urldate      = {2026-11-09}
+}
+
+@report{cleanmemo,
+  author = {{Example \& Partners LLP}},
+  title  = {Control Under the Securities Laws},
+  type   = {Client Alert},
+  number = {4455},
+  date   = {2024-02-21}
+}
+
+@misc{legacymemo2,
+  author       = {{Smith \& Partners LLP}},
+  title        = {Resale Basics},
+  shorttitle   = {Resale Basics},
+  howpublished = {Client alert},
+  organization = {Smith \& Partners LLP},
+  date         = {2023-04-12},
+  note         = {Generic genre label; must never print.}
+}
+
+@report{cleanmemo2,
+  author     = {{Smith \& Partners LLP}},
+  title      = {Resale Basics},
+  shorttitle = {Resale Basics},
+  type       = {Client alert},
+  date       = {2023-04-12}
+}
+
+@misc{legacyexpert2,
+  author     = {Roe, Richard},
+  title      = {Expert Report of Professor Richard Roe},
+  note       = {Roe v. Sample LLC, C.A. No. 2022-0777-ABC (Del. Ch.), May 2, 2022},
+  year       = {2022},
+  eventtitle = {Roe v. Sample LLC},
+  number     = {C.A. No. 2022-0777-ABC},
+  date       = {2022-05-02}
+}
+
+@report{cleanexpert2,
+  title      = {Expert Report of Professor Richard Roe},
+  eventtitle = {Roe v. Sample LLC},
+  number     = {C.A. No. 2022-0777-ABC},
+  date       = {2022-05-02}
+}

@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl" class="note" version="1.0" demote-non-dropping-particle="sort-only" default-locale="en-US" page-range-format="expanded">
+  <info>
+    <title>Bluebook Expert Report (21st Edition, footnotes)</title>
+    <title-short>Bluebook Expert Report</title-short>
+    <id>expert-report-bluebook-notes</id>
+    <link href="https://www.legalbluebook.com/" rel="documentation"/>
+    <author><name>Edwin Hu</name></author>
+    <category citation-format="note"/>
+    <category field="law"/>
+    <summary>Bluebook footnote citations for expert reports served in litigation. Titles print exactly as written in the bib (no case transforms); note/annote never print; [hereinafter X] from title-short, after the pin; supra note N / Id. short forms. Small caps for journals, books and firm memos (`typography: plain` in the build turns them roman, book and memo titles italic). Field conventions: references/bib-conventions.md. Adapted from the Bluebook Law Review 21e style (term set, supra macro).</summary>
+    <updated>2026-11-10T00:00:00+00:00</updated>
+  </info>
+
+  <locale xml:lang="en">
+    <terms>
+      <term name="ibid">id.</term>
+      <term name="at">at</term>
+      <term name="in">in</term>
+      <term name="and">&amp;</term>
+      <term name="et-al">et al.</term>
+      <term name="section" form="symbol"><single>§</single><multiple>§§</multiple></term>
+      <term name="paragraph" form="symbol"><single>¶</single><multiple>¶¶</multiple></term>
+      <term name="part" form="short"><single>pt.</single><multiple>pts.</multiple></term>
+      <term name="chapter" form="short"><single>ch.</single><multiple>chs.</multiple></term>
+      <term name="note" form="short"><single>n.</single><multiple>nn.</multiple></term>
+      <term name="month-01" form="short">Jan.</term>
+      <term name="month-02" form="short">Feb.</term>
+      <term name="month-03" form="short">Mar.</term>
+      <term name="month-04" form="short">Apr.</term>
+      <term name="month-05" form="short">May</term>
+      <term name="month-06" form="short">June</term>
+      <term name="month-07" form="short">July</term>
+      <term name="month-08" form="short">Aug.</term>
+      <term name="month-09" form="short">Sept.</term>
+      <term name="month-10" form="short">Oct.</term>
+      <term name="month-11" form="short">Nov.</term>
+      <term name="month-12" form="short">Dec.</term>
+      <!-- Bluebook ordinals: 2d, 3d (a style locale that defines ordinals replaces the whole set) -->
+      <term name="ordinal">th</term>
+      <term name="ordinal-01">st</term>
+      <term name="ordinal-02">d</term>
+      <term name="ordinal-03">d</term>
+      <term name="ordinal-11" match="last-two-digits">th</term>
+      <term name="ordinal-12" match="last-two-digits">th</term>
+      <term name="ordinal-13" match="last-two-digits">th</term>
+    </terms>
+  </locale>
+
+  <!-- ===== names ===== -->
+  <macro name="author">
+    <names variable="author">
+      <name and="symbol" delimiter=", " delimiter-precedes-last="never" initialize="false"/>
+    </names>
+  </macro>
+  <macro name="author-smallcaps">
+    <names variable="author">
+      <name and="symbol" delimiter=", " delimiter-precedes-last="never" initialize="false" font-variant="small-caps"/>
+    </names>
+  </macro>
+  <macro name="author-short">
+    <names variable="author">
+      <name form="short" and="symbol" delimiter=", " delimiter-precedes-last="never"/>
+    </names>
+  </macro>
+
+  <!-- ===== dates ===== -->
+  <macro name="year">
+    <date variable="issued"><date-part name="year"/></date>
+  </macro>
+  <!-- Mar. 14, 2019 / Feb. 2025 / 2001 -->
+  <macro name="full-date">
+    <choose>
+      <if variable="issued">
+        <date variable="issued">
+          <date-part name="month" form="short" suffix=" "/>
+          <date-part name="day" suffix=", "/>
+          <date-part name="year"/>
+        </date>
+      </if>
+    </choose>
+  </macro>
+
+  <!-- ===== pin cites ===== -->
+  <!-- ", at 5" for page locators; ", § 3(a)"; ", ¶ 4"; ", pt. II"; anything else verbatim
+       (", slip op. at 87"). The build strips the draft's leading "at " so this macro can
+       decide where Bluebook wants it. -->
+  <macro name="pin-at">
+    <choose>
+      <if variable="locator">
+        <choose>
+          <if locator="page">
+            <group delimiter=" "><text term="at"/><text variable="locator"/></group>
+          </if>
+          <else-if locator="section paragraph" match="any">
+            <group delimiter=" "><label variable="locator" form="symbol"/><text variable="locator"/></group>
+          </else-if>
+          <else-if locator="part chapter note" match="any">
+            <group delimiter=" "><label variable="locator" form="short"/><text variable="locator"/></group>
+          </else-if>
+          <else>
+            <text variable="locator"/>
+          </else>
+        </choose>
+      </if>
+    </choose>
+  </macro>
+  <!-- reporter / journal pin: ", 105" (no "at") for pages; otherwise as pin-at -->
+  <macro name="pin-bare">
+    <choose>
+      <if locator="page">
+        <text variable="locator"/>
+      </if>
+      <else>
+        <text macro="pin-at"/>
+      </else>
+    </choose>
+  </macro>
+  <!-- statute pin: space-joined, "15 U.S.C. § 77o" + "(b)" or "§ 11(m)" -->
+  <macro name="pin-statute">
+    <choose>
+      <if locator="section paragraph" match="any">
+        <group delimiter=" "><label variable="locator" form="symbol"/><text variable="locator"/></group>
+      </if>
+      <else-if locator="page">
+        <group delimiter=" "><text term="at"/><text variable="locator"/></group>
+      </else-if>
+      <else>
+        <text macro="pin-at"/>
+      </else>
+    </choose>
+  </macro>
+
+  <!-- ===== cases ===== -->
+  <!-- the court and date parenthetical: "(2d Cir. 1990)" reported, "(Del. Ch. Mar. 14, 2019)" unreported -->
+  <macro name="case-paren">
+    <group delimiter=" " prefix="(" suffix=")">
+      <text variable="publisher"/>
+      <choose>
+        <if variable="number">
+          <text macro="full-date"/>
+        </if>
+        <else>
+          <text macro="year"/>
+        </else>
+      </choose>
+    </group>
+  </macro>
+  <macro name="case-cite">
+    <group delimiter=" ">
+      <text variable="volume"/>
+      <text variable="container-title"/>
+      <text variable="page"/>
+    </group>
+  </macro>
+  <macro name="case-full">
+    <choose>
+      <if variable="number">
+        <!-- unreported: Name, No. X, 2019 WL 1234567, at *3 (Del. Ch. Mar. 14, 2019) -->
+        <group delimiter=" ">
+          <group delimiter=", ">
+            <text variable="title" font-style="italic"/>
+            <text variable="number"/>
+            <text macro="case-cite"/>
+            <text macro="pin-at"/>
+          </group>
+          <text macro="case-paren"/>
+        </group>
+      </if>
+      <else>
+        <!-- reported: Name, 900 F.2d 100, 105 (2d Cir. 1990) -->
+        <group delimiter=" ">
+          <group delimiter=", ">
+            <text variable="title" font-style="italic"/>
+            <text macro="case-cite"/>
+            <text macro="pin-bare"/>
+          </group>
+          <text macro="case-paren"/>
+        </group>
+      </else>
+    </choose>
+  </macro>
+  <!-- Smith, 900 F.2d at 105 / Acme Widget, 2019 WL 1234567, at *5 -->
+  <macro name="case-short">
+    <group delimiter=", ">
+      <text variable="title" form="short" font-style="italic"/>
+      <choose>
+        <if variable="locator">
+          <choose>
+            <if variable="number">
+              <text macro="case-cite"/>
+              <text macro="pin-at"/>
+            </if>
+            <else-if locator="page">
+              <group delimiter=" ">
+                <text variable="volume"/>
+                <text variable="container-title"/>
+                <text term="at"/>
+                <text variable="locator"/>
+              </group>
+            </else-if>
+            <else>
+              <text macro="case-cite"/>
+              <text macro="pin-at"/>
+            </else>
+          </choose>
+        </if>
+        <else>
+          <text macro="case-cite"/>
+        </else>
+      </choose>
+    </group>
+  </macro>
+
+  <!-- ===== statutes ===== -->
+  <macro name="statute">
+    <group delimiter=" ">
+      <text variable="title"/>
+      <text macro="pin-statute"/>
+      <text macro="year" prefix="(" suffix=")"/>
+    </group>
+  </macro>
+
+  <!-- ===== articles ===== -->
+  <!-- Alex Doe, Title, 87 Va. L. Rev. 1001, 1010 (2001) -->
+  <macro name="article-full">
+    <group delimiter=" ">
+      <group delimiter=", ">
+        <text macro="author"/>
+        <text variable="title" font-style="italic"/>
+        <group delimiter=" ">
+          <text variable="volume"/>
+          <text variable="container-title" form="short" font-variant="small-caps"/>
+          <text variable="page-first"/>
+        </group>
+        <choose>
+          <if variable="locator">
+            <text macro="pin-bare"/>
+          </if>
+        </choose>
+      </group>
+      <text macro="year" prefix="(" suffix=")"/>
+    </group>
+  </macro>
+
+  <!-- ===== books (small caps, Rule 15) ===== -->
+  <!-- book-title and memo-title are the two macros whose small caps become italic under
+       `typography: plain` (build_docx.py: plain_csl); every other small-caps run turns roman. -->
+  <macro name="book-title">
+    <text variable="title" font-variant="small-caps"/>
+  </macro>
+  <macro name="memo-title">
+    <text variable="title" font-variant="small-caps"/>
+  </macro>
+  <macro name="book-full">
+    <group delimiter=" ">
+      <group delimiter=", ">
+        <text macro="author-smallcaps"/>
+        <group delimiter=" ">
+          <text macro="book-title"/>
+          <choose>
+            <if locator="page">
+              <text variable="locator"/>
+            </if>
+          </choose>
+        </group>
+        <choose>
+          <if locator="page" match="none">
+            <text macro="pin-at"/>
+          </if>
+        </choose>
+      </group>
+      <group delimiter=" " prefix="(" suffix=")">
+        <group delimiter=" ">
+          <number variable="edition" form="ordinal"/>
+          <choose><if variable="edition"><text value="ed."/></if></choose>
+        </group>
+        <text macro="year"/>
+      </group>
+    </group>
+  </macro>
+
+  <!-- ===== releases, committee reports, expert reports, depositions, memos ===== -->
+  <!-- "Securities Act Release No. 33-7391", "S. Rep. No. 73-47"; with no genre the number is a
+       docket printed as written ("C.A. No. 2019-0001-ABC") -->
+  <macro name="genre-number">
+    <choose>
+      <if variable="genre">
+        <group delimiter=" ">
+          <text variable="genre"/>
+          <group delimiter=" ">
+            <choose><if variable="number"><text value="No."/></if></choose>
+            <text variable="number"/>
+          </group>
+        </group>
+      </if>
+      <else>
+        <text variable="number"/>
+      </else>
+    </choose>
+  </macro>
+  <!-- a firm memo's short name is small caps, like its author and title -->
+  <macro name="short-name">
+    <choose>
+      <if type="report" variable="author" match="all">
+        <text variable="title" form="short" font-variant="small-caps"/>
+      </if>
+      <else>
+        <text variable="title" form="short"/>
+      </else>
+    </choose>
+  </macro>
+  <macro name="hereinafter">
+    <choose>
+      <if variable="title-short">
+        <group delimiter=" " prefix="[" suffix="]">
+          <text value="hereinafter" font-style="italic"/>
+          <text macro="short-name"/>
+        </group>
+      </if>
+    </choose>
+  </macro>
+  <macro name="report-head">
+    <choose>
+      <if variable="author">
+        <!-- firm memo: Firm LLP, Title — a genre label ("Client alert") prints only with a number -->
+        <group delimiter=", ">
+          <text macro="author-smallcaps"/>
+          <text macro="memo-title"/>
+          <choose><if variable="number"><text macro="genre-number"/></if></choose>
+        </group>
+      </if>
+      <else>
+        <group delimiter=", ">
+          <group delimiter=" ">
+            <text variable="title"/>
+            <!-- the litigation the report was served in: case name italic, docket from `number` -->
+            <group delimiter=" ">
+              <text term="in"/>
+              <text variable="event" font-style="italic"/>
+            </group>
+          </group>
+          <text macro="genre-number"/>
+        </group>
+      </else>
+    </choose>
+  </macro>
+  <!-- (Del. Ch. Nov. 2, 2021): the court from `institution`, then the date -->
+  <macro name="report-date">
+    <group delimiter=" " prefix="(" suffix=")">
+      <text variable="publisher"/>
+      <text macro="full-date"/>
+    </group>
+  </macro>
+  <macro name="report-full">
+    <choose>
+      <if variable="container-title">
+        <!-- Title, Securities Act Release No. 33-7391, 1997 WL 70601, at *4 (Feb. 20, 1997) [hereinafter X] -->
+        <group delimiter=" ">
+          <group delimiter=", ">
+            <text macro="report-head"/>
+            <group delimiter=" ">
+              <text variable="volume"/>
+              <text variable="container-title"/>
+              <text variable="page"/>
+            </group>
+            <text macro="pin-at"/>
+          </group>
+          <text macro="report-date"/>
+          <text macro="hereinafter"/>
+        </group>
+      </if>
+      <else-if variable="title-short event" match="any">
+        <!-- Expert Report of X in Case, C.A. No. 1234 (Del. Ch. Oct. 15, 2026), at 4 ¶ 4 [hereinafter X Report];
+             a report served in a case (`event`) takes this order with or without a short name -->
+        <group delimiter=" ">
+          <group delimiter=", ">
+            <group delimiter=" ">
+              <text macro="report-head"/>
+              <text macro="report-date"/>
+            </group>
+            <text macro="pin-at"/>
+          </group>
+          <text macro="hereinafter"/>
+        </group>
+      </else-if>
+      <else>
+        <!-- S. Rep. No. 73-47, at 5-6 (1933) -->
+        <group delimiter=" ">
+          <group delimiter=", ">
+            <text macro="report-head"/>
+            <text macro="pin-at"/>
+          </group>
+          <text macro="report-date"/>
+        </group>
+      </else>
+    </choose>
+  </macro>
+
+  <!-- ===== anything else (@misc, @online, ...) ===== -->
+  <macro name="generic-full">
+    <group delimiter=" ">
+      <group delimiter=", ">
+        <group delimiter=" ">
+          <group delimiter=", ">
+            <text macro="author"/>
+            <text variable="title"/>
+            <text variable="container-title"/>
+            <text variable="publisher"/>
+          </group>
+          <text macro="full-date" prefix="(" suffix=")"/>
+        </group>
+        <text macro="pin-at"/>
+      </group>
+      <text macro="hereinafter"/>
+    </group>
+  </macro>
+
+  <!-- ===== short forms ===== -->
+  <!-- X, supra note N, at P   (X = title-short when present, else author's surname, else title) -->
+  <macro name="supra">
+    <group delimiter=", ">
+      <choose>
+        <if variable="title-short">
+          <text macro="short-name"/>
+        </if>
+        <else-if variable="author">
+          <text macro="author-short"/>
+        </else-if>
+        <else>
+          <text variable="title"/>
+        </else>
+      </choose>
+      <group delimiter=" ">
+        <text value="supra" font-style="italic"/>
+        <text value="note"/>
+        <text variable="first-reference-note-number"/>
+      </group>
+      <text macro="pin-at"/>
+    </group>
+  </macro>
+  <macro name="supra-book">
+    <group delimiter=", ">
+      <choose>
+        <if variable="title-short">
+          <text variable="title" form="short" font-variant="small-caps"/>
+        </if>
+        <else>
+          <text macro="author-short" font-variant="small-caps"/>
+        </else>
+      </choose>
+      <group delimiter=" ">
+        <text value="supra" font-style="italic"/>
+        <text value="note"/>
+        <text variable="first-reference-note-number"/>
+      </group>
+      <text macro="pin-at"/>
+    </group>
+  </macro>
+  <macro name="ibid-pin">
+    <choose>
+      <if locator="page">
+        <group delimiter=" "><text term="at"/><text variable="locator"/></group>
+      </if>
+      <else-if locator="section paragraph" match="any">
+        <group delimiter=" "><label variable="locator" form="symbol"/><text variable="locator"/></group>
+      </else-if>
+      <else-if locator="part chapter note" match="any">
+        <group delimiter=" "><label variable="locator" form="short"/><text variable="locator"/></group>
+      </else-if>
+      <else>
+        <text variable="locator" prefix=", "/>
+      </else>
+    </choose>
+  </macro>
+
+  <citation et-al-min="3" et-al-use-first="1" disambiguate-add-givenname="false">
+    <layout delimiter="; ">
+      <choose>
+        <!-- id. — the build capitalises it at the start of a sentence -->
+        <if position="ibid-with-locator">
+          <group delimiter=" ">
+            <text term="ibid" font-style="italic"/>
+            <text macro="ibid-pin"/>
+          </group>
+        </if>
+        <else-if position="ibid">
+          <text term="ibid" font-style="italic"/>
+        </else-if>
+        <else-if position="subsequent">
+          <choose>
+            <if type="legal_case">
+              <text macro="case-short"/>
+            </if>
+            <else-if type="legislation bill regulation" match="any">
+              <text macro="statute"/>
+            </else-if>
+            <else-if type="book">
+              <text macro="supra-book"/>
+            </else-if>
+            <else-if type="report" match="any">
+              <choose>
+                <if variable="title-short">
+                  <text macro="supra"/>
+                </if>
+                <else>
+                  <text macro="report-full"/>
+                </else>
+              </choose>
+            </else-if>
+            <else-if type="article-journal article-magazine article-newspaper" match="any">
+              <text macro="supra"/>
+            </else-if>
+            <else>
+              <choose>
+                <if variable="title-short author" match="any">
+                  <text macro="supra"/>
+                </if>
+                <else>
+                  <text macro="generic-full"/>
+                </else>
+              </choose>
+            </else>
+          </choose>
+        </else-if>
+        <else>
+          <choose>
+            <if type="legal_case">
+              <text macro="case-full"/>
+            </if>
+            <else-if type="legislation bill regulation" match="any">
+              <text macro="statute"/>
+            </else-if>
+            <else-if type="article-journal article-magazine article-newspaper" match="any">
+              <text macro="article-full"/>
+            </else-if>
+            <else-if type="book">
+              <text macro="book-full"/>
+            </else-if>
+            <else-if type="report">
+              <text macro="report-full"/>
+            </else-if>
+            <else>
+              <text macro="generic-full"/>
+            </else>
+          </choose>
+        </else>
+      </choose>
+    </layout>
+  </citation>
+
+  <!-- Never printed (the build passes suppress-bibliography); present because CSL requires a
+       layout for note styles that pandoc may consult. -->
+  <bibliography>
+    <layout>
+      <group delimiter=" ">
+        <text variable="title"/>
+        <text variable="genre"/>
+        <text variable="number"/>
+      </group>
+    </layout>
+  </bibliography>
+</style>

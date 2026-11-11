@@ -456,6 +456,13 @@ first>` gives each thread the id `<file stem>#<utterance id>`; the fixes go thro
 outcome per id, and `review-ledger verify --outcomes <file>` refuses a missing one. A resolved thread still
 comes through, marked resolved; replies ride on their thread; a resolve row is never a mark.
 
+### Export
+
+The Word file comes from the genre's builder, never a bare `pandoc`. Genre `expert` (a served
+expert report: page-1 caption, numbered paragraphs, Bluebook short forms):
+`uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/expert-report-docx/scripts/build_docx.py <proj> --pdf`.
+Domain `legal`: the law-review-docx skill.
+
 ## Red flags
 
 | Situation | Wrong move | Right move |
