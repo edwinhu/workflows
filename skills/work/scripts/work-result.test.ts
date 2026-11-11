@@ -827,3 +827,27 @@ describe('a claimed/observed disagreement says WHICH direction it went', () => {
     expect(r.stderr).toMatch(/not deterministic/)
   })
 })
+
+describe('work-result.sh re-runs checks under the dispatched run baseline', () => {
+  const BASE = 'a'.repeat(40)
+  const cmd = `[ "$WORK_RUN_BASELINE" = ${BASE} ]`
+  const run = (args: Record<string, unknown>) =>
+    runRaw(
+      JSON.stringify({
+        ...valid(),
+        mechanical: [{ name: 'scoped', exitCode: 0, output: 'x' }],
+      }),
+      { args: { projectDir: tmpdir(), mechanicalChecks: [{ name: 'scoped', cmd }], ...args } },
+    )
+
+  test('a run-scoped check that passes only with WORK_RUN_BASELINE = args.runBaseline is accepted', () => {
+    const r = run({ runBaseline: BASE })
+    expect(r.stderr).not.toMatch(/REFUSED/)
+    expect(r.code).toBe(0)
+  })
+
+  test('a malformed runBaseline is not exported', () => {
+    const r = run({ runBaseline: 'not-a-hash' })
+    expect(r.code).toBe(2)
+  })
+})

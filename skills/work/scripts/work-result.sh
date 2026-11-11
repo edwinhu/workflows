@@ -161,6 +161,11 @@ jq -e '
 ' -- "$ARGS" >/dev/null 2>&1 \
   || die "$ARGS: mechanicalChecks must be an array of {name, cmd} strings — nothing can be re-run"
 
+# work-checks.sh ran each check with WORK_RUN_BASELINE = args.runBaseline; a run-scoped leg re-run
+# without it scans the whole tree (scratch/, .work/) and disagrees with the claim.
+RUN_BASELINE=$(jq -r '.runBaseline // empty' -- "$ARGS")
+if [[ "$RUN_BASELINE" =~ ^[0-9a-f]{40,64}$ ]]; then export WORK_RUN_BASELINE="$RUN_BASELINE"; else unset WORK_RUN_BASELINE; fi
+
 while IFS=' ' read -r name64 cmd64; do
   [ -n "$name64" ] || continue
   name=$(printf '%s' "$name64" | base64 -d)
