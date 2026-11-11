@@ -59,7 +59,7 @@
 | Level | Key | Meaning |
 |-------|-----|---------|
 | **Row primary key** | `(dcn, seqnum)` | one transaction line on one filing. MUST be unique — if it isn't, your join to `header` fanned out (a `(dcn, personid)` with >1 header row), so add `DISTINCT` or fix the join, do not blindly sum |
-| **Economic event key** | `(personid, trandate, trancode, shares, round(price,2), ownership)` | the real-world trade. A **4/A amendment re-reports the same event under a NEW `dcn`** |
+| **Economic event key** | `(personid, cusip6, cusip2, trandate, trancode, shares, round(price,2), ownership)`, compared **across** `dcn`s only | the real-world trade. A **4/A amendment re-reports the same event under a NEW `dcn`**. Within one `dcn`, repeats of this key are separate lots, so the key is not unique there |
 
 ### Amendments (4/A) — the silent double-count
 
@@ -72,19 +72,23 @@ separate `dcn`s, each with the full set of transaction lines. So the same trade 
 - Correct handling = **supersession**: within each economic event key, keep only the row from the
   **latest filing** (`max(fdate)` / the `amend='A'` dcn) and drop the superseded original.
 
+Supersede **across filings only**, and put the security in the key. Lines on the same filing that share size and price are separate lots. A key without `cusip6, cusip2` lets one security's trade delete another's, as with Carnival Corp and Carnival plc. Without either guard, a key drops same-filing lots and merges cross-security pairs.
+
 ```python
-# amendment supersession, THEN exact-dup safety net
-ev = ["personid", "trandate", "trancode", "shares"]
+# keep, for each trade key, only the lines of its latest filing; never collapse within a filing
+ev = ["personid", "cusip6", "cusip2", "trandate", "trancode", "shares", "_p", "ownership"]
 df["_p"] = df["tprice"].round(2)
-df = df.sort_values("fdate").groupby(ev + ["_p"], as_index=False).last()  # keep amended copy
-df = df.drop_duplicates()
+latest = (df.sort_values(["secdate", "amend", "fdate"], na_position="first")
+            .groupby(ev)["dcn"].last().rename("keep_dcn"))
+df = df.join(latest, on=ev)
+df = df[df["dcn"] == df["keep_dcn"]].drop(columns="keep_dcn")   # all lots of the surviving filing stay
 ```
 
 **Profiling probes to run before any sum** (declare the grain, then verify it):
 ```python
 df.duplicated(subset=["dcn", "seqnum"]).sum()          # row PK — MUST be 0
 (df["amend"] == "A").sum()                              # how many amended rows exist
-df.groupby(ev + ["_p"])["dcn"].nunique().gt(1).sum()    # events under >1 dcn = amendment double-counts
+df.groupby(ev)["dcn"].nunique().gt(1).sum()             # events under >1 dcn = amendment double-counts
 ```
 If you dropped `dcn`/`seqnum`/`amend` at extraction you cannot run these — so **carry them through**.
 
@@ -128,7 +132,7 @@ If you dropped `dcn`/`seqnum`/`amend` at extraction you cannot run these — so 
 | FO | Financial Officer |
 | S | Secretary |
 | B | 10% Beneficial Owner |
-| H | 10% Holder |
+| H | Director (or officer-director) who is also a 10% owner. Not a plain holder: filer-years coded H with no other director code nearly always sit on the ISS board, unlike plain `B` holders. Ellison (Oracle) is `CEO+H` and `CT+H+OE`. |
 
 ## Transaction Codes
 
@@ -239,7 +243,7 @@ sql = f"""
 3. **Transaction value** - Calculate as `shares * tprice`
 4. **Direct vs Indirect** - `ownership = 'D'` for direct holdings only
 5. **Join keys** - Use both `dcn` AND `personid` when joining table1 to header
-6. **Amendments (4/A) double-count** - The same trade is re-filed under a new `dcn` with `amend='A'`. `formtype` stays `'4'`, and a corrected field (e.g. `sharesheld`) defeats `DISTINCT`/`drop_duplicates()`. Carry `dcn`/`seqnum`/`amend` and apply event-key supersession before summing — see [Grain, Keys & Amendments](#grain-keys--amendments)
+6. **Amendments (4/A) double-count** - The same trade is re-filed under a new `dcn` with `amend='A'`. `formtype` stays `'4'`, and a corrected field (e.g. `sharesheld`) defeats `DISTINCT`/`drop_duplicates()`. Carry `dcn`/`seqnum`/`amend` and apply cross-filing event-key supersession before summing — see [Grain, Keys & Amendments](#grain-keys--amendments)
 7. **Don't drop `seqnum`** - Multiple lines on one filing can share size/price (legitimate separate lots/tranches). They look like duplicates only if you drop `seqnum`; keep it so real lots aren't collapsed
 
 ## Bulk extraction for panel construction
