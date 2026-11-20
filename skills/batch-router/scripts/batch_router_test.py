@@ -99,6 +99,28 @@ def test_pdf_job_routes_to_gemini_even_with_expiring_claude_credit(tmp_path, mon
     assert any("TEXT jobs" in n for n in by["b_soon"]["notes"])
 
 
+def test_text_web_search_routes_to_claude_soonest_credit_first(tmp_path, monkeypatch):
+    c = ranked(tmp_path, monkeypatch, "--requests", "500", "--in-tokens", "2000", "--out-tokens", "300",
+               "--needs", "web-search", "--balance", "b_soon=200")
+    assert [r["account"] for r in c[:2]] == ["b_soon", "a_late"]
+    assert all(r["group_name"] == "web-search → Claude" for r in c[:2])
+    notes = " ".join(c[0]["notes"])
+    assert "web_search_20260318" in notes and "max_uses=3" in notes and "$15.00" in notes
+    assert "pilot 5-10 rows" in notes and "throttle" in notes and "Verified 2026-11-20" in notes and "UNVERIFIED" not in notes
+    by = {r["account"]: r for r in c}
+    assert by["vertex"]["group_name"] == "fallback"
+    assert any("pilot and cap" in n for n in by["vertex"]["notes"])
+    assert route.claude_search_tool("claude-sonnet-4-5") == "web_search_20250305"
+
+
+def test_pdf_web_search_job_still_routes_to_gemini(tmp_path, monkeypatch):
+    c = ranked(tmp_path, monkeypatch, "--requests", "500", "--in-tokens", "20000", "--out-tokens", "400",
+               "--needs", "pdf", "--needs", "web-search", "--balance", "b_soon=200")
+    assert c[0]["provider"] == "gemini" and c[0]["group"] == 1
+    by = {r["account"]: r for r in c}
+    assert by["b_soon"]["group"] == 3 and not by["b_soon"].get("lead")
+
+
 def test_long_input_is_long_context_and_routes_to_gemini(tmp_path, monkeypatch):
     c = ranked(tmp_path, monkeypatch, "--requests", "100", "--in-tokens", "150000", "--out-tokens", "300")
     assert c[0]["provider"] == "gemini" and "long-context" in c[0]["reason"]
@@ -122,10 +144,13 @@ def test_purpose_sets_the_gemini_billing_project(tmp_path, monkeypatch):
         c = ranked(tmp_path, monkeypatch, "--requests", "10", "--in-tokens", "100", "--out-tokens", "10",
                    "--needs", "pdf", *extra)
         return c[0]["next"]
-    assert "research project on the UVA Research" in gem("--purpose", "research")
+    research = gem("--purpose", "research")
+    assert "research project" in research and "UVA" not in research
+    assert "bills Eddy's personal account" in research and "pilot and cap" in research
     assert "never the AI Studio" in gem("--purpose", "research")
     consulting = gem("--purpose", "consulting")
-    assert consulting.startswith("ASK EDDY") and "never the UVA research project" in consulting
+    assert consulting.startswith("ASK EDDY") and "never the research project" in consulting
+    assert "UVA" not in consulting
 
 
 def test_shards_over_the_request_limit(tmp_path, monkeypatch):

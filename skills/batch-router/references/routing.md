@@ -9,7 +9,14 @@ limits, capabilities, accounts). This page explains what they encode. Prices che
 `long-context` (auto-added when mean input > 100,000 tokens/request), the Gemini row is group 1
 (`document → Gemini`) and every other usable row is group 3 (`fallback`), whatever its credit or expiry.
 A prepaid Claude row carries a note to spend that credit on a text job instead. The table below applies
-only to text jobs:
+only to text jobs.
+
+**Text web-search job** (`web-search`, no document type): usable Claude rows sort ahead of every other row
+(`web-search → Claude`), ordered among themselves by the table below; OpenAI and Gemini rows are
+`fallback`, Gemini with its pilot-and-cap note. Each Claude row prints: `web_search_20260318` (dynamic
+filtering, Claude 4.6+) else `web_search_20250305`; `max_uses` (`--max-uses`, default 3) and the search-fee
+cap it implies; pilot 5–10 rows and read cost per row (result tokens usually exceed the fee); per-org batch
+throttling; verified 2026-11-20: the monthly API credit pays search fees (Console Cost page tracks "Total web search cost" separately).
 
 | Group | Condition | Order within group |
 |---|---|---|
@@ -26,8 +33,8 @@ treated as unknown.
 
 | `--purpose` | Gemini next command |
 |---|---|
-| `research` | Vertex in `vertex_research_project` (accounts.toml), on the UVA Research billing account; never the AI Studio `GOOGLE_API_KEY`, which bills Eddy personally |
-| `consulting` | `vertex_consulting_project` if set; otherwise ASK EDDY. Never the UVA research project |
+| `research` | Vertex in `vertex_research_project` (accounts.toml), which bills Eddy's personal account (credits first); pilot and cap. Never the AI Studio `GOOGLE_API_KEY` |
+| `consulting` | `vertex_consulting_project` if set; otherwise ASK EDDY. Never the research project, never the AI Studio key |
 | unset / `other` | reminds you to pass `--purpose` |
 
 Creating a billing account, Cloud project or prepayment needs Eddy's yes.
@@ -86,7 +93,7 @@ Without `--jsonl` the size is estimated as requests × (in-tokens × 4 + 400) by
 | vision, pdf | yes | yes | yes |
 | embeddings | no | yes | yes |
 | audio, video | no | unverified, treated as no | yes |
-| web-search | yes, $10/1k searches | yes, $10/1k searches (verified live 2026-11-05) | yes, $14/1k after 5k free per month |
+| web-search | yes, $10/1k searches; preferred for text ([docs](https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool)); web fetch tokens only ([docs](https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-fetch-tool)) | yes, $10/1k searches (verified live 2026-11-05) | yes, $14/1k after 5k free per month |
 | long-context | 1M tokens | long-context tier above 272k | yes |
 
 ## Credit facts the config encodes

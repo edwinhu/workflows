@@ -6,6 +6,7 @@
 
 Document jobs (pdf, vision, audio, video, embeddings, long context > 100k tokens/request) go to Gemini
 even when a Claude credit is about to expire; prepaid credit only decides among text jobs.
+A text web-search job ranks Claude first (soonest-expiring credit first); Gemini grounding is a fallback.
 
 Never submits anything and makes no network call. Balances are never stored: pass what the Console
 shows as --balance <account>=<usd>; without it the balance is UNVERIFIED (assumed <= the monthly credit).
@@ -19,6 +20,7 @@ Exit codes: 0 ranked (at least one usable candidate), 1 nothing usable, 2 argume
 
 import argparse
 import json
+import re
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -44,21 +46,42 @@ GEMINI_FREE_SEARCHES = 5000  # per month across Gemini 3; account-dependent, tre
 LONG_CONTEXT_TOKENS = 100_000  # mean input tokens per request above which a job is long-context
 # Document types Gemini handles best; any of them outranks credit expiry.
 GEMINI_FIRST = {"pdf", "vision", "audio", "video", "embeddings", "long-context"}
+WEB_SEARCH_DOCS = "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool"
+
+
+def claude_search_tool(model: str) -> str:
+    """Dynamic filtering (web_search_20260318) needs Claude 4.6+; older models get the basic tool."""
+    m = re.search(r"-(\d+)-(\d+)$", model)
+    ver = (int(m.group(1)), int(m.group(2))) if m else (0, 0)
+    return "web_search_20260318" if ver >= (4, 6) else "web_search_20250305"
+
+
+def claude_search_notes(model: str, requests: int, max_uses: int) -> list[str]:
+    tool = claude_search_tool(model)
+    dyn = "dynamic filtering cuts tokens" if tool.endswith("0318") else "model predates dynamic filtering (4.6+)"
+    return [
+        f"tool {tool} ({dyn}); max_uses={max_uses} per row caps the search fee at "
+        f"${requests * max_uses * SEARCH_USD['anthropic']:,.2f}",
+        "pilot 5-10 rows and read cost per row: result tokens usually exceed the $10/1k search fee",
+        "Batches throttle web search per org: a large batch runs slower; an admin-disabled tool returns 400",
+        f"Verified 2026-11-20: the monthly API credit pays web search fees; search results add ~10k input tokens per search, so tokens usually cost more than the $10/1,000 fee ({WEB_SEARCH_DOCS})",
+    ]
 
 
 def gemini_next(model: str, purpose: str | None, settings: dict) -> str:
     base = f"Skill workflows:gemini-vertex  # Cloud Batch, model publishers/google/models/{model}"
-    research = settings.get("vertex_research_project") or "<the research project on the UVA Research billing account>"
+    research = settings.get("vertex_research_project") or "<the research project>"
     if purpose == "research":
-        return f"{base}; Vertex project {research} (ADC, cost gate), never the AI Studio GOOGLE_API_KEY"
+        return (f"{base}; Vertex project {research} (ADC, cost gate), which bills Eddy's personal account "
+                "(credits first): pilot and cap; never the AI Studio GOOGLE_API_KEY")
     if purpose == "consulting":
         proj = settings.get("vertex_consulting_project")
         if proj:
-            return f"{base}; Vertex project {proj}, never {research}"
-        return ("ASK EDDY which Cloud project bills this consulting job: never the UVA research project, "
+            return f"{base}; Vertex project {proj}, never {research}, never the AI Studio key"
+        return ("ASK EDDY which Cloud project bills this consulting job: never the research project, "
                 "never the AI Studio key; creating a project or billing account needs his yes")
-    return (f"{base}; pass --purpose: research → Vertex {research}; consulting → ask Eddy "
-            "(never UVA); the AI Studio GOOGLE_API_KEY bills Eddy personally")
+    return (f"{base}; pass --purpose: research → Vertex {research}; consulting → own project or ask Eddy "
+            "(never the research project); never the AI Studio GOOGLE_API_KEY")
 
 
 def next_command(provider: str, account: str | None, model: str, purpose: str | None = None,
@@ -164,6 +187,14 @@ def rank(args, accounts: dict[str, Account], today: date, settings: dict | None 
                                         "document job, even if it expires soon")
                 row.update(group=3, group_name="fallback",
                            reason=f"document job ({', '.join(doc)}): fallback only, Gemini preferred")
+        if "web-search" in needs and not doc:
+            if prov == "anthropic":
+                row["lead"] = True
+                row["group_name"] = "web-search → Claude"
+                row["notes"].extend(claude_search_notes(model, args.requests, getattr(args, "max_uses", 3)))
+            else:
+                row["group_name"] = "fallback"
+                row["reason"] += "; fallback: Claude preferred for search"
         if prov == "gemini" and "web-search" in needs:
             row["notes"].append("grounded batch: pilot and cap it; Oct 2026 billed 26,344 searches vs 5,490 visible")
         row["next"] = next_command(prov, acct.name, model, getattr(args, "purpose", None), settings)
@@ -171,14 +202,13 @@ def rank(args, accounts: dict[str, Account], today: date, settings: dict | None 
 
     def key(r):
         g = r["group"]
+        lead = 0 if r.get("lead") else 1  # usable Claude rows on a text web-search job
         if g in (1, 2):
-            return (g, r.get("days_left") if r.get("days_left") is not None else 10**6, r["cost_usd"])
-        if g == 1 and r.get("group_name"):
-            return (g, -1, r["cost_usd"])
+            return (lead, g, r.get("days_left") if r.get("days_left") is not None else 10**6, r["cost_usd"])
         if g == 3:
             # Gemini Vertex wins ties: it is the house fallback.
-            return (g, r["cost_usd"], 0 if r["provider"] == "gemini" else 1)
-        return (g, 0, 0)
+            return (lead, g, r["cost_usd"], 0 if r["provider"] == "gemini" else 1)
+        return (lead, g, 0, 0)
 
     return sorted(out, key=key)
 
@@ -201,10 +231,11 @@ def main(argv=None) -> int:
                     choices=["vision", "pdf", "audio", "video", "embeddings", "web-search", "long-context"],
                     help="vision/pdf/audio/video/embeddings/long-context route to Gemini first")
     ap.add_argument("--purpose", choices=["research", "consulting", "other"],
-                    help="who pays: research → Vertex research project (UVA); consulting → never UVA")
+                    help="who pays: research → Vertex research project (bills Eddy, credits first); consulting → own project or ask Eddy")
     ap.add_argument("--tier", default="cheap", choices=["cheap", "mid", "top", "frontier"])
     ap.add_argument("--model", help="exact model id; restricts each provider to it")
     ap.add_argument("--searches-per-row", type=float, default=2.0, help="with --needs web-search")
+    ap.add_argument("--max-uses", type=int, default=3, help="Claude web search max_uses per row")
     ap.add_argument("--balance", action="append", default=[], type=parse_balance,
                     help="<account>=<usd> as seen in the Console today")
     ap.add_argument("--today", type=date.fromisoformat, default=None)

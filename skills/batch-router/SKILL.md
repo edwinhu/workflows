@@ -39,6 +39,10 @@ It prints a ranked table with a reason per row and the next command. **Document 
    > 100k tokens/request, flagged automatically) rank Gemini first even when a Claude credit expires
    tomorrow; Claude and OpenAI rows become fallbacks. Pass `--needs` for every document type the job has.
 
+**Text web-search job → Claude.** `--needs web-search` with no document type ranks the usable Claude
+rows first (soonest-expiring credit first, then groups 1–3 below); OpenAI and Gemini grounding are
+fallbacks. Pass `--max-uses` (default 3) for the per-row search cap.
+
 Only a **text** job reaches the credit ranking:
 
 1. **Prepaid credit that expires soonest**, covers the estimated cost +20%, and has a usable key.
@@ -56,9 +60,11 @@ Then invoke the skill the top row names (`workflows:claude-batch`, `workflows:op
 
 ## Facts
 
-- **Who pays for Gemini.** Research batches run on Vertex in the research project on the UVA Research
-  billing account (`vertex_research_project` in accounts.toml; `--purpose research` prints it), never on
-  the AI Studio `GOOGLE_API_KEY`, whose project bills Eddy's personal account. Consulting work never bills the UVA account; until a consulting project exists the router says ask Eddy.
+- **Who pays for Gemini.** Research batches run on Vertex in the research project
+  (`vertex_research_project` in accounts.toml; `--purpose research` prints it), never on the AI Studio
+  `GOOGLE_API_KEY`. Every Cloud project bills Eddy's personal account (credits first), so pilot and cap
+  every job. Consulting work needs its own project, never the research
+  project; until one exists the router says ask Eddy.
 - **No paid commitment without Eddy.** Ask before creating a billing account, a Cloud project, a
   prepayment or any other paid commitment.
 - **Claude subscriptions are not a batch budget.** Daily agent work runs on the Claude Code subscription;
@@ -79,6 +85,12 @@ Then invoke the skill the top row names (`workflows:claude-batch`, `workflows:op
   month. The router assumes 2 searches per row (`--searches-per-row`); a grounded Gemini run once cost
   $390 in searches against $30 in tokens, and October 2026 billed 26,344 searches against 5,490 visible.
   Pilot every grounded batch and cap it.
+- **Claude web search in batches** ([web search](https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool),
+  [web fetch](https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-fetch-tool), 2026-11-20):
+  `web_search_20260318` (dynamic filtering, Claude 4.6+; else `web_search_20250305`), `max_uses` per row;
+  results bill as input tokens and usually cost more than the fee, failed searches are free, Batches
+  throttle search per org, an admin can disable it (400). Web fetch is tokens only. Verified 2026-11-20: the
+  monthly API credit pays web search fees (~10k input tokens per search, so tokens usually cost more than the $10/1,000 fee).
 - **OpenRouter** is pay-as-you-go and never a default.
 
 ## Red flags — STOP
@@ -87,8 +99,9 @@ Then invoke the skill the top row names (`workflows:claude-batch`, `workflows:op
 |---|---|
 | Send a text job straight to gemini-vertex out of habit | Run the router; a prepaid Claude credit may be expiring unused |
 | Route a PDF, image, audio, embeddings or >100k-token job to Claude to spend expiring credit | Gemini; spend the credit on a text job |
+| Send a text web-search job to Gemini grounding | Claude web search; Gemini is the fallback |
 | Run a research Gemini batch on the AI Studio `GOOGLE_API_KEY` | Vertex in the research project, `--purpose research` |
-| Bill consulting work to the UVA research project, or create a project for it | Ask Eddy |
+| Bill consulting work to the research project, or create a project for it | Ask Eddy |
 | Loop synchronous API calls over the rows | Batch; the only sync call is the one `verify` |
 | Fan out agents or farm rows, one per document | One batch job over pre-cut inputs |
 | Submit on the router's word alone | The router never submits; follow the provider skill's pilot and get the go-ahead |

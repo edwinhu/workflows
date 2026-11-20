@@ -49,6 +49,8 @@ SEARCH_USD = {"anthropic": 0.010, "openai": 0.010, "gemini": 0.014}
 
 # What each provider's BATCH path does. OpenAI's batch guide never mentions tools, but a live
 # /v1/responses batch row with web_search searched and cited sources (2026-11-05).
+# Claude web search works in Message Batches at $10/1k (per-org batch throttle):
+# https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool (2026-11-20).
 # Claude has no embeddings endpoint and no audio/video input; OpenAI audio/video on batch is unverified.
 CAPABILITIES = {
     "anthropic": {"vision", "pdf", "web-search", "long-context"},
