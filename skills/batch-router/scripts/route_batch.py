@@ -2,13 +2,17 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Rank batch providers for one job: soonest-expiring prepaid credit first, then cheapest pay-per-token.
+"""Rank batch providers for one job: document type first, then soonest-expiring credit, then price.
+
+Document jobs (pdf, vision, audio, video, embeddings, long context > 100k tokens/request) go to Gemini
+even when a Claude credit is about to expire; prepaid credit only decides among text jobs.
 
 Never submits anything and makes no network call. Balances are never stored: pass what the Console
 shows as --balance <account>=<usd>; without it the balance is UNVERIFIED (assumed <= the monthly credit).
 
 Usage:
-  route_batch.py --requests 5000 --in-tokens 3000 --out-tokens 300 [--tier cheap] [--needs web-search]
+  route_batch.py --requests 5000 --in-tokens 3000 --out-tokens 300 [--tier cheap] [--needs pdf]
+                 [--purpose research|consulting|other]
   route_batch.py --jsonl requests.jsonl [--out-tokens 300] [--balance uva=200] [--json]
 Exit codes: 0 ranked (at least one usable candidate), 1 nothing usable, 2 argument error.
 """
@@ -37,16 +41,35 @@ from batchlib import (
 SKILLS = Path(__file__).resolve().parents[2]
 MARGIN = 0.20
 GEMINI_FREE_SEARCHES = 5000  # per month across Gemini 3; account-dependent, treated as unspent
+LONG_CONTEXT_TOKENS = 100_000  # mean input tokens per request above which a job is long-context
+# Document types Gemini handles best; any of them outranks credit expiry.
+GEMINI_FIRST = {"pdf", "vision", "audio", "video", "embeddings", "long-context"}
 
 
-def next_command(provider: str, account: str | None, model: str) -> str:
+def gemini_next(model: str, purpose: str | None, settings: dict) -> str:
+    base = f"Skill workflows:gemini-vertex  # Cloud Batch, model publishers/google/models/{model}"
+    research = settings.get("vertex_research_project") or "<the research project on the UVA Research billing account>"
+    if purpose == "research":
+        return f"{base}; Vertex project {research} (ADC, cost gate), never the AI Studio GOOGLE_API_KEY"
+    if purpose == "consulting":
+        proj = settings.get("vertex_consulting_project")
+        if proj:
+            return f"{base}; Vertex project {proj}, never {research}"
+        return ("ASK EDDY which Cloud project bills this consulting job: never the UVA research project, "
+                "never the AI Studio key; creating a project or billing account needs his yes")
+    return (f"{base}; pass --purpose: research → Vertex {research}; consulting → ask Eddy "
+            "(never UVA); the AI Studio GOOGLE_API_KEY bills Eddy personally")
+
+
+def next_command(provider: str, account: str | None, model: str, purpose: str | None = None,
+                 settings: dict | None = None) -> str:
     if provider == "anthropic":
         s = SKILLS / "claude-batch/scripts/claude_batch.py"
         return f"uv run {s} validate <jsonl>  # then verify, then submit --account {account} --run"
     if provider == "openai":
         s = SKILLS / "openai-batch/scripts/openai_batch.py"
         return f"uv run {s} validate <jsonl>  # then verify, then submit --run (model {model})"
-    return f"Skill workflows:gemini-vertex  # Cloud Batch, model publishers/google/models/{model}"
+    return gemini_next(model, purpose, settings or {})
 
 
 def pick_model(provider: str, tier: str, model: str | None) -> str | None:
@@ -58,9 +81,12 @@ def pick_model(provider: str, tier: str, model: str | None) -> str | None:
     return None
 
 
-def rank(args, accounts: dict[str, Account], today: date) -> list[dict]:
+def rank(args, accounts: dict[str, Account], today: date, settings: dict | None = None) -> list[dict]:
     balances = dict(args.balance)
     needs = set(args.needs)
+    if args.in_tokens > LONG_CONTEXT_TOKENS:
+        needs.add("long-context")
+    doc = sorted(needs & GEMINI_FIRST)
     nbytes = args.bytes or int(args.requests * (args.in_tokens * 4 + 400))
     est_searches = round(args.requests * args.searches_per_row) if "web-search" in needs else 0
 
@@ -127,13 +153,28 @@ def rank(args, accounts: dict[str, Account], today: date) -> list[dict]:
         else:
             row.update(group=3, reason="pay-per-token" + (" (credit not linked/confirmed)"
                                                           if acct.monthly_credit_usd else ""))
-        row["next"] = next_command(prov, acct.name, model)
+        if doc:
+            # Document type outranks credit expiry: Gemini first, everything else a fallback.
+            if prov == "gemini":
+                row.update(group=1, group_name="document → Gemini",
+                           reason=f"document job ({', '.join(doc)}): Gemini is the batch API for it")
+            else:
+                if acct.prepaid:
+                    row["notes"].append("prepaid credit is for TEXT jobs: spend it on one, not this "
+                                        "document job, even if it expires soon")
+                row.update(group=3, group_name="fallback",
+                           reason=f"document job ({', '.join(doc)}): fallback only, Gemini preferred")
+        if prov == "gemini" and "web-search" in needs:
+            row["notes"].append("grounded batch: pilot and cap it; Oct 2026 billed 26,344 searches vs 5,490 visible")
+        row["next"] = next_command(prov, acct.name, model, getattr(args, "purpose", None), settings)
         out.append(row)
 
     def key(r):
         g = r["group"]
         if g in (1, 2):
             return (g, r.get("days_left") if r.get("days_left") is not None else 10**6, r["cost_usd"])
+        if g == 1 and r.get("group_name"):
+            return (g, -1, r["cost_usd"])
         if g == 3:
             # Gemini Vertex wins ties: it is the house fallback.
             return (g, r["cost_usd"], 0 if r["provider"] == "gemini" else 1)
@@ -157,7 +198,10 @@ def main(argv=None) -> int:
     ap.add_argument("--out-tokens", type=float, help="mean output tokens per request")
     ap.add_argument("--jsonl", type=Path, help="measure requests / input tokens / bytes from this file")
     ap.add_argument("--needs", action="append", default=[],
-                    choices=["vision", "pdf", "web-search", "long-context"])
+                    choices=["vision", "pdf", "audio", "video", "embeddings", "web-search", "long-context"],
+                    help="vision/pdf/audio/video/embeddings/long-context route to Gemini first")
+    ap.add_argument("--purpose", choices=["research", "consulting", "other"],
+                    help="who pays: research → Vertex research project (UVA); consulting → never UVA")
     ap.add_argument("--tier", default="cheap", choices=["cheap", "mid", "top", "frontier"])
     ap.add_argument("--model", help="exact model id; restricts each provider to it")
     ap.add_argument("--searches-per-row", type=float, default=2.0, help="with --needs web-search")
@@ -183,27 +227,30 @@ def main(argv=None) -> int:
         return 2
 
     today = args.today or datetime.now().astimezone().date()
-    accounts, _ = load_accounts()
-    ranked = rank(args, accounts, today)
+    accounts, settings = load_accounts()
+    ranked = rank(args, accounts, today, settings)
     usable = [r for r in ranked if r["group"] < 4]
 
     if args.json:
         print(json.dumps({"today": str(today), "accounts_file": str(accounts_path()),
                           "job": {"requests": args.requests, "in_tokens": args.in_tokens,
-                                  "out_tokens": args.out_tokens, "needs": args.needs, "tier": args.tier},
+                                  "out_tokens": args.out_tokens, "needs": args.needs, "tier": args.tier,
+                                  "purpose": args.purpose},
                           "candidates": ranked}, indent=2, default=str))
         return 0 if usable else 1
 
+    if args.in_tokens > LONG_CONTEXT_TOKENS and "long-context" not in args.needs:
+        print(f"(mean input {args.in_tokens:,.0f} tokens > {LONG_CONTEXT_TOKENS:,}: treated as long-context)")
     print(f"job: {args.requests:,} requests × {args.in_tokens:,.0f} in / {args.out_tokens:,.0f} out tokens"
           f"; tier {args.model or args.tier}; needs {', '.join(args.needs) or 'nothing extra'}; today {today}")
     if not accounts:
         print(f"(no accounts file at {accounts_path()}: only the Gemini fallback is known)")
     groups = {1: "prepaid, covers", 2: "prepaid, short", 3: "pay-per-token", 4: "blocked"}
-    print(f"{'#':>2}  {'account':<8} {'provider':<9} {'model':<22} {'est $':>9}  {'group':<16} reason")
+    print(f"{'#':>2}  {'account':<8} {'provider':<9} {'model':<22} {'est $':>9}  {'group':<18} reason")
     for i, r in enumerate(ranked, 1):
         cost = f"{r['cost_usd']:.2f}" if "cost_usd" in r else "-"
         print(f"{i:>2}  {r['account']:<8} {r['provider']:<9} {r['model'] or '-':<22} {cost:>9}  "
-              f"{groups[r['group']]:<16} {r['reason']}")
+              f"{r.get('group_name') or groups[r['group']]:<18} {r['reason']}")
         for n in r["notes"]:
             print(f"{'':>4}  · {n}")
     if usable:

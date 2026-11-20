@@ -5,6 +5,12 @@ limits, capabilities, accounts). This page explains what they encode. Prices che
 
 ## Ranking
 
+**Document type first.** When the job needs `pdf`, `vision`, `audio`, `video`, `embeddings` or
+`long-context` (auto-added when mean input > 100,000 tokens/request), the Gemini row is group 1
+(`document → Gemini`) and every other usable row is group 3 (`fallback`), whatever its credit or expiry.
+A prepaid Claude row carries a note to spend that credit on a text job instead. The table below applies
+only to text jobs:
+
 | Group | Condition | Order within group |
 |---|---|---|
 | 1 prepaid, covers | `credit_linked = true`, `monthly_credit_usd > 0`, usable key, balance ≥ cost × 1.2, ≥1 day to expiry | soonest `cycle_renews` first |
@@ -15,6 +21,16 @@ limits, capabilities, accounts). This page explains what they encode. Prices che
 Balance: the `--balance` value when given (verified), else `monthly_credit_usd` (UNVERIFIED, an upper
 bound). A `cycle_renews` date in the past means the config is stale: the row says so and the balance is
 treated as unknown.
+
+## Billing project (Gemini)
+
+| `--purpose` | Gemini next command |
+|---|---|
+| `research` | Vertex in `vertex_research_project` (accounts.toml), on the UVA Research billing account; never the AI Studio `GOOGLE_API_KEY`, which bills Eddy personally |
+| `consulting` | `vertex_consulting_project` if set; otherwise ASK EDDY. Never the UVA research project |
+| unset / `other` | reminds you to pass `--purpose` |
+
+Creating a billing account, Cloud project or prepayment needs Eddy's yes.
 
 ## Turnaround
 
@@ -68,6 +84,8 @@ Without `--jsonl` the size is estimated as requests × (in-tokens × 4 + 400) by
 | Need | Anthropic | OpenAI | Gemini |
 |---|---|---|---|
 | vision, pdf | yes | yes | yes |
+| embeddings | no | yes | yes |
+| audio, video | no | unverified, treated as no | yes |
 | web-search | yes, $10/1k searches | yes, $10/1k searches (verified live 2026-11-05) | yes, $14/1k after 5k free per month |
 | long-context | 1M tokens | long-context tier above 272k | yes |
 
@@ -77,4 +95,5 @@ Without `--jsonl` the size is estimated as requests × (in-tokens × 4 + 400) by
   Console (Billing > Promotional credits). [Source](https://platform.claude.com/docs/en/about-claude/api-credits-for-subscribers.md)
 - ChatGPT Pro: $100/$200/$500 per month by tier, linked by the subscriber to an API org; Batch not named
   in coverage. [Source](https://developers.openai.com/api/docs/guides/chatgpt-api-credits)
-- Gemini on Vertex: pay-per-token on GCP, no credit to route around.
+- Gemini on Vertex: pay-per-token on GCP, no credit to route around. Preferred for documents.
+- OpenRouter: pay-as-you-go, not a default.

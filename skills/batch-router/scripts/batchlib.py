@@ -49,10 +49,11 @@ SEARCH_USD = {"anthropic": 0.010, "openai": 0.010, "gemini": 0.014}
 
 # What each provider's BATCH path does. OpenAI's batch guide never mentions tools, but a live
 # /v1/responses batch row with web_search searched and cited sources (2026-11-05).
+# Claude has no embeddings endpoint and no audio/video input; OpenAI audio/video on batch is unverified.
 CAPABILITIES = {
     "anthropic": {"vision", "pdf", "web-search", "long-context"},
-    "openai": {"vision", "pdf", "web-search", "long-context"},
-    "gemini": {"vision", "pdf", "web-search", "long-context"},
+    "openai": {"vision", "pdf", "web-search", "long-context", "embeddings"},
+    "gemini": {"vision", "pdf", "web-search", "long-context", "embeddings", "audio", "video"},
 }
 
 

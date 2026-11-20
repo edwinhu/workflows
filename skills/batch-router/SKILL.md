@@ -28,17 +28,24 @@ shared Claude accounts per document.
 
 ```bash
 uv run ${CLAUDE_SKILL_DIR}/scripts/route_batch.py --requests 5000 --in-tokens 3000 --out-tokens 300 \
-  [--tier cheap|mid|top|frontier | --model <id>] [--needs vision|pdf|web-search|long-context] \
-  [--balance uva=200 --balance nyu=200] [--json]
+  [--tier cheap|mid|top|frontier | --model <id>] [--needs pdf|vision|audio|video|embeddings|long-context|web-search] \
+  [--purpose research|consulting|other] [--balance uva=200 --balance nyu=200] [--json]
 uv run ${CLAUDE_SKILL_DIR}/scripts/route_batch.py --jsonl requests.jsonl --out-tokens 300   # measured
 ```
 
-It prints a ranked table with a reason per row and the next command. The ranking:
+It prints a ranked table with a reason per row and the next command. **Document type decides first:**
+
+0. **Document job → Gemini.** PDFs, images, audio, video, embeddings, or long context (mean input
+   > 100k tokens/request, flagged automatically) rank Gemini first even when a Claude credit expires
+   tomorrow; Claude and OpenAI rows become fallbacks. Pass `--needs` for every document type the job has.
+
+Only a **text** job reaches the credit ranking:
 
 1. **Prepaid credit that expires soonest**, covers the estimated cost +20%, and has a usable key.
 2. Other prepaid credit (short balance, or expiry within 24h).
 3. **Pay-per-token, cheapest model that fits**; Gemini Vertex wins a tie and is the default fallback.
-4. Blocked: no key, or the batch path lacks a needed capability. Listed, with why.
+4. Blocked: no key, or the batch path lacks a needed capability (Claude has no embeddings, audio or
+   video). Listed, with why.
 
 Over a provider's per-batch limit (Claude 100k / 256 MB, OpenAI 50k / 200 MB, Gemini 200k) the row says
 how many shards. Details, prices and limits: [routing rules](references/routing.md).
@@ -49,6 +56,13 @@ Then invoke the skill the top row names (`workflows:claude-batch`, `workflows:op
 
 ## Facts
 
+- **Who pays for Gemini.** Research batches run on Vertex in the research project on the UVA Research
+  billing account (`vertex_research_project` in accounts.toml; `--purpose research` prints it), never on
+  the AI Studio `GOOGLE_API_KEY`, whose project bills Eddy's personal account. Consulting work never bills the UVA account; until a consulting project exists the router says ask Eddy.
+- **No paid commitment without Eddy.** Ask before creating a billing account, a Cloud project, a
+  prepayment or any other paid commitment.
+- **Claude subscriptions are not a batch budget.** Daily agent work runs on the Claude Code subscription;
+  the API credit ($200/month per org, three orgs, API and Message Batches only) is what batches spend.
 - **Balances are never stored.** There is no balance API for Claude credits; the Console is the only
   source. Pass `--balance <account>=<usd>` from what Eddy or the Console reported today; without it the
   router assumes at most the monthly credit and prints `balance UNVERIFIED`. Writing a balance into
@@ -58,16 +72,23 @@ Then invoke the skill the top row names (`workflows:claude-batch`, `workflows:op
 - **OpenAI is pay-per-token** until its account says `credit_linked = true`: the ChatGPT Pro credit page
   never names Batch. Its batches can queue for hours; not for same-day results.
 - **Credits expire at cycle end with no rollover.** An org whose credit lapses in four days with $200
-  unspent is worth more than any per-token discount, which is why expiry outranks price.
+  unspent is worth more than any per-token discount, which is why expiry outranks price — among text
+  jobs. It never outranks document type: a PDF batch on Claude to "use up" credit buys worse
+  extraction and a higher per-document bill than Gemini.
 - **Web search is priced per search, not per row:** Claude and OpenAI $10/1k, Gemini $14/1k after 5k free a
   month. The router assumes 2 searches per row (`--searches-per-row`); a grounded Gemini run once cost
-  $390 in searches against $30 in tokens.
+  $390 in searches against $30 in tokens, and October 2026 billed 26,344 searches against 5,490 visible.
+  Pilot every grounded batch and cap it.
+- **OpenRouter** is pay-as-you-go and never a default.
 
 ## Red flags — STOP
 
 | About to | Do instead |
 |---|---|
-| Send bulk work straight to gemini-vertex out of habit | Run the router; a prepaid Claude credit may be expiring unused |
+| Send a text job straight to gemini-vertex out of habit | Run the router; a prepaid Claude credit may be expiring unused |
+| Route a PDF, image, audio, embeddings or >100k-token job to Claude to spend expiring credit | Gemini; spend the credit on a text job |
+| Run a research Gemini batch on the AI Studio `GOOGLE_API_KEY` | Vertex in the research project, `--purpose research` |
+| Bill consulting work to the UVA research project, or create a project for it | Ask Eddy |
 | Loop synchronous API calls over the rows | Batch; the only sync call is the one `verify` |
 | Fan out agents or farm rows, one per document | One batch job over pre-cut inputs |
 | Submit on the router's word alone | The router never submits; follow the provider skill's pilot and get the go-ahead |

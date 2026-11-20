@@ -89,6 +89,45 @@ def test_openai_unlinked_is_pay_per_token_and_web_search_does_not_block_it(tmp_p
     assert by["vertex"]["group"] == 3
 
 
+def test_pdf_job_routes_to_gemini_even_with_expiring_claude_credit(tmp_path, monkeypatch):
+    # b_soon expires in 4 days with a verified $200: a text job would spend it first.
+    c = ranked(tmp_path, monkeypatch, "--requests", "500", "--in-tokens", "20000", "--out-tokens", "400",
+               "--needs", "pdf", "--balance", "b_soon=200")
+    assert c[0]["provider"] == "gemini" and c[0]["group"] == 1
+    by = {r["account"]: r for r in c}
+    assert by["b_soon"]["group"] == 3 and by["b_soon"]["days_left"] == 4
+    assert any("TEXT jobs" in n for n in by["b_soon"]["notes"])
+
+
+def test_long_input_is_long_context_and_routes_to_gemini(tmp_path, monkeypatch):
+    c = ranked(tmp_path, monkeypatch, "--requests", "100", "--in-tokens", "150000", "--out-tokens", "300")
+    assert c[0]["provider"] == "gemini" and "long-context" in c[0]["reason"]
+
+
+def test_embeddings_block_claude_and_route_to_gemini(tmp_path, monkeypatch):
+    c = ranked(tmp_path, monkeypatch, "--requests", "1000", "--in-tokens", "500", "--out-tokens", "0",
+               "--needs", "embeddings")
+    by = {r["account"]: r for r in c}
+    assert c[0]["provider"] == "gemini"
+    assert by["b_soon"]["group"] == 4 and "embeddings" in by["b_soon"]["reason"]
+
+
+def test_text_job_still_spends_expiring_credit_first(tmp_path, monkeypatch):
+    c = ranked(tmp_path, monkeypatch, "--requests", "500", "--in-tokens", "20000", "--out-tokens", "400")
+    assert c[0]["account"] == "b_soon" and c[0]["group"] == 1
+
+
+def test_purpose_sets_the_gemini_billing_project(tmp_path, monkeypatch):
+    def gem(*extra):
+        c = ranked(tmp_path, monkeypatch, "--requests", "10", "--in-tokens", "100", "--out-tokens", "10",
+                   "--needs", "pdf", *extra)
+        return c[0]["next"]
+    assert "research project on the UVA Research" in gem("--purpose", "research")
+    assert "never the AI Studio" in gem("--purpose", "research")
+    consulting = gem("--purpose", "consulting")
+    assert consulting.startswith("ASK EDDY") and "never the UVA research project" in consulting
+
+
 def test_shards_over_the_request_limit(tmp_path, monkeypatch):
     c = ranked(tmp_path, monkeypatch, "--requests", "250000", "--in-tokens", "100", "--out-tokens", "10")
     by = {r["account"]: r for r in c}

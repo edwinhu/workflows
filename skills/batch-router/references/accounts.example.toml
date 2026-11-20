@@ -8,6 +8,11 @@
 # Used for op:// keys when OP_SERVICE_ACCOUNT_TOKEN is unset.
 # op_token_file = "/path/to/op-service-account-token"
 
+# Vertex project for --purpose research (on the research-funds billing account); printed in the
+# Gemini next command. Consulting needs its own project; without one the router says ask Eddy.
+# vertex_research_project = "<research-project-id>"
+# vertex_consulting_project = "<consulting-project-id>"
+
 [accounts.personal]
 provider = "anthropic"
 label = "Personal org"
