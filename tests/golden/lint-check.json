@@ -15,7 +15,7 @@
         "bad.py": "import os\n\n\nx = 1\n"
       },
       "tsExpected": {
-        "stdoutSha256": "9d268891ebc48bd7f8f50b3f1ad493456663ad570618bd43622152b02b7303a6",
+        "stdoutSha256": "ee7d2eaadf1d209f6ddd0c5a3041e678360ac5994ce641d6fe405370883bd81a",
         "exit": 0,
         "fs": {}
       }

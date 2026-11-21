@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Stand-in for `ruff check --no-fix <file>` on the hook-golden PATH: lint-check's golden pins the
+# hook's behaviour (forward stdout on nonzero exit, silence on 0), not ruff's per-release rendering.
+[ "$1 $2" = "check --no-fix" ] || { echo "ruff stub: only 'check --no-fix <file>' is supported" >&2; exit 2; }
+f=$3
+if [ ! -f "$f" ]; then
+  printf 'E902 No such file or directory (os error 2)\n--> %s:1:1\n\nFound 1 error.\n' "$f"
+  exit 1
+fi
+if grep -q '^import ' "$f"; then
+  printf 'F401 [*] imported but unused\n --> %s:1:8\n\nFound 1 error.\n' "$f"
+  exit 1
+fi
+echo "All checks passed!"
