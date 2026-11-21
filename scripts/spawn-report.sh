@@ -18,7 +18,11 @@ export LC_ALL=C
 # The child's own stream is never the destination, so nothing below may reach it.
 unset TMPDIR CLAUDE_CODE_SESSION_ID session tmpdir label outcome summary report
 
-usage() { printf 'spawn-report.sh: %s\n' "$1" >&2; exit 2; }
+usage() {
+  printf 'spawn-report.sh: %s\n' "$1" >&2
+  printf 'usage: spawn-report.sh --session <id> --tmpdir <dir> --label <tab> --outcome DONE|BLOCKED|ERROR --summary <line> --report <abs path>\n' >&2
+  exit 2
+}
 fail() { printf 'spawn-report.sh: %s\n' "$1" >&2; exit 1; }
 
 # Byte-identical to farm.sh's enc(): one protocol.

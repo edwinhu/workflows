@@ -37,7 +37,7 @@ const nodeIO: SnapshotIO = {
   async stat(p) { const s = statSync(p); return { size: s.size, mtimeMs: s.mtimeMs } },
   async alivePids(pids) {
     const [cmd = 'ps', ...args] = psArgv(pids)
-    return psPids(spawnSync(cmd, args, { encoding: 'utf8' }).stdout ?? '')
+    return psPids(spawnSync(cmd, args, { encoding: 'utf8', timeout: 10_000 }).stdout ?? '')
   },
 }
 
@@ -58,6 +58,7 @@ function report(s: ReturnType<typeof sandbox>, over: Record<string, string> = {}
   const argv = Object.entries(a).flatMap(([k, v]) => [k, v])
   return spawnSync('bash', [REPORT, ...argv], {
     encoding: 'utf8',
+    timeout: 10_000,
     env: { ...process.env, TMPDIR: s.childTmp, CLAUDE_CODE_SESSION_ID: 'child-sess-99' },
   })
 }
