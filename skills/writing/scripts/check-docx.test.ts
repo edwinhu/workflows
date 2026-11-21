@@ -29,7 +29,7 @@ function project(): string {
   const z = spawnSync('python3', ['-c', 'import sys, zipfile\nwith zipfile.ZipFile(sys.argv[1], "w") as z:\n    z.writestr("word/document.xml", sys.argv[2])',
     join(d, 'exports', 'Intro.docx'), xml], { encoding: 'utf8', timeout: 60_000 })
   expect(z.status, z.stderr).toBe(0)
-  const realUv = spawnSync('bash', ['-c', 'command -v uv'], { encoding: 'utf8' }).stdout.trim()
+  const realUv = spawnSync('bash', ['-c', 'command -v uv'], { encoding: 'utf8', timeout: 10_000 }).stdout.trim()
   const sections = JSON.stringify([join(d, 'drafts', 'Intro.md'), join(d, 'exports', 'Intro.docx')]
     .map((f, i) => ({ name: `S${i}`, draftFile: f })))
   writeFileSync(join(d, 'bin', 'uv'), `#!/usr/bin/env bash

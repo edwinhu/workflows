@@ -222,8 +222,14 @@ test('workflow-check prints the warning: lines of a check that exits 0, and a wa
 
 test('writing check.sh maps --style general to writing/general: the general register\'s crossing markers gate through workflow-check', () => {
   const p = project({ 'drafts/x.md': 'As explained supra, This Article argues the point.\n', 'refs.bib': '', 'plan.md': '# Plan\n' })
+  // The constraint leg grades the plan's section drafts, so a stub `uv` names drafts/x.md as the one section and
+  // hands every other call to the real uv.
+  const realUv = sh('bash', ['-c', 'command -v uv']).stdout.trim()
+  const sections = JSON.stringify([{ name: 'X', draftFile: join(p, 'drafts', 'x.md') }])
+  put(p, { 'bin/uv': `#!/usr/bin/env bash\ncase "$*" in\n  *writing_section_index.py*) echo '{"ok": true, "style": "general", "sections": ${sections}}'; exit 0 ;;\n  *) exec '${realUv}' "$@" ;;\nesac\n` })
+  chmodSync(join(p, 'bin', 'uv'), 0o755)
   const r = sh('bash', [join(ROOT, 'skills', 'writing', 'scripts', 'check.sh'), '--project', p, '--bib', join(p, 'refs.bib'), '--plan', join(p, 'plan.md'),
-    '--plan-hash', 'h', '--style', 'general'], { WORKFLOW_CHECKS_PATH: ROOT, TMPDIR: mkTmp('wfc-tmpdir-') })
+    '--plan-hash', 'h', '--style', 'general'], { WORKFLOW_CHECKS_PATH: ROOT, TMPDIR: mkTmp('wfc-tmpdir-'), PATH: `${join(p, 'bin')}:${process.env.PATH}` })
   const o = r.stdout + r.stderr
   expect(o, o.slice(-1500)).toMatch(/^leg writing-general-gate exit=1/m)
   const crossings = [...o.matchAll(/^drafts\/x\.md:1: register-crossing REGISTER-CROSSING: `([^`]+)`/gm)].map(m => m[1]).sort()

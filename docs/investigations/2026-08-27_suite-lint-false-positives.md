@@ -14,7 +14,7 @@ argue with a specific row.
 |---|---|---|---|---|
 | positive-match-failure-vocabulary | 14 | 26 | 23 | 3 |
 | single-distinct-literal | 10 | 208 | 191 | 17 |
-| existence-only-artifact | 1 | 1 | 1 | 0 |
+| existence-only-artifact | 2 | 2 | 2 | 0 |
 | injected-key-never-varied | 17 | 44 | 44 | 0 |
 
 **The cited-findings column is the one this repository's suite pins, and the only one re-executed on
@@ -298,9 +298,9 @@ The `suite-lint.test.ts:462` reading above establishes the point without it.
 
 ## existence-only-artifact
 
-Raw 1, false positives 1, no true positives.
+Raw 2, false positives 2, no true positives.
 
-The one finding is `skills/grind/scripts/grind.test.ts::reports the run after it finishes, reading only the journal`, and it is a false positive of a shape the
+The first finding is `skills/grind/scripts/grind.test.ts::reports the run after it finishes, reading only the journal`, and it is a false positive of a shape the
 rule cannot currently distinguish. The line is
 
 ```
@@ -316,7 +316,15 @@ this file" is exactly what a correct absence assertion looks like. The repair th
 exist. (The line immediately above it, `expect(stray.length).toBeGreaterThan(0)`, asserts the
 contents of the artifact that *is* supposed to exist, which the rule does not flag.)
 
-Its earlier finding was a different false positive: a read guard rather than an assertion, the last
+The second finding is `tests/spawn-report.test.ts::<file scope>`, and it is not an assertion at all. The line is
+
+```
+const s = lstatSync(`${dir}/${name}`)
+```
+
+inside `nodeIO.list`, the filesystem adapter the test hands to the watcher's `buildViews`. It stats each entry `readdirSync` returned and consumes the result on the next line — `s.isFile()`, `s.isDirectory()`, `s.size`, `s.mtimeMs` — so the stat is how the helper reads the artifact's metadata, not a claim that the artifact exists. The rule counts a `lstatSync` reference to a path as an existence check without following the returned `Stats` into the values the helper returns. The file's assertions read the event file's contents through the watcher's own snapshot and wake text, which is the content check the rule's premise says is missing.
+
+Before both of these, an earlier finding was a different false positive: a read guard rather than an assertion, the last
 field of a helper's return, where an `existsSync` chose `''` over throwing so that the failure would
 surface at the assertion instead of in the fixture, while the artifact's *contents* were asserted
 twice further down. There the rule scored an `existsSync` reference without noticing that the guarded
@@ -324,10 +332,10 @@ read flows into a variable the assertions consume. That file was `tests/goal-sen
 deleted 2026-09-17 with the `/goal` self-send transport it exercised, so the finding went with its
 subject rather than being fixed.
 
-This count has moved 0 → 1 → 0 → 1 across four refreshes without the rule changing once: what moved
+This count has moved 0 → 1 → 0 → 1 → 2 across five refreshes without the rule changing once: what moved
 each time was which files the corpus held. That is the case for pinning the AUDITED CORPUS rather
-than the whole-tree total, which is what `suite-lint-report.test.ts` now does. Both findings the rule
-has ever produced here were read, and both were false; on this corpus it has never been right.
+than the whole-tree total, which is what `suite-lint-report.test.ts` now does. All three findings the rule
+has ever produced here were read, and all three were false; on this corpus it has never been right.
 
 ## injected-key-never-varied
 

@@ -165,7 +165,7 @@ describe('editorial summary (check-marks and check-quotes, contract form)', () =
     expect(q.out).toContain('1 editorial summary span(s) skipped as elisions')
     expect(q.code).toBe(0)
   })
-  const positional = (edit: (t: string) => string) => spawnSync('python3', [join(CONSTRAINTS, 'check-marks.py'), join(project(edit), 'addenda/a.typ')], { encoding: 'utf8' }).stdout
+  const positional = (edit: (t: string) => string) => spawnSync('python3', [join(CONSTRAINTS, 'check-marks.py'), join(project(edit), 'addenda/a.typ')], { encoding: 'utf8', timeout: 60_000 }).stdout
   test('the fixture as committed has no summary and says so', () => {
     expect(positional(t => t)).toContain('summaries: PASS — no editorial summary')
   })
