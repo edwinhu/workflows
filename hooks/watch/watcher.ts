@@ -2,6 +2,8 @@
 //
 //   wake          $.prompt.submit ONCE per run that reaches DONE or GONE, remembered in $.store; a finished
 //                 one carries its report heads or its work verdict
+//   spawn         a spawned session's report (scripts/spawn-report.sh) wakes once, naming the summary
+//                 and report path; outcome() reads nothing for it, so the report text is never pasted
 //   /farm         a table of this session's runs, printed at once, no turn
 //   beacon        <TMPDIR>/farm-events/<session>/watcher.alive, rewritten by every tick that completes:
 //                 the one thing outside this module that can tell a session whose mods never loaded

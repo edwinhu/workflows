@@ -410,3 +410,38 @@ test('a stale event file from a long-dead grind session wakes nobody', async ($,
   await clock.advance(15_000)
   expect(seen.submits).toEqual([])
 })
+
+/** A spawned session's report, as scripts/spawn-report.sh writes it into the PARENT's events dir:
+ *  one START + DONE pair in one file, its writer's pid long dead. */
+function spawnTree(): Tree {
+  return {
+    [`${dir(SID)}/700.ndjson`]:
+      `spawn: START omarchy:child-tab cwd=/w out=/r/child-report.md t=${T0 + 40 * 60}\n` +
+      `spawn: DONE omarchy:child-tab BLOCKED summary=needs%20a%20decision%20on%20the%20fallback\n`,
+    '/r/child-report.md': '# Full report\nREPORT-BODY-MARKER line the parent must not get pasted\n',
+  }
+}
+
+const spawnStore = new Map<string, unknown>()
+
+test('a spawned session\'s report wakes the parent once, labelled, with summary and path only', async ($, on) => {
+  const { seen, clock } = world(on, spawnTree(), { store: spawnStore })
+  await start($)
+  await clock.settle()
+  await clock.advance(15_000)
+  await clock.advance(15_000)
+  expect(seen.submits.length).toBe(1)
+  const t = seen.submits[0]!
+  expect(t).toContain('Spawned session omarchy:child-tab reported BLOCKED: needs a decision on the fallback')
+  expect(t).toContain('Report: /r/child-report.md')
+  expect(t).not.toContain('REPORT-BODY-MARKER')
+  expect(t).not.toContain('GONE')
+})
+
+test('a spawned session\'s report does not wake the parent again after a reload', async ($, on) => {
+  const { seen, clock } = world(on, spawnTree(), { store: spawnStore })
+  await start($)
+  await clock.settle()
+  await clock.advance(15_000)
+  expect(seen.submits).toEqual([])
+})

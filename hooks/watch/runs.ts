@@ -3,7 +3,8 @@
 // `bun test` covers it (tests/farm-watch-runs.test.ts) as well as the mod kit.
 //
 // THE STREAM is $TMPDIR/farm-events/<session id>/<pid>.ndjson, written by farm.sh, work-round.sh,
-// work-loop.sh and grind.sh: `<prefix>: START <label> k=v ...`, `CLAIM <label> path=<p> `,
+// work-loop.sh, grind.sh and, into the PARENT session's directory, a spawned child's spawn-report.sh:
+// `<prefix>: START <label> k=v ...`, `CLAIM <label> path=<p> `,
 // `DONE <label> <status> ...`, values percent-encoded by enc(). The directory's session key IS the
 // ownership marker; the filename is the pid that lives for the whole run.
 
@@ -56,7 +57,7 @@ export type Run = {
   wait?: { waits: number; why: string; script: string }
 }
 
-export type Kind = 'farm' | 'work-round' | 'work-loop' | 'grind'
+export type Kind = 'farm' | 'work-round' | 'work-loop' | 'grind' | 'spawn'
 
 export type View = Run & {
   kind: Kind
@@ -143,6 +144,8 @@ export function basename(p: string): string {
 }
 
 export function kindOf(r: Run): Kind {
+  // First: a spawned session names its own label, so a child labelled work-loop is still a spawn.
+  if (r.prefix === 'spawn') return 'spawn'
   if (r.label === 'work-round') return 'work-round'
   if (r.label === 'work-loop') return 'work-loop'
   if (r.prefix === 'grind') return 'grind'
@@ -151,7 +154,8 @@ export function kindOf(r: Run): Kind {
 
 /** The paths that say a run delivered: its claims, else its out=. A grind's journal is not one. */
 export function artifactsOf(r: Run): string[] {
-  if (kindOf(r) === 'grind') return []
+  // A spawn's report is written before its events, so its presence cannot stand in for a missing DONE.
+  if (kindOf(r) === 'grind' || kindOf(r) === 'spawn') return []
   if (kindOf(r) === 'work-loop') return r.out ? [r.out] : []
   const c = r.claims.length ? r.claims : r.out ? [r.out] : []
   // farm.sh claims the caller's spelling AND its canonical form; a relative one is relative to the
@@ -357,11 +361,35 @@ export function verdictText(json: string | null): string {
     `failed checks: ${ids(r.mechanicalThatFailed)} · lenses flagged: ${ids(r.lensesThatFlagged)} · rules failed: ${ids(r.rulesThatFailed)}`
 }
 
+/** The longest value a spawn wake takes from its event line, in characters. */
+export const SPAWN_FIELD_MAX = 300
+
+// C0, DEL and C1 controls, plus the two Unicode line separators.
+const CONTROL = /[\x00-\x1f\x7f-\x9f\u2028\u2029]/g
+
+/** A value from a spawn line, made safe to paste: anyone who can write the events file chose it, so it
+ *  gets no line break and at most SPAWN_FIELD_MAX characters. Cut before scrubbing, so the scrub is
+ *  bounded too. */
+function oneLine(s: string): string {
+  let cut = s.length > SPAWN_FIELD_MAX ? s.slice(0, SPAWN_FIELD_MAX) : s
+  if (cut !== s) cut = cut.replace(/[\uD800-\uDBFF]$/, '') + '…'
+  return cut.replace(CONTROL, ' ')
+}
+
+/** A spawned session's wake: one line naming its summary and report path, never the report text. */
+function spawnWake(v: View, ev: string): string {
+  const label = oneLine(v.label)
+  if (!v.done) return `Spawned session ${label} left an incomplete report (no DONE line). ${ev}`
+  const summary = oneLine(fields(v.done.detail).summary ?? '')
+  return `Spawned session ${label} reported ${oneLine(v.done.status)}: ${summary}. Report: ${oneLine(v.out)}. ${ev}`
+}
+
 /** The prompt that wakes the session for a finished or dead run; `outcome` appends what a finished
  *  one delivered — report heads for a farm or grind run, the verdict for a work loop. */
 export function wakeText(v: View, nowMs: number, outcome?: Outcome): string {
   const took = elapsed(nowMs - v.startedMs)
   const ev = `events: ${v.file}`
+  if (v.kind === 'spawn') return spawnWake(v, ev)
   if (v.kind === 'work-loop' || v.kind === 'work-round') {
     const dir = v.runDir ?? dirname(v.out)
     if (v.state === 'gone') {
