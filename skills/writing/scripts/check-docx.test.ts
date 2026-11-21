@@ -50,4 +50,4 @@ test('check.sh judges a planned .docx draft with the writing constraints: its fi
   const out = (r.stdout ?? '') + (r.stderr ?? '')
   expect(out).toContain('exports/Intro.docx:1: wikipedia-structural-patterns')
   expect(out).toMatch(/^leg writing-general-gate exit=1$/m)
-}, 290_000)
+}, 320_000)

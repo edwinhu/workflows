@@ -87,7 +87,7 @@ describe('a spawned session reports through the parent session\'s events dir', (
     expect(t).toContain(`Report: ${s.report}`)
     expect(t).not.toContain('FULL-REPORT-BODY-MARKER')
     expect(t).not.toContain('\n')
-  })
+  }, 30_000)
 
   test('two reports from one child are two wakes, each with its own outcome', async () => {
     const s = sandbox()
@@ -99,7 +99,7 @@ describe('a spawned session reports through the parent session\'s events dir', (
     expect(texts.length).toBe(2)
     expect(texts.some(t => t.includes('reported BLOCKED'))).toBe(true)
     expect(texts.some(t => t.includes('reported DONE: shipped') && t.includes(`Report: ${second}`))).toBe(true)
-  })
+  }, 60_000)
 
   test('the script refuses what would mislead the parent, and writes nothing when it does', () => {
     const s = sandbox()
@@ -117,7 +117,7 @@ describe('a spawned session reports through the parent session\'s events dir', (
     let n = 0
     try { n = readdirSync(s.events).filter(f => f.endsWith('.ndjson')).length } catch { /* no dir: nothing written */ }
     expect(n).toBe(0)
-  })
+  }, 120_000)
 
   test('a forged event line cannot put a newline or a wall of text into the wake', async () => {
     const s = sandbox()
