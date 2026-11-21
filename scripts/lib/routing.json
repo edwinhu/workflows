@@ -1,6 +1,6 @@
 {
   "_comment": "The farm-out routing table, read by scripts/lib/route.ts. kinds are hand-edited and reviewed; candidate availability, price and asOf change ONLY through `bun scripts/lib/route.ts --refresh`, the only sanctioned way to update them, and its diff is reviewed before commit. Models are pinned full ids: an unpinned wrapper slot is wrapper-local and can name another family.",
-  "asOf": "2026-10-13",
+  "asOf": "2026-11-21",
   "candidates": {
     "sonnet": {
       "provider": "claude",
@@ -13,9 +13,9 @@
         "completion": 0.00001
       },
       "signals": {
-        "usageRank": 30,
-        "intelligenceIndex": 56,
-        "asOf": "2026-10-13"
+        "usageRank": 21,
+        "intelligenceIndex": 54.5,
+        "asOf": "2026-11-21"
       }
     },
     "haiku": {
@@ -29,9 +29,9 @@
         "completion": 5e-7
       },
       "signals": {
-        "usageRank": 49,
-        "intelligenceIndex": 43.4,
-        "asOf": "2026-10-13"
+        "usageRank": 18,
+        "intelligenceIndex": 36.5,
+        "asOf": "2026-11-21"
       }
     },
     "opus": {
@@ -45,25 +45,9 @@
         "completion": 0.00002
       },
       "signals": {
-        "usageRank": 15,
-        "intelligenceIndex": 57.6,
-        "asOf": "2026-10-13"
-      }
-    },
-    "flash": {
-      "provider": "gemini",
-      "model": "gemini-3.7-flash-high",
-      "owner": "antigravity",
-      "openrouter": "google/gemini-3.7-flash",
-      "available": false,
-      "price": {
-        "prompt": 7.5e-7,
-        "completion": 0.00000375
-      },
-      "signals": {
-        "usageRank": 40,
-        "intelligenceIndex": 39.1,
-        "asOf": "2026-10-13"
+        "usageRank": 6,
+        "intelligenceIndex": 59.1,
+        "asOf": "2026-11-21"
       }
     },
     "luna": {
@@ -77,25 +61,25 @@
         "completion": 5e-7
       },
       "signals": {
-        "usageRank": 9,
-        "intelligenceIndex": 38.1,
-        "asOf": "2026-10-13"
+        "usageRank": 4,
+        "intelligenceIndex": 27.9,
+        "asOf": "2026-11-21"
       }
     },
     "sol": {
       "provider": "codex",
-      "model": "gpt-6.1-sol",
+      "model": "gpt-6.2-sol",
       "owner": "openai",
-      "openrouter": "openai/gpt-6.1-sol",
+      "openrouter": "openai/gpt-6.2-sol",
       "available": true,
       "price": {
         "prompt": 0.000002,
         "completion": 0.00001
       },
       "signals": {
-        "usageRank": 31,
-        "intelligenceIndex": 51.8,
-        "asOf": "2026-10-13"
+        "usageRank": 61,
+        "intelligenceIndex": 57.3,
+        "asOf": "2026-11-21"
       }
     },
     "flash38": {
@@ -105,13 +89,45 @@
       "openrouter": "google/gemini-3.8-flash",
       "available": true,
       "price": {
-        "prompt": 7.5e-7,
-        "completion": 0.00000375
+        "prompt": 8.25e-7,
+        "completion": 0.000004125
       },
       "signals": {
-        "usageRank": 16,
-        "intelligenceIndex": 40.9,
-        "asOf": "2026-10-13"
+        "usageRank": 24,
+        "intelligenceIndex": 30.8,
+        "asOf": "2026-11-21"
+      }
+    },
+    "hydrogen": {
+      "provider": "gemini",
+      "model": "gemini-4-hydrogen-xhigh",
+      "owner": "antigravity",
+      "openrouter": "google/gemini-4-hydrogen",
+      "available": true,
+      "price": {
+        "prompt": 0.0000015,
+        "completion": 0.0000075
+      },
+      "signals": {
+        "usageRank": 70,
+        "intelligenceIndex": 53.9,
+        "asOf": "2026-11-21"
+      }
+    },
+    "neon": {
+      "provider": "gemini",
+      "model": "gemini-4-neon-xhigh",
+      "owner": "antigravity",
+      "openrouter": "google/gemini-4-neon",
+      "available": true,
+      "price": {
+        "prompt": 0.000003,
+        "completion": 0.000015
+      },
+      "signals": {
+        "usageRank": 64,
+        "intelligenceIndex": 61.4,
+        "asOf": "2026-11-21"
       }
     }
   },
@@ -133,21 +149,21 @@
       "fallbacks": [
         "opus",
         "sol",
-        "flash38"
+        "neon"
       ]
     },
     "bulk": {
       "pick": "flash38",
       "fallbacks": [
+        "hydrogen",
         "haiku",
-        "sonnet",
-        "flash"
+        "sonnet"
       ]
     },
     "vision": {
-      "pick": "flash38",
+      "pick": "hydrogen",
       "fallbacks": [
-        "flash"
+        "flash38"
       ]
     }
   }

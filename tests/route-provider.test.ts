@@ -80,36 +80,43 @@ function stubJev() {
 // ----------------------------------------------------------------- (a) the committed table
 
 describe('the committed routing.json', () => {
-  test('carries sol and flash38 with the decided provider, model, owner and openrouter id', () => {
+  test('carries sol, flash38, hydrogen and neon with the decided provider, model, owner and openrouter id', () => {
     const t = JSON.parse(readFileSync(COMMITTED, 'utf8'))
     expect(t.candidates.sol).toMatchObject({
-      provider: 'codex', model: 'gpt-6.1-sol', owner: 'openai', openrouter: 'openai/gpt-6.1-sol',
+      provider: 'codex', model: 'gpt-6.2-sol', owner: 'openai', openrouter: 'openai/gpt-6.2-sol',
     })
     expect(t.candidates.flash38).toMatchObject({
       provider: 'gemini', model: 'gemini-3.8-flash-high', owner: 'antigravity', openrouter: 'google/gemini-3.8-flash',
     })
+    expect(t.candidates.hydrogen).toMatchObject({
+      provider: 'gemini', model: 'gemini-4-hydrogen-xhigh', owner: 'antigravity', openrouter: 'google/gemini-4-hydrogen',
+    })
+    expect(t.candidates.neon).toMatchObject({
+      provider: 'gemini', model: 'gemini-4-neon-xhigh', owner: 'antigravity', openrouter: 'google/gemini-4-neon',
+    })
+    expect(t.candidates.flash).toBeUndefined()
   })
 
-  test("review's chain is sonnet, then opus, sol, flash38 — the pick is still sonnet", () => {
+  test("review's chain is sonnet, then opus, sol, neon — the pick is still sonnet", () => {
     const t = JSON.parse(readFileSync(COMMITTED, 'utf8'))
-    expect(t.kinds.review).toEqual({ pick: 'sonnet', fallbacks: ['opus', 'sol', 'flash38'] })
+    expect(t.kinds.review).toEqual({ pick: 'sonnet', fallbacks: ['opus', 'sol', 'neon'] })
   })
 
   test('a codex review row resolves to sol', async () => {
     expectConstrained(parseDecision(await decide({ kind: 'review', provider: 'codex' }, COMMITTED)),
-      { provider: 'codex', model: 'gpt-6.1-sol', kind: 'review', candidate: 'sol' })
+      { provider: 'codex', model: 'gpt-6.2-sol', kind: 'review', candidate: 'sol' })
   })
 
-  test('a gemini review row resolves to flash38', async () => {
+  test('a gemini review row resolves to neon', async () => {
     expectConstrained(parseDecision(await decide({ kind: 'review', provider: 'gemini' }, COMMITTED)),
-      { provider: 'gemini', model: 'gemini-3.8-flash-high', kind: 'review', candidate: 'flash38' })
+      { provider: 'gemini', model: 'gemini-4-neon-xhigh', kind: 'review', candidate: 'neon' })
   })
 
-  test("kind vision is flash38 over flash, and a gemini vision row resolves to flash38", async () => {
+  test("kind vision is hydrogen over flash38, and a gemini vision row resolves to hydrogen", async () => {
     const t = JSON.parse(readFileSync(COMMITTED, 'utf8'))
-    expect(t.kinds.vision).toEqual({ pick: 'flash38', fallbacks: ['flash'] })
+    expect(t.kinds.vision).toEqual({ pick: 'hydrogen', fallbacks: ['flash38'] })
     expectConstrained(parseDecision(await decide({ kind: 'vision', provider: 'gemini' }, COMMITTED)),
-      { provider: 'gemini', model: 'gemini-3.8-flash-high', kind: 'vision', candidate: 'flash38' })
+      { provider: 'gemini', model: 'gemini-4-hydrogen-xhigh', kind: 'vision', candidate: 'hydrogen' })
   })
 
   test('a claude review row resolves to sonnet', async () => {
