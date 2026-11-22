@@ -52,8 +52,8 @@ Grain differs per source — this is a composite reference.
 ### Source 2: `wrdssec_all.wrds_forms` (N-2 filing counts)
 
 - **Row PK:** `fname` — VERIFIED SAMPLED 2023 slice: 0 dupes over 1,159,918 rows; `(accession, cik)` also
-  0 dupes. `accession` alone is NOT unique (347,721 dupes in the 2023 slice — one row per filer CIK on
-  multi-filer submissions). Count filings with `COUNT(DISTINCT accession)`.
+  0 dupes. `accession` alone is NOT unique (347,721 dupes in the 2023 slice — one row per header CIK on
+  multi-CIK submissions). Count filings with `COUNT(DISTINCT accession)`.
 - **Linking identifiers:** `cik` → gvkey via `wrdssec.wciklink_gvkey`.
 
 ### Source 3: Form ADV (SEC IAPD bulk download)
@@ -256,7 +256,7 @@ def count_new_adv_registrations(year: int) -> int:
     """
     # dateRange=custom intermittently returns {"message": "Internal server error"};
     # startdt/enddt work alone. hits.total caps at 10,000 with relation "gte", so a
-    # capped value is a floor, not a count (full API notes: sec-fetch skill).
+    # capped value is a floor, not a count (full API notes: edgar skill, references/sec-gov.md).
     base = 'https://efts.sec.gov/LATEST/search-index'
     url = (f'{base}?q=%22ADV%22'
            f'&startdt={year}-01-01&enddt={year}-12-31'

@@ -82,7 +82,7 @@ uv run --script ${CLAUDE_SKILL_DIR}/scripts/resolve_exhibits.py --hits data/raw/
   join server-side to `registrant` (file no.), `filing_view` (date, form prefix) and `wrds_forms`
   (`wrdsfname`), so only ids and paths come back, never `filing` text.
 - **Files via rclone:** raw submissions from `wrds:/wrds/sec/archives` by `wrdsfname`, cached;
-  over 10,000 files it uses `edgar.md`'s server-side tar. `--ignore-checksum` is deliberate: the
+  over 10,000 files it uses the edgar skill's server-side tar. `--ignore-checksum` is deliberate: the
   default md5 check opens an ssh session per file on the login node, and exhausted it at 16 transfers.
 - **Parse locally:** one pass over the SGML `<DOCUMENT>` blocks gives TYPE, DESCRIPTION, FILENAME
   and text for every hit, with no per-hit query.

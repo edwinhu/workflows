@@ -299,7 +299,7 @@ def fetch(paths: list[str], cache: Path, out: Path, tar_threshold: int, scratch:
                 "--stats-one-line",
             ]
         )
-    else:  # edgar.md: scp list -> tar server-side on /scratch -> rclone one archive
+    else:  # skills/edgar/references/edgar.md: scp list -> tar server-side on /scratch -> rclone one archive
         stats["route"] = "scp + ssh tar czf + rclone"
         stamp = f"blaw_{os.getpid()}_{int(time.time())}"
         rlist, rtar = f"/tmp/{stamp}.txt", f"{scratch}/{stamp}.tar.gz"

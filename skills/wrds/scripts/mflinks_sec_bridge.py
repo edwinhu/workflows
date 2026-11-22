@@ -20,7 +20,7 @@ Usage:
 SEC annual series/class CSVs live under
 https://www.sec.gov/files/investment/data/other/investment-company-series-and-class-information/
 Fetch them with a DECLARING User-Agent (name + email) — a spoofed browser UA 403s.
-See the `sec-fetch` skill.
+See the `edgar` skill, references/sec-gov.md.
 """
 import argparse, re, sys, warnings
 from pathlib import Path

@@ -4,7 +4,7 @@
 set -uo pipefail
 cd "$(dirname "$0")" || exit 1
 WRDS=../..
-EDGAR="$WRDS/references/edgar.md"
+EDGAR="$WRDS/../edgar/references/edgar.md"
 SKILL="$WRDS/SKILL.md"
 fail=0
 
@@ -38,7 +38,7 @@ grep -qF 'edgar_parquet' "$SKILL" || { echo "SKILL.md has no pointer to edgar_pa
 echo "== doc: mechanism claims name both mechanisms =="
 # parse_13f defaults to a hand-rolled scanner (-fast-xml=true, main.go:208); parse_npx uses
 # xml.Decoder. Naming one mechanism and attributing it to both is the false claim this run
-# already made once, and it put SKILL.md in contradiction with references/edgar.md.
+# already made once, and it put SKILL.md in contradiction with skills/edgar/references/edgar.md.
 for f in "$SKILL" "$EDGAR"; do
 	if grep -qF 'xml.Decoder' "$f" && ! grep -qF 'hand-rolled' "$f"; then
 		echo "$(basename "$f") names xml.Decoder without naming parse_13f's hand-rolled scanner"; fail=1

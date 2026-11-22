@@ -327,7 +327,7 @@ asset_owner   299,714       2,596,663
 
 **(c) method.** One recent dense quarter measured on a 4-slot compute node,
 reading `/wrds/sec/archives` directly — never per-filing SEC.gov HTTP
-(`edgar.md` iron law; on the grid the archive is a local mount, so no rclone leg
+(edgar skill iron law; on the grid the archive is a local mount, so no rclone leg
 at all):
 
 > **2024Q2: 7,680 filings · 1.44 GB input · 27 s parse wall · 2,489,014 rows ·

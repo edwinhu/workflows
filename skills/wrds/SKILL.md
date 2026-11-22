@@ -1,7 +1,7 @@
 ---
 name: wrds
 version: 1.0
-description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/ExecuComp/Capital IQ", "Form 4 insider data", "13F institutional ownership (Thomson)", "13D/13G blockholders", "ISS governance/compensation/voting/directors", "proxy advisor recommendations", "shareholder proposals / 14a-8", "TAQ intraday/NBBO", "SDC M&A or new issues", "DealScan syndicated loans", "PitchBook PE/VC deals", "FISD corporate bonds", "municipal bonds / muni trades / MSRB RTRS / SDC municipals", "Form D/ADV", "fund formation", "FJC court data", "linking datasets / join keys (gvkey-permno via CCM, cik-gvkey via wciklink, DealScan-Compustat)", or any WRDS PostgreSQL query or SAS ETL on the WRDS grid (qsub/qsas/SGE).
+description: 'Use when "query WRDS", "access Compustat/CRSP/ExecuComp/Capital IQ", "Form 4 insider data", "13F institutional ownership (Thomson)", "13D/13G blockholders", "ISS governance/compensation/voting/directors", "proxy advisor recommendations", "shareholder proposals / 14a-8", "TAQ intraday/NBBO", "SDC M&A or new issues", "DealScan syndicated loans", "PitchBook PE/VC deals", "FISD corporate bonds", "municipal bonds / muni trades / MSRB RTRS / SDC municipals", "Form D/ADV", "fund formation", "FJC court data", "linking datasets / join keys (gvkey-permno via CCM, cik-gvkey via wciklink, DealScan-Compustat)", or any WRDS PostgreSQL query or SAS ETL on the WRDS grid (qsub/qsas/SGE). NEGATIVE ROUTING: EDGAR filings, filing text and filing parsers go to edgar.'
 user-invocable: false
 ---
 
@@ -43,7 +43,7 @@ The WRDS login node is shared infrastructure. Running parsers, bulk file reads, 
 
 The login node is for: `qsub`, `qstat`, `qdel`, `scp`, `ls`, `head`, short `psql` queries.
 
-Submission patterns and working array jobs: `references/edgar.md` (§ SGE index build), `scripts/sec_index/submit_array.sh`, `scripts/parse_13f/sge/submit_shards.sh`, and `../npx-ownership-panel/scripts/run_pipeline.sh`.
+Submission patterns and working array jobs: `${CLAUDE_PLUGIN_ROOT}/skills/edgar/references/edgar.md` (§ SGE Submission Pattern), `scripts/sec_index/submit_array.sh`, `scripts/parse_13f/sge/submit_shards.sh`, and `../npx-ownership-panel/scripts/run_pipeline.sh`.
 </EXTREMELY-IMPORTANT>
 
 **Running compute on the login node is NOT HELPFUL — it gets the user's account flagged, the job killed, and the work lost.** You run on the login node because qsub feels like overhead. The overhead is 5 minutes of script writing. The downside is account suspension and a rerun from scratch.
@@ -55,8 +55,6 @@ Submission patterns and working array jobs: `references/edgar.md` (§ SGE index 
 - A `qsub` job is not automatically a parallel job. Measured by `qacct`: **14 diagnostic scans over a 26,749-filing, 63.5 GB pile cost 9,388 s of wall clock — 2 h 37 m — every one a single serial task** because the submit script omitted `-t`. Sharded 50 ways the same scans are under 10 minutes total. The worst single scan was 1,247 s and returned a number that had to be discarded.
 - Do not ITERATE a detection rule at corpus scale. Four header-detection passes over that pile cost 3,124 s to converge on a rule that could have been prototyped against a few hundred cached filings locally in seconds and validated at scale ONCE. Serial submission made each wrong guess cost twenty minutes instead of twenty seconds; the scans were the wrong instrument for iteration, not merely the wrong shape.
 - A filing list staged in the login node's `/tmp` is invisible to grid nodes. Stage under `/scratch`; a job that opens it will fail with FileNotFoundError inside the task, not at submit time.
-- The `wrds_clean_filings` path convention is `cik_int.zfill(10)[:6]/{cik_int}/{accession}.txt` (see `references/edgar.md`). Hand-rolled path logic gets this wrong.
-- `scan_covers` profiles handle header extraction, body parsing, and custom extractors (`Custom` field type) — "this parser is different enough to need its own binary" has not yet been true once. For SGML header fields (state of incorporation, business address, SIC, FYE, former name, every role block), query the pre-parsed `wrdssec_all.wrds_forms_reg` first (see `references/edgar.md`); scan only for what it lacks.
 - **A pixi/conda env under `/scratch` is not durable.** A grid job that ran fine in August 2026 came back `rc=127` weeks later: the env its submit script hard-coded had been swept, and no interpreter on WRDS had polars any more. Either rebuild the env as a step of the job, or keep the heavy pull on the grid and do the dataframe work locally. Do not hard-code an env path and assume it survives.
 
 ### Red Flags — STOP Immediately If You're About To:
@@ -65,25 +63,10 @@ Submission patterns and working array jobs: `references/edgar.md` (§ SGE index 
 - **Write `ssh wrds 'nohup ... &'`** → STOP. nohup doesn't change the node. Use qsub.
 - **Write `ssh wrds 'python3 ...'` for anything that reads >10 files** → STOP. Use qsub.
 - **Submit ONE qsub job that loops over the whole corpus** → STOP. Legal by the Iron Law and still wrong: a serial task over 26,749 filings is minutes of wall clock the grid would do in seconds. Shard it — `qsub -t 1-N` with each task striding the list. `scripts/array_scan.sh` wraps the pattern (stage the .py under /scratch, submit `-t 1-N -sync y`, cat the per-shard output in order).
-- **Skip reading `references/edgar.md` before building a new WRDS file parser** → STOP. The path conventions, SGE patterns, and existing parsers are already documented. Read them first.
-- **Create a new standalone Go binary for EDGAR extraction** → STOP. `scripts/scan_covers/` is a generic profile-based framework. Add a `profiles_*.go` file, not a new binary. The framework handles SGE sharding, path construction, concurrency, and form-type filtering.
-- **Build a new Go/Python parser without checking `scripts/scan_covers/`** → STOP. This framework exists precisely so you don't reinvent extraction infrastructure. Every standalone parser is technical debt that should have been a profile.
 
-### IRON LAW: USE SCAN_COVERS, NOT STANDALONE BINARIES
+### EDGAR filings and filing parsers
 
-<EXTREMELY-IMPORTANT>
-Before writing ANY new EDGAR filing extractor:
-
-1. **Read `scripts/scan_covers/`** — generic profile-based Go framework with SGE, concurrency, path handling
-2. **Add a `profiles_*.go` file** — not a standalone binary. The Profile struct supports pattern-based fields AND custom extractors (set `FullBody: true` for body-text searches like prospectus 485 filings — see `profiles_proxy_advisors.go`)
-3. **Read `references/edgar.md`** — path conventions, existing profiles, SGE submission patterns
-
-**Building a standalone parser when `scan_covers` exists is NOT HELPFUL — it reinvents infrastructure that already handles SGE sharding, NFS concurrency, path construction, form-type filtering, and error handling.** You built a 300-line standalone Go binary, ran it on the login node, got the path convention wrong, and spent 5 iterations fixing it. Adding a 60-line profile to `scan_covers` would have worked on the first try.
-
-Every standalone EDGAR parser is technical debt. The `scan_covers` framework exists to eliminate this class of mistake.
-
-**Exactly two sanctioned exceptions: `scripts/parse_13f/` and `scripts/parse_npx/`.** `scan_covers` `FullBody` reads the whole file into one buffer per worker and its `Field` model reduces a regex to one value per column, so a record table — the 13F `infoTable`, the N-PX `proxyTable` whose nested `voteRecord`s run to tens of thousands in a single filing — is neither; those two stream the record table instead, emitting one row per record: `parse_13f` with a hand-rolled information-table scanner, `parse_npx` with `xml.Decoder`. Cover-page or header extraction is still a profile, with no exception. Their TSV-to-parquet output contract is `scripts/edgar_parquet/` (see `references/edgar.md`).
-</EXTREMELY-IMPORTANT>
+Filing lists, filing text, exhibits, filing paths and every EDGAR extractor (`scan_covers` profiles, the two sanctioned record-table parsers, `wrds_forms_reg`): `${CLAUDE_PLUGIN_ROOT}/skills/edgar/SKILL.md`. The scripts stay in this skill's `scripts/`.
 
 # WRDS Data Access
 
@@ -241,10 +224,9 @@ See **`references/sas-etl.md`** for complete patterns:
 | WRDS People Link | `wrdsapps_plink_exec_ciq`, `_exec_boardex`, `_exec_trinsider`, `_trinsider_ciq` | pairwise PERSON id links (execid ↔ directorid ↔ CIQ personid ↔ TR personid). `plink_boardex_ciq` denied unless the account holds both. See `references/people-linking.md` |
 | Audit Analytics activism | `audit_corp_legal` (**`edwin_hu` only**) | `feed31_shareholder_activism` — one row per SC 13D/13D-A: subject CIK, filer, accession, stake, purpose keys. Query it before parsing 13D covers. No proxy-fight/settlement fields. See `references/audit-analytics.md` |
 | IBES | `tr_ibes` | `det_epsus`, `statsum_epsus` |
-| Form D / Reg D | `wrdssec` | `wrds_vc_formd` (parsed, 2000–2020); index: `wrdssec_all.forms` (all CIKs) or `wrds_forms` (filer only) — default to `forms`, see `references/wrds-forms-tables.md` |
-| SEC EDGAR | `wrdssec_all` | `forms` (raw index, all CIKs per filing — default), `wrds_forms` (filer-only view), `wciklink_cusip` |
-| SEC Search | `wrds_sec_search` | `filing_<form>` (full text + indexed `filing_tsv`), `registrant` — server-side full-text search; never select `filing` in bulk. See `references/sec-text-search.md` |
-| EDGAR | `edgar` | `filings`, `filing_docs` |
+| Form D / Reg D | `wrdssec` | `wrds_vc_formd` (parsed, 2000–2020); index: `wrdssec_all.wrds_forms` (every header CIK, with `accession` and `wrdsfname`), see `${CLAUDE_PLUGIN_ROOT}/skills/edgar/references/wrds-forms-tables.md` |
+| SEC EDGAR | `wrdssec_all` | `wrds_forms` (every header CIK per filing, `accession`, `wrdsfname` — default), `forms` (same CIKs, no `accession`), `wrds_forms_reg` (CIK roles), `wciklink_cusip` — the filing route is the edgar skill |
+| SEC Search | `wrds_sec_search` | `filing_<form>` (full text + indexed `filing_tsv`), `registrant` — server-side full-text search; never select `filing` in bulk. See `${CLAUDE_PLUGIN_ROOT}/skills/edgar/references/sec-text-search.md` |
 | Fama-French | `ff` | `factors_monthly`, `factors_daily` |
 | LSEG/Datastream | `tr_ds` | `ds2constmth`, `ds2indexlist` |
 | FJC (Federal Judicial Center) | `fjc` | `civil`, `criminal`, `bankruptcy`, `appeals` |
@@ -349,7 +331,6 @@ Detailed query patterns and table documentation:
 - **`references/formd.md`** - Form D / Reg D (canonical): two sources (WRDS `wrds_vc_formd` + SEC EDGAR TSV/XML), grain & keys, denormalization gotcha, exemption + industry codes, post-2020 gap, validated benchmarks
 - **`references/boardex.md`** - BoardEx: 1999 coverage start and ~20k-company universe, `wrds_org_composition` is directors PLUS senior managers, sentinel dates, feed 4.2 succession ids, the reused-ticker linking trap, measured recall vs proxy statements
 - **`references/people-linking.md`** - WRDS People Link: the pairwise person-id tables, which are readable per account, and the Execucomp chain when BoardEx↔CIQ is denied
-- **`references/edgar.md`** - SEC EDGAR filings, URL construction, DCN vs accession numbers
 - **`references/connection.md`** - Connection pooling, caching, error handling
 - **`references/taq.md`** - TAQ: master files, IID, raw tick processing (NBBO, VWAP, closing auctions), CRSP–TAQ merge, era transition (legacy vs millisecond)
 - **`references/sas-etl.md`** - SAS metadata probing (PROC CONTENTS/DATASETS/PRINT), hash objects, index-friendly WHERE, SGE array jobs, PROC SQL optimization
@@ -374,8 +355,7 @@ Detailed query patterns and table documentation:
   - Run `detect_calendar_bucket_gap` on every **reference/dimension table** at build time, not just on the output panel. It is the one detector that catches a root cause rather than a symptom: a reference table missing a whole calendar bucket makes every downstream join fall back to a default, silently, and the result looks like a vendor defect (see D8).
 - **`references/lpc-dealscan.md`** - LPC DealScan: legacy vs 2021+ flat schema, borrower ids, the gvkey link and its grain caveats
 - **`references/muni-bonds.md`** - Municipal bonds: MSRB RTRS trades, SDC municipals
-- **`references/wrds-forms-tables.md`** - `wrdssec_all.wrds_forms` and friends: filing metadata tables and their columns
-- **`references/sec-text-search.md`** - `wrds_sec_search`: phrase/prefix full-text search over filing text in SQL (tsvector + `ts_headline` snippets, `registrant` join), plus the `bow_YYYY` word-count tables
+- EDGAR filing tables, filing text and full-text SQL: `${CLAUDE_PLUGIN_ROOT}/skills/edgar/SKILL.md`
 
 ### Example Files
 
@@ -390,7 +370,6 @@ Working code from real projects:
 - **`examples/pitchbook_eda.ipynb`** - PitchBook: PE deal activity, VC rounds by stage, fund formation by vintage, IRR/TVPI by strategy
 - **`npx-ownership-panel` SKILL** (promoted out of this skill's examples) - the full meeting-level proxy-voting x ownership panel: ISS N-PX fund votes reduced to (item x block) cells on the grid, joined to 13-F institutional and MF holdings. One bash command, verified end to end. Also carries the ISS->CRSP fund crosswalk. Use it for any N-PX or fund-level voting work.
 - **`examples/blockholders_pipeline/`** - 13D/13G → Volkova blockholder panel, end-to-end Python. `redo_bridge.py` is the reference implementation of TR `personid` → SEC `rptOwnerCik` name bridging (97.4% hit rate).
-- **`examples/form4_pipeline/`** - Two parallel Form 3/4/5 pipelines: the annualized SAS ownership panel and the XML owner bridge built from the raw filings.
 - **`examples/proxy_advisors_pipeline/`** - 485BPOS/485APOS scan for ISS / Glass Lewis / Egan-Jones customer relationships via the `scan_covers` Go framework + SGE.
 - **`examples/fjc_eda.ipynb`** - FJC Integrated Database: securities cases (`nos = 850`), filing trends, court distribution
 - **`examples/lpc_dealscan_eda.ipynb`** (paired script: `examples/lpc_dealscan_eda.py`) - LPC DealScan: ~171K US facilities 1990-2020 (the normalized facility table; queries are capped at 2020-12-31), volume by year, loan type and purpose mix
@@ -400,8 +379,9 @@ Working code from real projects:
 
 - **`scripts/test_connection.py`** - Validate WRDS connectivity
 - **`scripts/inventory_schemas.py`** - Inventory every accessible WRDS PostgreSQL schema, its tables, and row counts — run this before guessing at a table name
-- **`scripts/scan_covers/`** - Generic profile-based Go framework for EDGAR extraction (SGE sharding, NFS concurrency, path construction, form-type filtering). Add a `profiles_*.go`, never a new standalone binary — see the Iron Law above.
-- **`scripts/parse_13f/`, `scripts/scan_headers/`, `scripts/sec_index/`** - Companion EDGAR tooling: 13F table parsing, SEC header scanning, index building
+- **`scripts/scan_covers/`** - Generic profile-based Go framework for EDGAR extraction (SGE sharding, NFS concurrency, path construction, form-type filtering).
+- **`scripts/parse_13f/`, `scripts/scan_headers/`, `scripts/sec_index/`, `scripts/edgar_parquet/`** - Companion EDGAR tooling: 13F parsing, header scanning, index building, TSV to parquet
+- **`scripts/form4/`** - Form 3/4/5: TR SAS ownership panel and the XML owner bridge
 - **`scripts/dual_class/`** - Dual-class common stock from 10-K text (WRDS clean filings or EDGAR): deterministic passage extractor + Gemini-on-Vertex classifier (Flex ≤10, gated Batch), plus `--backend jev|gemini|hybrid`; calibrated on 270 hand labels + 180 second-labeller filings (hybrid precision 0.992 / recall 1.000) — see `references/dual-class.md`
 
 ### Local Sample Notebooks

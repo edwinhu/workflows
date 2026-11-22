@@ -9,7 +9,7 @@
  *   buckets.txt           quarter ids, one per line
  *   counts.tsv            quarter, n_filings
  *
- * The path mapping is the one in references/edgar.md:
+ * The path mapping is the one in skills/edgar/references/edgar.md:
  *   fname 'edgar/data/1034196/0001104659-20-000437.txt'
  *     -> '000103/1034196/0001104659-20-000437.txt'
  *   (CIK zero-padded to 10, first 6 chars are the parent directory)

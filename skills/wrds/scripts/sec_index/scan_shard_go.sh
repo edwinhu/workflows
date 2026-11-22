@@ -24,7 +24,7 @@ GO_BIN="${GO_BIN:-$WRDS_SCRATCH/bin/scan_shard_go}"
 # THE WORKLOAD IS I/O-BOUND, NOT CPU-BOUND. This comment previously claimed the
 # opposite ("Go regex parsing is CPU-bound ... goroutine count barely matters,
 # NFS is not the bottleneck"), which contradicted this skill's OWN measurements
-# in references/edgar.md §Benchmarks: on shard 000000 (219,196 files) the Go
+# in skills/edgar/references/edgar.md §Benchmarks: on shard 000000 (219,196 files) the Go
 # helper used 28 s CPU against awk's 68 s CPU, yet ran 22 s wall against 583 s.
 # CPU was never the constraint; the 26x win is entirely concurrent NFS opens
 # overlapping per-file open latency. Two knobs, two different jobs:

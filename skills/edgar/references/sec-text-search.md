@@ -2,7 +2,7 @@
 
 The backend of the WRDS web "SEC Filings Search" (`/text-search/wrds-sec-filing-search/`). The web
 tool has no JSON API (form POST → server-rendered HTML); this schema is the programmatic route.
-Readable on `eddyhu` (verified 2026-09-30).
+Readable on the account checked (verified 2026-09-30).
 
 ## Schema
 
@@ -66,5 +66,5 @@ the fetched exhibit before counting.
 
 - `wrdssec.bow_YYYY(accession, word, noccur)` (1993–2025): single-word counts per filing, no phrases;
   `bow_filingsummary` maps accession to cik/form/date. Cheap exhaustive screens on one word.
-- `wrdssec.sec_item_words_*` (10-K item level) is premium: `permission denied` on `eddyhu`.
-- EDGAR's own full-text API (exhibit-level hits, 10,000-result cap): see the `sec-fetch` skill.
+- `wrdssec.sec_item_words_*` (10-K item level) is premium: `permission denied` on the account checked.
+- EDGAR's own full-text API (exhibit-level hits, 10,000-result cap): `sec-gov.md` § "EDGAR full-text search".
