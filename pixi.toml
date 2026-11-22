@@ -14,7 +14,8 @@ test = "pytest tests/"
 # which is why `pytest tests/` aborted collection and the suite read as broken:
 # pyyaml and lxml for prose-audit's diction table and .docx reader, pandas and
 # polars for the ds and npx-linking suites, psycopg, loguru and beautifulsoup4 for
-# blaw-edgar-search's resolve_exhibits_test.py.
+# blaw-edgar-search's resolve_exhibits_test.py; pymupdf, requests, pyarrow, psycopg2 and
+# pypdf for the PDF-reading, HTTP, parquet and WRDS suites and workshop_deck_test.py.
 python = "3.12.*"
 pytest = ">=8,<10"
 pyyaml = ">=6,<7"
@@ -26,6 +27,11 @@ pytest-xdist = ">=3.8.0,<4"
 psycopg = ">=3.3.4,<4"
 loguru = ">=0.8.0,<0.9"
 beautifulsoup4 = ">=4.15.0,<5"
+pymupdf = ">=1.28.0,<3"
+requests = ">=2.34.2,<3"
+pyarrow = ">=26.0.1,<27"
+psycopg2 = ">=2.9.12,<3"
+pypdf = ">=7.1.1,<8"
 
 [pypi-dependencies]
 # conda-forge tops out at sparse_dot_topn 0.3.1 (py311, linux-64 only), and 0.3.1
