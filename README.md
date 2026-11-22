@@ -40,7 +40,6 @@ The script recognizes macOS, Linux, and Windows-like environments on x64 or arm6
 | [scholar](https://github.com/edwinhu/google-scholar-cli) | Google Scholar search | `librarian` agent, internal `google-scholar` skill |
 | [consensus](https://github.com/edwinhu/consensus-cli) | Academic paper search | `librarian` agent, internal `consensus` skill |
 | [morgen](https://github.com/edwinhu/morgen-cli) | Calendar & tasks | Direct Bash, or session in `~/areas/assistant/` |
-| [superhuman](https://github.com/edwinhu/superhuman-cli) | Email | `email-handling` skill (via Bash) |
 
 Requires `gh` (GitHub CLI). Tools already on your `$PATH` are skipped.
 
