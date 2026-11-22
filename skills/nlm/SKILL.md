@@ -29,13 +29,15 @@ require exit 0 first; an empty chat answer is evidence of nothing until you have
 
 ## Authentication
 
-Before first use, authenticate with Google:
+**Default re-auth recipe** — attach to the everyday browser on :9222, which holds the live NotebookLM session:
 
 ```bash
-nlm auth login -all
+nlm auth login -cdp-url "$(curl -s localhost:9222/json/version | jq -r .webSocketDebuggerUrl)"
 ```
 
-This connects to Chrome via CDP (Chrome DevTools Protocol) to extract cookies from an active NotebookLM session. Credentials are stored in `~/.nlm/env`.
+Credentials are stored in `~/.nlm/env`.
+
+**Fact:** bare `nlm auth login -all` / `nlm refresh` launch a stale local Chrome Default profile with no notebooklm cookies, land on `/trynow`, and fail with `browser auth failed: auth data not found after timeout`. `crumb refresh notebooklm` does not help: nlm keeps its own store (`~/.nlm/env`) and never reads crumb's jar. Re-auth via `-cdp-url` on :9222 fixed it (measured 2026-11-21).
 
 ### Troubleshooting Authentication
 
@@ -201,7 +203,7 @@ nlm generate-chat "$id" "What are the key findings?"
 
 ## Troubleshooting
 
-- **Auth errors (exit 3)**: `nlm auth login -all` to re-authenticate; `nlm refresh` to refresh credentials.
+- **Auth errors (exit 3)**: re-auth with the `-cdp-url` :9222 recipe under Authentication; `nlm auth login -all` and `nlm refresh` are fallbacks that can fail.
 - **Debug mode**: add `-debug` for detailed API interaction logs.
 - **Resource busy (exit 7)**: generation (audio/video/deck/report) is async — re-run the `get`/`list`/`artifact get` command until it's ready.
 - **Authoritative syntax**: `nlm --help` and `nlm <group> --help` always reflect the installed binary.
