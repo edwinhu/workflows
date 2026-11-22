@@ -75,6 +75,11 @@ NOT_FRAME = {'to_dicts', 'to_list', 'tolist', 'to_numpy', 'item', 'rows', 'iter_
 COUNT_OF = (r'\b{n}\s*(?:\[[^\]]*\]\s*)?\.(?:height|shape|n_rows|count\(\s*\)|select\(\s*pl\.len)|'
             r'\b(?:len|nrow|n_rows)\(\s*{n}\b|'
             r'\b\w*(?:log|report|audit|count|rows|shape|trace|chain)\w*\s*\([^)]*\b{n}\b')
+# groupby(...)[col].<one of these>() returns one value per input row: no row count changes
+GROUP_PRESERVING = {'transform', 'cumsum', 'cumcount', 'shift', 'rank', 'diff', 'pct_change', 'ffill', 'bfill',
+                    'fillna', 'cummax', 'cummin', 'cumprod'}
+GROUP_AGGREGATING = {'agg', 'aggregate', 'sum', 'mean', 'size', 'count', 'first', 'last', 'min', 'max', 'median',
+                     'nunique', 'std', 'var', 'apply', 'head', 'tail', 'nth'}
 WINDOW = 6
 
 
@@ -92,6 +97,18 @@ def _chain(node):
         else:
             break
     return list(reversed(names)), (cur.id if isinstance(cur, ast.Name) else None)
+
+
+def _keeps_rows(m, rest):
+    """A groupby followed by a length-preserving method (before any aggregation) changes no row count."""
+    if m not in ('groupby', 'group_by'):
+        return False
+    for r in rest:
+        if r in GROUP_AGGREGATING:
+            return False
+        if r in GROUP_PRESERVING:
+            return True
+    return False
 
 
 def _first_frame_arg(node):
@@ -130,7 +147,7 @@ def transform_sites(rel, lines):
         if len(targets) != 1 or not isinstance(targets[0], ast.Name):
             continue
         methods, root = _chain(node.value)
-        row = [m for m in methods if m in ROW_METHODS]
+        row = [m for i, m in enumerate(methods) if m in ROW_METHODS and not _keeps_rows(m, methods[i + 1:])]
         if not row or EXPR_ONLY & set(methods) or methods[-1] in NOT_FRAME:
             continue
         source = root
