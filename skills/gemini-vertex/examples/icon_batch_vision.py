@@ -111,9 +111,8 @@ def create_vision_jsonl(
                     ],
                     "generationConfig": gen_config
                 },
-                "metadata": {
-                    "request_id": Path(filename).stem
-                }
+                # Top-level scalar column: Vertex rejects a nested "metadata" object (code=3).
+                "request_id": Path(filename).stem
             }
             f.write(json.dumps(request) + '\n')
 
@@ -275,7 +274,7 @@ def parse_vision_results(jsonl_path: str) -> dict[str, dict]:
         for line in f:
             entry = json.loads(line)
 
-            request_id = entry.get("metadata", {}).get("request_id")
+            request_id = entry.get("request_id")
             if not request_id:
                 raise ValueError("Missing output request_id; verify Cloud correlation in the pilot")
             response = entry.get("response", {})

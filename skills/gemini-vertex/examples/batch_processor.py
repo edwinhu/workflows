@@ -163,11 +163,10 @@ class GeminiBatchProcessor:
                 ],
                 "generationConfig": gen_config
             },
-            "metadata": {
-                "request_id": request_id,
-                # Stamp the resolved model so a result is traceable to what produced it.
-                "model": self.model
-            }
+            # Top-level scalar columns: Vertex rejects a nested "metadata" object (code=3).
+            "request_id": request_id,
+            # Stamp the resolved model so a result is traceable to what produced it.
+            "model": self.model
         }
 
     def prepare_batch(
@@ -323,7 +322,7 @@ class GeminiBatchProcessor:
             for line in f:
                 entry = json.loads(line)
 
-                request_id = entry.get("metadata", {}).get("request_id")
+                request_id = entry.get("request_id")
                 if not request_id:
                     raise ValueError("Missing output request_id; verify Cloud correlation in the pilot")
                 response = entry.get("response", {})

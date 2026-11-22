@@ -335,3 +335,239 @@ def test_openai_embeddings_body_not_flagged(tmp_path, monkeypatch, capsys):
     body = {"object": "list", "data": [{"object": "embedding", "embedding": [0.1]}]}
     rc, s, written = _run_results(openai, tmp_path, monkeypatch, capsys, _oai_row("a", body), OAI_BATCH)
     assert rc == 0 and s["incomplete"] == [] and len(written.splitlines()) == 1
+
+
+# ── batch_models.json, --refresh, --propose ─────────────────────────────────────────────────
+
+import copy  # noqa: E402
+import shutil  # noqa: E402
+
+refresh = load(HERE / "batch_refresh.py")
+
+# The hand-edited MODELS constant as it stood before the table moved to batch_models.json (2026-11-04).
+LEGACY_MODELS = {
+    "claude-haiku-5-5": ("anthropic", "cheap", 0.05, 0.25, 100_000, (0.25, 1.25)),
+    "claude-sonnet-5-5": ("anthropic", "mid", 1.0, 5.0, None, None),
+    "claude-opus-5-5": ("anthropic", "top", 2.0, 10.0, None, None),
+    "claude-fable-5-1": ("anthropic", "frontier", 5.0, 25.0, None, None),
+    "gpt-6-luna": ("openai", "cheap", 0.05, 0.25, 272_000, (0.10, 0.375)),
+    "gpt-6.1-terra": ("openai", "mid", 0.50, 2.50, 272_000, (1.00, 3.75)),
+    "gpt-6.1-sol": ("openai", "top", 1.00, 5.00, 272_000, (2.00, 7.50)),
+    "gpt-6-astra": ("openai", "frontier", 5.00, 25.00, 272_000, (10.00, 37.50)),
+    "gemini-3.5-flash-lite": ("gemini", "cheap", 0.15, 1.25, None, None),
+    "gemini-3.8-flash": ("gemini", "mid", 0.375, 1.875, None, None),
+}
+
+
+def test_table_loads_identically_to_the_legacy_constants():
+    import batchlib
+    assert set(batchlib.MODELS) == set(LEGACY_MODELS)
+    for mid, (prov, tier, pin, pout, over, long) in LEGACY_MODELS.items():
+        m = batchlib.MODELS[mid]
+        assert (m["provider"], m["tier"], m["in"], m["out"]) == (prov, tier, pin, pout), mid
+        assert m.get("long_over") == over and m.get("long") == long, mid
+        assert isinstance(m.get("long", ()), tuple)
+        assert m["available"] is True and m["source"].startswith("https://")
+
+
+def test_table_file_has_no_stray_keys_for_batch_cost():
+    import batchlib
+    assert batchlib.batch_cost("gpt-6-luna", 10, 300_000, 0) == 10 * 300_000 * 0.10 / 1e6
+    assert batchlib.batch_cost("gemini-3.8-flash", 2, 1000, 100) == 2 * (1000 * 0.375 + 100 * 1.875) / 1e6
+
+
+def test_unavailable_model_is_skipped_by_pick_model(tmp_path):
+    import batchlib
+    assert route.pick_model("gemini", "mid", None) == "gemini-3.8-flash"
+    batchlib.MODELS["gemini-3.8-flash"]["available"] = False
+    try:
+        assert route.pick_model("gemini", "mid", None) is None
+    finally:
+        batchlib.MODELS["gemini-3.8-flash"]["available"] = True
+
+
+ANTHROPIC_PAGE = """### Batch processing
+
+| Model | Batch input | Batch output |
+| :---- | :---- | :---- |
+| Claude Fable 5.2 | $4 / MTok | $20 / MTok |
+| Claude Fable 5.1 | $5 / MTok | $25 / MTok |
+| Claude Opus 5.5 | $2 / MTok | $10 / MTok |
+| Claude Sonnet 5.5 | $1.10 / MTok | $5 / MTok |
+| Claude Haiku 5.5 (for prompts up to 100,000 tokens) | $0.05 / MTok | $0.25 / MTok |
+| Claude Haiku 5.5 (for prompts over 100,000 tokens) | $0.25 / MTok | $1.25 / MTok |
+"""
+OPENAI_PAGE = """### Batch pricing data
+
+| Model | Short context input | Short context output | Short context cached input | Long context input | Long context output |
+| --- | --- | --- | --- | --- | --- |
+| gpt-6.2-sol | $1.00 | $5.00 | $0.05 | $2.00 | $7.50 |
+| gpt-6-luna | $0.05 | $0.25 | $0.005 | $0.10 | $0.375 |
+| gpt-6.1-sol | $1.00 | $5.00 | $0.05 | $2.00 | $7.50 |
+| gpt-6.1-terra | $0.50 | $2.50 | $0.025 | $1.00 | $3.75 |
+| gpt-6-astra | $5.00 | $25.00 | $0.50 | $10.00 | $37.50 |
+"""
+# Three tabs per model (Standard, Priority, Batch), the shape of the live page.
+_TAB = " | Input (text, image, video, audio)\n | Global\n | ${i} | $0.1 | N/A\n | \n | Text output (response and reasoning)\n | Global\n | ${o} | $9 | N/A\n | \n"
+
+
+def _gem(name, *tabs, head=""):
+    return "".join(f"{name}\n{head}{_TAB.format(i=i, o=o)}" for i, o in tabs)
+
+
+GEMINI_PAGE = ("Header\n | \n"
+               + _gem("Gemini 3.8 Flash", (0.75, 3.75), (1.35, 6.75), (0.375, 1.875))
+               + _gem("Gemini 3.5 Flash-Lite", (0.30, 2.50), (0.5, 4.0), (0.15, 1.25))
+               + _gem("Gemini 4 Neon", (3.0, 15.0), (5.4, 27.0), (1.5, 7.5)))
+
+
+def _catalogs(**over):
+    base = {"anthropic": {"claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5", "claude-fable-5-1"},
+            "openai": {"gpt-6-luna", "gpt-6.1-terra", "gpt-6.1-sol", "gpt-6-astra"},
+            "gemini": {"gemini-3.5-flash-lite", "gemini-3.8-flash"}}
+    base.update(over)
+    return base, {}
+
+
+def _pages(**over):
+    base = {"anthropic": ANTHROPIC_PAGE, "openai": OPENAI_PAGE, "gemini": GEMINI_PAGE}
+    base.update(over)
+    return base, {}
+
+
+def _table_copy(tmp_path):
+    p = tmp_path / "batch_models.json"
+    shutil.copy(HERE / "batch_models.json", p)
+    return p
+
+
+def test_parsers_read_batch_rows_only():
+    from datetime import date
+    a = refresh.parse_anthropic(ANTHROPIC_PAGE)
+    assert a["claudehaiku55"] == {"in": 0.05, "out": 0.25, "long": (0.25, 1.25)}
+    assert a["claudefable52"] == {"in": 4.0, "out": 20.0}
+    assert refresh.parse_openai(OPENAI_PAGE)["gpt-6.2-sol"] == {"in": 1.0, "out": 5.0, "long": (2.0, 7.5)}
+    g = refresh.parse_gemini(GEMINI_PAGE, date(2026, 11, 21))
+    assert g["gemini38flash"] == {"in": 0.375, "out": 1.875}
+    assert g["gemini4neon"] == {"in": 1.5, "out": 7.5}
+
+
+def test_gemini_dated_rows_follow_today():
+    from datetime import date
+    promo = _gem("Gemini 4 Carbon*", (2.0, 10.0), (3.6, 18.0), (1.0, 5.0), head="through November 30, 2026\n")
+    full = _gem("Gemini 4 Carbon\n(Starting December 1, 2026),\nGemini 4 Carbon Cyber Permissive",
+                (4.0, 20.0), (7.2, 36.0), (2.0, 10.0))
+    page = "H\n | \n" + promo + full
+    assert refresh.parse_gemini(page, date(2026, 11, 21))["gemini4carbon"] == {"in": 1.0, "out": 5.0}
+    assert refresh.parse_gemini(page, date(2026, 12, 2))["gemini4carbon"] == {"in": 2.0, "out": 10.0}
+
+
+def test_refresh_writes_available_price_asof_and_leaves_tier_untouched(tmp_path, monkeypatch, capsys):
+    from datetime import date
+    p = _table_copy(tmp_path)
+    before = json.loads(p.read_text())
+    cats, ce = _catalogs(gemini={"gemini-3.5-flash-lite"})  # 3.8-flash dropped from the list
+    pages, pe = _pages(anthropic=ANTHROPIC_PAGE)  # sonnet price moved to 1.10
+    monkeypatch.setattr(refresh, "fetch_catalogs", lambda: (cats, ce))
+    monkeypatch.setattr(refresh, "fetch_pages", lambda: (pages, pe))
+    assert refresh.refresh_cli(p, date(2026, 11, 21)) == 0
+    after = json.loads(p.read_text())
+    out = capsys.readouterr().out
+    assert after["models"]["gemini-3.8-flash"]["available"] is False
+    assert after["models"]["claude-sonnet-5-5"]["in"] == 1.10
+    assert all(m["asOf"] == "2026-11-21" for m in after["models"].values())
+    assert {k: v["tier"] for k, v in after["models"].items()} == {k: v["tier"] for k, v in before["models"].items()}
+    assert set(after["models"]) == set(before["models"])  # refresh never adds or drops a model
+    assert "claude-sonnet-5-5.in: 1.0 -> 1.1" in out and "gemini-3.8-flash.available: True -> False" in out
+
+
+def test_refresh_unparsable_price_is_flagged_with_reason_never_guessed(tmp_path, monkeypatch):
+    from datetime import date
+    p = _table_copy(tmp_path)
+    cats, ce = _catalogs()
+    pages, pe = _pages(gemini="a page with no tables at all")
+    monkeypatch.setattr(refresh, "fetch_catalogs", lambda: (cats, ce))
+    monkeypatch.setattr(refresh, "fetch_pages", lambda: (pages, pe))
+    refresh.refresh_cli(p, date(2026, 11, 21))
+    m = json.loads(p.read_text())["models"]["gemini-3.8-flash"]
+    assert (m["in"], m["out"]) == (0.375, 1.875)  # last verified numbers, not invented ones
+    assert "no parsable batch row" in m["price_unverified"] and "2026-11-21" in m["price_unverified"]
+    assert "price_unverified" not in json.loads(p.read_text())["models"]["gpt-6-luna"]
+
+
+def test_refresh_unreachable_provider_leaves_its_fields_alone(tmp_path, monkeypatch, capsys):
+    from datetime import date
+    p = _table_copy(tmp_path)
+    before = json.loads(p.read_text())["models"]["gpt-6-luna"]
+    cats, _ = _catalogs()
+    del cats["openai"]
+    pages, _ = _pages()
+    del pages["openai"]
+    monkeypatch.setattr(refresh, "fetch_catalogs", lambda: (cats, {"openai": "401"}))
+    monkeypatch.setattr(refresh, "fetch_pages", lambda: (pages, {"openai": "timeout"}))
+    refresh.refresh_cli(p, date(2026, 11, 21))
+    assert json.loads(p.read_text())["models"]["gpt-6-luna"] == before
+    assert "openai: catalog unreachable (401)" in capsys.readouterr().out
+
+
+def test_refresh_without_changes_does_not_rewrite(tmp_path, monkeypatch, capsys):
+    from datetime import date
+    p = _table_copy(tmp_path)
+    cats, ce = _catalogs()
+    pages, pe = _pages(anthropic=ANTHROPIC_PAGE.replace("$1.10", "$1"))
+    monkeypatch.setattr(refresh, "fetch_catalogs", lambda: (cats, ce))
+    monkeypatch.setattr(refresh, "fetch_pages", lambda: (pages, pe))
+    refresh.refresh_cli(p, date(2026, 11, 4))  # same asOf as the committed table
+    assert "no change" in capsys.readouterr().out
+
+
+def test_propose_detects_new_family_and_writes_nothing(tmp_path, monkeypatch, capsys):
+    from datetime import date
+    p = _table_copy(tmp_path)
+    snapshot = p.read_bytes()
+    cats, ce = _catalogs(
+        gemini={"gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-4-neon", "text-embedding-005"},
+        anthropic={"claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5", "claude-fable-5-1",
+                   "claude-fable-5-2", "claude-opus-4-8", "claude-opus-4-5-20251101"},
+        openai={"gpt-6-luna", "gpt-6.1-terra", "gpt-6.1-sol", "gpt-6-astra", "gpt-6.2-sol", "gpt-5.6-luna",
+                "gpt-image-2", "gpt-realtime"})
+    pages, _ = _pages()
+    monkeypatch.setattr(refresh, "fetch_catalogs", lambda: (cats, ce))
+    monkeypatch.setattr(refresh, "fetch_pages", lambda: (pages, {}))
+    assert refresh.propose_cli(p, date(2026, 11, 21), as_json=True) == 0
+    rep = json.loads(capsys.readouterr().out)
+    assert p.read_bytes() == snapshot  # advisory: nothing written
+    fams = {(f["provider"], f["family"]): [m["id"] for m in f["models"]] for f in rep["families"]}
+    assert fams[("gemini", "gemini codename")] == ["gemini-4-neon"]
+    assert fams[("anthropic", "claude fable")] == ["claude-fable-5-2"]
+    assert ("openai", "gpt image") not in fams and ("openai", "gpt realtime") not in fams
+    assert all("20251101" not in m["id"] for f in rep["families"] for m in f["models"])
+    tiers = {t["current"]: t for t in rep["tiers"]}
+    assert [c["id"] for c in tiers["gpt-6.1-sol"]["candidates"]] == ["gpt-6.2-sol"]
+    assert tiers["claude-fable-5-1"]["candidates"][0]["price"] == {"in": 4.0, "out": 20.0}
+    neon = tiers["gemini-3.8-flash"]["candidates"][0]
+    assert neon["id"] == "gemini-4-neon" and neon["codename_no_published_tier"] is True
+    assert neon["price"] == {"in": 1.5, "out": 7.5}
+    assert "gpt-5.6-luna" not in [c["id"] for t in rep["tiers"] for c in t["candidates"]]  # older, not newer
+
+
+def test_propose_text_says_codename_needs_a_human(tmp_path, monkeypatch, capsys):
+    from datetime import date
+    p = _table_copy(tmp_path)
+    cats, ce = _catalogs(gemini={"gemini-3.8-flash", "gemini-4-neon", "gemini-4-argon"})
+    pages, _ = _pages()
+    monkeypatch.setattr(refresh, "fetch_catalogs", lambda: (cats, ce))
+    monkeypatch.setattr(refresh, "fetch_pages", lambda: (pages, {}))
+    refresh.propose_cli(p, date(2026, 11, 21), as_json=False)
+    out = capsys.readouterr().out
+    assert "gemini-4-neon" in out and "no published tier; a human must assign one" in out
+    assert "gemini-4-argon: price not found" in out  # not on the page: said plainly, not guessed
+
+
+def test_cli_refresh_and_propose_are_exclusive_and_skip_job_args(monkeypatch):
+    assert route.main(["--refresh", "--propose"]) == 2
+    seen = {}
+    monkeypatch.setattr(refresh, "propose_cli", lambda path, today, js: seen.update(path=path, js=js) or 0)
+    monkeypatch.setitem(sys.modules, "batch_refresh", refresh)
+    assert route.main(["--propose", "--json", "--table", "/x.json"]) == 0
+    assert str(seen["path"]) == "/x.json" and seen["js"] is True

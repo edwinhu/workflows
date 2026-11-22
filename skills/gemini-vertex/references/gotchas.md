@@ -24,6 +24,7 @@ Founder web-search pilots and M100 used `gemini-3.8-flash`, location `global`, o
 | Empty `{"googleSearch": {}}` failed import: `Query error: Cannot store struct 'request.tools.googleSearch' with no fields`; job FAILED before inference | Give the tool a field: `{"googleSearch": {"excludeDomains": ["example.invalid"]}}` was accepted and grounding ran |
 | M100 SUCCEEDED with 97/100 grounded rows; three returned RECITATION with no answer | Inspect finish reasons and usable content; job success does not mean every row has an answer |
 | Extra top-level JSONL fields such as `key` passed through to output; M100 reconciled all keys | Key rows outside `request` and reconcile by key, not content matching |
+| A nested `metadata` object beside `request` failed import on 7 jobs (measured 2026-11-21): `code=3 The column or property "metadata" in the specified input data is of unsupported type. Supported types: STRING, INTEGER, FLOAT, BOOLEAN, TIMESTAMP, DATE, DATETIME, NUMERIC` | Every non-`request` JSONL field must be a top-level scalar column: `{"request":{...},"request_id":"doc-1"}`. Never wrap correlation IDs in `metadata`; serialize structured values to a STRING |
 | Uncapped pilot rows made 2, 23 and 47 queries. “Use at most 3 Google searches; stop searching as soon as you have found who founded the company.” yielded M100 mean 2.98, median 3, p90 5, max 7; 27/100 exceeded 3 | This is a soft cap, not a hard limit. Always measure about 100 rows and project search cost before a full grounded run |
 | Search tariff used in M100: 5,000 free queries/month, then $14/1,000 queries, billed per query | Budget queries separately from model tokens; observed query counts on failed rows may omit searches before failure, so projections are not billing reconciliation |
 | 2/5 pilot rows returned code 4 DEADLINE_EXCEEDED, `Request deadline exceeded before prefill finished`; the same keys succeeded on M100 resubmission | Plan a retry pass for failed keys; preserve identifiers rather than dropping rows |
@@ -137,7 +138,7 @@ The current product is **Gemini Enterprise Agent Platform**, with historical SDK
 
 Observed 2026-08-30 with google-genai 2.20.0: a bare Cloud batch model ID 404'd; the publisher-qualified path and global endpoint worked for the tested 3.5 Flash-Lite job. models.list availability was not sufficient to establish batch serviceability in the requested region. Keep the correct backend/resource path, consult current model availability, and probe the same model/endpoint before production. Never silently downgrade the model to clear a 404.
 
-Cloud metadata flattening was a production workaround for BigQuery-backed results (current BigQuery docs exclude array/struct/range/datetime/geography columns): store scalar domain IDs/model/prompt hashes, serialize complex metadata if necessary. This is not a Developer key requirement or proof that every backend forbids nested JSON.
+Cloud batch input columns must be scalar (STRING, INTEGER, FLOAT, BOOLEAN, TIMESTAMP, DATE, DATETIME, NUMERIC): a nested object or array fails import (row in [Cloud batch facts](#cloud-batch-facts-measured)). Store scalar domain IDs/model/prompt hashes as top-level columns and serialize complex values to a STRING. This is not a Developer `key` requirement.
 
 ### Current Vertex Gemini batch limits (2026-10-01)
 

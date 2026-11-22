@@ -33,6 +33,8 @@ uv run ${CLAUDE_SKILL_DIR}/scripts/route_batch.py --requests 5000 --in-tokens 30
 uv run ${CLAUDE_SKILL_DIR}/scripts/route_batch.py --jsonl requests.jsonl --out-tokens 300   # measured
 ```
 
+Model table maintenance: `route_batch.py --propose [--json]` (advisory: new models the providers serve, newer same-family candidates per tier) and `--refresh [--table PATH]` (only writer of `available`, prices, `asOf` in `scripts/batch_models.json`; review the diff).
+
 It prints a ranked table with a reason per row and the next command. **Document type decides first:**
 
 0. **Document job → Gemini.** PDFs, images, audio, video, embeddings, or long context (mean input

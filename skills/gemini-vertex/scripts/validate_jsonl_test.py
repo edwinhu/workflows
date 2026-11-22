@@ -113,3 +113,16 @@ def test_cli_missing_file_is_usage_error(tmp_path):
     p = cli(str(tmp_path / "nope.jsonl"))
     assert p.returncode == 2
     assert "File not found" in p.stderr
+
+
+def test_cloud_rejects_nested_metadata_column(tmp_path):
+    """Vertex fails import with code=3 on a non-scalar column; top-level scalars are fine."""
+    req = {"contents": [{"role": "user", "parts": [{"text": "x"}]}]}
+    script = Path(__file__).with_name("validate_jsonl.py")
+    bad, good = tmp_path / "bad.jsonl", tmp_path / "good.jsonl"
+    bad.write_text(json.dumps({"request": req, "metadata": {"request_id": "d"}}) + "\n")
+    good.write_text(json.dumps({"request": req, "request_id": "d"}) + "\n")
+    rb = subprocess.run([sys.executable, str(script), "--backend", "cloud", str(bad)], capture_output=True, text=True, timeout=60)
+    rg = subprocess.run([sys.executable, str(script), "--backend", "cloud", str(good)], capture_output=True, text=True, timeout=60)
+    assert rb.returncode == 1 and "column 'metadata' is dict" in rb.stdout + rb.stderr
+    assert rg.returncode == 0

@@ -96,7 +96,7 @@ class ModernizationTests(unittest.TestCase):
         processor = module.GeminiBatchProcessor.__new__(module.GeminiBatchProcessor)
         processor.model = "gemini-3.8-flash"
         request = processor.create_request("gs://bucket/a.pdf", "Extract", "row-1")
-        self.assertEqual(request["metadata"]["request_id"], "row-1")
+        self.assertEqual(request["request_id"], "row-1")
         self.assertEqual(
             request["request"]["generationConfig"],
             {"responseMimeType": "application/json"},
@@ -177,7 +177,7 @@ class ModernizationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "results.jsonl"
             row = {
-                "metadata": {"request_id": "row-1"},
+                "request_id": "row-1",
                 "response": {"candidates": [{
                     "finishReason": "STOP",
                     "content": {"parts": [
@@ -202,7 +202,7 @@ class ModernizationTests(unittest.TestCase):
         processor = processor_module.GeminiBatchProcessor.__new__(processor_module.GeminiBatchProcessor)
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "results.jsonl"
-            row = {"metadata": {"request_id": "row-1"}, "status": "Bad Request: INVALID_ARGUMENT", "response": {}}
+            row = {"request_id": "row-1", "status": "Bad Request: INVALID_ARGUMENT", "response": {}}
             path.write_text(json.dumps(row) + "\n")
             result = next(processor.parse_results(str(path)))
             self.assertFalse(result["success"])
@@ -212,7 +212,7 @@ class ModernizationTests(unittest.TestCase):
             path.write_text(json.dumps(row) + "\n")
             self.assertFalse(next(processor.parse_results(str(path)))["success"])
             self.assertFalse(icon_module.parse_vision_results(str(path))["row-1"]["success"])
-            del row["metadata"]
+            del row["request_id"]
             path.write_text(json.dumps(row) + "\n")
             with self.assertRaisesRegex(ValueError, "Missing output request_id"):
                 next(processor.parse_results(str(path)))

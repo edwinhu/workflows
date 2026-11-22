@@ -15,27 +15,25 @@ from pathlib import Path
 
 import tomllib
 
-# Batch prices, USD per million tokens (input, output). Checked 2026-11-04 against
-# platform.claude.com/docs/en/build-with-claude/batch-processing.md,
-# developers.openai.com/api/docs/pricing.md and skills/gemini-vertex/references/models-and-pricing.md.
-# `long` is the price above `long_over` input tokens per request. Re-check the pages before a large run.
-MODELS = {
-    "claude-haiku-5-5": {"provider": "anthropic", "tier": "cheap", "in": 0.05, "out": 0.25,
-                         "long_over": 100_000, "long": (0.25, 1.25)},
-    "claude-sonnet-5-5": {"provider": "anthropic", "tier": "mid", "in": 1.0, "out": 5.0},
-    "claude-opus-5-5": {"provider": "anthropic", "tier": "top", "in": 2.0, "out": 10.0},
-    "claude-fable-5-1": {"provider": "anthropic", "tier": "frontier", "in": 5.0, "out": 25.0},
-    "gpt-6-luna": {"provider": "openai", "tier": "cheap", "in": 0.05, "out": 0.25,
-                   "long_over": 272_000, "long": (0.10, 0.375)},
-    "gpt-6.1-terra": {"provider": "openai", "tier": "mid", "in": 0.50, "out": 2.50,
-                      "long_over": 272_000, "long": (1.00, 3.75)},
-    "gpt-6.1-sol": {"provider": "openai", "tier": "top", "in": 1.00, "out": 5.00,
-                    "long_over": 272_000, "long": (2.00, 7.50)},
-    "gpt-6-astra": {"provider": "openai", "tier": "frontier", "in": 5.00, "out": 25.00,
-                    "long_over": 272_000, "long": (10.00, 37.50)},
-    "gemini-3.5-flash-lite": {"provider": "gemini", "tier": "cheap", "in": 0.15, "out": 1.25},
-    "gemini-3.8-flash": {"provider": "gemini", "tier": "mid", "in": 0.375, "out": 1.875},
-}
+# Batch prices, USD per million tokens (input, output), tiers and availability live in
+# batch_models.json beside this file; `route_batch.py --refresh` is the only writer of `available`,
+# `price` and `asOf`. `long` is the price above `long_over` input tokens per request.
+MODELS_FILE = Path(__file__).resolve().parent / "batch_models.json"
+
+
+def load_models(path: Path | None = None) -> dict:
+    """{model: {provider, tier, in, out[, long_over, long], ...}} from the table; `long` is a tuple."""
+    data = json.loads((path or MODELS_FILE).read_text())
+    out = {}
+    for mid, m in data["models"].items():
+        m = dict(m)
+        if m.get("long"):
+            m["long"] = tuple(m["long"])
+        out[mid] = m
+    return out
+
+
+MODELS = load_models()
 
 # Per-batch hard limits: requests, bytes. Gemini Cloud Batch: 200k requests, one 1 GB JSONL.
 LIMITS = {

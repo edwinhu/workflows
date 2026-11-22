@@ -1,6 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["google-genai"]  # only --refresh/--propose import it (Vertex models.list)
 # ///
 """Rank batch providers for one job: document type first, then soonest-expiring credit, then price.
 
@@ -15,6 +16,9 @@ Usage:
   route_batch.py --requests 5000 --in-tokens 3000 --out-tokens 300 [--tier cheap] [--needs pdf]
                  [--purpose research|consulting|other]
   route_batch.py --jsonl requests.jsonl [--out-tokens 300] [--balance uva=200] [--json]
+  route_batch.py --refresh [--table PATH]       # only writer of available/price/asOf in batch_models.json
+  route_batch.py --propose [--table PATH] [--json]  # advisory: models the providers serve that the table lacks
+--refresh and --propose are the only modes that touch the network (provider model lists, pricing pages).
 Exit codes: 0 ranked (at least one usable candidate), 1 nothing usable, 2 argument error.
 """
 
@@ -30,6 +34,7 @@ from batchlib import (
     CAPABILITIES,
     LIMITS,
     MODELS,
+    MODELS_FILE,
     SEARCH_USD,
     Account,
     accounts_path,
@@ -99,7 +104,7 @@ def pick_model(provider: str, tier: str, model: str | None) -> str | None:
     if model:
         return model if MODELS.get(model, {}).get("provider") == provider else None
     for mid, m in MODELS.items():
-        if m["provider"] == provider and m["tier"] == tier:
+        if m["provider"] == provider and m["tier"] == tier and m.get("available") is not False:
             return mid
     return None
 
@@ -240,7 +245,23 @@ def main(argv=None) -> int:
                     help="<account>=<usd> as seen in the Console today")
     ap.add_argument("--today", type=date.fromisoformat, default=None)
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--refresh", action="store_true",
+                    help="re-derive available/price/asOf in the table from live catalogs and pricing pages")
+    ap.add_argument("--propose", action="store_true",
+                    help="advisory: list served models the table lacks, with newer same-family candidates")
+    ap.add_argument("--table", type=Path, default=MODELS_FILE, help="model table for --refresh/--propose")
     args = ap.parse_args(argv)
+
+    if args.refresh or args.propose:
+        if args.refresh and args.propose:
+            print("--refresh and --propose are separate modes", file=sys.stderr)
+            return 2
+        import batch_refresh
+
+        today = args.today or datetime.now().astimezone().date()
+        if args.refresh:
+            return batch_refresh.refresh_cli(args.table, today)
+        return batch_refresh.propose_cli(args.table, today, args.json)
 
     args.bytes = None
     if args.jsonl:

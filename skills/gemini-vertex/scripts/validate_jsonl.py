@@ -47,6 +47,11 @@ def validate_jsonl(path: str, backend: str = "cloud") -> tuple[bool, list[str]]:
                         prefixes = ("gs://",) if backend == "cloud" else ("https://", "files/")
                         if not isinstance(uri, str) or not uri.startswith(prefixes):
                             errors.append(f"Line {number}: Invalid {backend} file URI: {uri}")
+            if backend == "cloud":
+                for col, val in data.items():
+                    if col != "request" and isinstance(val, (dict, list)):
+                        errors.append(f"Line {number}: column '{col}' is {type(val).__name__}; Vertex accepts only "
+                                      "scalar top-level columns (code=3), so use e.g. \"request_id\": \"doc-1\"")
             if backend == "developer":
                 request_id = data.get("key")
                 if not isinstance(request_id, str) or not request_id:

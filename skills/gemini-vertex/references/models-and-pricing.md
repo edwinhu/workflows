@@ -1,6 +1,6 @@
 # Cloud models, thinking and prices
 
-Verify the current [Cloud model cards](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models), [batch availability](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference), [locations](https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/locations), [thinking](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/thinking) and [Cloud pricing](https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing). Snapshot checked 2026-10-01; never use Developer prices/availability as production evidence.
+Verify the current [Cloud model cards](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models), [batch availability](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference), [locations](https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/locations), [thinking](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/thinking) and [Cloud pricing](https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing). Snapshot checked 2026-10-01 and not kept current by hand: run `route_batch.py --propose` (batch-router) for what Vertex serves now, and `--refresh` keeps batch-router's table current; never use Developer prices/availability as production evidence.
 
 ## Current extraction choices
 

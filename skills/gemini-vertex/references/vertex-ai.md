@@ -28,10 +28,10 @@ job = client.batches.get(name=job.name)
 One JSONL file, one complete GenerateContentRequest in `request` per line:
 
 ```json
-{"request":{"contents":[{"role":"user","parts":[{"text":"Extract the dates"},{"fileData":{"fileUri":"gs://your-bucket/documents/doc-1.pdf","mimeType":"application/pdf"}}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"OBJECT","properties":{"dates":{"type":"ARRAY","items":{"type":"STRING"}}},"required":["dates"]}}},"metadata":{"request_id":"doc-1","prompt_version":"v1"}}
+{"request":{"contents":[{"role":"user","parts":[{"text":"Extract the dates"},{"fileData":{"fileUri":"gs://your-bucket/documents/doc-1.pdf","mimeType":"application/pdf"}}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"OBJECT","properties":{"dates":{"type":"ARRAY","items":{"type":"STRING"}}},"required":["dates"]}}},"request_id":"doc-1","prompt_version":"v1"}
 ```
 
-`metadata.request_id` is the bundled examples' **local correlation convention**, not a mandatory Cloud API field. Use unique stable domain IDs; verify metadata round-trip in the 5–10-row Cloud sample before scaling. Do not assume Developer `key` semantics apply to generative Cloud output. Keep metadata scalar or serialize complex values; BigQuery column restrictions are described below. Validate the examples' convention with `scripts/validate_jsonl.py --backend cloud`.
+`request_id` is the bundled examples' **local correlation convention**, not a mandatory Cloud API field. Put correlation values in **top-level scalar columns** beside `request`, never in a nested `metadata` object: Vertex rejects that import (see [gotchas](gotchas.md#cloud-batch-facts-measured)). Use unique stable domain IDs; verify the columns round-trip in the 5–10-row Cloud sample before scaling. Do not assume Developer `key` semantics apply to generative Cloud output. Serialize any complex value to a STRING column. Validate the examples' convention with `scripts/validate_jsonl.py --backend cloud`.
 
 Raw JSONL uses `generationConfig`, `responseMimeType`, `responseSchema`, and `thinkingConfig.thinkingLevel` if set. Do not put SDK/Pydantic classes or Developer Interactions `response_format` in JSONL. Omit Gemini 3 sampling controls; exact thinking levels are model-specific. See [structured-output.md](structured-output.md).
 

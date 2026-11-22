@@ -1,0 +1,120 @@
+{
+ "_comment": "Batch prices USD/M tokens. Hand-edit `tier` only; `available`, `price` (in/out/long) and `asOf` are written by route_batch.py --refresh.",
+ "models": {
+  "claude-haiku-5-5": {
+   "provider": "anthropic",
+   "tier": "cheap",
+   "in": 0.05,
+   "out": 0.25,
+   "long_over": 100000,
+   "long": [
+    0.25,
+    1.25
+   ],
+   "available": true,
+   "asOf": "2026-11-04",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/batch-processing.md"
+  },
+  "claude-sonnet-5-5": {
+   "provider": "anthropic",
+   "tier": "mid",
+   "in": 1.0,
+   "out": 5.0,
+   "available": true,
+   "asOf": "2026-11-04",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/batch-processing.md"
+  },
+  "claude-opus-5-5": {
+   "provider": "anthropic",
+   "tier": "top",
+   "in": 2.0,
+   "out": 10.0,
+   "available": true,
+   "asOf": "2026-11-04",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/batch-processing.md"
+  },
+  "claude-fable-5-1": {
+   "provider": "anthropic",
+   "tier": "frontier",
+   "in": 5.0,
+   "out": 25.0,
+   "available": true,
+   "asOf": "2026-11-04",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/batch-processing.md"
+  },
+  "gpt-6-luna": {
+   "provider": "openai",
+   "tier": "cheap",
+   "in": 0.05,
+   "out": 0.25,
+   "long_over": 272000,
+   "long": [
+    0.1,
+    0.375
+   ],
+   "available": true,
+   "asOf": "2026-11-04",
+   "source": "https://developers.openai.com/api/docs/pricing.md"
+  },
+  "gpt-6.1-terra": {
+   "provider": "openai",
+   "tier": "mid",
+   "in": 0.5,
+   "out": 2.5,
+   "long_over": 272000,
+   "long": [
+    1.0,
+    3.75
+   ],
+   "available": true,
+   "asOf": "2026-11-04",
+   "source": "https://developers.openai.com/api/docs/pricing.md"
+  },
+  "gpt-6.1-sol": {
+   "provider": "openai",
+   "tier": "top",
+   "in": 1.0,
+   "out": 5.0,
+   "long_over": 272000,
+   "long": [
+    2.0,
+    7.5
+   ],
+   "available": true,
+   "asOf": "2026-11-04",
+   "source": "https://developers.openai.com/api/docs/pricing.md"
+  },
+  "gpt-6-astra": {
+   "provider": "openai",
+   "tier": "frontier",
+   "in": 5.0,
+   "out": 25.0,
+   "long_over": 272000,
+   "long": [
+    10.0,
+    37.5
+   ],
+   "available": true,
+   "asOf": "2026-11-04",
+   "source": "https://developers.openai.com/api/docs/pricing.md"
+  },
+  "gemini-3.5-flash-lite": {
+   "provider": "gemini",
+   "tier": "cheap",
+   "in": 0.15,
+   "out": 1.25,
+   "available": true,
+   "asOf": "2026-11-04",
+   "source": "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing"
+  },
+  "gemini-3.8-flash": {
+   "provider": "gemini",
+   "tier": "mid",
+   "in": 0.375,
+   "out": 1.875,
+   "available": true,
+   "asOf": "2026-11-04",
+   "source": "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing"
+  }
+ }
+}

@@ -53,8 +53,11 @@ Claude or Gemini when results are needed the same day.
 | top | `claude-opus-5-5` | `gpt-6.1-sol` | — |
 | frontier | `claude-fable-5-1` | `gpt-6-astra` | — |
 
-A tier names a price class, not equal quality. Verify the ids against the provider's model page at use
-time and update `batchlib.MODELS` when they move.
+A tier names a price class, not equal quality. Models, tiers and prices live in
+`scripts/batch_models.json`. `route_batch.py --refresh` is the only writer of `available`, prices and `asOf`
+(live model lists and the providers' pricing pages; an unparsable price is flagged `price_unverified`, never
+guessed). `route_batch.py --propose` lists models the providers serve that the table lacks and suggests newer
+same-family candidates; it writes nothing. `tier` is hand-edited.
 
 ## Batch prices, USD per MTok (input / output)
 
