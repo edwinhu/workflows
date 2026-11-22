@@ -178,6 +178,15 @@ test('skills/writing/SKILL.md\'s example dispatch names the workflow (no <regist
     expect(read(`skills/writing/rules/${f}`), f).not.toMatch(/skills\/writing\/constraints\/|skills\/ai-anti-patterns\/constraints\/|constraints\/jev\/(writing|legal|econ)\b/)
 })
 
+test('writing rule bodies and the writing-reviewer agent name no retired skill or REVIEW.md', () => {
+  const stale = /(?<![\w.\/-])\/writing-(draft|verify|revise|setup|outline|validate)(?![\w-])|REVIEW\.md/
+  for (const f of readdirSync(join(ROOT, 'skills/writing/rules')).filter(f => f.endsWith('.md'))) {
+    const body = read(`skills/writing/rules/${f}`).replace(/^---\n[\s\S]*?\n---\n/, '')
+    expect(body, f).not.toMatch(stale)
+  }
+  expect(read('user-agents/writing-reviewer.md')).not.toMatch(/\bwriting-revise\b/)
+})
+
 // ---- scope without a run baseline ------------------------------------------------------------------------
 
 test('workflow-check with no baseline, --files or --changed examines the whole tree; with a baseline and no change nothing is in scope', () => {

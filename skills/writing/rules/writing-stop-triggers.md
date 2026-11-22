@@ -14,25 +14,25 @@ These are the most common rationalizations that cause main chat to bypass the wr
 ## Examples
 
 ### Correct
-1. Agent needs to check tone → Loads domain skill + ai-anti-patterns → Invokes /writing-verify.
-2. Agent sees a typo in the draft → Notes it for the revision phase → Continues current phase.
-3. Subagent returns a draft → Agent reports the subagent returned → Invokes next skill.
+1. Agent needs to check tone → Loads domain skill + ai-anti-patterns → Dispatches the `writing-reviewer` agent.
+2. Agent sees a typo in the draft → Notes it for the next `/writing` pass → Continues current phase.
+3. Subagent returns a draft → Agent reports the subagent returned → Routes the next step through `/writing`.
 
 ### Incorrect
-1. Agent reads a draft file "just to see how it's going" outside of any phase skill.
-2. Agent "polishes a paragraph" mid-outline phase.
+1. Agent reads a draft file "just to see how it's going" outside `/writing` or the `writing-reviewer` agent.
+2. Agent "polishes a paragraph" in main chat instead of routing the edit through `/writing`.
 3. Agent summarizes a subagent's draft in its own words (rewriting disguised as reporting).
 
 ## Red Flags
 
 | Action | Why Wrong | Do Instead |
 |--------|-----------|------------|
-| Reading a draft file outside of a phase skill | Bypasses constraint loading; you'll form opinions and start editing | Load the appropriate skill first |
-| "Let me check the tone" without loading domain skill + ai-anti-patterns | Partial evaluation is worse than no evaluation — it creates false confidence | Load ALL constraint layers, then evaluate via the review skill |
-| "Quick edit to the intro" without REVIEW.md | Unstructured edits bypass review → revise pipeline | Run /writing-verify first, then /writing-revise |
-| Editing prose after reading REVIEW.md (skipping /writing-revise) | REVIEW.md is for /writing-revise to consume, not for main chat to act on directly | Invoke /writing-revise |
-| "Let me polish this paragraph" mid-workflow | Polish is revision work; doing it ad-hoc bypasses the revision skill's constraint loading | Continue current phase; polish during revision |
-| Summarizing a subagent's draft in your own words | You're rewriting, not summarizing. This is investigation disguised as reporting. | Report the subagent returned, invoke next skill |
+| Reading a draft file outside of `/writing` or the `writing-reviewer` agent | Bypasses constraint loading; you'll form opinions and start editing | Route through `/writing` or dispatch `writing-reviewer` |
+| "Let me check the tone" without loading domain skill + ai-anti-patterns | Partial evaluation is worse than no evaluation — it creates false confidence | Load ALL constraint layers, then evaluate via the `writing-reviewer` agent |
+| "Quick edit to the intro" in main chat | Unstructured edits bypass the work loop's gate and review | Route the edit through `/writing` |
+| Editing prose after reading the `writing-reviewer`'s findings | The findings are for the `/writing` work loop to act on, not for main chat to apply by hand | Route the fixes through `/writing` |
+| "Let me polish this paragraph" mid-workflow | Polish is an edit; doing it ad-hoc bypasses the writing agent's constraint loading | Route the polish through `/writing` |
+| Summarizing a subagent's draft in your own words | You're rewriting, not summarizing. This is investigation disguised as reporting. | Report the subagent returned, route the next step through `/writing` |
 | "The draft is almost done, let me finish it myself" | "Almost done" is the most dangerous state — you'll skip the remaining phases | Follow the workflow to completion |
 | Reading `references/` source material to "verify" claims | Fact-checking IS investigation. Delegate to a review subagent. | Spawn a review subagent with fact-checking instructions |
 
@@ -40,7 +40,7 @@ These are the most common rationalizations that cause main chat to bypass the wr
 
 | Excuse | Reality | Do Instead |
 |--------|---------|------------|
-| "I'm just reading, not editing" | Reading forms opinions. Opinions become edits. Edits bypass constraints. | Don't read draft prose outside a phase skill |
+| "I'm just reading, not editing" | Reading forms opinions. Opinions become edits. Edits bypass constraints. | Don't read draft prose outside `/writing` or the `writing-reviewer` agent |
 | "This is faster than spawning a subagent" | Faster ≠ better. The subagent loads constraints; you didn't. | Spawn the subagent |
-| "It's just one paragraph" | One paragraph becomes two. Two becomes a section. Then you've rewritten the draft. | STOP. Invoke the appropriate skill. |
+| "It's just one paragraph" | One paragraph becomes two. Two becomes a section. Then you've rewritten the draft. | STOP. Route it through `/writing`. |
 | "The subagent will take too long" | The subagent takes minutes. Fixing your unstructured edits takes hours. | Spawn the subagent |

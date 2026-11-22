@@ -13,7 +13,7 @@ PRECIS.md assigns unique IDs to every claim (CLAIM-01, CLAIM-02, etc.). These ID
 | **OUTLINE.md** | `Implements: [CLAIM-01, CLAIM-02]` per section |
 | **outlines/*.md** | `Claim Supported: CLAIM-01` per section outline |
 | **VALIDATION.md** | `CLAIM-01: COVERED / PARTIAL / MISSING` -- full coverage map |
-| **REVIEW.md** | Issues reference claim IDs when relevant |
+| **Reviewer findings** | Issues reference claim IDs when relevant |
 
 **Without IDs, "we covered the argument" is vague. With IDs, you can verify that CLAIM-01, CLAIM-02, and CLAIM-03 are each addressed with evidence in specific sections.**
 
