@@ -6,8 +6,17 @@ assignment changes no row count and owes no count line. `.agg()`, `.size()`, `.s
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "checks" / "_jev"))
-from _ds import transform_sites  # noqa: E402
+# Import _ds in isolation: another suite owns a top-level `_common` (scripts/cite-fidelity), and _ds does `from _common import _read`.
+_JEV = str(Path(__file__).resolve().parents[1] / "checks" / "_jev")
+_saved = {m: sys.modules.pop(m) for m in ("_common", "_ds") if m in sys.modules}
+sys.path.insert(0, _JEV)
+try:
+    from _ds import transform_sites  # noqa: E402
+finally:
+    sys.path.remove(_JEV)
+    for _m in ("_common", "_ds"):
+        sys.modules.pop(_m, None)
+    sys.modules.update(_saved)
 
 
 def _lines(src):
