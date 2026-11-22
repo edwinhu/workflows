@@ -25,6 +25,9 @@ afterAll(() => rmSync(TMP, { recursive: true, force: true }));
 
 const HEADER = "WORKFLOWS PLUGIN MODS DID NOT LOAD";
 
+/** Bun's default 5 s test timeout kills the spawned hook under a loaded parallel run. */
+const SPAWN_TEST_TIMEOUT_MS = 60_000;
+
 /** A freshly started interactive 2.1.287 session; override what the case is about. */
 function probe(over: Partial<ModsProbe> = {}): ModsProbe {
   return { interactive: true, version: "2.1.287 (Claude Code)", processAgeMs: 1500, flag: false, beacon: () => false, ...over };
@@ -174,11 +177,11 @@ describe("session-start hook", () => {
       expect(out.hookSpecificOutput.additionalContext).not.toContain(HEADER);
       expect(stderr).not.toContain(HEADER);
     }
-  });
+  }, SPAWN_TEST_TIMEOUT_MS);
 
   test("interactive but not spawned by Claude Code (tests, goldens, a hand run): silent and no wait", () => {
     const { out, ms } = runHook({ CLAUDE_CODE_ENTRYPOINT: "cli", FARM_OUT_CHILD: "", CLAUDE_CONFIG_DIR: off });
     expect(out.hookSpecificOutput.additionalContext).not.toContain(HEADER);
     expect(ms).toBeLessThan(4000);
-  });
+  }, SPAWN_TEST_TIMEOUT_MS);
 });
