@@ -10,6 +10,7 @@ import { absolute, crashDeny, guardNow, type EnvName, type FileStat, type Guard,
 import { atomicConstraintGuard } from './atomic-constraint.ts'
 import { bunParallelGuard } from './bun-test.ts'
 import { cronDeleteGuard, cronRecord } from './cron-delete.ts'
+import { edgarSourceGuard } from './edgar-source.ts'
 import { farmDetachGuard } from './farm-detach.ts'
 import { imageReadGuard } from './image-read.ts'
 import { pgrepSelfMatch } from './pgrep.ts'
@@ -42,6 +43,7 @@ export const GUARDS: GuardSpec[] = [
   { script: 'atomic-constraint-guard.ts', gate: 'ATOMIC CONSTRAINT GUARD', event: 'PostToolUse', tools: ['Edit', 'Write'], guard: atomicConstraintGuard },
   { script: 'typst-convention-guard.ts', gate: 'TYPST CONVENTION GUARD', event: 'PostToolUse', tools: ['Edit', 'Write'], guard: typstConventionGuard },
   { script: 'validate-skill-paths.ts', gate: 'VALIDATE SKILL PATHS', event: 'PostToolUse', tools: ['Edit', 'Write'], guard: validateSkillPaths },
+  { script: 'edgar-source-guard.ts', gate: 'EDGAR SOURCE GUARD', event: 'PostToolUse', tools: ['Edit', 'Write'], guard: edgarSourceGuard },
   { script: 'cron-delete-guard.ts --record', gate: 'CRON RECORD', event: 'PostToolUse', tools: ['CronCreate'], guard: cronRecord },
 ]
 

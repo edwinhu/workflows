@@ -376,6 +376,8 @@ The correct pattern is always:
 1. **Query metadata** from WRDS SQL (accession numbers, fnames, dates) — fast, small result
 2. **rclone the raw files** from `/wrds/sec/archives/` — parallelizable, cacheable to disk
 3. **Process locally** — regex, NLP, whatever — no database round-trips
+
+**Bulk in rounds, never one request per document:** targets discovered while parsing form the next file list and the next single copy (`../../edgar/SKILL.md`).
 </EXTREMELY-IMPORTANT>
 
 #### WRDS Filing Filesystem Layout
@@ -461,7 +463,7 @@ For small batches (<10K files), `rclone copy --files-from` is fine:
 
 ```bash
 rclone copy wrds:/wrds/sec/wrds_clean_filings/ "$OUTPUT_DIR" \
-    --files-from "$FILES_FROM" --transfers 16 --no-traverse --stats 30s --stats-one-line
+    --files-from "$FILES_FROM" --transfers 8 --no-traverse --stats 30s --stats-one-line
 ```
 
 For large batches (>10K files), use the tar approach below instead — it's significantly faster.

@@ -105,6 +105,16 @@ test('an Edit far from standing Typst violations gets no convention context', as
   expect(r).toEqual({ result: 'ran' })
 })
 
+test('a script written with a sec.gov filing URL gets the EDGAR advisory; a clean script and prose do not', async ($, on) => {
+  const url = ['https://www.sec.gov/', 'Archives/edgar/data/1/2.txt'].join('')
+  world(on, { '/w/get.py': `import requests\nrequests.get("${url}")\n`, '/w/ok.py': 'print(1)\n', '/w/notes.md': url + '\n' })
+  const hit = await $.tool.call({ tool: 'Write', file_path: 'get.py', content: 'x' })
+  expect(hit.result).toBe('ran')
+  expect(hit.context?.join('\n')).toContain('EDGAR SOURCE: get.py has sec.gov filing URLs (line 2)')
+  expect(await $.tool.call({ tool: 'Write', file_path: 'ok.py', content: 'x' })).toEqual({ result: 'ran' })
+  expect(await $.tool.call({ tool: 'Write', file_path: 'notes.md', content: 'x' })).toEqual({ result: 'ran' })
+})
+
 test('deleting the heartbeat of an in-flight work run is denied', async ($, on) => {
   world(on, { '/w/.work/run-a/args.json': '{"heartbeatCrons":["541afe58"]}\n' })
   const r = await $.tool.call({ tool: 'CronDelete', id: '541afe58' })

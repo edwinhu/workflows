@@ -522,7 +522,7 @@ export const MIN_CLAUDE_CODE = "2.1.287";
 /** The tool-call guards hooks/guards/mod.ts runs, by their former settings-hook names. */
 const MOD_GUARDS =
   "image-read-guard, read-guard, suggest-compact, pgrep-self-match, bun-parallel-guard, cron-delete-guard, " +
-  "atomic-constraint-guard, typst-convention-guard, validate-skill-paths";
+  "atomic-constraint-guard, typst-convention-guard, validate-skill-paths, edgar-source-guard";
 
 function versionParts(v: string): number[] | null {
   const m = v.match(/(\d+)\.(\d+)\.(\d+)/);

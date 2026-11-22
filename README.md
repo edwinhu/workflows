@@ -123,7 +123,7 @@ These skills have `user-invocable: false` — Claude loads them automatically wh
 `bluebook`, `bluebook-audit`, `docx-repair`, `source-verify`
 
 ### Data Access
-`wrds`, `lseg-data`, `gemini-vertex`
+`wrds`, `edgar`, `lseg-data`, `gemini-vertex`
 
 ### Knowledge Management
 `nlm`, `google-scholar`, `readwise`, `readwise-chat`, `readwise-search`, `readwise-docs`, `readwise-prune`
@@ -262,6 +262,7 @@ share the code; `tests/mod-guards-parity.test.ts` holds the two to identical ans
 | `atomic-constraint-guard` | after | Edit, Write | Validate atomic constraint file structure |
 | `typst-convention-guard` | after | Edit, Write | Typst convention violations |
 | `validate-skill-paths` | after | Edit, Write | `${CLAUDE_*}` references to missing files |
+| `edgar-source-guard` | after | Edit, Write | Scripts with sec.gov filing URLs: point at the `edgar` skill (advisory) |
 
 ### Bulk-extraction guard (mod)
 
