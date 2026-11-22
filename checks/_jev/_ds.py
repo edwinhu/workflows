@@ -74,7 +74,7 @@ EXPR_ONLY = {'col', 'lit', 'when', 'struct', 'element', 'str', 'list', 'dt', 'ar
 NOT_FRAME = {'to_dicts', 'to_list', 'tolist', 'to_numpy', 'item', 'rows', 'iter_rows', 'to_dict', 'values'}
 COUNT_OF = (r'\b{n}\s*(?:\[[^\]]*\]\s*)?\.(?:height|shape|n_rows|count\(\s*\)|select\(\s*pl\.len)|'
             r'\b(?:len|nrow|n_rows)\(\s*{n}\b|'
-            r'\b\w*(?:log|report|audit|count|rows|shape|trace|chain)\w*\s*\([^)]*\b{n}\b')
+            r'\b\w*(?:log|report|audit|count|rows|shape|trace|chain)\w*\s*\((?:[^()]|\([^()]*\))*\b{n}\b')
 # groupby(...)[col].<one of these>() returns one value per input row: no row count changes
 GROUP_PRESERVING = {'transform', 'cumsum', 'cumcount', 'shift', 'rank', 'diff', 'pct_change', 'ffill', 'bfill',
                     'fillna', 'cummax', 'cummin', 'cumprod'}

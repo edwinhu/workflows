@@ -48,3 +48,41 @@ def test_other_row_methods_in_a_preserving_chain_still_count():
 d2 = d.dropna(subset=["x"]).groupby("g").x.transform("mean")
 """
     assert _lines(src) == [1]
+
+
+def _shown(src):
+    sites = transform_sites("x.py", src.strip("\n").split("\n"))
+    assert len(sites) == 1, sites
+    return sites[0]["output_count_shown"]
+
+
+def test_audit_call_with_nested_call_before_the_frame_credits_it():
+    src = """
+out = sc.merge(uni(d), on="cik", how="left", validate="1:1")
+audit_join(f"[{label}] {p} scored x universe", sc, uni(d), out, ["cik"])
+"""
+    assert _shown(src) is True
+
+
+def test_log_call_naming_other_frame_with_nested_call_stays_uncredited():
+    src = """
+out = sc.merge(uni(d), on="cik", how="left", validate="1:1")
+log_rows(x, len(y))
+"""
+    assert _shown(src) is False
+
+
+def test_fstring_nested_call_before_the_name_still_credits_it():
+    src = """
+out = sc.merge(uni(d), on="cik", how="left", validate="1:1")
+log_rows(f"merged {len(z)}", out)
+"""
+    assert _shown(src) is True
+
+
+def test_merge_with_no_count_stays_uncredited():
+    src = """
+out = sc.merge(uni(d), on="cik", how="left", validate="1:1")
+print("done")
+"""
+    assert _shown(src) is False
