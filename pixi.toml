@@ -15,7 +15,8 @@ test = "pytest tests/"
 # pyyaml and lxml for prose-audit's diction table and .docx reader, pandas and
 # polars for the ds and npx-linking suites, psycopg, loguru and beautifulsoup4 for
 # blaw-edgar-search's resolve_exhibits_test.py; pymupdf, requests, pyarrow, psycopg2 and
-# pypdf for the PDF-reading, HTTP, parquet and WRDS suites and workshop_deck_test.py.
+# pypdf for the PDF-reading, HTTP, parquet and WRDS suites and workshop_deck_test.py;
+# pyreadstat for npx_panel_scripts_test.py, html2text for readwise_to_nlm_test.py.
 python = "3.12.*"
 pytest = ">=8,<10"
 pyyaml = ">=6,<7"
@@ -32,6 +33,8 @@ requests = ">=2.34.2,<3"
 pyarrow = ">=26.0.1,<27"
 psycopg2 = ">=2.9.12,<3"
 pypdf = ">=7.1.1,<8"
+pyreadstat = ">=1.3.8,<2"
+html2text = ">=2025.4.15,<2026"
 
 [pypi-dependencies]
 # conda-forge tops out at sparse_dot_topn 0.3.1 (py311, linux-64 only), and 0.3.1
