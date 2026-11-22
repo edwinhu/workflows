@@ -495,7 +495,8 @@ def test_fetch_round_one_copy_with_n_lines_and_exact_argv(tmp_path):
     argv, listed = cp.calls[0][:-1], cp.calls[0][-1]
     assert argv[:2] == ["rclone", "copy"]
     assert argv[2:4] == ["wrds:/wrds/sec/archives", f"{tmp_path}/archives"]
-    assert argv[4] == "--files-from" and argv[6:] == ["--transfers", "8", "--no-traverse", "--log-level", "ERROR"]
+    assert argv[4] == "--files-from" and argv[6:] == ["--transfers", "8", "--no-traverse", "--log-level", "ERROR",
+                         "--ignore-checksum"]
     assert listed == [f"000000/{n}/{A(n)}.txt" for n in (1, 2, 3)]  # de-duplicated
     assert out == [f"{tmp_path}/archives/000000/{n}/{A(n)}.txt" for n in (1, 2, 3, 1)]
     assert not Path(argv[5]).exists()  # temp list removed
@@ -598,6 +599,7 @@ def test_default_copy_runs_rclone_from_path(rclone_stub, tmp_path):
     assert Path(out).read_text() == "body\n"
     argv = rclone_stub.read("rclone_argv").split("\n")
     assert argv[:3] == ["copy", "wrds:/wrds/sec/archives", f"{tmp_path}/archives"] and "--no-traverse" in argv
+    assert "--ignore-checksum" in argv
 
 
 def test_default_copy_nonzero_exit_raises_with_stderr(rclone_stub, tmp_path):
@@ -634,3 +636,45 @@ def test_cli_fetch_failures_and_bad_input(rclone_stub, tmp_path):
 
 def test_docstring_names_fetch():
     assert "fetch" in ef.__doc__
+
+
+# ── dot-stuffing ──────────────────────────────────────────────────────────────────────────────
+def _body(raw: bytes) -> bytes:
+    sgml = HEADER + b"<DOCUMENT>\n<TYPE>EX-3.1\n<FILENAME>d.txt\n<TEXT>\n" + raw + b"</TEXT>\n</DOCUMENT>\n"
+    d, = ef.documents(sgml)
+    return d.text
+
+
+def test_stuffed_file_is_unstuffed():
+    assert _body(b"..report table{\nplain\n..x\n") == b".report table{\nplain\n.x\n"
+
+
+def test_triple_dot_becomes_double_in_stuffed_file():
+    assert _body(b"..a\n...\nb\n") == b".a\n..\nb\n"
+
+
+def test_unstuffed_file_with_single_dot_line_and_genuine_triple_dot_unchanged():
+    raw = b".x\n...\n..y\n"
+    assert _body(raw) == raw
+
+
+def test_lone_dot_line_counts_as_single_dot_even_with_crlf():
+    for raw in (b"..a\n.\n", b"..a\r\n.\r\n"):
+        assert _body(raw) == raw
+
+
+def test_crlf_stuffed_is_unstuffed():
+    assert _body(b"..a\r\nb\r\n") == b".a\r\nb\r\n"
+
+
+def test_non_utf8_bytes_unstuffed_without_decoding():
+    assert _body(b"..\xff\xfe\x00\n\x80..\n") == b".\xff\xfe\x00\n\x80..\n"
+
+
+def test_uuencoded_line_starting_with_dots_is_unstuffed():
+    assert _body(b"begin 644 a.gif\n..M1TE&.#=A\nend\n") == b"begin 644 a.gif\n.M1TE&.#=A\nend\n"
+
+
+def test_single_dot_line_in_another_document_keeps_whole_submission_unchanged():
+    sgml = filing(doc("EX-3.1", "a.htm", "..a"), doc("EX-3.1", "b.htm", ".b"))
+    assert [d.text for d in ef.documents(sgml)] == [b"..a\n", b".b\n"]

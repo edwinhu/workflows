@@ -184,7 +184,10 @@ def _round(pairs, dest, clean, query, copy):
             f.write("\n".join(need) + "\n")
         try:
             (copy or rclone_copy)(["rclone", "copy", root, str(base), "--files-from", f.name,
-                                   "--transfers", "8", "--no-traverse", "--log-level", "ERROR"])
+                                   "--transfers", "8", "--no-traverse", "--log-level", "ERROR",
+                                   # the wrds remote sets md5sum_command: without this rclone opens one ssh session
+                                   # per file for md5sum and exhausts the login node; size is still checked
+                                   "--ignore-checksum"])
         finally:
             os.unlink(f.name)
     # rclone exits 0 on a listed file that does not exist, so presence on disk decides "missing".
@@ -231,15 +234,29 @@ def _lines(data: bytes):
         pos = nxt
 
 
+def _is_stuffed(sgml: bytes) -> bool:
+    """Older submissions double every leading "."; such a file has no line starting with exactly one "."."""
+    return not any(sgml[s:s + 1] == b"." and sgml[s + 1:s + 2] != b"." for s, _, _ in _lines(sgml))
+
+
+def _unstuff(text: bytes) -> bytes:
+    return b"\n".join(l[1:] if l.startswith(b"..") else l for l in text.split(b"\n"))
+
+
 def documents(sgml: bytes) -> list:
-    """Every <DOCUMENT>; text is the bytes between <TEXT>'s line and </TEXT>'s line, never decoded."""
+    """Every <DOCUMENT>; text is the bytes between <TEXT>'s line and </TEXT>'s line, never decoded.
+
+    A dot-stuffed submission has one leading "." dropped from each body line starting "..".
+    """
+    stuffed = _is_stuffed(sgml)
     docs, cur, text_start = [], None, None
     for start, end, nxt in _lines(sgml):
         line = sgml[start:end].rstrip(b" \t\r")
         if text_start is not None:
             if line == b"</TEXT>":
                 assert cur is not None
-                cur["text"], text_start = sgml[text_start:start], None
+                text = sgml[text_start:start]
+                cur["text"], text_start = (_unstuff(text) if stuffed else text), None
             continue
         if cur is None:
             if line == b"<DOCUMENT>":
