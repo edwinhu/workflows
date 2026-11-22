@@ -158,6 +158,17 @@ def _derived(block: str, seed: set[str]) -> set[str]:
     return names
 
 
+# Look-around for the log that reports a statement: lines before, lines after. AFTER matches
+# DQ4's WINDOW in checks/_jev/_ds.py, so a count either rule credits the other credits too.
+WINDOW_BEFORE = 4
+WINDOW_AFTER = 6
+
+
+def window(lines: list[str], lineno: int) -> str:
+    """The text around 1-based `lineno` in which a log may report the operation on it."""
+    return "\n".join(lines[max(0, lineno - 1 - WINDOW_BEFORE) : lineno + WINDOW_AFTER])
+
+
 _MAX_SPAN = 6  # lines walked in either direction; a statement longer than this is rare
 
 

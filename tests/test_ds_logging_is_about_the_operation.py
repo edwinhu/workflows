@@ -145,3 +145,42 @@ def test_a_real_count_outside_the_window_is_still_a_finding(tmp_path):
 
 if __name__ == "__main__":
     sys.exit(__import__("pytest").main([__file__, "-q"]))
+
+
+# ---------------------------------------------------------------- look-around window
+# The DQ4 row-count rule credits a count up to 6 lines after the statement; the dropna and
+# coerce branches must read as far, and no farther.
+
+_FIT = (
+    "n_in = len(d)\n"
+    "d = d.dropna(subset=[ctl] + rest)\n"
+    "n_na = n_in - len(d)\n"
+    'keep = d.groupby("event_id").mover.transform(lambda s: s.sum() == 1 and len(s) > 1)\n'
+    "n_set = int((~keep).sum())\n"
+    "d = d[keep].copy()\n"
+)
+_FIT_PRINT = 'print(f"rows in {n_in:,}; dropped for missing values {n_na:,}; rows used {len(d):,}")\n'
+
+
+def test_window_report_five_lines_below_dropna_satisfies(tmp_path):
+    assert not run(err_check, tmp_path, _FIT + _FIT_PRINT)
+
+
+def test_window_without_the_print_fails(tmp_path):
+    assert run(err_check, tmp_path, _FIT)
+
+
+def test_window_unrelated_quantity_five_lines_below_still_fails(tmp_path):
+    assert run(err_check, tmp_path, _FIT + 'print(f"{len(other):,} config rows")\n')
+
+
+def test_window_is_bounded_log_eight_lines_below_fails(tmp_path):
+    src = "d = d.dropna(subset=[c])\n" + "x = 1\n" * 7 + 'print(f"dropped {len(d):,} rows")\n'
+    assert run(err_check, tmp_path, src)
+
+
+def test_window_applies_to_coerce_too(tmp_path):
+    ok = 'x = pd.to_numeric(x, errors="coerce")\n' + "y = 1\n" * 4 + 'print(f"{x.isna().sum()} coerced")\n'
+    far = 'x = pd.to_numeric(x, errors="coerce")\n' + "y = 1\n" * 7 + 'print(f"{x.isna().sum()} coerced")\n'
+    assert not run(err_check, tmp_path, ok)
+    assert run(err_check, tmp_path, far)
