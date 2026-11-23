@@ -41,6 +41,16 @@ const doneLine = (events: string) =>
   readdirSync(events).filter(f => f.endsWith('.ndjson'))
     .map(f => readFileSync(join(events, f), 'utf8')).join('').match(/DONE detached-row ok\b/)
 
+/** The detached farm run can still be writing its bookkeeping under `root` after its DONE line is
+ *  filed, and a write after rmSync recreates the dir. Remove until it stays gone for a full beat. */
+async function removeWhenQuiet(root: string) {
+  for (let i = 0; i < 20; i++) {
+    rmSync(root, { recursive: true, force: true })
+    await Bun.sleep(500)
+    if (!existsSync(root)) return
+  }
+}
+
 async function until(pred: () => unknown, ms: number) {
   const end = Date.now() + ms
   while (Date.now() < end) { if (pred()) return true; await Bun.sleep(250) }
@@ -60,7 +70,7 @@ test('with the watcher alive, --detach returns before the row finishes and the r
     expect(await until(() => existsSync(s.out) && doneLine(s.events), 30_000)).toBe(true)
     expect(readFileSync(s.out, 'utf8')).toBe('row report\n')
   } finally {
-    rmSync(s.root, { recursive: true, force: true })
+    await removeWhenQuiet(s.root)
   }
 }, 60_000)
 
