@@ -1,7 +1,7 @@
 ---
 name: wrds
 version: 1.0
-description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/ExecuComp/Capital IQ", "Form 4 insider data", "13F institutional ownership (Thomson)", "13D/13G blockholders", "ISS governance/compensation/voting/directors", "proxy advisor recommendations", "shareholder proposals / 14a-8", "TAQ intraday/NBBO", "SDC M&A or new issues", "DealScan syndicated loans", "PitchBook PE/VC deals", "FISD corporate bonds", "municipal bonds / muni trades / MSRB RTRS / SDC municipals", "Form D/ADV", "fund formation", "FJC court data", "linking datasets / join keys (gvkey-permno via CCM, cik-gvkey via wciklink, DealScan-Compustat)", or any WRDS PostgreSQL query or SAS ETL on the WRDS grid (qsub/qsas/SGE).
+description: Use when "query WRDS", "pull SEC filings", "access Compustat/CRSP/ExecuComp/Capital IQ", "Form 4 insider data", "Form 144 proposed insider sales (Thomson)", "13F institutional ownership (Thomson)", "13D/13G blockholders", "ISS governance/compensation/voting/directors", "proxy advisor recommendations", "shareholder proposals / 14a-8", "TAQ intraday/NBBO", "SDC M&A or new issues", "DealScan syndicated loans", "PitchBook PE/VC deals", "FISD corporate bonds", "municipal bonds / muni trades / MSRB RTRS / SDC municipals", "Form D/ADV", "fund formation", "FJC court data", "linking datasets / join keys (gvkey-permno via CCM, cik-gvkey via wciklink, DealScan-Compustat)", or any WRDS PostgreSQL query or SAS ETL on the WRDS grid (qsub/qsas/SGE).
 user-invocable: false
 ---
 
@@ -234,7 +234,7 @@ See **`references/sas-etl.md`** for complete patterns:
 | ExecuComp | `comp_execucomp` | `anncomp` |
 | CRSP | `crsp` | `dsf`, `msf`, `stocknames`, `ccmxpf_lnkhist` |
 | CRSP v2 | `crsp` | `dsf_v2`, `msf_v2`, `stocknames_v2` |
-| Form 4 Insiders | `tr_insiders` | `table1`, `header`, `company` |
+| Form 4 / 144 Insiders | `tr_insiders` | `table1`, `header`, `company`, `form144` |
 | ISS Incentive Lab | `iss_incentive_lab` | `comppeer`, `sumcomp`, `participantfy` |
 | Capital IQ | `ciq` (views), `ciq_pplintel`, `ciq_common` | `wrds_professional` (board/professional panel), `ciqcompanyrel` (company-to-company), `wrds_compensation`. **Account-split: `ciq_pplintel` and `boardex_na` are on opposite WRDS accounts; `ciq_transactions` is denied on both.** See `references/capiq.md` |
 | BoardEx | `boardex_na` (**`edwin_hu` only**) | `na_wrds_org_composition` (directors **+ senior managers** — filter `seniority`), `na_wrds_company_names`, `na_dir_profile_details` (`usualname` = nickname). History starts **1999**, ~20k mostly-large companies. See `references/boardex.md` |
@@ -345,6 +345,7 @@ Detailed query patterns and table documentation:
 - **`references/crsp.md`** - CRSP legacy (SIZ) stock data and CCM linking
 - **`${CLAUDE_SKILL_DIR}/../../skills/crsp-v2/SKILL.md`** - CRSP CIZ / v2 format (required for any data after 2024-12-31)
 - **`references/insider-form4.md`** - Thomson Reuters Form 4, rolecodes, insider types
+- **`references/insider-form144.md`** - Thomson Reuters Form 144 proposed sales: coverage start (`secdate` from 1996-06, not `fdate`), amendments, Form 4 join
 - **`references/iss-compensation.md`** - ISS Incentive Lab, peer companies, compensation
 - **`references/formd.md`** - Form D / Reg D (canonical): two sources (WRDS `wrds_vc_formd` + SEC EDGAR TSV/XML), grain & keys, denormalization gotcha, exemption + industry codes, post-2020 gap, validated benchmarks
 - **`references/boardex.md`** - BoardEx: 1999 coverage start and ~20k-company universe, `wrds_org_composition` is directors PLUS senior managers, sentinel dates, feed 4.2 succession ids, the reused-ticker linking trap, measured recall vs proxy statements

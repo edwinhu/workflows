@@ -18,7 +18,7 @@
 | `tr_insiders.table2` | Derivative holdings |
 | `tr_insiders.header` | Insider identity and role codes |
 | `tr_insiders.company` | Company identifiers |
-| `tr_insiders.form144` | Form 144 filings |
+| `tr_insiders.form144` | Form 144 proposed-sale notices — see [insider-form144.md](insider-form144.md) |
 
 ## Key Fields
 
