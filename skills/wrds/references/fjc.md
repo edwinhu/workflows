@@ -9,7 +9,7 @@ The Federal Judicial Center (FJC) Integrated Database on WRDS contains all feder
 | `fjc` | Primary — civil, criminal, bankruptcy, appeals |
 | `fjc_litigation` | Alternate copy (identical structure) |
 | `fjc_litigation_old` | Older vintage |
-| `fjc_linking` | WRDS-constructed firm links (gvkey/CIK) |
+| `fjc_linking` | WRDS-constructed firm links (gvkey only) |
 
 Use `fjc` for all queries unless you need the linking tables, which live in `fjc_linking`.
 
@@ -21,7 +21,7 @@ Use `fjc` for all queries unless you need the linking tables, which live in `fjc
 | `fjc.criminal` | — | Criminal cases |
 | `fjc.bankruptcy` | — | Bankruptcy filings |
 | `fjc.appeals` | — | Appellate cases |
-| `fjc_linking.wrds_civil_link` | — | Civil case → gvkey/CIK matches for plaintiff/defendant |
+| `fjc_linking.wrds_civil_link` | 180k | Civil case → gvkey name matches (no CIK; sparse and noisy, see below) |
 
 ## `fjc.civil` Key Columns
 
@@ -164,23 +164,19 @@ Post-PSLRA (1995–2025): ~72% of NOS=850 cases dismissed pre-trial, <1% reach t
 
 ## `fjc_linking.wrds_civil_link` — Firm Matching
 
-WRDS-constructed table linking civil cases to Compustat/EDGAR firm identifiers.
+WRDS name-match of civil cases to Compustat firms. **gvkey only — there is no CIK column**; map CIK → gvkey through `comp.company` first.
 
 | Column | Description |
 |--------|-------------|
-| `def_gvkey` | Defendant Compustat gvkey |
-| `def_cik` | Defendant SEC CIK |
-| `plt_gvkey` | Plaintiff Compustat gvkey |
-| `plt_cik` | Plaintiff SEC CIK |
-| `def_com_name` | Matched company name (defendant) |
-| `plt_com_name` | Matched company name (plaintiff) |
-| `d_score` | Match quality score (defendant) |
-| `p_score` | Match quality score (plaintiff) |
+| `def_gvkey`, `def_com_name`, `defendant` | Matched defendant gvkey, its Compustat name, the FJC defendant string |
+| `plt_gvkey`, `plt_com_name`, `plaintiff` | Same for the plaintiff |
+| `d_score`, `p_score` | Match score, values 2, 3 or 4 only (never 1.0) |
 | `filedate`, `docket`, `circuit`, `district`, `office` | Join keys back to `fjc.civil` |
 
-Join on `(filedate, docket, circuit, district, office)` to merge with `fjc.civil`.
-
-Filter on `d_score = 1.0` for high-confidence defendant matches.
+Measured 2026-11-17 (180,174 rows, filed 1960 – 2024-12-12; every row has `def_gvkey`):
+- About a third of links do not join back to `fjc.civil` on the five keys (12,370 of 36,062 for one 4,908-gvkey sample).
+- Sparse: 813 of 4,908 sample gvkeys had any linked case, mostly product-liability mass torts (NOS 365); NOS 850/160 links covered 78 firms.
+- Noisy at every score: person-name defendants ("ANDREWS, ET AL", "KELLY, ET AL") matched to companies. Do not use it as a firm's litigation count. Audit Analytics litigation (`audit.f14_lit_legal_party`, CIK-keyed) covers several times more firms with securities cases.
 
 ## Empirical Benchmarks (NOS=850, 1980–2025)
 
