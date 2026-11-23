@@ -45,7 +45,7 @@ async function state2(rule: string, kase: "vio2" | "sat2") {
 test("evidence.py discovers only the wired rules; the uncalibrated ones sit below the glob", async () => {
     expect(Object.keys(await getEvidence("A1", "sat"))).toEqual(WIRED);
     expect(Object.keys(await getEvidence("DQ1", "sat"))).toEqual(UNCALIBRATED);
-});
+}, 30_000); // two cold python starts; the 5 s default timed out when the whole suite ran in parallel
 
 test("every rule's criteria carry the four options", async () => {
     const state = { ...(await getEvidence("A1", "sat")), ...(await getEvidence("DQ1", "sat")) };
