@@ -102,7 +102,8 @@
         "M1": [
           { "kind": "violating", "path": "tests/fixtures/jev/M1/vio2" },
           { "kind": "compliant", "path": "tests/fixtures/jev/M1/sat2" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/M1-08_agk_sample", "source": "hf-wt-float scripts/08_agk_sample.py @5f2c32b, lines 50-52, 566-571, 691-696 (main() bodies wrapped in stub defs so the excerpt parses); accepted deliverable, no plan supplied" }
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/M1-08_agk_sample", "source": "hf-wt-float scripts/08_agk_sample.py @5f2c32b, lines 50-52, 566-571, 691-696 (main() bodies wrapped in stub defs so the excerpt parses); accepted deliverable, no plan supplied" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/M1-nevada_snapshot_switch", "source": "nevada working tree on e04f937 (run 1113-nevada-nvde-2026, every write under a declared path): src/nevada/nvde_status/report/build.py lines 58-100, 656-660, 842-846 (the last two wrapped in stub defs); src/nevada/nv_registry/link/build.py lines 51-78, 780-811, 861-872; src/nevada/nv_registry/extract.py lines 39-47, 100-113, 173-176; plan.md is .planning/fluttering-mapping-quill.md lines 5, 45-62, 88-90, 124-133, 150-160; --snapshot switch writers whose target is selected at runtime" }
         ],
         "R1": [
           { "kind": "violating", "path": "tests/fixtures/jev/R1/vio2" },
