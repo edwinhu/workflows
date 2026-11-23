@@ -111,8 +111,10 @@ Five domain requirements on the plan:
   reached, and the data-quality and scale risks the read-only profile actually surfaced. A risk found
   at CLARIFY that reaches no plan section is a risk nothing acts on.
 - **Reproducibility decisions**, appropriate to the work: source vintages, seeds, environments and
-  config. `R1` (fresh re-run reproducibility) is judged by the review lens's data-quality item, so a
-  plan recording none of these leaves `R1` with nothing to judge against.
+  config. `R1` (fresh re-run reproducibility) is computed when the project has a replay command: put a
+  line `Replay command: <cmd>` in the plan (or ship `manifest/inputs.csv` with a `replay.sh`/`replay.py`
+  beside it) and `check.sh`'s `ds-replay` leg runs it and reads the exit code. With none, the leg reports
+  `R1 FINDING: no replay command` and the lens judges R1 against what the plan recorded.
 - **A `## Data Outputs` table**, in exactly this grammar, because `checks/ds/constraints/ds-dq.py` parses it and an
   output absent from it is one nothing will check:
 
@@ -220,7 +222,7 @@ const args = {
     { name: "ds",
       cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/check.sh --plan ${planPath} --project-dir ${projectDir}${testCmd ? ` --test-cmd ${shq(testCmd)}` : ' --no-test-cmd'}${lintCmd ? ` --lint-cmd ${shq(lintCmd)}` : ' --no-lint-cmd'}` },
   ],
-  // check.sh runs every checks/ds/constraints/ script through `workflow-check ds --constraints-only`. work-checks.sh runs ruleChecks as a command (no agent); Jev scores the rules under checks/ds/rules/ (A1, A4, DEN, DQ4, DQ6, E7, M1, R1, UNI; DQ1 waits in checks/ds/rules/uncalibrated/ and ds-dq.py decides it); a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
+  // check.sh runs every checks/ds/constraints/ script through `workflow-check ds --constraints-only`. work-checks.sh runs ruleChecks as a command (no agent); the ds-replay leg runs the project's replay command for R1 (exit code decides; none = a finding for the lens); Jev scores the rules under checks/ds/rules/ (A1, A4, DEN, DQ4, DQ6, E7, M1, R1, UNI; DQ1 waits in checks/ds/rules/uncalibrated/ and ds-dq.py decides it); a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
   ruleChecks: { name: "jev-rules", cmd: `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow ds --project-dir ${projectDir} --plan ${planPath}` },
 
   // One lens after verification and mechanical checks; its checklist covers all five dimensions.
@@ -260,7 +262,7 @@ const args = {
     "THE DS CONSTRAINT CORPUS IS ONE COMMAND AWAY. Run `${CLAUDE_PLUGIN_ROOT}/scripts/load-constraints ds` for the index — the C/V/A/E ids the ds-rules digest prints plus any further rule scoped to this workflow, each with an openable path — then read the ones your task touches. Do not work from a paraphrase of them in a brief: a paraphrase is a lossy copy of a corpus that moves.",
     "IRON LAW OF DS PLANNING — ask before you look; plan only from evidence you actually gathered.",
     "IRON LAW OF DS VERIFICATION — no check result without the runner's own output. A mechanical check reported from reading the code, or an N/A justified by a reason the model composed, is the model certifying its own enumeration. Every mechanical result is a line ${CLAUDE_PLUGIN_ROOT}/checks/ds/constraints/ds-dq.py emitted, quoted as emitted.",
-    "Never report M1, UNI, DEN, DEL or R1 as PASS. The runner lists them as MODEL-EVALUATED; Jev scores M1, UNI, DEN and R1, and DEL is a judgement reported with the evidence read.",
+    "Never report M1, UNI, DEN, DEL or R1 as PASS, except R1 when the ds-replay leg ran a replay command and printed `R1 PASS`. The runner lists them as MODEL-EVALUATED; Jev scores M1, UNI, DEN and R1, and DEL is a judgement reported with the evidence read.",
     "DQ4 and DQ6 are `N/A` from the runner on a present output (FAIL, like every check, when the output is absent), and that `N/A` is not a third kind of pass — the runner emits a line for them only because ENUM requires one, and an N/A never sets its non-zero exit. Jev's DQ4 and DQ6 verdicts score them against the input → transform → output count chain and the before/after shape. Never read their N/A as `the runner checked this`.",
     "An artifact absent from the plan's ## Data Outputs table is one nothing will check and cannot be claimed as verified. Do not verify an output the table never declared.",
     "The analysis is done by dispatched agents. Main chat writes no .py, .ipynb, .R, .sas, .sql or .qmd file, by any tool.",

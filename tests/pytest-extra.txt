@@ -74,3 +74,4 @@ skills/wrds/scripts/dual_class/tests/test_run_isolation.py
 skills/wrds/scripts/dual_class/tests/test_schema.py
 skills/batch-router/scripts/batch_router_test.py
 skills/edgar/scripts/edgar_filing_test.py
+skills/ds/scripts/ds_replay_test.py

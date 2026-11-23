@@ -17,6 +17,9 @@
 # The ds-dq-tests leg runs the runner's own contract suite (ds_dq_test.py; DS_DQ_SUITE overrides the path), so an edit that
 # breaks ds-dq's parse turns the gate red.
 #
+# The ds-replay leg is R1 as a computation (ds_replay.py): the plan's `Replay command:` line, or a manifest dir's replay.sh/replay.py,
+# is run and its exit code decides; with none it reports `R1 FINDING: no replay command` and exits 0, leaving R1 to the lens.
+#
 # Usage: check.sh --plan <planPath> --project-dir <dir> (--test-cmd <cmd> | --no-test-cmd) [--test-count-re <re>] (--lint-cmd <cmd> | --no-lint-cmd)
 # Exit 0 = every declared leg passed. 1 = some leg failed. 2 = refusal, or a leg that examined nothing.
 set -uo pipefail   # deliberately not -e: every leg must run so every leg reports.
@@ -52,6 +55,9 @@ echo "ds-dq-tests: polars==$POLARS_PIN" >&2
 SUITE="${DS_DQ_SUITE:-$HERE/ds_dq_test.py}"
 legcount_run ds-dq-tests legcount_cmd ds-dq-tests "$HERE" "uv run --with polars==$POLARS_PIN --with pytest python3 -m pytest -o addopts= -p no:cacheprovider \"$SUITE\" -q"
 report ds-dq-tests "$LEG_STATUS"
+
+legcount_run ds-replay python3 "$HERE/ds_replay.py" --plan "$PLAN" --project-dir "$PROJ"
+report ds-replay "$LEG_STATUS"
 
 if [ -n "$TESTCMD" ]; then legcount_run tests legcount_cmd tests "$PROJ" "$TESTCMD" "$TESTRE"; report tests "$LEG_STATUS"
 else count_line tests 0 "command(s)" "— nothing in scope (declined by plan)" >&2; report tests 0 "declined by plan"; fi

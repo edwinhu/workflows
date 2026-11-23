@@ -31,7 +31,7 @@ window) would cure.
 | DQ5 | Cardinality check on categoricals | computed | ✅ | ✅ | ✅ |
 | DQ6 | Output-first verification (shape before/after) | always N/A | ✅ | ✅ | ✅ |
 | COV | Sample-period coverage (each windowed source spans its Required window) | computed | ✅ | ✅ | ✅ |
-| R1 | Reproducibility (same inputs → same outputs) | MODEL-EVALUATED | ✅ | ✅ | ✅ |
+| R1 | Reproducibility (same inputs → same outputs) | computed by the ds-replay leg when a replay command exists, else MODEL-EVALUATED | ✅ | ✅ | ✅ |
 | M1 | Approved-plan criterion compliance | MODEL-EVALUATED | ✅ | ✅ | ✅ |
 | UNI | Universe agreement (every source admits the same entities) | MODEL-EVALUATED | ✅ | ✅ | ✅ |
 | DEN | Every reported rate states its denominator | MODEL-EVALUATED | ✅ | ✅ | ✅ |
@@ -198,7 +198,10 @@ Verify the approved native-plan goal, task criteria, and constraints are address
 
 ### R1: Fresh Re-Run
 
-Execute analysis fresh (not from cache) and compare outputs.
+Execute analysis fresh (not from cache) and compare outputs. Where the project has a replay command (a
+`Replay command:` line in the plan, or `manifest/inputs.csv` with a `replay.sh`/`replay.py` beside it),
+`skills/ds/scripts/ds_replay.py` runs it and its exit code is the verdict (`R1 PASS` / `R1 FAIL`); with none it
+prints `R1 FINDING: no replay command` and the lens judges R1. Contract: `skills/replication-package/references/replay.md`.
 
 ```python
 # Run 1

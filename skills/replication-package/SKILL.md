@@ -175,6 +175,14 @@ all of these have happened. So the build ends with `ruff check` (or the project'
 the staged copy and an `ast.parse` of every packaged `.py`, and it refuses to archive on
 failure. Never rewrite a comment with a pattern that can consume its own line break.
 
+## Expert report or court production: ship a replay
+
+A package for an expert report or court production also carries (a) `decisions.csv`, one row per override or exclusion
+(reason, verbatim quote, source, decided_by, decided_on); (b) a manifest dir (sample, figures, inputs with md5, code commit,
+output hash); (c) a replay command that rebuilds from the saved inputs with no model or network call and exits 0 only when
+the result matches the manifest after the decisions. Contract: `references/replay.md`.
+`ds` runs the command as its R1 check.
+
 ## Contents
 
 Include: the source closure, the notebook or script that produces the deliverable, pinned
