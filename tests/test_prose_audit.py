@@ -1008,3 +1008,17 @@ def test_quoted_text_is_not_the_authors_prose(tmp_path):
     assert [s["line"] for s in dash] == [7], res["spans"]
     assert all(s["severity"] == "soft" for s in dash), dash
     assert not [s for s in style if any("opener_transition" in label for label in s["labels"])], style
+
+
+# ── frame-as-sample: "frame" used to mean a sample (Eddy rejected it in writing) ─────────────────
+# The narrow collocations are 0/14,294,148; the broad "our/his/their frame" is 9 human hits
+# (frame of reference, framework line breaks) and is recorded as rejected in tics.yaml.
+@pytest.mark.parametrize("verdict,sentence", [
+    ("fire",  "the 948 Russell 1000 companies in our frame"),
+    ("clean", "their frame of reference"),
+])
+def test_frame_as_sample_respects_the_corpus_boundary(tmp_path, verdict, sentence):
+    draft = tmp_path / f"frame-{abs(hash(sentence))}.md"
+    draft.write_text(sentence + "\n")
+    labels = _labels(PA.audit_document(draft))
+    assert ("frame-as-sample" in labels) == (verdict == "fire"), f"{sentence!r} -> {labels}"
