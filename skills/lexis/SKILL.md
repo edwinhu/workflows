@@ -1,12 +1,14 @@
 ---
 name: lexis
-description: "Use when the user says 'Lexis Public Records', 'Secretary of State entity status via Lexis', 'corporate filings', 'is this company revoked / in good standing in Nevada', 'judgments and liens', 'UCC lookup', 'Lexis bankruptcy search', 'FEIN lookup', or 'locate a business'. Also use when the user says 'get this case from Lexis', 'pull it off Lexis+', 'export the opinion from Nexis', or names Lexis/Lexis+/Nexis/Protege as a case-retrieval source. NEGATIVE ROUTING: case and opinion retrieval is NOT implemented here — use workflows:westlaw; Delaware entity status is not available on Lexis at all."
+description: "Use when the user says 'Lexis Public Records', 'Secretary of State entity status via Lexis', 'corporate filings', 'is this company revoked / in good standing in Nevada', 'judgments and liens', 'UCC lookup', 'Lexis bankruptcy search', 'FEIN lookup', or 'locate a business'. Also use when the user says 'get this case from Lexis', 'pull it off Lexis+', 'export the opinion from Nexis', or names Lexis/Lexis+/Nexis/Protege as a case-retrieval source. NEGATIVE ROUTING: news archive search (Lexis+ News, Factiva) goes to workflows:news-search; case and opinion retrieval is NOT implemented here — use workflows:westlaw; Delaware entity status is not available on Lexis at all."
 ---
 
 # Lexis: Public Records measured; case retrieval not implemented
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
+
+**News searches (Lexis+ News, Factiva) go to `workflows:news-search`.**
 
 **There is no Lexis case-retrieval procedure here.** Nobody has driven the Lexis+ case-law UI, so
 there are no measured selectors, endpoints or steps to follow for it.
