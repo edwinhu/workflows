@@ -1,9 +1,9 @@
 ---
 name: edgar
-description: "ALWAYS use before getting SEC EDGAR filings or writing code that does - 'pull filings', 'download the 10-Ks', '10-K / 10-Q / 8-K / DEF 14A / S-1 text', 'filing text', 'get the exhibits', 'charters and bylaws', 'credit / employment / stockholder agreements from filings', 'EX-3.1 / EX-10', 'list a company's filings', or any script touching sec.gov/Archives or data.sec.gov/submissions. Use even when the user names sec.gov or a filing URL, or a filing fetch returns 403. NEGATIVE ROUTING: SEC rules releases, SEC web pages and XBRL company-facts APIs go to sec-fetch; WRDS datasets other than filing documents go to wrds."
+description: "ALWAYS use for anything from SEC EDGAR or SEC.gov, and before writing code that fetches or parses it - 'pull SEC filings', 'download the 10-Ks', '10-K / 10-Q / 8-K / DEF 14A / S-1 text', 'filing text', 'get the exhibits', 'charters and bylaws', 'agreements from filings', 'EX-3.1 / EX-10', 'list a company's filings', 'search inside filings', 'EDGAR full-text search', 'wrds_forms', 'build a filing parser', 'get the rules release PDF', 'proposing/adopting release', 'SEC company facts', any sec.gov or data.sec.gov URL, or a 403 from sec.gov. NEGATIVE ROUTING: parsed WRDS datasets (Compustat, CRSP, ISS, Thomson 13F and insider tables, SDC) go to wrds."
 ---
 
-# EDGAR filings
+# EDGAR and SEC.gov
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
@@ -17,19 +17,21 @@ description: "ALWAYS use before getting SEC EDGAR filings or writing code that d
 | The need | Source |
 |---|---|
 | Many filings, their exhibits, or a list of filings | WRDS, below |
-| Phrase search inside filings | `${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/sec-text-search.md` |
-| One filing, looked at once, not from a script | sec.gov is allowed, through `sec-fetch`; WRDS works too |
-| Filings newer than `max(fdate)` in `wrdssec_all.wrds_forms` (it lags about a business day) | `sec-fetch`, for those filings only, after running that query |
-| SEC rules releases and web pages; data.sec.gov APIs with no WRDS equivalent | `sec-fetch` |
+| Which filing table, which columns, which CIK roles | `references/wrds-forms-tables.md` |
+| Phrase search inside filings | `references/sec-text-search.md` (WRDS); EDGAR full-text search in `references/sec-gov.md` |
+| A parser or scanner over a corpus | "Extractors", below |
+| One filing, looked at once, not from a script | sec.gov is allowed (`references/sec-gov.md`); WRDS works too |
+| Filings newer than `max(fdate)` in `wrdssec_all.wrds_forms` (it lags about a business day) | `references/sec-gov.md`, for those filings only, after running that query |
+| Rules releases, SEC web pages, data.sec.gov APIs with no WRDS equivalent, a 403 on any of these | `references/sec-gov.md` |
 
 ## WRDS route
 
-Before writing the pull, read § "Download Filing Text via WRDS rclone" in `${CLAUDE_PLUGIN_ROOT}/skills/wrds/references/edgar.md`.
+Before writing the pull, read § "Download Filing Text via WRDS rclone" in `references/edgar.md`.
 
 1. **First list by SQL:** `cik, accession, form, fdate, wrdsfname` from `wrdssec_all.wrds_forms`. `cik` is a 10-digit string.
 2. **One bulk copy:** `wrdsfname` is the path under both roots, `wrds:/wrds/sec/archives` (raw SGML with every exhibit) and `wrds:/wrds/sec/wrds_clean_filings` (markup stripped). Clean is for text; **discovery needs raw**, because clean drops the hrefs to referenced filings. Clean also empties GRAPHIC, XBRL, XML, EXCEL and ZIP bodies, so those need raw too.
 3. **Parse locally for the next list** (referenced accessions), copy that list in one go, and repeat until no new targets.
-4. **Extract locally:** both copies keep the `<DOCUMENT>`, `<TYPE>` and `<FILENAME>` tags.
+4. **Extract locally:** both copies keep the `<DOCUMENT>`, `<TYPE>` and `<FILENAME>` tags. Use `extract`, not a fresh regex: older submissions double a leading "." on each body line, which corrupts text and uuencoded files.
 
 ```bash
 E="${CLAUDE_SKILL_DIR}/scripts/edgar_filing.py"
@@ -42,9 +44,24 @@ python3 "$E" path <cik> <accession> [--clean]         # offline
 
 In Python, `fetch_round(pairs, dest)` is one round and `fetch_rounds(seeds, dest, discover)` repeats it: `discover` gets a round's local paths and returns the next pairs.
 
-- Raw submissions are large (1,150 filings = 6.2 GB). When only a few `<DOCUMENT>` blocks per filing are needed, use clean, or extract on WRDS in a grid array job (`edgar.md` § "SGE Submission Pattern"; this script is stdlib-only) and copy back only those blocks.
+- Raw submissions are large (1,150 filings = 6.2 GB). When only a few `<DOCUMENT>` blocks per filing are needed, use clean, or extract on WRDS in a grid array job (`references/edgar.md` § "SGE Submission Pattern"; this script is stdlib-only) and copy back only those blocks.
 - An exhibit incorporated by reference names the accession of the filing that carries it, often under another CIK (predecessor, parent, filer agent prefix). `resolve` finds it by accession; a path built from the citing firm's CIK silently misses it.
-- A missing file under WRDS is not a reason to switch the batch to sec.gov. Report the residue, and send only filings past `max(fdate)` to `sec-fetch`.
+- A missing file under WRDS is not a reason to switch the batch to sec.gov. Report the residue, and fetch from sec.gov only filings past `max(fdate)`.
+
+## Extractors
+
+<EXTREMELY-IMPORTANT>
+**NO NEW STANDALONE EXTRACTOR BEFORE READING `scan_covers`.** A new binary is not helpful: it rebuilds sharding, paths and form filters that exist, and becomes a second thing to fix. Add a `profiles_*.go` profile. Corpus scans run as SGE array jobs, never on the login node.
+</EXTREMELY-IMPORTANT>
+
+| Need | Existing tool |
+|---|---|
+| Header fields (state, SIC, address, former names) | query `wrdssec_all.wrds_forms_reg` first |
+| Cover page, body or header extraction at scale | `${CLAUDE_PLUGIN_ROOT}/skills/wrds/scripts/scan_covers/` |
+| Series and header scans; a self-built index | `${CLAUDE_PLUGIN_ROOT}/skills/wrds/scripts/scan_headers/`, `${CLAUDE_PLUGIN_ROOT}/skills/wrds/scripts/sec_index/` |
+| 13F, N-PX, DEF 14A ownership, S-1 management | the `parse_*` directories in `${CLAUDE_PLUGIN_ROOT}/skills/wrds/scripts/` |
+| Dual-class from 10-K text | `${CLAUDE_PLUGIN_ROOT}/skills/wrds/scripts/dual_class/` |
+| Parser records to Parquet | `${CLAUDE_PLUGIN_ROOT}/skills/wrds/scripts/edgar_parquet/` |
 
 ## Red flags
 
@@ -55,3 +72,4 @@ In Python, `fetch_round(pairs, dest)` is one round and `fetch_rounds(seeds, dest
 | Read `data.sec.gov/submissions` to list filings | `wrds_forms` has the list for every CIK in one query | Query `wrds_forms` |
 | Fetch each exhibit by URL | The submission file already contains it | `extract` |
 | Fix a 403 on a batch of filings with a User-Agent | It repairs the wrong route | Move the batch to WRDS |
+| Spoof a browser User-Agent on sec.gov | It is what gets blocked | Declare a name and email (`references/sec-gov.md`) |

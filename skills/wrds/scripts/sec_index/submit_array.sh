@@ -40,7 +40,7 @@ WRDS_SCRATCH="${WRDS_SCRATCH:-/scratch/${WRDS_INST:-nyu}/$(whoami)}"
 export SHARD_LIST="${SHARD_LIST:-$WRDS_SCRATCH/sec_index/shards.txt}"
 export OUT_DIR="${OUT_DIR:-$WRDS_SCRATCH/sec_index}"
 export ARCHIVE_ROOT="${ARCHIVE_ROOT:-/wrds/sec/archives}"
-# THE GO SCANNER IS THE DEFAULT. references/edgar.md has said "Use the Go
+# THE GO SCANNER IS THE DEFAULT. skills/edgar/references/edgar.md has said "Use the Go
 # scanner (recommended)" since it was measured at 22s/shard against awk's 583s,
 # but this wrapper still exec'd the awk baseline — so the documented
 # recommendation and the thing that actually ran disagreed by 26x, and every

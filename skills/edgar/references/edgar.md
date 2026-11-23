@@ -1,64 +1,26 @@
-# SEC EDGAR Access via WRDS
+# SEC EDGAR filings on WRDS
+
+Filing metadata, keys and bulk text on WRDS. For sec.gov itself (rules releases, data.sec.gov APIs, EDGAR full-text search, filings newer than WRDS) see `sec-gov.md`; for the route in general see `../SKILL.md`.
 
 ## Contents
 
-- [Key Tables](#key-tables) - `edgar.filings`, `edgar.company_info`
-- [Grain & Keys (verified 2026-06-09)](#grain--keys-verified-2026-06-09) - **`edgar` schema does NOT exist on WRDS pg — use `wrdssec_all`**
-- [Common Form Types](#common-form-types) - 10-K, 10-Q, 8-K, DEF 14A, Form 4
-- [Query Patterns](#query-patterns) - Find filings, filter by type/date
-- [Accessing Filing Documents](#accessing-filing-documents) - URL construction, Form 4 URLs
-- [CRITICAL: DCN vs Accession Number](#critical-dcn-vs-accession-number) - WRDS gotcha
-- [Linking CIK to Other Identifiers](#linking-cik-to-other-identifiers) - CIK↔GVKEY
-- [Working with Filing Content](#working-with-filing-content) - Download, parse sections
-- [Rate Limiting](#rate-limiting-for-sec-access) - SEC API limits
-
-## Overview
-
-WRDS provides SEC EDGAR filing data through the `edgar` schema. This includes filing metadata, company information, and filing content access.
-
-## Key Tables
-
-### edgar.filings
-Master filing table with all SEC submissions.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `cik` | varchar(10) | Central Index Key (10-digit padded) |
-| `accession_number` | varchar(25) | Unique filing identifier |
-| `form_type` | varchar(20) | Filing type (10-K, 10-Q, 8-K, etc.) |
-| `file_date` | date | Date filed with SEC |
-| `accepted` | timestamp | SEC acceptance timestamp |
-| `company_name` | varchar(150) | Filer company name |
-| `fiscal_year_end` | varchar(4) | Fiscal year end (MMDD format) |
-| `sic` | varchar(4) | Standard Industrial Classification |
-| `state` | varchar(2) | State of incorporation |
-| `file_num` | varchar(20) | SEC file number |
-| `fiscal_year` | int | Fiscal year of filing |
-
-### edgar.company_info
-Company registration information.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `cik` | varchar(10) | Central Index Key |
-| `company_name` | varchar(150) | Company name |
-| `sic` | varchar(4) | SIC code |
-| `state` | varchar(2) | State |
-| `fiscal_year_end` | varchar(4) | Fiscal year end |
+- [Grain & Keys (verified 2026-06-09)](#grain--keys-verified-2026-06-09) - **there is no `edgar` schema on WRDS; use `wrdssec_all`**
+- [Common Form Types](#common-form-types) - 10-K, 10-Q, 8-K items, DEF 14A, Form 4
+- [Query Patterns](#query-patterns) - filings for a set of CIKs, counts by form, CIK to GVKEY
+- [CRITICAL: DCN vs Accession Number](#critical-dcn-vs-accession-number) - `tr_insiders` gotcha
+- [Download Filing Text via WRDS rclone](#download-filing-text-via-wrds-rclone) - layout, `--files-from`, the tar route, anti-patterns
+- [Start with the pre-parsed header table](#start-with-the-pre-parsed-header-table-wrdssec_allwrds_forms_reg) - `wrdssec_all.wrds_forms_reg`
+- [Self-built SEC index via SGE](#self-built-sec-index-via-sge-fallback-for-wrds-lag--unparsed-header-fields) - unparsed header fields, Go header scanner
+- [Go-Based Filing Parsers](#go-based-filing-parsers) - SGE submission pattern, `scan_covers` profiles, the two sanctioned exceptions, the parquet contract
 
 ## Grain & Keys (verified 2026-06-09)
 
-> **WARNING — `edgar.filings` and `edgar.company_info` DO NOT EXIST on wrds-pgdata.** Verified 2026-06-09:
-> no `edgar` schema in `pg_namespace` at all (not a permissions issue). The query patterns above are kept
-> for historical context but will fail. The working SEC filing-index tables for this account are
-> `wrdssec_all.forms` and `wrdssec_all.wrds_forms` (WRDS SEC Analytics Suite — manuals:
-> https://wrds-www.wharton.upenn.edu/pages/support/manuals-and-overviews/wrds-sec-analytics-suite/).
-> See `wrds-forms-tables.md` for column details.
+**The `edgar` schema does not exist on wrds-pgdata** (no `edgar` row in `pg_namespace`, not a permissions issue), so `edgar.filings`, `edgar.company_info` and `edgar.filing_docs` fail. The SEC filing-index tables are `wrdssec_all.forms` and `wrdssec_all.wrds_forms` (WRDS SEC Analytics Suite; manuals: https://wrds-www.wharton.upenn.edu/pages/support/manuals-and-overviews/wrds-sec-analytics-suite/). Column details: `wrds-forms-tables.md`.
 
 - **Row PK `wrdssec_all.wrds_forms`** (~26.9M rows): `fname` — VERIFIED SAMPLED 2023 fdate slice: 0 dupes
   over 1,159,918 rows. `(accession, cik)` — also 0 dupes (SAMPLED 2023). `accession` ALONE IS NOT UNIQUE:
-  347,721 dupes in the 2023 slice — one row per filer CIK on multi-filer submissions (`regcount` co-registrants).
-  Count filings with `COUNT(DISTINCT accession)`; count filer-filings with `(accession, cik)`.
+  347,721 dupes in the 2023 slice — one row per header CIK (filer, subject company, issuer, reporting owner; `regcount` = header blocks).
+  Count filings with `COUNT(DISTINCT accession)`; count CIK-filings with `(accession, cik)`.
 - **Row PK `wrdssec_all.forms`** (~26.9M rows): `fname` — VERIFIED SAMPLED 2023 fdate slice: 0 dupes over
   1,160,114 rows. **`forms` has NO `accession` column** (cols: gvkey, cik, fdate, findexdate, lindexdate,
   form, coname, fname, iname, source) — derive the accession from `fname` if needed.
@@ -98,7 +60,7 @@ Company registration information.
   when the fund's brand name matches nothing on EDGAR.
 - **Business/event key:** one EDGAR submission = `accession` (equivalently the accession embedded in
   `fname`). Amendments (`10-K/A`, `SC 13D/A`, ...) are separate submissions with their own accessions —
-  supersede by `(cik, form-family, period)` taking the latest `fdate`, as in `blockholders.md`.
+  supersede by `(cik, form-family, period)` taking the latest `fdate`, as in `../../wrds/references/blockholders.md`.
 - **Linking identifiers:** `cik`; `gvkey` (pre-joined on `wrdssec_all.forms`, or via
   `wrdssec.wciklink_gvkey` — filter `flag` 2-3, see
   [WRDS CIK Linking Tables](https://wrds-www.wharton.upenn.edu/documents/750/WRDS_CIK_Linking_Tables.pdf));
@@ -119,77 +81,7 @@ Company registration information.
 | `SC 13D` | Beneficial ownership >5% | As needed |
 | `SC 13G` | Passive beneficial ownership | As needed |
 
-## Query Patterns
-
-### Find Company Filings
-
-```python
-def get_company_filings(pool, cik: str, form_types: list = None,
-                        start_date: str = None) -> list:
-    """Get SEC filings for a company.
-
-    Args:
-        pool: WRDS connection pool
-        cik: CIK number (will be normalized)
-        form_types: List of form types to filter (optional)
-        start_date: Start date for filings (optional)
-
-    Returns:
-        List of filing records
-    """
-    # Normalize CIK to 10 digits
-    cik_normalized = str(cik).zfill(10)
-
-    query = """
-        SELECT cik, accession_number, form_type, file_date,
-               company_name, sic
-        FROM edgar.filings
-        WHERE cik = %s
-    """
-    params = [cik_normalized]
-
-    if form_types:
-        query += " AND form_type = ANY(%s)"
-        params.append(form_types)
-
-    if start_date:
-        query += " AND file_date >= %s"
-        params.append(start_date)
-
-    query += " ORDER BY file_date DESC"
-
-    with pool.cursor() as cursor:
-        cursor.execute(query, tuple(params))
-        return cursor.fetchall()
-```
-
-### Get 10-K and 10-Q Filings
-
-```python
-def get_periodic_filings(pool, cik: str, years: int = 5) -> list:
-    """Get annual and quarterly filings for analysis."""
-    cik_normalized = str(cik).zfill(10)
-
-    with pool.cursor() as cursor:
-        cursor.execute("""
-            SELECT
-                cik,
-                accession_number,
-                form_type,
-                file_date,
-                fiscal_year,
-                company_name
-            FROM edgar.filings
-            WHERE cik = %s
-              AND form_type IN ('10-K', '10-Q', '10-K/A', '10-Q/A')
-              AND file_date >= CURRENT_DATE - INTERVAL '%s years'
-            ORDER BY file_date DESC
-        """, (cik_normalized, years))
-
-        return cursor.fetchall()
-```
-
-### Find 8-K Filings by Topic
+8-K item numbers give the topic (the `items` field in EDGAR full-text search, `sec-gov.md`):
 
 8-K filings include item numbers indicating the topic:
 
@@ -207,268 +99,106 @@ def get_periodic_filings(pool, cik: str, years: int = 5) -> list:
 | 7.01 | Regulation FD disclosure |
 | 8.01 | Other events |
 
-```python
-def get_8k_filings(pool, cik: str, start_date: str) -> list:
-    """Get 8-K filings for a company."""
-    cik_normalized = str(cik).zfill(10)
+## Query Patterns
 
-    with pool.cursor() as cursor:
-        cursor.execute("""
-            SELECT
-                cik,
-                accession_number,
-                form_type,
-                file_date,
-                accepted,
-                company_name
-            FROM edgar.filings
-            WHERE cik = %s
-              AND form_type IN ('8-K', '8-K/A')
-              AND file_date >= %s
-            ORDER BY file_date DESC
-        """, (cik_normalized, start_date))
-
-        return cursor.fetchall()
-```
-
-### Industry-Wide Filing Search
+Columns below are the ones verified in Grain & Keys: `cik` is a 10-digit string, `fdate` the filing date, `form` the form type.
 
 ```python
-def get_industry_filings(pool, sic: str, form_type: str,
-                         start_date: str, end_date: str) -> list:
-    """Get filings for an entire industry."""
-    with pool.cursor() as cursor:
-        cursor.execute("""
-            SELECT
-                cik,
-                company_name,
-                accession_number,
-                form_type,
-                file_date
-            FROM edgar.filings
-            WHERE sic = %s
-              AND form_type = %s
-              AND file_date BETWEEN %s AND %s
-            ORDER BY file_date DESC
-        """, (sic, form_type, start_date, end_date))
-
-        return cursor.fetchall()
+# Filings for a set of CIKs: one query, never one per CIK
+cursor.execute("""
+    SELECT cik, accession, form, fdate, fname, wrdsfname
+    FROM wrdssec_all.wrds_forms
+    WHERE cik = ANY(%s)
+      AND form = ANY(%s)
+      AND fdate BETWEEN %s AND %s
+    ORDER BY cik, fdate
+""", ([str(c).zfill(10) for c in ciks], ['10-K', '10-K/A'], '2019-01-01', '2024-12-31'))
 ```
 
-## Accessing Filing Documents
+```sql
+-- Filing counts by form for one CIK (count submissions, not filer rows)
+SELECT form, COUNT(DISTINCT accession) AS n, MIN(fdate) AS earliest, MAX(fdate) AS latest
+FROM wrdssec_all.wrds_forms
+WHERE cik = %s
+GROUP BY form
+ORDER BY n DESC;
+```
 
-### Constructing SEC URLs
+- `wrds_forms` has a row for every header CIK, so `cik = X` also finds filings naming X as subject company, issuer or reporting owner; the role is in `wrds_forms_reg` (`wrds-forms-tables.md`, measured 2026-11-22).
+- Filter on `fdate` ranges, never `year(fdate)`; cache the metadata locally for repeated analysis.
+- CIK to GVKEY: `comp.company.cik` (10-digit) or `wrdssec.wciklink_gvkey` (Linking identifiers, above). Names: `wrdssec.wciklink_names`; fuzzy name matching is the `fuzzy-name-matching` skill.
 
-EDGAR documents are available at SEC.gov using accession numbers:
+### Ticker-to-CIK Mapping
 
 ```python
-def get_filing_url(cik: str, accession_number: str) -> str:
-    """Construct SEC EDGAR URL for a filing.
-
-    Args:
-        cik: CIK number (will be normalized)
-        accession_number: Filing accession number
-
-    Returns:
-        URL to filing index page
-    """
-    # Normalize CIK (remove leading zeros for URL)
-    cik_clean = str(int(cik))
-
-    # Remove dashes from accession number for path
-    accession_clean = accession_number.replace('-', '')
-
-    return (f"https://www.sec.gov/Archives/edgar/data/"
-            f"{cik_clean}/{accession_clean}/")
-
-def get_filing_document_url(cik: str, accession_number: str,
-                            document_name: str) -> str:
-    """Construct URL for specific document within filing."""
-    base_url = get_filing_url(cik, accession_number)
-    return f"{base_url}{document_name}"
+cursor.execute("""
+    SELECT cik, coname, ticker, n_records, ftdate, ltdate
+    FROM wrdssec.wciklink_ticker
+    WHERE ticker = ANY(%s)
+    ORDER BY ticker, ftdate
+""", (ticker_list,))
 ```
 
-### Form 4 URLs
+`wciklink_ticker` holds one row per `(cik, ticker)` with the first and last date the pair was seen (`ftdate`, `ltdate`, 2002-02-02 to the present) and `n_records`. 3,270 of its 31,420 tickers map to more than one CIK (2026-11-22): `GM` is `0000040730` through 2009-06-05 and `0001467858` from 2010-11-24; `F` also returns stray one-off rows (`n_records` 1 and 6) beside Ford's 2,738. Keep the row whose `[ftdate, ltdate]` covers your event date and prefer the largest `n_records`. AAPL, MSFT and EXCO each return one row (`0000320193`, `0000789019`, `0001690820`).
 
-Form 4 filings have a special XML viewer format:
-
-```python
-def get_form4_viewer_url(cik: str, accession_number: str) -> str:
-    """Construct SEC Form 4 viewer URL.
-
-    The xslF345X03 stylesheet renders Form 4 in a readable format.
-    """
-    cik_clean = str(int(cik))
-    accession_clean = accession_number.replace('-', '')
-
-    return (f"https://www.sec.gov/Archives/edgar/data/"
-            f"{cik_clean}/{accession_clean}/xslF345X03/primarydocument.xml")
-
-def get_form4_index_url(cik: str, accession_number: str) -> str:
-    """Construct Form 4 filing index URL."""
-    cik_clean = str(int(cik))
-    accession_clean = accession_number.replace('-', '')
-
-    return (f"https://www.sec.gov/Archives/edgar/data/"
-            f"{cik_clean}/{accession_clean}/{accession_number}-index.htm")
-```
-
-### CRITICAL: DCN vs Accession Number
+## CRITICAL: DCN vs Accession Number
 
 **WRDS `tr_insiders` uses DCN (Document Control Number), NOT SEC accession numbers.**
 
 The DCN in `tr_insiders.header` is an internal Thomson Reuters identifier that
-does NOT work for constructing SEC EDGAR URLs. To get the actual SEC accession
-number, query the SEC filings tables:
+is not an SEC accession number and resolves no filing path. To get the accession,
+look the Form 4 up in `wrdssec_all.wrds_forms`, which carries every CIK on the header
+(reporting owner and issuer), by CIK and filing date:
 
-```python
-def get_accession_from_dcn(pool, cik: str, filing_date: str) -> str | None:
-    """Get SEC accession number for a Form 4 filing.
-
-    WRDS tr_insiders uses DCN, not accession numbers. Use this to find
-    the actual SEC accession number for URL construction.
-    """
-    cik_normalized = str(cik).zfill(10)
-
-    with pool.cursor() as cursor:
-        cursor.execute("""
-            SELECT accession_number
-            FROM edgar.filings
-            WHERE cik = %s
-              AND form_type = '4'
-              AND file_date = %s
-            ORDER BY accepted DESC
-            LIMIT 1
-        """, (cik_normalized, filing_date))
-
-        row = cursor.fetchone()
-        return row[0] if row else None
+```sql
+SELECT DISTINCT accession, cik, form, fdate, wrdsfname
+FROM wrdssec_all.wrds_forms
+WHERE cik = %s AND form IN ('4', '4/A') AND fdate = %s;
 ```
 
-Alternative: Query SEC EDGAR API directly:
+A TR `fdate` can differ from the SEC `fdate` by 1-3 days for after-hours filings (`../../wrds/references/insider-form4.md`), so widen the date window before concluding a filing is missing.
 
-```python
-import requests
-
-def get_filings_from_sec_api(cik: str) -> dict:
-    """Get all filings for a company from SEC EDGAR API.
-
-    Returns JSON with filings.recent.accessionNumber for all filings.
-    """
-    cik_padded = str(cik).zfill(10)
-    url = f"https://data.sec.gov/submissions/CIK{cik_padded}.json"
-
-    response = requests.get(
-        url,
-        headers={'User-Agent': 'Academic Research your@email.edu'},
-        timeout=30
-    )
-    response.raise_for_status()
-    return response.json()
-```
-
-### Download Filing Text via WRDS rclone (Preferred for Bulk Access)
+## Download Filing Text via WRDS rclone
 
 <EXTREMELY-IMPORTANT>
 **IRON LAW: For bulk filing text, use rclone from the WRDS filesystem. NEVER pull text blobs through SQL. NEVER make per-filing SEC.gov HTTP requests.**
 
-The correct pattern is always:
-1. **Query metadata** from WRDS SQL (accession numbers, fnames, dates) — fast, small result
-2. **rclone the raw files** from `/wrds/sec/archives/` — parallelizable, cacheable to disk
-3. **Process locally** — regex, NLP, whatever — no database round-trips
+1. **Query metadata** from WRDS SQL (accessions, `wrdsfname`, dates): fast, small result
+2. **Copy the files** in one `rclone copy --files-from` (or the tar route over 10K files)
+3. **Process locally**: regex, NLP, whatever, with no database round-trips
 
-**Bulk in rounds, never one request per document:** targets discovered while parsing form the next file list and the next single copy (`../../edgar/SKILL.md`).
+**Bulk in rounds, never one request per document:** targets discovered while parsing form the next file list and the next single copy (`../SKILL.md`). sec.gov is only for what WRDS lacks: `sec-gov.md`.
 </EXTREMELY-IMPORTANT>
 
-#### WRDS Filing Filesystem Layout
+### WRDS Filing Filesystem Layout
 
 WRDS provides two copies of every filing:
 
 | Directory | Content | Use case |
 |-----------|---------|----------|
-| `/wrds/sec/archives/` | Raw filings (HTML, images, full SGML) | When you need exact original formatting |
-| `/wrds/sec/wrds_clean_filings/` | **Cleaned plain text** (HTML stripped, images removed) | **Default choice** — text extraction, NLP, regex |
+| `/wrds/sec/archives/` | Raw submission: full SGML, HTML, every exhibit | Discovery (hrefs to referenced filings), GRAPHIC/XBRL/XML/EXCEL/ZIP bodies, original formatting |
+| `/wrds/sec/wrds_clean_filings/` | Cleaned plain text: markup stripped, those binary bodies emptied | Text extraction, NLP, regex |
 
-**Use `wrds_clean_filings` by default.** It's dramatically smaller (clean text compresses ~5-10x vs HTML's ~0.8x), faster to transfer, and easier to parse. Only use `archives` if you specifically need the original HTML/SGML structure.
+Clean text is much smaller (it compresses ~5-10x vs raw HTML's ~0.8x) and faster to transfer, so use it for text; discovery needs raw, because clean drops the hrefs. Both keep the `<DOCUMENT>`, `<TYPE>` and `<FILENAME>` tags and share one path layout: `{cik_zfill10[:6]}/{cik_int}/{accession}.txt`.
 
-Both directories share the same path layout: `{CIK_prefix}/{CIK_int}/{accession}.txt`
+`fname` in `wrdssec_all.wrds_forms` is the EDGAR path (`edgar/data/{cik_int}/{accession}.txt`); `wrdsfname` is the on-disk path under both roots. Do not convert one into the other by hand: `../scripts/edgar_filing.py` does it (`path` for one filing offline, `resolve` for a list via `wrdsfname`, `fetch` for one round's copy), and `resolve` finds a filing filed under another CIK than the one citing it.
 
-The `fname` field from `wrdssec_all.wrds_forms` gives the path as `edgar/data/{CIK_int}/{accession}.txt`. Convert to filesystem path:
-
-```python
-def fname_to_rclone_path(fname: str) -> str:
-    """Convert WRDS fname to rclone path.
-
-    fname: 'edgar/data/1034196/0001104659-20-000437.txt'
-    -> wrds:/wrds/sec/archives/000103/1034196/0001104659-20-000437.txt
-
-    Path mapping:
-    - CIK as integer: 1034196
-    - Zero-pad to 10 digits: 0001034196
-    - Parent directory: first 6 chars = 000103
-    - Child directory: CIK as integer = 1034196
-    """
-    parts = fname.split("/")
-    cik_int = parts[2]       # '1034196'
-    filename = parts[3]      # '0001104659-20-000437.txt'
-    cik_padded = cik_int.zfill(10)
-    parent = cik_padded[:6]  # '000103'
-    # Use wrds_clean_filings for text extraction (default):
-    return f"/wrds/sec/wrds_clean_filings/{parent}/{cik_int}/{filename}"
-    # Use archives only if you need original HTML/SGML:
-    # return f"/wrds/sec/archives/{parent}/{cik_int}/{filename}"
+```bash
+E=skills/edgar/scripts/edgar_filing.py
+python3 "$E" resolve pairs.tsv > files_from.txt      # "cik accession" lines in, wrdsfname lines out
+python3 "$E" fetch pairs.tsv out/ --clean            # resolve + ONE rclone copy; local paths out, one per line
 ```
 
-#### Step 1: Query Metadata (Fast)
-
-```python
-import wrds
-
-db = wrds.Connection(wrds_username="eddyhu")
-
-# Get filing paths for all CIKs at once — one query per form type
-meta = db.raw_sql(f"""
-    SELECT cik, accession, form, fdate AS filing_date, fname
-    FROM wrdssec_all.wrds_forms
-    WHERE cik IN ('{cik_list}')
-    AND form IN ('SC 13D', 'SC 13D/A')
-    AND fdate >= '2000-01-01'
-""")
-# Result: ~60K rows of metadata, no text — fast
-db.close()
-```
-
-#### Step 2: Bulk Download via rclone (bash script)
-
-Python generates the file list, bash does the download. Clean separation — the rclone part is deterministic and rerunnable.
-
-**Step 2a: Python generates the files-from list**
-
-```python
-# Convert WRDS fnames to rclone-relative paths
-with open("data/raw/edgar_filings/files_to_download.txt", "w") as f:
-    for fname in meta["fname"]:
-        # fname: 'edgar/data/1034196/0001104659-20-000437.txt'
-        # rclone path: 000103/1034196/0001104659-20-000437.txt
-        parts = fname.split("/")
-        cik_int = parts[2]
-        filename = parts[3]
-        parent = cik_int.zfill(10)[:6]
-        f.write(f"{parent}/{cik_int}/{filename}\n")
-```
-
-**Step 2b: Bash downloads the files**
-
-For small batches (<10K files), `rclone copy --files-from` is fine:
+### Up to 10K files: one `rclone copy --files-from`
 
 ```bash
 rclone copy wrds:/wrds/sec/wrds_clean_filings/ "$OUTPUT_DIR" \
-    --files-from "$FILES_FROM" --transfers 8 --no-traverse --stats 30s --stats-one-line
+    --files-from "$FILES_FROM" --transfers 8 --no-traverse --ignore-checksum --stats 30s --stats-one-line
 ```
 
-For large batches (>10K files), use the tar approach below instead — it's significantly faster.
+`--ignore-checksum` is required: the `wrds` remote sets `md5sum_command`, so without it rclone opens one ssh session per file to md5sum it and exhausts the login node; size is still checked. rclone exits 0 on a listed file that does not exist, so presence on disk, not the exit code, decides what is missing. `fetch` does all of this.
 
-**For large batches (>10K files): tar server-side, download one archive (PREFERRED)**
+### Over 10K files: tar server-side, download one archive
 
 This is the fastest approach: (1) one large sequential transfer beats thousands of SFTP round-trips, (2) `rclone copy` handles resume if the connection drops. Use `scp` for the small file list upload (rclone SFTP can be flaky after heavy use), `rclone` for the large archive download.
 
@@ -482,7 +212,7 @@ OUTPUT_DIR="${2:?Usage: $0 <files-from.txt> <output-dir>}"
 
 # Use /scratch/<institution>/<user>/ for large files — NOT /tmp (only 44 GB)
 WRDS_USER="$(ssh wrds whoami)"
-WRDS_SCRATCH="/scratch/nyu/${WRDS_USER}"  # Change 'nyu' to your institution
+WRDS_SCRATCH="${WRDS_SCRATCH:-/scratch/${WRDS_INST:-nyu}/${WRDS_USER}}"
 REMOTE_TMP="${WRDS_SCRATCH}/filings_$(date +%s).tar.gz"
 REMOTE_LIST="/tmp/$(basename "$FILES_FROM")"  # file list is small, /tmp is fine
 
@@ -508,7 +238,7 @@ ssh wrds "ls -lh $REMOTE_TMP"
 
 # 3. Download single archive via rclone (handles resume on large files)
 echo "Downloading archive..."
-rclone copy "wrds:$REMOTE_TMP" "$OUTPUT_DIR" --stats 30s --stats-one-line
+rclone copy "wrds:$REMOTE_TMP" "$OUTPUT_DIR" --ignore-checksum --stats 30s --stats-one-line
 
 # 4. Extract locally
 echo "Extracting..."
@@ -523,36 +253,28 @@ echo "Done. $(find "$OUTPUT_DIR" -name '*.txt' | wc -l) files extracted."
 
 Usage:
 ```bash
-# Python generates the file list (step 2a above), then:
+# edgar_filing.py resolve writes the wrdsfname list, then:
 bash download_filings_tar.sh data/raw/edgar_filings/files_to_download.txt data/raw/edgar_filings/raw/
 ```
 
-**IMPORTANT: WRDS `/tmp` is only ~44 GB — do NOT tar there.** Use `/scratch/nyu/<username>/` instead (13 TB free, NFS-mounted).
+**IMPORTANT: WRDS `/tmp` is only ~44 GB — do NOT tar there.** Use `/scratch/<institution>/<username>/` instead (13 TB free, NFS-mounted).
 
 Key paths on WRDS:
 - `/tmp/` — 44 GB, shared, fills up fast. Only for small temp files (<1 GB).
-- `/scratch/nyu/<username>/` — 13 TB, institution-scoped. Use for large archives.
+- `/scratch/<institution>/<username>/` — 13 TB, institution-scoped. Use for large archives.
 - `/home/<username>/` — quota-limited. Don't use for bulk data.
 
 Size estimates for 110K filings:
 - **`wrds_clean_filings`** (plain text): ~5-10 GB tar.gz. Clean text compresses well (~5-10x).
 - **`archives`** (raw HTML): ~40-70 GB tar.gz. HTML compresses poorly (~0.8x).
 
-**Step 2c: Python reads the downloaded files**
+The list fed to `tar -T` must be `wrdsfname` paths: an `fname` path fails per file with `tar: ...: Cannot stat` and still exits 0 with a valid empty archive. **This recipe runs `tar` under `nohup` on the login node**, which the wrds login-node Iron Law forbids for bulk reads (`../../wrds/SKILL.md`); over a large list, put the same `tar czf` in a submit script and `qsub` it.
 
-```python
-# Read local files — no network, no DB
-texts = {}
-for fname in meta["fname"]:
-    parts = fname.split("/")
-    cik_int, filename = parts[2], parts[3]
-    parent = cik_int.zfill(10)[:6]
-    local_path = Path(f"data/raw/edgar_filings/raw/{parent}/{cik_int}/{filename}")
-    if local_path.exists():
-        texts[fname] = local_path.read_text(errors="replace")
-```
+### Process locally
 
-**Anti-patterns to avoid:**
+`fetch` prints one local path per input pair (nothing for a missing filing); read those, and pull single documents out with `edgar_filing.py extract` rather than a fresh regex (older submissions double a leading "." on each body line).
+
+### Anti-patterns
 
 | Approach | Problem |
 |----------|---------|
@@ -562,27 +284,8 @@ for fname in meta["fname"]:
 | `--transfers 32` over SFTP | Overwhelms SSH multiplexing, causes `mux_client_request_session` errors |
 | `--progress` flag in scripts | Generates too much terminal output — use `--stats 30s --stats-one-line` instead |
 | Pulling text via SQL (`SELECT filing_text`) | 9GB+ in memory for 60K filings. OOM risk. |
-| Per-filing SEC.gov HTTP requests | Rate-limited to 10 req/sec. 60K files = 100+ min. |
-
-#### Step 3: Process Locally
-
-```python
-# Extract whatever you need from the raw text — no DB needed
-for fname, text in texts.items():
-    result = your_extractor(text[:80000])  # Limit to first 80K chars
-```
-
-#### Ticker-to-CIK Mapping
-
-Use `secsamp._names_` for bulk ticker-to-CIK mapping:
-
-```python
-ticker_map = db.raw_sql(f"""
-    SELECT DISTINCT tickerh AS ticker, cik
-    FROM secsamp._names_
-    WHERE tickerh IN ('{ticker_list}')
-""")
-```
+| Per-filing SEC.gov HTTP requests | Rate-limited to 10 req/sec (60K files = 100+ min) and risks an IP block; what sec.gov is for: `sec-gov.md` |
+| `rclone copy` without `--ignore-checksum` | One ssh session per file for md5sum; exhausts the login node |
 
 #### Why Not SQL Text Blobs or SEC.gov URLs?
 
@@ -592,164 +295,6 @@ ticker_map = db.raw_sql(f"""
 | Per-filing `SELECT` in a loop | N round-trips to WRDS PostgreSQL. 60K queries = hours. |
 | SEC.gov HTTP requests | Rate-limited to 10 req/sec. 60K files = 100+ minutes. |
 | **rclone from WRDS filesystem** | Parallel file reads, disk cache, no rate limit, no OOM. |
-
-## Linking CIK to Other Identifiers
-
-### CIK to Compustat GVKEY
-
-```python
-def cik_to_gvkey(pool, cik: str) -> str | None:
-    """Convert SEC CIK to Compustat GVKEY."""
-    cik_normalized = str(cik).zfill(10)
-
-    with pool.cursor() as cursor:
-        cursor.execute("""
-            SELECT gvkey
-            FROM comp.company
-            WHERE cik = %s
-            LIMIT 1
-        """, (cik_normalized,))
-
-        row = cursor.fetchone()
-        return row[0] if row else None
-```
-
-### Fuzzy Company Matching
-
-When CIK is not available, use fuzzy matching:
-
-```python
-from difflib import SequenceMatcher
-
-def find_company_by_name(pool, company_name: str,
-                         threshold: float = 0.7) -> list:
-    """Find companies by name with fuzzy matching.
-
-    Returns list of (cik, company_name, similarity_score) tuples.
-    """
-    # Get candidate companies (limit search space)
-    name_upper = company_name.upper()
-    first_word = name_upper.split()[0]
-
-    with pool.cursor() as cursor:
-        cursor.execute("""
-            SELECT DISTINCT cik, company_name
-            FROM edgar.filings
-            WHERE UPPER(company_name) LIKE %s
-            LIMIT 100
-        """, (f'{first_word}%',))
-
-        candidates = cursor.fetchall()
-
-    # Score each candidate
-    matches = []
-    for cik, db_name in candidates:
-        score = SequenceMatcher(None, name_upper, db_name.upper()).ratio()
-        if score >= threshold:
-            matches.append((cik, db_name, score))
-
-    # Sort by score descending
-    matches.sort(key=lambda x: x[2], reverse=True)
-
-    return matches
-```
-
-## Filing Counts and Statistics
-
-```python
-def get_filing_statistics(pool, cik: str) -> dict:
-    """Get filing statistics for a company."""
-    cik_normalized = str(cik).zfill(10)
-
-    with pool.cursor() as cursor:
-        cursor.execute("""
-            SELECT
-                form_type,
-                COUNT(*) as count,
-                MIN(file_date) as earliest,
-                MAX(file_date) as latest
-            FROM edgar.filings
-            WHERE cik = %s
-            GROUP BY form_type
-            ORDER BY count DESC
-        """, (cik_normalized,))
-
-        results = cursor.fetchall()
-
-        return {
-            row[0]: {
-                'count': row[1],
-                'earliest': row[2],
-                'latest': row[3]
-            }
-            for row in results
-        }
-```
-
-## Working with Filing Content
-
-For actual filing content, **always prefer rclone from the WRDS filesystem** (see [Download Filing Text via WRDS rclone](#download-filing-text-via-wrds-rclone-preferred-for-bulk-access) above). This is faster, has no rate limits, and caches to disk.
-
-For small one-off downloads (<10 filings), SEC.gov URLs are acceptable:
-
-### Parsing 10-K Sections
-
-```python
-import re
-import requests
-
-def download_10k_text(cik: str, accession_number: str) -> str | None:
-    """Download 10-K full text from SEC."""
-    # Get filing index to find the main document
-    base_url = get_filing_url(cik, accession_number)
-
-    # Try common document names
-    doc_names = [
-        f'{accession_number}.txt',
-        'complete-submission.txt',
-    ]
-
-    for doc_name in doc_names:
-        url = f'{base_url}{doc_name}'
-        response = requests.get(url, timeout=30)
-        if response.status_code == 200:
-            return response.text
-
-    return None
-
-def extract_10k_section(text: str, section: str) -> str | None:
-    """Extract specific section from 10-K text.
-
-    Common sections:
-    - Item 1: Business
-    - Item 1A: Risk Factors
-    - Item 7: MD&A
-    - Item 7A: Market Risk
-    - Item 8: Financial Statements
-    """
-    # Section patterns (simplified)
-    patterns = {
-        'Item 1': r'Item\s+1\.?\s+Business(.*?)Item\s+1A',
-        'Item 1A': r'Item\s+1A\.?\s+Risk\s+Factors(.*?)Item\s+1B',
-        'Item 7': r'Item\s+7\.?\s+Management.*?Discussion(.*?)Item\s+7A',
-        'Item 8': r'Item\s+8\.?\s+Financial\s+Statements(.*?)Item\s+9',
-    }
-
-    if section not in patterns:
-        return None
-
-    match = re.search(patterns[section], text, re.IGNORECASE | re.DOTALL)
-    return match.group(1).strip() if match else None
-```
-
-## Best Practices
-
-1. **Always normalize CIK** to 10 digits with leading zeros
-2. **Use form_type arrays** with `ANY(%s)` for multiple types
-3. **Include date filters** to limit result sets
-4. **Cache filing metadata** locally for repeated analysis
-5. **Respect SEC rate limits** when downloading documents (10 requests/second)
-6. **Use WRDS file access** for bulk downloads when available
 
 ## Start with the pre-parsed header table: `wrdssec_all.wrds_forms_reg`
 
@@ -762,14 +307,12 @@ WRDS already parses every filing's SGML header, all forms, into `wrdssec_all.wrd
 
 Reach for `scan_headers` / `scan_covers` only for what this table does not carry: fields WRDS does not parse (series/class blocks, period of report, cover-page or body text), or filings newer than its vintage.
 
-## Self-built SEC index via SGE (fallback for WRDS lag / secondary CIKs)
+## Self-built SEC index via SGE (fallback for WRDS lag / unparsed header fields)
 
 **When to use:**
 
-1. You need **secondary CIKs** that `wrdssec_all.wrds_forms` drops (it only stores the filer CIK).
-   Examples: Form 4 issuer + reporting owner, SC 13D subject + filer, Form 144 issuer.
-2. WRDS `wrds_forms` is stale or missing recent filings and you want to (re)build the index yourself.
-3. You need a field `wrds_forms` does not expose (e.g. every role block, IRS number, film number).
+1. WRDS `wrds_forms` is stale or missing recent filings and you want to (re)build the index yourself.
+2. You need a header field neither `wrds_forms` nor `wrds_forms_reg` exposes. Secondary CIKs and their roles are already there (`wrds-forms-tables.md`).
 
 **What it does:** SGE array, one task per top-level 6-char shard under `/wrds/sec/archives/`
 (there are ~164 shards). Each task reads only the first 4 KB (or up to `</SEC-HEADER>`) of every
@@ -846,7 +389,7 @@ ls -d /wrds/sec/archives/*/ | sed 's|/wrds/sec/archives/||;s|/$||' | sort > shar
 qsub -t 1-$(wc -l < shards.txt) submit_array.sh     # 164 tasks, ~5 min wall
 
 # Locally:
-python scripts/sec_index/build_index.py --all
+python skills/wrds/scripts/sec_index/build_index.py --all
 ```
 
 ### Benchmarks (shard `000000`, 219,196 files, WRDS login node)
@@ -895,39 +438,9 @@ rather than the prose.
   at column 0 inside. The parser emits a `COMPANY DATA` role for these (~0.5% of rows).
   Filter to a whitelist post-parse.
 
-## Rate Limiting for SEC Access
+## Rate limits for sec.gov
 
-```python
-import time
-from functools import wraps
-
-def rate_limit(calls_per_second: int = 10):
-    """Decorator to rate-limit SEC API calls."""
-    min_interval = 1.0 / calls_per_second
-    last_call = [0.0]
-
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            elapsed = time.time() - last_call[0]
-            if elapsed < min_interval:
-                time.sleep(min_interval - elapsed)
-            last_call[0] = time.time()
-            return func(*args, **kwargs)
-        return wrapper
-    return decorator
-
-@rate_limit(calls_per_second=10)
-def fetch_filing_from_sec(url: str) -> str:
-    """Rate-limited fetch from SEC EDGAR."""
-    response = requests.get(
-        url,
-        headers={'User-Agent': 'YourName your@email.com'},
-        timeout=30
-    )
-    response.raise_for_status()
-    return response.text
-```
+User-Agent, the 10 requests/second limit and what sec.gov is for: `sec-gov.md`.
 
 ## Go-Based Filing Parsers
 
@@ -940,10 +453,11 @@ on WRDS compute nodes via SGE are dramatically faster than Python. Pattern:
    binary here is filelist-driven and none of them reads stdin — opens each filing on
    WRDS NFS, extracts its fields, and writes gzipped TSV with **no header row**
 3. **SGE array job**: shards the filelist by *bytes* across N workers for parallelism
-4. **Convert to parquet** (Python, local): `scripts/edgar_parquet/` types the columns,
+4. **Convert to parquet** (Python, local): `skills/wrds/scripts/edgar_parquet/` types the columns,
    partitions Hive-style by year and writes ZSTD parquet. See
    [The record-table output contract](#the-record-table-output-contract) below.
 5. **Build panel** (Python, local): read the parquet dataset with polars and aggregate
+
 
 ### Path Convention for `wrds_clean_filings`
 
@@ -952,20 +466,8 @@ on WRDS compute nodes via SGE are dramatically faster than Python. Pattern:
 ```
 
 Example: CIK 34088, accession 0001193125-25-073986 ->
-`/wrds/sec/wrds_clean_filings/000034/34088/0001193125-25-073986.txt`
-
-Python helper:
-```python
-def fname_to_clean_path(fname: str) -> str:
-    """Convert WRDS fname to wrds_clean_filings path.
-    fname: 'edgar/data/34088/0001193125-25-073986.txt'
-    """
-    parts = fname.split("/")
-    cik_int = parts[2]
-    filename = parts[3]
-    parent = cik_int.zfill(10)[:6]
-    return f"{parent}/{cik_int}/{filename}"
-```
+`/wrds/sec/wrds_clean_filings/000034/34088/0001193125-25-073986.txt`. Build it with
+`../scripts/edgar_filing.py path <cik> <accession> --clean` (or `rclone_path()` in Python), not by hand.
 
 ### SGE Submission Pattern
 
@@ -982,34 +484,40 @@ qsub -t 1-20 \
 
 ### Existing Parsers
 
+Sources are under `skills/wrds/scripts/`.
+
 | Parser | Source | Extracts | Input | Accuracy |
 |--------|--------|----------|-------|----------|
-| `quorum` (profile) | `scan_covers/profiles_quorum.go` + `profiles/quorum/` | Bylaw quorum threshold from DEF 14A | DEF 14A, DEFM14A | 96.6% explicit parse |
+| `quorum` (profile) | `scan_covers/profiles_quorum.go` + `scan_covers/profiles/quorum/` | Bylaw quorum threshold from DEF 14A | DEF 14A, DEFM14A | 96.6% explicit parse |
 | `state_incorp` (profile) | `scan_covers/profiles_state_incorp.go` | State of incorp + HQ state from 10-K SGML header — for header state and HQ, start with the pre-parsed `wrdssec_all.wrds_forms_reg` (all forms) instead | 10-K filings | 98.4% vs Barzuza et al. |
 | `blockholders_13dg` (profile) | `scan_covers/profiles_blockholders_13dg.go` | Item 12 + max ownership % | SC 13D/G | — |
 | `proxy_advisors` (profile) | `scan_covers/profiles_proxy_advisors.go` | ISS/GL/EJ mentions | 485BPOS/APOS | — |
 | `tender_sc_to` (profile) | `scan_covers/profiles_tender_sc_to.go` | Tender offer cover fields | SC TO-* | — |
-| `parse_13f` (**standalone, sanctioned**) | `scripts/parse_13f/parse_13f_go/` | One row per holding from the 13F `infoTable`, plus a manifest row per filing | 13F-HR, 13F-HR/A | 89,072,489 rows over 248,500 filings |
-| `parse_npx` (**standalone, sanctioned**) | `scripts/parse_npx/parse_npx_go/` | One row per `voteRecord` (XML era) or proposal line (legacy text era), plus a manifest row per filing | N-PX, N-PX/A | — |
+| `parse_13f` (**standalone, sanctioned**) | `parse_13f/parse_13f_go/` | One row per holding from the 13F `infoTable`, plus a manifest row per filing | 13F-HR, 13F-HR/A | 89,072,489 rows over 248,500 filings |
+| `parse_npx` (**standalone, sanctioned**) | `parse_npx/parse_npx_go/` | One row per `voteRecord` (XML era) or proposal line (legacy text era), plus a manifest row per filing | N-PX, N-PX/A | — |
 
 **Every cover-page extraction is a profile; exactly two record-table parsers are
-not.** Two rows here previously pointed into `~/projects/mirror` —
-`bylaw_quorum/parse_quorum_go/` and `state_incorp_go/` — and the second was already
-dead (that directory does not exist). The quorum parser has been ported to
-`-profile quorum`, verified identical to the standalone on fixtures covering every
-confidence tier; see `profiles/quorum/README.md`.
+not.** The quorum parser runs as `-profile quorum`, verified identical to its former
+standalone binary on fixtures covering every confidence tier; see
+`skills/wrds/scripts/scan_covers/profiles/quorum/README.md`.
 
-Reaching for a standalone binary is still the documented Red Flag: `scan_covers`
-handles SGE sharding, path construction and concurrency generically, so a new
-extraction is a `profiles_*.go` file plus a `profiles/<name>/` directory for staging
-and panel building.
+A standalone binary is the red flag in `../SKILL.md`: `scan_covers` handles SGE
+sharding, NFS concurrency, path construction, form-type filtering and error handling
+generically, so a new extraction is a `profiles_*.go` file plus a `profiles/<name>/`
+directory for staging and panel building. The `Profile` struct takes pattern-based
+fields and custom extractors (the `Custom` field type); set `FullBody: true` for a
+body-text search, as `profiles_proxy_advisors.go` does over 485BPOS/485APOS
+prospectuses. "This parser is different enough to need its own binary" has not yet
+been true once: a 300-line standalone Go binary, run on the login node with the path
+convention wrong, took 5 iterations to fix where a 60-line profile would have worked
+first time.
 
 **The exception, and why it is mechanical rather than a matter of taste.**
 `scan_covers` `FullBody` mode reads the entire file into one buffer per worker, and
 its `Field` model is a regex reduced to **one value per column** for the filing. A
 *record table* is neither of those things: the 13F `infoTable` fans a single filing
-out into thousands of holding rows, and one 23.8 MB N-PX filing carries 28,067
-nested `voteRecord`s (`scripts/parse_npx/README.md`). Buffering that file and
+out into thousands of holding rows, and one 23.8 MB N-PX filing's `proxyTable` carries
+28,067 nested `voteRecord`s (`skills/wrds/scripts/parse_npx/README.md`). Buffering that file and
 collapsing it to one value per column loses the table. `parse_13f` and `parse_npx`
 therefore stream instead — `parse_13f` with a hand-rolled information-table scanner,
 `parse_npx` with `xml.Decoder` at constant memory — and they are the only two
@@ -1020,7 +528,7 @@ with no exception.
 
 Both record-table binaries emit headerless gzipped TSV, which is a transport format,
 not a storage format. The converter that turns it into parquet lives at
-[`scripts/edgar_parquet/`](../scripts/edgar_parquet/) and serves both parsers from
+[`skills/wrds/scripts/edgar_parquet/`](../../wrds/scripts/edgar_parquet/) and serves both parsers from
 one typing table (`parsers.py`).
 
 **Layout, as verified on rjds:**

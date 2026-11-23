@@ -41,7 +41,7 @@ Year assignment differs from filing date:
   Collisions upstream = SC 13D/A / 13G/A amendments + multiple filings per year; resolved by keeping the
   **latest `file_date`** filing per triple (Volkova supersession rule).
 - **Underlying index tables (schema-verified):** `wrdssec_all.wrds_forms` — `fname` unique, `(accession,
-  cik)` unique, `accession` alone NOT unique (one row per filer CIK; 347,721 dupes in a 2023 slice of
+  cik)` unique, `accession` alone NOT unique (one row per header CIK; 347,721 dupes in a 2023 slice of
   1,159,918 rows) — hence the `DISTINCT` / `drop_duplicates('accession')` steps in this pipeline.
   **Caveat:** the SQL below selects `accession` FROM `wrdssec_all.forms`, but `forms` has NO `accession`
   column (verified 2026-06-09) — use `wrdssec_all.wrds_forms`, or derive the accession from `forms.fname`.
@@ -95,7 +95,7 @@ pixi run python scripts/pull_blockholders.py \
     --out data/processed/blockholders_python_2020.parquet
 ```
 
-**Faster for multi-year runs** — use the WRDS tar pattern (see edgar.md):
+**Faster for multi-year runs** — use the WRDS tar pattern (see `../../edgar/references/edgar.md`):
 
 ```bash
 # 1. Python: query + write files_from.txt
@@ -162,7 +162,7 @@ dedup, so a filer who switched 13G→13D mid-year gets `active_inst=1`.
 `item12` is the "Type of Reporting Person" code from the cover page. Our parser does a two-pass match (line-based, then collapsed-one-liner). Miss rate ~5-10%.
 
 ### 3. `files_13F` lookup
-Use `wrdssec_all.forms WHERE form ILIKE '%13F%'` (default to `forms`, not `wrds_forms` — see `references/wrds-forms-tables.md`). Pre-1999 coverage is sparse (<100 CIKs/year) because many filings were paper — not a WRDS bug, SEC never digitized them. Post-1999 is complete.
+Use `wrdssec_all.wrds_forms WHERE form ILIKE '%13F%'` (default to `wrds_forms`; both tables carry every header CIK — see `../../edgar/references/wrds-forms-tables.md`). Pre-1999 coverage is sparse (<100 CIKs/year) because many filings were paper — not a WRDS bug, SEC never digitized them. Post-1999 is complete.
 
 ### 4. Position extraction artifacts
 The R parser has hacks to strip row-number prefixes (row 9 → value looks like `9xx`; row 11 → `11xx` or `11x`). Our port ports these byte-for-byte.

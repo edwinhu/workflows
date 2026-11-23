@@ -168,4 +168,4 @@ Local:
 - `${CLAUDE_SKILL_DIR}/references/bright-data-webarchive-api.md` — Web Archive filters and parallel-poll harness.
 - `${CLAUDE_SKILL_DIR}/references/bright-data-datasets-catalog.md` — the 1,576-dataset marketplace.
 - `${CLAUDE_SKILL_DIR}/references/bright-data-finra-sec-coverage.md` — verified FINRA/IAPD coverage and dump costs.
-- The `sec-fetch` skill owns SEC.gov specifically (declared-UA access that avoids the 403).
+- The `edgar` skill owns SEC.gov specifically (declared-UA access that avoids the 403).

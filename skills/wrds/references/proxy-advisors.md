@@ -52,7 +52,7 @@ This is a **derived pipeline**, not a WRDS table — the grain is its own output
 
 `wrdssec_all.forms.fname` is shaped `edgar/data/<cik>/<accession>.txt`; map to
 the clean-filings layout via `<source>/<cik6>/<cik>/<accession>.txt` using the
-same helper as other pipelines — see `edgar.md`.
+same helper as other pipelines — see `../../edgar/references/edgar.md`.
 
 ## Name variants
 

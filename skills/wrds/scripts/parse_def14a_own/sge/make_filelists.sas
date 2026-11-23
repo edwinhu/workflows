@@ -13,7 +13,7 @@
  * filelists are paths only for exactly that reason — a 13F carries its own
  * period of report inside the document; a proxy's ownership table does not.
  *
- * The path mapping is the one in references/edgar.md:
+ * The path mapping is the one in skills/edgar/references/edgar.md:
  *   fname 'edgar/data/104169/0000104169-24-000123.txt'
  *     -> '000010/104169/0000104169-24-000123.txt'
  *   (CIK zero-padded to 10, first 6 chars are the parent directory)

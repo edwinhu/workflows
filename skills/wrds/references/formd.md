@@ -81,7 +81,7 @@ SEC official counts within 0.5% for 2011–2019 (see [Validated Benchmarks](#val
 | `accession` | Accession number |
 | `form` | `'D'` or `'D/A'` |
 | `fdate` | Filing date (a real DATE — better than `wrds_vc_formd`'s `signaturedate`) |
-| `cik` | Filer CIK |
+| `cik` | Header CIK (one row per CIK on the filing) |
 | `coname` | Company name |
 
 ### Source 2 — SEC EDGAR structured-data TSV (post-2020)

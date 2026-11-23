@@ -261,6 +261,13 @@ Postgres from a laptop.
   `scripts/form4/pull_insider_ownership.py` (server-side filters, year chunking).
 - Three-step XML route when TR coverage is short: `scripts/form4/step1_query_filings.py`
   -> `step2_download_xmls.sh` -> `step3_parse_xmls.py`. See `scripts/form4/README.md`.
+  The XML bridge's TR `fdate` and SEC `wrds_forms.fdate` differ by 1-3 days for after-hours
+  filings: never join on `fdate`; pull every Form 3/4/5 for the candidate issuers in the
+  window and scope the bridge by issuer and normalized name, then `examples/blockholders_pipeline/redo_bridge.py`.
+  Measured 2019-2024: ~540K filings, ~500 MB tar, ~76K unique `(issuer_cik, rpt_owner_cik, rpt_owner_name)`
+  pairs; step 1 30 s, step 2 5-10 min, step 3 6-8 min on 15 cores. SAS: 2-4 min per year,
+  ~15 min wall for the 31-year array; the Python puller does a cusip6-pruned 5-year slice in ~22 s.
+  The array writes `out.tr_insider_panel_<year>` per task and ships no stacker.
 
 These were vendored from mirror and generalised (no user, institution or project
 tree baked in; `FORM4_ROOT` / `WRDS_SCRATCH` override). mirror keeps its copies

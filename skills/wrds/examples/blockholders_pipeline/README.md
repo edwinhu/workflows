@@ -49,7 +49,7 @@ Full reference: `../references/blockholders.md`.
 
 **Upstream dependency — Form 4 insider add-on**: `redo_bridge.py` consumes
 two artifacts produced by the Form 4 pipeline
-(`../form4_pipeline/`):
+(`../../scripts/form4/`):
 - `tr_insider_panel.parquet` — annualized % ownership per (cusip6,
   personid, year), built by `sas/pull_tr_insiders.sas` on the WRDS grid.
 - `form4_owner_bridge.parquet` — `(issuer_cik, rpt_owner_name) →
@@ -100,7 +100,7 @@ pd.concat([pd.read_parquet(f) for f in sorted(glob.glob('data/processed/blockhol
 "
 
 # 3. (Optional) Merge insider add-on into panel
-#    Prereq: run ../form4_pipeline/ to produce tr_insider_panel.parquet
+#    Prereq: run ../../scripts/form4/ to produce tr_insider_panel.parquet
 #    and form4_owner_bridge.parquet.
 pixi run python redo_bridge.py
 ```
@@ -123,7 +123,7 @@ pixi run python redo_bridge.py
    mid-year ends up `active_inst=1` (R source behavior).
 6. **Insider add-on is produced by the Form 4 pipeline.** Annualization
    (`tr_insiders → prc_own`) and the `personid → rpt_owner_cik` bridge
-   are both Form 4 concerns; see `../form4_pipeline/`. `redo_bridge.py`
+   are both Form 4 concerns; see `../../scripts/form4/`. `redo_bridge.py`
    just merges those artifacts into this panel. Add-on rows default to
    `individual=1`, `filing_type=NA`.
 

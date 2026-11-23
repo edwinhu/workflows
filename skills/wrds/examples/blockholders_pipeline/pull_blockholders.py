@@ -63,11 +63,10 @@ FORM_TYPES = ("SC 13D", "SC 13D/A", "SC 13G", "SC 13G/A")
 def query_forms_metadata(start: str, end: str) -> pd.DataFrame:
     conn = wrds_pull.connect(user="eddyhu")
     forms_csv = "'" + "','".join(FORM_TYPES) + "'"
-    # Use wrdssec_all.forms (raw, all CIK roles) rather than wrds_forms
-    # (primary filer only). Equivalent accession set here because we filter by
-    # form+date, but forms is the safer default — see
-    # skills/wrds/references/wrds-forms-tables.md. DISTINCT collapses the
-    # multi-CIK-per-accession rows back to one row per (cik, accession).
+    # Queries wrdssec_all.forms. wrds_forms carries the same header CIKs (see
+    # skills/edgar/references/wrds-forms-tables.md), so either works here.
+    # DISTINCT collapses the multi-CIK-per-accession rows back to one row per
+    # (cik, accession).
     sql = f"""
         SELECT DISTINCT fdate, cik, coname, form, accession, fname
         FROM wrdssec_all.forms
