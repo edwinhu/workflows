@@ -648,7 +648,7 @@ if [ -n "$TASKS" ]; then
     l=$(jq -r ".[$i].label // \"task-$i\"" "$TASKS")
     a=$(jq -r ".[$i].agent // \"\"" "$TASKS"); [ "$a" = "null" ] && a=""
     m=$(jq -r ".[$i].model // \"\"" "$TASKS"); [ "$m" = "null" ] && m=""
-    b=$(jq -r ".[$i].budget // \"$BUDGET\"" "$TASKS"); [ "$b" = "null" ] && b="$BUDGET"
+    b=$(jq -r ".[$i].budget // \"${BUDGET:-$FARM_TASK_BUDGET}\"" "$TASKS"); [ "$b" = "null" ] && b="${BUDGET:-$FARM_TASK_BUDGET}"
     # enc() cannot save a newline: it would split the record, and a forged DONE line inside a
     # label is indistinguishable from a real verdict to every reader of this stream.
     #
