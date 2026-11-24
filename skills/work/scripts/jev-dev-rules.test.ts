@@ -62,7 +62,7 @@ const SIGNAL: Record<string, (s: any) => boolean> = {
   MOCK: s => s.n_changed_tests_asserting_only_on_mocks > 0,
   WEAK: s => s.hunks_removing_or_rewriting_assertions.some((h: any) =>
     h.added_lines.some((l: any) => /toBeDefined\(\)|toBeTruthy\(\)|toThrow\(\)|toBeGreaterThan\(0\)/.test(l.text))),
-  NET: s => s.n_with_a_non_local_host > 0,
+  NET: s => s.n_executable_non_local > 0,
   SHELL: s => s.added_shell_or_subprocess_sites.some((x: any) => x.interpolates_on_line && !x.argv_form),
   LOOP: s => s.n_such_loops > 0,
 };
