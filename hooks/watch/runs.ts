@@ -68,6 +68,9 @@ export type View = Run & {
   artifactsPresent: boolean
   /** Some artifact exists non-empty but predates the run's START: an earlier run's, not this one's. */
   artifactsStale: boolean
+  /** The artifacts absent or empty, and those present but older than START, each in artifactsOf order. */
+  missingArtifacts: string[]
+  staleArtifacts: string[]
   state: 'running' | 'done' | 'gone'
   startedMs: number
   /** For a work-loop: loop.exit's content when present. */
@@ -205,8 +208,10 @@ export function classify(runs: Run[], facts: Facts): View[] {
     const startedMs = r.t ? r.t * 1000 : facts.firstSeen.get(r.file) ?? 0
     // Several runs can name one path, so freshness is judged per run, against its own START.
     const stale = (p: string) => (facts.presentAt?.get(p) ?? Infinity) < startedMs
-    const artifactsPresent = arts.length > 0 && arts.every(p => facts.present.has(p) && !stale(p))
-    const artifactsStale = arts.some(p => facts.present.has(p) && stale(p))
+    const missingArtifacts = arts.filter(p => !facts.present.has(p))
+    const staleArtifacts = arts.filter(p => facts.present.has(p) && stale(p))
+    const artifactsPresent = arts.length > 0 && !missingArtifacts.length && !staleArtifacts.length
+    const artifactsStale = staleArtifacts.length > 0
     let runDir: string | undefined
     if (kind === 'work-round' || kind === 'work-loop') runDir = r.out ? dirname(r.out) : undefined
     else if (kind === 'farm') runDir = [r.out, ...r.claims].map(p => p && dirname(p)).find(d => d && workDirs.has(d))
@@ -222,7 +227,7 @@ export function classify(runs: Run[], facts: Facts): View[] {
     else if (artifactsPresent) state = 'done'
     else state = 'gone'
     return {
-      ...r, kind, runDir, nested, alive, artifactsPresent, artifactsStale, state, startedMs, loopExit,
+      ...r, kind, runDir, nested, alive, artifactsPresent, artifactsStale, missingArtifacts, staleArtifacts, state, startedMs, loopExit,
       round: runDir ? facts.round.get(runDir) : undefined,
       phase: runDir ? facts.phase.get(runDir) : undefined,
     }
@@ -310,108 +315,84 @@ const LOOP_EXITS: Record<string, string> = {
   '7': 'plan defect escalates to a human', '8': 'read-only run reached its verdict', '9': 'dispatch died with no verdict',
 }
 
+/** The longest free-text value (label, status, summary, why) a wake takes from an event line, in characters. */
+export const SPAWN_FIELD_MAX = 300
+
+/** The longest path a wake takes: Linux PATH_MAX, so no real path is ever cut short. */
+const PATH_MAX = 4096
+
+// C0, DEL and C1 controls, plus the two Unicode line separators.
+const CONTROL = /[\x00-\x1f\x7f-\x9f\u2028\u2029]/g
+
+/** A value from an event line, made safe to paste: anyone who can write the events file chose it, so it
+ *  gets no line break and at most `max` characters. Cut before scrubbing, so the scrub is bounded too. */
+function oneLine(s: string, max = SPAWN_FIELD_MAX): string {
+  let cut = s.length > max ? s.slice(0, max) : s
+  if (cut !== s) cut = cut.replace(/[\uD800-\uDBFF]$/, '') + '…'
+  return cut.replace(CONTROL, ' ')
+}
+
+/** A path for the wake, whole: the reader opens it next. */
+const fullPath = (p: string) => oneLine(p, PATH_MAX)
+
 /** The prompt that wakes the session for a grind loop whose gate keeps waiting. */
 export function waitText(v: View): string {
   const w = v.wait!
-  return `grind loop ${v.label} waiting: ${w.waits} consecutive gate waits, still running. Why: ${w.why || '(the gate printed nothing)'}. ` +
-    `Status: bash ${w.script || 'grind.sh'} status --journal ${v.out}`
+  return `${oneLine(v.label)}: waiting, ${w.waits} gate waits · ${oneLine(w.why) || '(the gate printed nothing)'} · ` +
+    `status: bash ${fullPath(w.script) || 'grind.sh'} status --journal ${fullPath(v.out)}`
 }
 
-/** One artifact as wake() read it: `size` is the stat's byte count, `text` the UTF-8 read. */
-export type ArtifactHead = { path: string; size: number; text: string }
+/** What wake() read for a finished run: a work loop's result.json, null when the read failed. */
+export type Outcome = { resultJson?: string | null }
 
-/** What wake() read for a finished run. `resultJson` is a work loop's result.json, null when the read failed. */
-export type Outcome = { heads?: ArtifactHead[]; resultJson?: string | null }
-
-/** How much a wake pastes: the first HEAD_FILES artifacts, HEAD_LINES lines each, each line cut at HEAD_WIDTH characters. */
-export const HEAD_FILES = 3
-export const HEAD_LINES = 15
-export const HEAD_WIDTH = 200
-
-/** A report's head for the wake. A file holding a NUL byte is named by size, never pasted. */
-export function headText(h: ArtifactHead): string {
-  const top = `\n--- ${h.path}, first ${HEAD_LINES} lines ---\n`
-  if (h.text.includes('\0')) return `${top}(binary, ${h.size} bytes)`
-  // Walked by indexOf, so a long report costs a count, not a copy of every line.
-  const shown: string[] = []
-  let lines = 0
-  for (let i = 0; i < h.text.length; lines++) {
-    let j = h.text.indexOf('\n', i)
-    if (j < 0) j = h.text.length
-    if (shown.length < HEAD_LINES) shown.push(j - i > HEAD_WIDTH ? h.text.slice(i, i + HEAD_WIDTH) + '…' : h.text.slice(i, j))
-    i = j + 1
-  }
-  const more = lines - shown.length
-  return top + shown.join('\n') + (more > 0 ? `\n(… ${more} more lines)` : '')
-}
-
-/** A work loop's verdict line from its result.json text, unwrapping the Workflow tool envelope
- *  (`.result`) as work-result.sh does. Anything without a boolean overallPass is unreadable. */
+/** A work loop's verdict from its result.json text, unwrapping the Workflow tool envelope (`.result`)
+ *  as work-result.sh does. Anything without a boolean overallPass is unreadable. */
 export function verdictText(json: string | null): string {
-  const unreadable = '\nVerdict: result.json unreadable'
+  const unreadable = 'result.json unreadable'
   let r: any
   try { r = JSON.parse(json ?? '') } catch { return unreadable }
   const isObj = (x: unknown) => typeof x === 'object' && x !== null && !Array.isArray(x)
   if (isObj(r) && !('overallPass' in r) && isObj(r.result) && 'overallPass' in r.result) r = r.result
   if (!isObj(r) || typeof r.overallPass !== 'boolean') return unreadable
-  // mechanicalThatFailed holds {name, exitCode}; the other selectors hold ids. A missing selector is unknown, not empty.
-  const ids = (a: unknown) => !Array.isArray(a) ? '?' : !a.length ? 'none'
-    : a.map((x: any) => (typeof x === 'string' ? x : x?.name ?? x?.id ?? JSON.stringify(x))).join(', ')
-  return `\nVerdict: ${r.overallPass ? 'PASS' : 'FAIL'} · flagged tasks: ${ids(r.tasksThatFlagged)} · ` +
-    `failed checks: ${ids(r.mechanicalThatFailed)} · lenses flagged: ${ids(r.lensesThatFlagged)} · rules failed: ${ids(r.rulesThatFailed)}`
+  return r.overallPass ? 'PASS' : 'FAIL'
 }
 
-/** The longest value a spawn wake takes from its event line, in characters. */
-export const SPAWN_FIELD_MAX = 300
-
-// C0, DEL and C1 controls, plus the two Unicode line separators.
-const CONTROL = /[\x00-\x1f\x7f-\x9f\u2028\u2029]/g
-
-/** A value from a spawn line, made safe to paste: anyone who can write the events file chose it, so it
- *  gets no line break and at most SPAWN_FIELD_MAX characters. Cut before scrubbing, so the scrub is
- *  bounded too. */
-function oneLine(s: string): string {
-  let cut = s.length > SPAWN_FIELD_MAX ? s.slice(0, SPAWN_FIELD_MAX) : s
-  if (cut !== s) cut = cut.replace(/[\uD800-\uDBFF]$/, '') + '…'
-  return cut.replace(CONTROL, ' ')
-}
-
-/** A spawned session's wake: one line naming its summary and report path, never the report text. */
-function spawnWake(v: View, ev: string): string {
+/** A spawned session's wake: its outcome, summary and report path, never the report text. */
+function spawnWake(v: View): string {
   const label = oneLine(v.label)
-  if (!v.done) return `Spawned session ${label} left an incomplete report (no DONE line). ${ev}`
+  if (!v.done) return `spawn ${label}: incomplete report (no DONE line)`
   const summary = oneLine(fields(v.done.detail).summary ?? '')
-  return `Spawned session ${label} reported ${oneLine(v.done.status)}: ${summary}. Report: ${oneLine(v.out)}. ${ev}`
+  return `spawn ${label}: ${oneLine(v.done.status)} · ${summary} · report ${fullPath(v.out)}`
 }
 
-/** The prompt that wakes the session for a finished or dead run; `outcome` appends what a finished
- *  one delivered — report heads for a farm or grind run, the verdict for a work loop. */
+/** The one line that wakes the session for a finished or dead run: the run, how it ended, how long it
+ *  took and the full path to read next. `outcome` is a finished work loop's result.json, whose verdict
+ *  leads its line; nothing is ever read out of a report. */
 export function wakeText(v: View, nowMs: number, outcome?: Outcome): string {
   const took = elapsed(nowMs - v.startedMs)
-  const ev = `events: ${v.file}`
-  if (v.kind === 'spawn') return spawnWake(v, ev)
+  if (v.kind === 'spawn') return spawnWake(v)
+  const gone = `GONE after ${took} (no DONE line)`
+  const status = v.done ? oneLine(v.done.status) || 'done' : 'done (no DONE line)'
   if (v.kind === 'work-loop' || v.kind === 'work-round') {
     const dir = v.runDir ?? dirname(v.out)
-    if (v.state === 'gone') {
-      return `work run ${basename(dir)} is GONE: pid ${v.pid} (${v.kind}) exited with no DONE line after ${took}. ` +
-        `No verdict at ${dir}/result.json. Read ${dir}/run.log${v.kind === 'work-loop' ? ` and ${dir}/loop.log` : ''}. ${ev}`
-    }
-    if (v.kind === 'work-loop') {
-      const code = v.loopExit ?? v.done?.detail.match(/rc=(\d+)/)?.[1] ?? '?'
-      return `work run ${basename(dir)} loop finished: exit ${code} (${LOOP_EXITS[code] ?? 'see loop.log'}) after ${took}. ` +
-        `Result: ${dir}/result.json; loop log: ${dir}/loop.log. ${ev}` +
-        (outcome && outcome.resultJson !== undefined ? verdictText(outcome.resultJson) : '')
-    }
-    return `work run ${basename(dir)} round finished: ${v.done?.detail || 'result present'} after ${took}. ` +
-      `Result: ${dir}/result.json; run log: ${dir}/run.log. ${ev}`
+    const head = `work ${oneLine(basename(dir))}`
+    const result = fullPath(`${dir}/result.json`)
+    if (v.state === 'gone') return `${head}: ${gone} · expected ${result} missing`
+    if (v.kind === 'work-round') return `${head}: round ${v.done ? status : 'done'}, ${took} · result ${result}`
+    const code = oneLine(v.loopExit ?? v.done?.detail.match(/rc=(\d+)/)?.[1] ?? '?')
+    const verdict = outcome && outcome.resultJson !== undefined ? `${verdictText(outcome.resultJson)}, ` : ''
+    return `${head}: ${verdict}exit ${code} (${LOOP_EXITS[code] ?? 'see loop.log'}), ${took} · result ${result}`
   }
-  const what = v.kind === 'grind' ? 'grind loop' : 'farm run'
+  if (v.kind === 'grind') {
+    return `${oneLine(v.label)}: ${v.state === 'gone' ? gone : `${status}, ${took}`} · journal ${fullPath(v.out)}`
+  }
+  const head = `farm ${oneLine(v.label)}`
   const arts = artifactsOf(v)
+  const missing = new Set(v.missingArtifacts), stale = new Set(v.staleArtifacts)
   if (v.state === 'gone') {
-    return `${what} ${v.label} is GONE: pid ${v.pid} exited with no DONE line after ${took}` +
-      (arts.length ? `; expected artifact ${v.artifactsStale ? 'stale (older than START)' : 'missing'}: ${arts.join(', ')}` : '') + `. ${ev}`
+    const lost = arts.filter(p => missing.has(p) || stale.has(p)).map(p => `${fullPath(p)} ${missing.has(p) ? 'missing' : 'stale'}`)
+    return `${head}: ${gone}` + (lost.length ? ` · expected ${lost.join(', ')}` : '')
   }
-  return `${what} ${v.label} finished: ${v.done?.detail || 'artifact present, no DONE line'} after ${took}.` +
-    (arts.length ? ` Report: ${arts.join(', ')} (${v.artifactsPresent ? 'present' : v.artifactsStale ? 'STALE, older than START' : 'MISSING'}).` : '') + ` ${ev}` +
-    (outcome?.heads ?? []).slice(0, HEAD_FILES).map(headText).join('')
+  const report = arts.map(p => fullPath(p) + (missing.has(p) ? ' MISSING' : stale.has(p) ? ' STALE' : ''))
+  return `${head}: ${status}, ${took}` + (report.length ? ` · report ${report.join(', ')}` : '')
 }

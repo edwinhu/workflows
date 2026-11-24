@@ -1,5 +1,6 @@
-// The watcher's wake carries the outcome: the head of a finished farm row's report, or a finished work
-// loop's verdict from result.json, so one wake is enough to act on. Same fake world as watcher.test.ts.
+// The watcher's wake is one terse line: a finished farm row names its report path, a finished work loop
+// carries its verdict from result.json (PASS / FAIL / unreadable), and nothing is ever read out of a
+// report file. Same fake world as watcher.test.ts.
 import { expect, mock, test } from 'claude-code/testing'
 
 const SID = 'S1'
@@ -56,6 +57,14 @@ function farmRow(report: string): Tree {
   }
 }
 
+/** A farm row whose process died with no DONE line and no artifact. */
+function goneRow(): Tree {
+  return {
+    [`${dir(SID)}/300.ndjson`]:
+      `farm: START lost cwd=/w out= expect=1 t=${T0}\nfarm: CLAIM lost path=/w/lost.md \n`,
+  }
+}
+
 /** One finished work loop whose result.json is `result`. */
 function workLoop(result: string): Tree {
   const R = '/w/.work/runs/1001-x'
@@ -68,47 +77,24 @@ function workLoop(result: string): Tree {
   }
 }
 
-test('a finished farm row wakes with the first 15 lines of its report and a count of the rest', async ($, on) => {
-  const lines = Array.from({ length: 20 }, (_, i) => `line ${i + 1}`)
-  const { submits, clock } = world(on, farmRow(lines.join('\n') + '\n'))
+const RESULT = '/w/.work/runs/1001-x/result.json'
+
+test('a finished farm row wakes with its report path and none of the report text', async ($, on) => {
+  const report = Array.from({ length: 20 }, (_, i) => `REPORT-LINE-${i + 1}`).join('\n') + '\n'
+  const { submits, clock } = world(on, farmRow(report))
   await settle($, clock)
-  expect(submits.length).toBe(1)
-  const s = submits[0]!
-  expect(s).toContain('farm run beta finished: ok toolCalls=12 W=900')
-  expect(s).toContain('--- /w/beta.md, first 15 lines ---\nline 1\nline 2\n')
-  expect(s).toContain('\nline 15\n')
-  expect(s).not.toContain('line 16')
-  expect(s).toContain('(… 5 more lines)')
+  expect(submits).toEqual(['farm beta: ok, 43m · report /w/beta.md'])
+  expect(submits[0]).not.toContain('REPORT-LINE')
 })
 
-test('a report line longer than 200 characters is cut with an ellipsis', async ($, on) => {
-  const { submits, clock } = world(on, farmRow('x'.repeat(300) + '\nshort\n'))
-  await settle($, clock)
-  const s = submits[0]!
-  expect(s).toContain('x'.repeat(200) + '…')
-  expect(s).not.toContain('x'.repeat(201))
-  expect(s).toContain('\nshort')
-})
-
-test('a binary report is named by size, never pasted', async ($, on) => {
-  const bin = 'PK\u0003\u0004\u0000\u0000garbage'
-  const { submits, clock } = world(on, farmRow(bin))
-  await settle($, clock)
-  const s = submits[0]!
-  expect(s).toContain(`(binary, ${bin.length} bytes)`)
-  expect(s).not.toContain('garbage')
-})
-
-test('a finished work loop wakes with its verdict from result.json', async ($, on) => {
+test('a finished work loop wakes with its FAIL verdict and no flagged-task detail', async ($, on) => {
   const result = JSON.stringify({
     overallPass: false, tasksThatFlagged: ['T1', 'T3'], mechanicalThatFailed: [{ name: 'dev', exitCode: 1 }],
     lensesThatFlagged: [], rulesThatFailed: ['WEAK'],
   })
   const { submits, clock } = world(on, workLoop(result))
   await settle($, clock)
-  expect(submits.length).toBe(1)
-  expect(submits[0]).toContain('work run 1001-x loop finished: exit 0 (gate passed)')
-  expect(submits[0]).toContain('Verdict: FAIL · flagged tasks: T1, T3 · failed checks: dev · lenses flagged: none · rules failed: WEAK')
+  expect(submits).toEqual([`work 1001-x: FAIL, exit 0 (gate passed), 43m · result ${RESULT}`])
 })
 
 test('a verdict wrapped under .result is unwrapped', async ($, on) => {
@@ -116,13 +102,20 @@ test('a verdict wrapped under .result is unwrapped', async ($, on) => {
     overallPass: true, tasksThatFlagged: [], mechanicalThatFailed: [], lensesThatFlagged: [], rulesThatFailed: [] } })
   const { submits, clock } = world(on, workLoop(result))
   await settle($, clock)
-  expect(submits[0]).toContain('Verdict: PASS · flagged tasks: none · failed checks: none · lenses flagged: none · rules failed: none')
+  expect(submits).toEqual([`work 1001-x: PASS, exit 0 (gate passed), 43m · result ${RESULT}`])
 })
 
 test('an unparseable result.json says so instead of guessing a verdict', async ($, on) => {
   const { submits, clock } = world(on, workLoop('{not json'))
   await settle($, clock)
-  expect(submits.length).toBe(1)
-  expect(submits[0]).toContain('Verdict: result.json unreadable')
-  expect(submits[0]).not.toContain('Verdict: PASS')
+  expect(submits).toEqual([`work 1001-x: result.json unreadable, exit 0 (gate passed), 43m · result ${RESULT}`])
+})
+
+test('a GONE farm row and a finished work loop each wake with a single bare line', async ($, on) => {
+  const { submits, clock } = world(on, { ...goneRow(), ...workLoop(JSON.stringify({ overallPass: true })) })
+  await settle($, clock)
+  expect(submits.length).toBe(2)
+  expect(submits.find(s => s.startsWith('farm lost:'))).toBe('farm lost: GONE after 43m (no DONE line) · expected /w/lost.md missing')
+  expect(submits.find(s => s.startsWith('work 1001-x:'))).toBe(`work 1001-x: PASS, exit 0 (gate passed), 43m · result ${RESULT}`)
+  for (const s of submits) expect(s).not.toMatch(/\n|W=|toolCalls=|events:|--- /)
 })

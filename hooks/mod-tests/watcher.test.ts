@@ -112,11 +112,9 @@ test('DONE and GONE each wake once; another session\'s run never wakes', async (
   await clock.advance(15_000)
   expect(seen.submits.length).toBe(2)
   const beta = seen.submits.find(s => s.includes('beta'))!
-  expect(beta).toContain('farm run beta finished: ok toolCalls=12 W=900 after 33m')
-  expect(beta).toContain('Report: /w/beta.md (present)')
+  expect(beta).toBe('farm beta: ok, 33m · report /w/beta.md')
   const gamma = seen.submits.find(s => s.includes('gamma'))!
-  expect(gamma).toContain('farm run gamma is GONE: pid 400 exited with no DONE line after 42m')
-  expect(gamma).toContain('expected artifact missing: /w/gamma.md')
+  expect(gamma).toBe('farm gamma: GONE after 42m (no DONE line) · expected /w/gamma.md missing')
   expect(seen.submits.some(s => s.includes('theirs'))).toBe(false)
   expect(seen.submits.some(s => s.includes('alpha'))).toBe(false)
 })
@@ -156,7 +154,7 @@ test('a run that finishes still wakes, and never draws a mod status line', async
   tree['/w/alpha.md'] = '# alpha'
   await clock.advance(15_000)
   expect(seen.statuses).toEqual([])
-  expect(seen.submits.some(s => s.startsWith('farm run alpha finished: ok toolCalls=4'))).toBe(true)
+  expect(seen.submits.some(s => s.startsWith('farm alpha: ok, ') && s.endsWith(' · report /w/alpha.md'))).toBe(true)
 })
 
 test('a work run wakes once through its loop; its round and nested rows stay quiet', async ($, on) => {
@@ -165,8 +163,8 @@ test('a work run wakes once through its loop; its round and nested rows stay qui
   await clock.settle()
   await clock.advance(15_000)
   expect(seen.submits.length).toBe(1)
-  expect(seen.submits[0]).toContain('work run 1001-x loop finished: exit 0 (gate passed)')
-  expect(seen.submits[0]).toContain('Result: /w/.work/runs/1001-x/result.json')
+  // result.json is '{}': no overallPass, so the verdict is unreadable and the exit code speaks.
+  expect(seen.submits[0]).toBe('work 1001-x: result.json unreadable, exit 0 (gate passed), 43m · result /w/.work/runs/1001-x/result.json')
   const out = await $.command.run({ command: 'farm', args: '' })
   expect(out.text).toContain('↳ workflow')
 })
@@ -274,7 +272,7 @@ test('secreg 1002-slides-18-diag: the loop\'s DONE rc=3 wakes once; its round, w
   await clock.settle()
   await clock.advance(15_000)
   expect(seen.length).toBe(1)
-  expect(seen[0]).toContain('work run 1002-slides-18-diag loop finished: exit 3 (redispatch refused at Tier 1) after 7m.')
+  expect(seen[0]).toBe('work 1002-slides-18-diag: result.json unreadable, exit 3 (redispatch refused at Tier 1), 7m · result /home/eh/.local/state/craft/1002-slides-18-diag/result.json')
   expect([...store.keys()]).toEqual(['notified:e3b75752-8459-4201-8118-4b52c8e0bc9c:2657005:0:work-loop:1790992953'])
   expect(tree[`${D}/watcher.alive`]).toBe('1790993405')
 })
@@ -362,14 +360,14 @@ test('a live grind loop\'s WAIT wakes once per new waits value, never twice for 
   await clock.settle()
   await clock.advance(15_000)
   expect(seen.submits).toEqual([
-    'grind loop grind j.jsonl waiting: 2 consecutive gate waits, still running. Why: grid busy. Status: bash /p/grind.sh status --journal /w/j.jsonl',
+    'grind j.jsonl: waiting, 2 gate waits · grid busy · status: bash /p/grind.sh status --journal /w/j.jsonl',
   ])
   await clock.advance(15_000)
   expect(seen.submits.length).toBe(1)
   tree[G] += wait(4)
   await clock.advance(15_000)
   expect(seen.submits.length).toBe(2)
-  expect(seen.submits[1]).toContain('waiting: 4 consecutive gate waits')
+  expect(seen.submits[1]).toStartWith('grind j.jsonl: waiting, 4 gate waits · ')
   await clock.advance(15_000)
   expect(seen.submits.length).toBe(2)
   // still live: no DONE-style wake
@@ -387,7 +385,7 @@ test('a grind started 3 days ago with a fresh DONE wakes once', async ($, on) =>
   await clock.advance(15_000)
   await clock.advance(15_000)
   expect(seen.submits.length).toBe(1)
-  expect(seen.submits[0]).toContain('grind j.jsonl')
+  expect(seen.submits[0]).toBe('grind j.jsonl: done, 72h43m · journal /w/j.jsonl')
 })
 
 test('a fresh WAIT on a 3-day-old live grind wakes once', async ($, on) => {
@@ -398,7 +396,7 @@ test('a fresh WAIT on a 3-day-old live grind wakes once', async ($, on) => {
   await clock.advance(15_000)
   await clock.advance(15_000)
   expect(seen.submits.length).toBe(1)
-  expect(seen.submits[0]).toContain('waiting: 6 consecutive gate waits')
+  expect(seen.submits[0]).toStartWith('grind j.jsonl: waiting, 6 gate waits · ')
 })
 
 test('a stale event file from a long-dead grind session wakes nobody', async ($, on) => {
@@ -432,8 +430,7 @@ test('a spawned session\'s report wakes the parent once, labelled, with summary 
   await clock.advance(15_000)
   expect(seen.submits.length).toBe(1)
   const t = seen.submits[0]!
-  expect(t).toContain('Spawned session omarchy:child-tab reported BLOCKED: needs a decision on the fallback')
-  expect(t).toContain('Report: /r/child-report.md')
+  expect(t).toBe('spawn omarchy:child-tab: BLOCKED · needs a decision on the fallback · report /r/child-report.md')
   expect(t).not.toContain('REPORT-BODY-MARKER')
   expect(t).not.toContain('GONE')
 })

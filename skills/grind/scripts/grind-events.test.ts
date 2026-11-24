@@ -308,7 +308,10 @@ describe('grind.sh — the watcher mod reads the stream without being taught a s
 
     const views = watchPass(eventDir)
     expect(views[0]!.state).toBe('gone')
-    expect(wakeText(views[0]!, Date.now())).toContain(`grind loop grind journal.jsonl is GONE: pid ${pid}`)
+    const wake = wakeText(views[0]!, Date.now())
+    expect(wake).toStartWith('grind journal.jsonl: GONE after ')
+    expect(wake).toEndWith(' · journal ' + journal)
+    expect(wake).not.toMatch(/\n|events:|rc=/)
   }, 1_080_000)
 
   test('a grind file in the directory leaves the farm run\'s classification unchanged', async () => {

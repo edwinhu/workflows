@@ -1,7 +1,7 @@
 // The watcher mod, registered from hooks/watch/watcher.ts: the farm-out runs and work rounds THIS session launched, read from files only.
 //
 //   wake          $.prompt.submit ONCE per run that reaches DONE or GONE, remembered in $.store; a finished
-//                 one carries its report heads or its work verdict
+//                 run's wake names its report path and, for a work loop, its verdict; never the report text
 //   spawn         a spawned session's report (scripts/spawn-report.sh) wakes once, naming the summary
 //                 and report path; outcome() reads nothing for it, so the report text is never pasted
 //   /farm         a table of this session's runs, printed at once, no turn
@@ -17,8 +17,7 @@
 // waking itself about its own runs would loop.
 import type { EngineInterface, On } from 'claude-code'
 import {
-  artifactsOf, BEACON, dirname, HEAD_FILES, table, TICK_MS, pastHorizon, wakeable, wakeText, waitText,
-  type ArtifactHead, type Outcome, type View,
+  BEACON, dirname, table, TICK_MS, pastHorizon, wakeable, wakeText, waitText, type Outcome, type View,
 } from './runs.ts'
 import { buildViews, psArgv, psPids, type Caches, type SnapshotIO } from './snapshot.ts'
 import { setForecastCache } from '../jev/forecast-mod.ts'
@@ -68,23 +67,11 @@ async function snapshot($: EngineInterface): Promise<{ views: View[]; nowMs: num
   return { views: await buildViews(engineIO($), await eventDirs($), nowMs, caches), nowMs }
 }
 
-/** What a finished run delivered, read once, just before its wake: a work loop's result.json, or the
- *  first HEAD_FILES artifacts of a farm or grind run that are regular, non-empty, absolute files written
- *  at or after its START (classify's present-and-fresh rule). A dead run gets nothing. */
+/** A finished work loop's result.json, read once just before its wake for the verdict. Nothing else is
+ *  read for any run, so no report text reaches a wake. */
 async function outcome($: EngineInterface, v: View): Promise<Outcome | undefined> {
-  if (v.state !== 'done') return undefined
-  if (v.kind === 'work-loop') return { resultJson: (await readText($, `${v.runDir ?? dirname(v.out)}/result.json`)) ?? null }
-  if (v.kind !== 'farm' && v.kind !== 'grind') return undefined
-  const heads: ArtifactHead[] = []
-  for (const p of artifactsOf(v)) {
-    if (heads.length >= HEAD_FILES) break
-    if (!p.startsWith('/')) continue
-    const s = await $.fs.stat(p).catch(() => undefined)
-    if (!s || s.kind !== 'file' || s.size === 0 || s.mtimeMs < v.startedMs) continue
-    const text = await readText($, p)
-    if (text !== undefined) heads.push({ path: p, size: s.size, text })
-  }
-  return { heads }
+  if (v.state !== 'done' || v.kind !== 'work-loop') return undefined
+  return { resultJson: (await readText($, `${v.runDir ?? dirname(v.out)}/result.json`)) ?? null }
 }
 
 async function wake($: EngineInterface, views: View[], nowMs: number) {

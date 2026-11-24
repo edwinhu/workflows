@@ -83,8 +83,8 @@ describe('a spawned session reports through the parent session\'s events dir', (
     expect(views[0]!.kind).toBe('spawn')
     expect(views[0]!.state).toBe('done')
     const t = texts[0]!
-    expect(t).toContain(`Spawned session ${LABEL} reported BLOCKED: needs a decision on the fallback channel`)
-    expect(t).toContain(`Report: ${s.report}`)
+    expect(t).toBe(`spawn ${LABEL}: BLOCKED · needs a decision on the fallback channel · report ${s.report}`)
+    expect(t).not.toMatch(/events:|W=|toolCalls=|--- /)
     expect(t).not.toContain('FULL-REPORT-BODY-MARKER')
     expect(t).not.toContain('\n')
   }, 30_000)
@@ -97,8 +97,8 @@ describe('a spawned session reports through the parent session\'s events dir', (
     expect(report(s, { '--outcome': 'DONE', '--summary': 'shipped', '--report': second }).status).toBe(0)
     const { texts } = await wakes(s)
     expect(texts.length).toBe(2)
-    expect(texts.some(t => t.includes('reported BLOCKED'))).toBe(true)
-    expect(texts.some(t => t.includes('reported DONE: shipped') && t.includes(`Report: ${second}`))).toBe(true)
+    expect(texts.some(t => t.startsWith(`spawn ${LABEL}: BLOCKED · `))).toBe(true)
+    expect(texts).toContain(`spawn ${LABEL}: DONE · shipped · report ${second}`)
   }, 60_000)
 
   test('the script refuses what would mislead the parent, and writes nothing when it does', () => {
@@ -129,7 +129,7 @@ describe('a spawned session reports through the parent session\'s events dir', (
     const { views, texts } = await wakes(s)
     expect(views.length).toBe(1)
     expect(views[0]!.kind).toBe('spawn')
-    expect(texts[0]).toContain('Spawned session forged reported DONE: first')
+    expect(texts[0]).toStartWith('spawn forged: DONE · first')
     expect(texts[0]).not.toContain('\n')
     expect(texts[0]!.length).toBeLessThan(800)
   })
