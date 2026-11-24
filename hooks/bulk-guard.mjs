@@ -252,7 +252,28 @@ function jsEnclosing(lines, i) {
   return { loops, fn };
 }
 
-const dataLoop = (headers) => headers.some((h) => !RETRY_HEADER.test(h));
+// A loop over a one-line literal of at most 10 strings/numbers, or range() spanning at most 10, is
+// the ≤10-document Flex route the deny text prescribes, not a data loop; anything else stays one.
+// ("abc") without a trailing comma is a string iterated per character, not a 1-tuple.
+const LITERAL_ITEM = /^\s*("[^"\n]*"|'[^'\n]*'|[-+]?\d+(\.\d+)?)\s*$/;
+const NO_NEST = "[^[\\](){}\\n]*";
+const PY_LITERAL_HEADER = new RegExp(`^\\s*for\\s+[A-Za-z_]\\w*\\s+in\\s+(?:\\[(${NO_NEST})\\]|\\((${NO_NEST})\\))\\s*:\\s*(#.*)?$`);
+const JS_LITERAL_HEADER = new RegExp(`^\\s*for\\s*\\(\\s*(?:const|let|var)\\s+[A-Za-z_$][\\w$]*\\s+of\\s+\\[(${NO_NEST})\\]\\s*\\)\\s*\\{?\\s*(//.*)?$`);
+const PY_RANGE_HEADER = /^\s*for\s+[A-Za-z_]\w*\s+in\s+range\(\s*(-?\d+)\s*(?:,\s*(-?\d+)\s*)?\)\s*:\s*(#.*)?$/;
+function boundedHeader(h) {
+  const r = h.match(PY_RANGE_HEADER);
+  if (r) return (r[2] === undefined ? Number(r[1]) : Number(r[2]) - Number(r[1])) <= 10;
+  const py = h.match(PY_LITERAL_HEADER);
+  const js = py ? null : h.match(JS_LITERAL_HEADER);
+  const raw = py ? py[1] ?? py[2] : js?.[1];
+  if (raw === undefined) return false;
+  const body = raw.replace(/,\s*$/, "");
+  const items = body.split(",");
+  if (py?.[2] !== undefined && items.length === 1 && body === raw) return false;
+  return items.length <= 10 && items.every((s) => LITERAL_ITEM.test(s));
+}
+
+const dataLoop = (headers) => headers.some((h) => !RETRY_HEADER.test(h) && !boundedHeader(h));
 
 function inLoop(lines, i, lang, depth = 0) {
   const { loops, fn } = (lang === "py" ? pyEnclosing : jsEnclosing)(lines, i);

@@ -258,6 +258,53 @@ test("agent-written model-API-in-a-loop scripts are denied (Write, Bash heredoc,
   expect(h.events().every((e) => e.rule === "api-in-loop")).toBe(true);
 });
 
+// One local PDF sent to Vertex Flex, twice per API version: the route the denial text prescribes.
+const flexPy = (header: string, setup = "") => `import base64, glob, json, os, subprocess, urllib.request
+PROJECT = "eddyhu-research"
+pdf = base64.b64encode(open("filing.pdf", "rb").read()).decode()
+token = subprocess.check_output(["gcloud", "auth", "print-access-token"], text=True).strip()
+
+def call(ver, name, extra, prompt):
+    url = "https://aiplatform.googleapis.com/" + ver + "/projects/" + PROJECT + "/locations/global/publishers/google/models/gemini-3.8-flash:generateContent"
+    body = {"contents": [{"role": "user", "parts": [
+        {"inlineData": {"mimeType": "application/pdf", "data": pdf}}, {"text": prompt}]}]}
+    body.update(extra)
+    req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={
+        "Authorization": "Bearer " + token, "Content-Type": "application/json",
+        "X-Vertex-AI-LLM-Shared-Request-Type": "flex"})
+    with urllib.request.urlopen(req, timeout=600) as r:
+        out = json.load(r)
+    print(name, ver, out["candidates"][0]["content"]["parts"][0]["text"][:200])
+${setup}
+${header}
+    call(ver, "plain", {}, "Summarise the filing.")
+    call(ver, "json", {"generationConfig": {"responseMimeType": "application/json"}}, "Return the parties as JSON.")
+`;
+
+test("a model call inside a loop over a literal of at most 10 items is allowed; unbounded iterables are denied", async () => {
+  const h = harness();
+  const w = (name: string, content: string) => h.call({ tool: "Write", file_path: join(SCRATCH, name), content });
+  expect((await w("flex.py", flexPy(`for ver in ["v1", "v1beta1"]:`))).deny).toBeUndefined();
+  expect((await w("flex-tuple.py", flexPy(`for ver in ("v1", "v1beta1"):`))).deny).toBeUndefined();
+  expect((await w("flex-range.py", flexPy(`for ver in range(3):`))).deny).toBeUndefined();
+  const eleven = JSON.stringify(Array.from({ length: 11 }, (_, i) => `v${i}`));
+  expect((await w("flex-11.py", flexPy(`for ver in ${eleven}:`))).deny).toBe(DENY_MESSAGE);
+  expect((await w("flex-glob.py", flexPy(`for ver in glob.glob("*.pdf"):`))).deny).toBe(DENY_MESSAGE);
+  const rows = `rows = [l.strip() for l in open("versions.txt")]`;
+  expect((await w("flex-rows.py", flexPy(`for ver in rows:`, rows))).deny).toBe(DENY_MESSAGE);
+  expect((await w("flex-listdir.py", flexPy(`for ver in os.listdir("pdfs"):`))).deny).toBe(DENY_MESSAGE);
+  const mixed = `path = open("next.txt").read().strip()`;
+  expect((await w("flex-mixed.py", flexPy(`for ver in ["v1", path]:`, mixed))).deny).toBe(DENY_MESSAGE);
+  const star = `rows = open("versions.txt").read().split()`;
+  expect((await w("flex-star.py", flexPy(`for ver in [*rows]:`, star))).deny).toBe(DENY_MESSAGE);
+  const GC = ["generate", "Content"].join("");
+  const flexJs = (header: string) => `const pdf = "x";\nasync function call(ver: string) {\n  const url = "https://aiplatform.googleapis.com/" + ver + "/projects/p/locations/global/publishers/google/models/gemini-3.8-flash:${GC}";\n  return fetch(url, { method: "POST", headers: { "X-Vertex-AI-LLM-Shared-Request-Type": "flex" }, body: pdf });\n}\n${header} {\n  await call(v);\n}\n`;
+  expect((await w("flex-js.ts", flexJs('for (const v of ["v1", "v1beta1"])'))).deny).toBeUndefined();
+  expect((await w("flex-js-files.ts", flexJs("for (const v of files)"))).deny).toBe(DENY_MESSAGE);
+  expect((await w("flex-js-spread.ts", flexJs("for (const v of [...files])"))).deny).toBe(DENY_MESSAGE);
+  expect(h.events().filter((e) => e.rule === "api-in-loop")).toHaveLength(8);
+});
+
 test("one model call, a retry loop, and an Edit that adds the loop", async () => {
   const h = harness();
   const one = `client = anthropic.Anthropic()\nmsg = client.messages.create(model="m", messages=[])\n`;

@@ -136,6 +136,7 @@
         "NET": [
           { "kind": "violating", "path": "tests/fixtures/jev/dev/NET/vio" },
           { "kind": "compliant", "path": "tests/fixtures/jev/dev/NET/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-bulk-guard-flex-fixture", "source": "workflows working tree on HEAD 6d4b0ea3, tests/bulk-guard.test.ts flexPy/flexJs fixtures handed to a local hook harness; user ruled the NET hit a false positive 2026-11-23" },
           { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-route-agenix-key", "source": "workflows commit 41c871de, diff hunks with 12 lines of context; accepted change" },
           { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-route-propose-rank", "source": "workflows commit f2239344, diff hunks with 12 lines of context; accepted change" }
         ],
