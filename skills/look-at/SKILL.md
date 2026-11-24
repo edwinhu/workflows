@@ -169,7 +169,7 @@ These apply to `--backend api`, which is metered. The `claude` backend takes `--
 
 | Model | Use Case | Speed | Cost |
 |-------|----------|-------|------|
-| `gemini-3.7-flash` | Default - most capable stable Flash, `thinking_level=high` | Fast | $0.75/1M |
+| `gemini-4-hydrogen` | Default - Google's upgrade for 3.8 Flash, `thinking_level=high` | Fast | $1.50/1M |
 | `gemini-3.5-flash-lite` | High-throughput / document parsing when cost matters | Fastest | $0.30/1M |
 | `gemini-3.1-pro-preview` | Maximum vision capability, hardest extractions | Slower | $2.00/1M |
 | `gemini-3-pro-preview` | Highest accuracy required | Medium | Medium |
@@ -201,7 +201,7 @@ For complex visual reasoning tasks, use the `--agentic` flag to enable code exec
     --agentic
 ```
 
-**Note:** Agentic mode adds code execution to whichever model is selected; `gemini-3.7-flash` supports it, so it no longer forces a different model.
+**Note:** Agentic mode adds code execution to whichever model is selected; `gemini-4-hydrogen` supports it, so it no longer forces a different model.
 
 ## Common Patterns
 

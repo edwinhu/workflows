@@ -1,15 +1,15 @@
 {
-  "_comment": "Single source of truth for Gemini model selection. Read by scripts/lib/gemini_models.py and scripts/lib/gemini-models.ts. Verified against https://ai.google.dev/gemini-api/docs/models.md.txt and the deprecations page on 2026-09-13.",
+  "_comment": "Single source of truth for Gemini model selection. Read by scripts/lib/gemini_models.py and scripts/lib/gemini-models.ts. Verified against https://aistudio.google.com/docs/choosing-a-model#upgrade-paths, models.md.txt, deprecations.md.txt, and pricing.md.txt on 2026-11-23.",
   "roles": {
-    "bulk": "gemini-3.1-flash-lite",
-    "judgment": "gemini-3.1-flash-lite",
-    "pro": "gemini-3.1-pro-preview",
-    "vision": "gemini-3.7-flash"
+    "bulk": "gemini-3.5-flash-lite",
+    "judgment": "gemini-4-hydrogen",
+    "pro": "gemini-4-neon",
+    "vision": "gemini-4-hydrogen"
   },
   "notes": {
-    "bulk": "Cheap high-volume batch / per-item work. gemini-3.1-flash-lite is stable; shutdown 2027-05-07.",
-    "judgment": "Reasoning where accuracy matters but volume is still per-item. Same id as bulk today; separate role so the two can diverge without a sweep.",
-    "pro": "The few sites that need a pro model. gemini-3.1-pro-preview has no announced shutdown date and is the current pro id.",
-    "vision": "Multimodal extraction from a single file (OCR, charts, tables, video). Kept on a full flash model because flash-lite regresses on dense-document reading."
+    "bulk": "Cheap high-volume batch / per-item work. gemini-3.5-flash-lite is Google's named replacement for 3.1-flash-lite (which shuts down 2027-05-07); stable with no shutdown announced ($0.30 in / $2.50 out per 1M).",
+    "judgment": "Google's upgrade for 3.8 Flash, recommended for multimodal document pipelines with fewer fabricated claims than 3.8 Flash ($1.50 in / $7.50 out per 1M).",
+    "pro": "Google's upgrade for 3.1-pro ($3 in / $15 out per 1M). Pass gemini-4-carbon explicitly for the hardest problems.",
+    "vision": "Google's upgrade for 3.8 Flash, recommended for multimodal document pipelines with fewer fabricated claims than 3.8 Flash ($1.50 in / $7.50 out per 1M). On Vertex, Gemini 4 applies Part.documentMetadata page slicing (Gemini 3.x ignores it), but Vertex Flex rejects Gemini 4 (HTTP 400 \"Flex API is not supported for model\"), measured 2026-11-23."
   }
 }

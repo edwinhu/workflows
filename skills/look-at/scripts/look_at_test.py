@@ -140,11 +140,11 @@ def test_analyze_uploads_with_mime_prompts_and_cleans_up(la, monkeypatch, tmp_pa
     assert c.api_key == "k"
     assert c.uploaded[0][1] == {"mime_type": "application/pdf"}
     model, contents, cfg = c.generated[0]
-    assert model == "gemini-3.7-flash"           # the 'vision' role
+    assert model == "gemini-4-hydrogen"           # the 'vision' role
     assert "Goal: get the title" in contents[1]
     assert cfg.thinking_config.thinking_level == "high" and cfg.tools is None
     assert c.deleted == ["files/abc"]
-    assert "Model: gemini-3.7-flash" in capsys.readouterr().err  # provenance on stderr, not stdout
+    assert "Model: gemini-4-hydrogen" in capsys.readouterr().err  # provenance on stderr, not stdout
 
 
 def test_analyze_model_override_and_agentic_tools(la, monkeypatch, tmp_path):
