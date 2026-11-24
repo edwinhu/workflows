@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Installed by matter-guard.sh install; see that script.
+exec "$(dirname "$(readlink -f "$0")")/matter-guard.sh" commit-msg "$@"
