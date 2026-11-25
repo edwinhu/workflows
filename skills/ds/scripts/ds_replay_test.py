@@ -83,6 +83,6 @@ def test_check_sh_leg_follows_the_replay_exit(tmp_path, rc):
     assert f"leg ds-replay exit={rc}" in r.stdout + r.stderr
 
 
-def test_replication_skill_points_at_the_replay_contract():
+def test_expert_production_skill_points_at_the_replay_contract():
     root = Path(__file__).resolve().parents[3]
-    assert "references/replay.md" in (root / "skills/replication-package/SKILL.md").read_text()
+    assert "references/replay.md" in (root / "skills/expert-production/SKILL.md").read_text()

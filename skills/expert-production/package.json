@@ -1,0 +1,3 @@
+{
+  "suite": ["../../tests/expert_production_test.py", "../../tests/expert_production_gate_test.py"]
+}

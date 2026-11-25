@@ -10,7 +10,7 @@
 Owner's rule: always strip metadata. build_docx.py runs strip_ooxml on every build and
 strip_pdf after every Word render; make_template.py runs strip_ooxml on the template.
 
-Policy (differs from replication-package's scrub_metadata.py, which keeps dates and drops the
+Policy (differs from expert-production's scrub_metadata.py, which keeps dates and drops the
 producer): the .docx keeps no dates and no names; the PDF keeps only Creator and Producer, which
 the Microsoft Word check in build_docx.py reads.
 """

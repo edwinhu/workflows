@@ -51,7 +51,7 @@ skills/docx-typst/scripts/reconcile_test.py
 skills/gemini-vertex/scripts/validate_jsonl_test.py
 skills/law-review-docx/scripts/check_widows_test.py
 skills/marimo/scripts/marimo_scripts_test.py
-skills/replication-package/scripts/scrub_metadata_test.py
+skills/expert-production/scripts/scrub_metadata_test.py
 skills/westlaw/scripts/westlaw_docx_text_test.py
 skills/jupytext/scripts/scripts_test.py
 skills/law-econ-docx/scripts/build_le_docx_test.py
