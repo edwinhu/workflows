@@ -16,7 +16,7 @@
 
 ### Added
 
-- **`expert-production` replaces `replication-package`:** a work-parameter workflow whose single mechanical gate, `package-check.sh`, runs archive, code, leak and rerun legs over a hash-approved production SPEC. It ships `strip_code.py`, `manifest.py` and `build-runbook.sh`.
+- **`expert-production` replaces the former production-packaging skill:** a work-parameter workflow whose single mechanical gate, `package-check.sh`, runs archive, code, leak and rerun legs over a hash-approved production SPEC. It ships `strip_code.py`, `manifest.py` and `build-runbook.sh`.
 
 ### Fixed
 
