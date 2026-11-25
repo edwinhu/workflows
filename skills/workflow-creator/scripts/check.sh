@@ -6,7 +6,7 @@
 #
 # Usage: check.sh --target <skill dir> [--agent <agent .md outside the skill dir>]...   (--agent repeats: one per dispatched agent)
 #
-# Legs (all seven run; none short-circuits, so one line is printed per leg every time):
+# Legs (all eight run; none short-circuits, so one line is printed per leg every time):
 #   wc-probe     the probe over --target (and --agent, which lives outside it)
 #   sc-probe     SKILL shape over --target — the TOC bang, the four ways a bang aborts a load,
 #                paths the prose cannot resolve
@@ -28,6 +28,10 @@
 #                <target>/package.json {"suite": ["../../tests/farm-*.test.ts"]}, globs relative to
 #                the target; a glob matching nothing is exit 2. (Not symlinks: bun test follows them
 #                and scripts/test.sh would run every linked file twice.)
+#   suite-coverage  every Python suite under --target (test_*.py or *_test.py, same skip rules as
+#                tests/suite-coverage.test.ts) must be named in tests/script-suites.txt or
+#                tests/pytest-extra.txt, or declared `# not-gated: <path> -- <reason>`. A repo with
+#                neither manifest has no coverage contract and exits 0 (nothing in scope).
 #
 # wc-probe has only ever judged GATE INTEGRITY, never STRUCTURE. That is how typst accumulated 16
 # runners, a check.sh running one leg of six, and 62 checkers across four locations while passing
@@ -288,7 +292,7 @@ else
     if [ "${#suite[@]}" -gt 0 ]; then
       # One bun process PER FILE, at most SHARDS at once: bun reports only `Ran N tests across M
       # files`, so a file that ran nothing is visible only if no sibling shares its process.
-      # A target's tests spawn its own check.sh (7 legs); bun's 5 s default kills one at load and
+      # A target's tests spawn its own check.sh (8 legs); bun's 5 s default kills one at load and
       # strands that leg's leg-o/leg-e temp files. The budget is a ceiling, not a delay.
       # The exit status lands in <out>.rc: `wait -n` below reaps the job, so `wait $pid` cannot.
       bi=0
@@ -356,6 +360,104 @@ else
       count_line probe-tests "$test_n" "test(s)" "no test ran"
     fi
     report probe-tests "$rc" "$(( ${#suite[@]} + ${#pysuite[@]} )) file(s)"
+  fi
+fi
+
+# --- leg: suite-coverage -----------------------------------------------------------------------
+# Every Python suite under --target (same naming and skip rules as tests/suite-coverage.test.ts)
+# must be named by tests/script-suites.txt or tests/pytest-extra.txt, or declared
+# `# not-gated: <path> -- <reason>`. Repos without those manifests have no coverage contract.
+SC_REPO_ROOT="$(git -C "$TARGET" rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -z "$SC_REPO_ROOT" ]; then
+  count_line suite-coverage 0 "suite(s)" "target is not in a git repo"
+  report suite-coverage 0 "not in a git repo"
+else
+  SC_REPO_ROOT="$(cd "$SC_REPO_ROOT" && pwd -P)"
+  if [ ! -f "$SC_REPO_ROOT/tests/script-suites.txt" ] && [ ! -f "$SC_REPO_ROOT/tests/pytest-extra.txt" ]; then
+    count_line suite-coverage 0 "suite(s)" "no suite manifests exist"
+    report suite-coverage 0 "no suite manifests"
+  else
+    python3 -I - "$SC_REPO_ROOT" "$TARGET" >&2 <<'PY'
+import os, re, stat, sys
+
+root = os.path.realpath(sys.argv[1])
+target = os.path.realpath(sys.argv[2])
+
+manifests = ["tests/script-suites.txt", "tests/pytest-extra.txt"]
+skip_dirs = {".git", "node_modules", "__pycache__", "scratch", ".claude", "tests"}
+
+try:
+    submodules = set()
+    gm = os.path.join(root, ".gitmodules")
+    if os.path.exists(gm):
+        with open(gm, encoding="utf-8") as fh:
+            for line in fh:
+                m = re.match(r"^path\s*=\s*(\S+)$", line.strip())
+                if m:
+                    submodules.add(m.group(1))
+
+    gated = set()
+    exempt = {}
+    for rel_m in manifests:
+        p = os.path.join(root, rel_m)
+        if not os.path.exists(p):
+            continue
+        with open(p, encoding="utf-8") as fh:
+            for raw in fh:
+                line = raw.strip()
+                ng = re.match(r"^#\s*not-gated:\s*(\S+)\s*--\s*(.+)$", line)
+                if ng:
+                    exempt[ng.group(1)] = ng.group(2).strip()
+                    continue
+                if not line or line.startswith("#"):
+                    continue
+                gated.add(line)
+
+    found = []
+    def walk(d):
+        for name in os.listdir(d):
+            abs_p = os.path.join(d, name)
+            rel = os.path.relpath(abs_p, root).replace(os.sep, "/")
+            try:
+                st = os.lstat(abs_p)
+            except OSError:
+                continue
+            if stat.S_ISLNK(st.st_mode):
+                continue
+            if stat.S_ISDIR(st.st_mode):
+                if name in skip_dirs or name.startswith(".") or rel in submodules:
+                    continue
+                walk(abs_p)
+            elif re.match(r"^test_.*\.py$", name) or name.endswith("_test.py"):
+                found.append(rel)
+
+    walk(target)
+except OSError as exc:
+    print(f"suite-coverage: could not inspect suites or manifests: {exc}")
+    sys.exit(2)
+
+found.sort()
+if not found:
+    print("suite-coverage: 0 suite(s) examined — nothing in scope (no python suite under target)")
+    sys.exit(0)
+
+print(f"suite-coverage: {len(found)} suite(s) examined")
+unaccounted = [s for s in found if s not in gated and s not in exempt]
+if unaccounted:
+    print(
+        "suite-coverage: python suite(s) named by neither tests/script-suites.txt nor tests/pytest-extra.txt "
+        '(add to the manifest that fits, or declare "# not-gated: <path> -- <reason>"):'
+    )
+    for s in unaccounted:
+        print(f"  {s}")
+    sys.exit(1)
+sys.exit(0)
+PY
+    scov_rc=$?
+    if [ "$scov_rc" -ne 0 ] && [ "$scov_rc" -ne 1 ]; then
+      scov_rc=2
+    fi
+    report suite-coverage "$scov_rc"
   fi
 fi
 

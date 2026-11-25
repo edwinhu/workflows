@@ -116,7 +116,7 @@ function dispatchFixture() {
   mkdirSync(join(dir, 'src'), { recursive: true })
   redScript(dir)
   const plan = planFile(dir, 'route-run', cleanArgs(dir))
-  return { dir, plan, argsPath: join(dir, '.work', 'route-run', 'args.json') }
+  return { dir, plan, argsPath: join(dir, '.work', 'route-run', 'args.preview.json') }
 }
 
 function dispatch(f: { dir: string; plan: string }, flags: string[] = [], extra: Record<string, string> = {}) {

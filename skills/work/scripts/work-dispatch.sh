@@ -40,7 +40,7 @@
 #   work-dispatch.sh --stray PLAN      NUL-separated abs paths on stdin; prints those under no writable/scaffold path
 #   work-dispatch.sh --covers PLAN PATH  is PATH inside some task's writablePaths? 0 yes, 1 no,
 #                                      2 undecidable (read by main-thread-guard.sh, which fails closed)
-#   WORK_DISPATCH_DRYRUN=1            build + lint + probe + size, stop before dispatching
+#   WORK_DISPATCH_DRYRUN=1            build + lint + probe + size, write args.preview.json and nothing that arms a run; stop before dispatching
 #   WORK_GOAL_PRINT=1                 print the composed objective, then
 #                                      stop: writes no args.json, runs no probe, dispatches nothing
 #   WORK_LOOP_INTERVAL_MINUTES=30     heartbeat period, as whole minutes (default 60)
@@ -1054,9 +1054,9 @@ fi
 goal=$("$SKILL/scripts/compose-goal.sh" "$plan" "$R" "$maxrounds" "$readonly_run")
 [ -n "${WORK_GOAL_PRINT:-}" ] && { printf '%s\n' "$goal"; exit 0; }
 
-# args.json is what disarms the guard, so a preview must NOT write it — otherwise --print would
-# release the hold having dispatched nothing.
-out="$R/args.json"; [ "$mode" = print ] && out="$R/args.preview.json"
+# args.json is what disarms the guard, so a preview or dry run must NOT write it — otherwise
+# --print or WORK_DISPATCH_DRYRUN would leave an armed-looking run having dispatched nothing.
+out="$R/args.json"; { [ "$mode" = print ] || [ -n "${WORK_DISPATCH_DRYRUN:-}" ]; } && out="$R/args.preview.json"
 
 # TIER 1, before $out exists. Blocking findings stop the dispatch with the run still ARMED — writing
 # args.json first would release the guard on a plan we are refusing to run.
@@ -1183,8 +1183,8 @@ archive_plan "$plan" "$R" "$hash" || exit 1
 # THE WORKFLOW CURSOR. projectDir/.planning/ACTIVE_WORKFLOW.md is what the per-edit hooks (hooks/jev,
 # writing-prose-check) read to know which workflow an edit belongs to, and nothing else wrote it for
 # most workflows. Only its `workflow:` line is set; other fields (writing_receipt.py's `style:`) stay.
-# Not under --print, which builds and stops, nor readOnly, whose projectDir this run must not write.
-if [ "$mode" != print ] && [ "$readonly_run" = 0 ]; then
+# Not under --print or WORK_DISPATCH_DRYRUN, which stop without dispatching, nor readOnly, whose projectDir this run must not write.
+if [ "$mode" != print ] && [ -z "${WORK_DISPATCH_DRYRUN:-}" ] && [ "$readonly_run" = 0 ]; then
   python3 - "$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["args"]["projectDir"])' "$run")" "$workflow" <<'PY' || exit 1
 import os, re, sys
 proj, wf = sys.argv[1], sys.argv[2]

@@ -134,7 +134,8 @@ jq -n '[{prompt:"…", expect:"/repo/out.md", label:"count", kind:"script", agen
 bash $S/farm.sh --tasks /tmp/t.json --cwd /repo --detach
 
 # Rows run in PARALLEL. Per row: prompt (required), workflow (required unless the persona
-# implies it), kind (or provider/model), expect (string or array), label, agent.
+# implies it: a workflow name, or "none" said out loud), kind (or provider/model), expect
+# (string or array), label, agent.
 # Omit "agent" when the row must orchestrate.
 # schema (JSON Schema object, inline JSON or a path) -> --json-schema; the CLI-validated value is
 # written to the row's ONE expect unless the child wrote it. A persona needs StructuredOutput in tools.

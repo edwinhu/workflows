@@ -1,5 +1,5 @@
 // check.test.ts — the entry point's own suite. Its job is to prove that a failure in EACH of the
-// seven legs reaches check.sh's exit code, so no leg can be silently dropped or stubbed out.
+// eight legs reaches check.sh's exit code, so no leg can be silently dropped or stubbed out.
 //
 // It never runs check.sh against this skill itself: check.sh's suite leg runs
 // `bun test <target>/scripts/*.test.ts`, which is this file, and a self-target would recurse.
@@ -12,7 +12,7 @@ import { basename, join } from 'node:path'
 
 const SCRIPTS = import.meta.dir
 
-// Every case spawns a check.sh that runs seven legs; bun's 5 s default kills one at load and strands
+// Every case spawns a check.sh that runs eight legs; bun's 5 s default kills one at load and strands
 // the leg's leg-o/leg-e temp files in TMPDIR (the run's leak guard then fails).
 setDefaultTimeout(120_000)
 const CHECK = join(SCRIPTS, 'check.sh')
@@ -133,21 +133,21 @@ function legStatus(stdout: string, name: string): string {
   return line
 }
 
-test('leg-count: check.sh statically declares exactly the seven legs', () => {
+test('leg-count: check.sh statically declares exactly the eight legs', () => {
   // Decided by READING check.sh, not by running it: check.sh is the run's own mechanical gate, so a
   // check.sh that dropped a leg would still exit 0 and certify its own completeness.
   const src = readFileSync(CHECK, 'utf8')
   const names = new Set<string>()
   for (const m of src.matchAll(/^[ \t]*report[ \t]+([A-Za-z0-9_-]+)\b/gm)) names.add(m[1]!)
-  expect([...names].sort()).toEqual(['authoring-gate', 'authoring-lint', 'parity', 'pc-probe', 'probe-tests', 'sc-probe', 'wc-probe'])
-  expect(names.size).toBe(7)
+  expect([...names].sort()).toEqual(['authoring-gate', 'authoring-lint', 'parity', 'pc-probe', 'probe-tests', 'sc-probe', 'suite-coverage', 'wc-probe'])
+  expect(names.size).toBe(8)
 })
 
-test('leg-count: a clean target prints exactly seven leg lines and exits 0', () => {
+test('leg-count: a clean target prints exactly eight leg lines and exits 0', () => {
   const r = run(harness(), ['--target', target({ tests: { 'fixture.test.ts': PASSING_TEST } })])
   expect(r.stdout + r.stderr).toContain('leg')
-  expect(legLines(r.stdout).length).toBe(7)
-  for (const leg of ['wc-probe', 'sc-probe', 'pc-probe', 'parity', 'authoring-lint', 'authoring-gate', 'probe-tests']) {
+  expect(legLines(r.stdout).length).toBe(8)
+  for (const leg of ['wc-probe', 'sc-probe', 'pc-probe', 'parity', 'authoring-lint', 'authoring-gate', 'probe-tests', 'suite-coverage']) {
     expect(legStatus(r.stdout, leg)).toContain('exit=0')
   }
   expect(r.code).toBe(0)
@@ -163,7 +163,7 @@ test('a forced failure in the sc-probe leg propagates', () => {
   const r = run(harness(), ['--target', t])
   expect(legStatus(r.stdout, 'sc-probe')).not.toContain('exit=0')
   expect(legStatus(r.stdout, 'wc-probe')).toContain('exit=0')
-  expect(legLines(r.stdout).length).toBe(7)
+  expect(legLines(r.stdout).length).toBe(8)
   expect(r.code).not.toBe(0)
 })
 
@@ -188,7 +188,7 @@ test('the pc-probe leg REFUSES with exit 2 when no plugin root resolves above th
   const r = run(harness(), ['--target', target({ noPluginRoot: true })])
   expect(legStatus(r.stdout, 'pc-probe')).toContain('exit=2')
   expect(r.stderr).toContain('.claude-plugin/plugin.json')
-  expect(legLines(r.stdout).length).toBe(7)
+  expect(legLines(r.stdout).length).toBe(8)
   expect(r.code).toBe(2)
 })
 
@@ -222,7 +222,7 @@ test('a forced failure in the wc-probe leg propagates', () => {
   writeFileSync(join(t, 'SKILL.md'), `${CLEAN_SKILL}\nRun \`bash ${join(t, 'scripts', 'does-not-exist.sh')}\`.\n`)
   const r = run(harness(), ['--target', t])
   expect(legStatus(r.stdout, 'wc-probe')).not.toContain('exit=0')
-  expect(legLines(r.stdout).length).toBe(7)
+  expect(legLines(r.stdout).length).toBe(8)
   expect(r.code).not.toBe(0)
 })
 
@@ -232,7 +232,7 @@ test('a forced failure in the authoring-lint leg propagates', () => {
   const r = run(harness(), ['--target', t])
   expect(legStatus(r.stdout, 'authoring-lint')).toContain('exit=1')
   expect(legStatus(r.stdout, 'wc-probe')).toContain('exit=0')
-  expect(legLines(r.stdout).length).toBe(7)
+  expect(legLines(r.stdout).length).toBe(8)
   expect(r.code).toBe(1)
 })
 
@@ -243,7 +243,7 @@ test('a forced failure in the parity leg propagates', () => {
   ])
   expect(legStatus(r.stdout, 'parity')).not.toContain('exit=0')
   expect(legStatus(r.stdout, 'wc-probe')).toContain('exit=0')
-  expect(legLines(r.stdout).length).toBe(7)
+  expect(legLines(r.stdout).length).toBe(8)
   expect(r.code).not.toBe(0)
 })
 
@@ -254,14 +254,14 @@ test('a forced failure in the authoring-gate leg (its node-check constraint on a
   ])
   expect(legStatus(r.stdout, 'authoring-gate')).not.toContain('exit=0')
   expect(r.stderr).toContain('node-check')
-  expect(legLines(r.stdout).length).toBe(7)
+  expect(legLines(r.stdout).length).toBe(8)
   expect(r.code).not.toBe(0)
 })
 
 test('a forced failure in the probe-tests leg propagates', () => {
   const r = run(harness(), ['--target', target({ tests: { 'fixture.test.ts': FAILING_TEST } })])
   expect(legStatus(r.stdout, 'probe-tests')).not.toContain('exit=0')
-  expect(legLines(r.stdout).length).toBe(7)
+  expect(legLines(r.stdout).length).toBe(8)
   expect(r.code).not.toBe(0)
 })
 
@@ -285,7 +285,7 @@ test('the suite leg fails when the target ships scripts/ with no test file', () 
 test('the suite leg passes when the target ships no scripts/ directory at all', () => {
   const r = run(harness(), ['--target', target()])
   expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=0')
-  expect(legLines(r.stdout).length).toBe(7)
+  expect(legLines(r.stdout).length).toBe(8)
   expect(r.code).toBe(0)
 })
 
@@ -364,7 +364,7 @@ function audit(out: string): string[] {
   return JSON.parse(r.stdout)
 }
 const combined = (r: { stdout: string; stderr: string }) => r.stdout + r.stderr
-const COUNTED_LEGS = ['sc-probe', 'parity', 'authoring-lint', 'authoring-gate', 'probe-tests']
+const COUNTED_LEGS = ['sc-probe', 'parity', 'authoring-lint', 'authoring-gate', 'probe-tests', 'suite-coverage']
 
 test('non-vacuity: every leg of a fixture target prints a count line, so the audit has no failures', () => {
   const r = run(harness(), ['--target', target({ js: 'export const x = 1\n', tests: { 'fixture.test.ts': PASSING_TEST } })])
@@ -524,3 +524,69 @@ test('unusable TMPDIR: the parity leg is exit 2 too', () => {
   const r = run(harness(), ['--target', target({ tests: { 'a.test.ts': PASSING_TEST } })], { TMPDIR: '/var/tmp/does-not-exist-xyz' })
   expect(legStatus(r.stdout, 'parity')).toContain('exit=2')
 })
+
+// --- suite-coverage leg: every python suite under target must be in a repo manifest or not-gated -----
+function gitRepoSkill(opts: { manifests?: Record<string, string>; skillTests?: Record<string, string> }): string {
+  const repo = tmp('wc-check-suite-cov-')
+  spawnSync('git', ['-C', repo, 'init', '-q'], { encoding: 'utf8', timeout: 30_000 })
+  mkdirSync(join(repo, '.claude-plugin'))
+  writeFileSync(join(repo, '.claude-plugin', 'plugin.json'), '{"name":"fixture","version":"0.0.1"}')
+  const skill = join(repo, 'skills', 'fixture')
+  mkdirSync(join(skill, 'scripts'), { recursive: true })
+  writeFileSync(join(skill, 'SKILL.md'), CLEAN_SKILL)
+  for (const [name, body] of Object.entries(opts.skillTests ?? {})) {
+    writeFileSync(join(skill, 'scripts', name), body)
+  }
+  if (opts.manifests) {
+    mkdirSync(join(repo, 'tests'), { recursive: true })
+    for (const [name, body] of Object.entries(opts.manifests)) {
+      writeFileSync(join(repo, 'tests', name), body)
+    }
+  }
+  return skill
+}
+
+test('suite-coverage: unregistered python suite fails with exit 1 and names the file on stderr', () => {
+  const skill = gitRepoSkill({
+    manifests: { 'pytest-extra.txt': '# manifest\n' },
+    skillTests: { 'foo_test.py': PY_PASS },
+  })
+  const r = run(harness(), ['--target', skill])
+  expect(legStatus(r.stdout, 'suite-coverage')).toContain('exit=1')
+  expect(r.code).toBe(1)
+  expect(r.stderr).toContain('skills/fixture/scripts/foo_test.py')
+  expect(r.stderr).toMatch(/^suite-coverage: 1 suite\(s\) examined/m)
+})
+
+test('suite-coverage: python suite listed in tests/pytest-extra.txt passes with exit 0', () => {
+  const skill = gitRepoSkill({
+    manifests: { 'pytest-extra.txt': 'skills/fixture/scripts/foo_test.py\n' },
+    skillTests: { 'foo_test.py': PY_PASS },
+  })
+  const r = run(harness(), ['--target', skill])
+  expect(legStatus(r.stdout, 'suite-coverage')).toContain('exit=0')
+  expect(r.code).toBe(0)
+  expect(r.stderr).toMatch(/^suite-coverage: 1 suite\(s\) examined/m)
+})
+
+test('suite-coverage: python suite declared with # not-gated passes with exit 0', () => {
+  const skill = gitRepoSkill({
+    manifests: { 'pytest-extra.txt': '# not-gated: skills/fixture/scripts/foo_test.py -- needs external service\n' },
+    skillTests: { 'foo_test.py': PY_PASS },
+  })
+  const r = run(harness(), ['--target', skill])
+  expect(legStatus(r.stdout, 'suite-coverage')).toContain('exit=0')
+  expect(r.code).toBe(0)
+  expect(r.stderr).toMatch(/^suite-coverage: 1 suite\(s\) examined/m)
+})
+
+test('suite-coverage: repo with neither manifest exits 0 with a count line stating no suite manifests exist', () => {
+  const skill = gitRepoSkill({
+    skillTests: { 'foo_test.py': PY_PASS },
+  })
+  const r = run(harness(), ['--target', skill])
+  expect(legStatus(r.stdout, 'suite-coverage')).toContain('exit=0')
+  expect(r.code).toBe(0)
+  expect(r.stderr).toMatch(/^suite-coverage: 0 suite\(s\) examined — nothing in scope \(no suite manifests exist\)/m)
+  expect(audit(combined(r))).toEqual([])
+}, 180_000)

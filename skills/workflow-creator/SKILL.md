@@ -121,7 +121,7 @@ couples every caller to a language choice; `wc-probe`'s P20 refuses those. Cross
 is reached through `bin/` on PATH (`typst-rules`), never through a hand-rolled `$HOME` resolver.
 
 **A generated workflow declares its own check entry point.** `check.sh` gates workflow *artifacts* —
-seven legs, listed in its header (pc-probe is plugin-scoped, so a sibling skill's structure can fail it) — and is not a generated workflow's domain gate. A workflow
+eight legs, listed in its header (pc-probe is plugin-scoped, so a sibling skill's structure can fail it) — and is not a generated workflow's domain gate. A workflow
 whose domain has a toolchain (build, test, lint, render) ships one entry point of its own, collects
 those legs behind it, and names *that* in its `mechanicalChecks`. The law binds the workflow being
 generated, not only its generator.
@@ -386,7 +386,7 @@ const args = {
 
   tasks: [ /* the plan's table verbatim: {id, name, work, writablePaths, acceptance, refs, agentType?} */ ],
 
-  // ONE entry, always: check.sh runs every leg (the seven in its header, probe suite over genDir included) and its exit code is the whole mechanical verdict. A new deterministic
+  // ONE entry, always: check.sh runs every leg (the eight in its header, probe suite over genDir included) and its exit code is the whole mechanical verdict. A new deterministic
   // check becomes a LEG of check.sh, never a second entry here — P10 refuses that.
   // `--agent` whenever the workflow ships a guard agent: the file sits outside genDir and the probe
   // walks genDir alone, so without it nothing scans the guard. Never a second `--target` at the

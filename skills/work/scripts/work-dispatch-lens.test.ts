@@ -194,7 +194,7 @@ function dispatchFixture(argsOver: object = {}) {
   const plan = planFile(dir, 'lens-run', cleanArgs(dir, argsOver))
   return {
     dir, plan,
-    argsPath: join(dir, '.work', 'lens-run', 'args.json'),
+    argsPath: join(dir, '.work', 'lens-run', 'args.preview.json'),
     log: join(dir, 'route-calls.jsonl'),
   }
 }

@@ -57,7 +57,7 @@ function project(extra: Record<string, unknown> = {}, items: any[] = objItems, r
   const plan = join(dir, 'plan.md')
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
     `<!-- work:dispatch\n${JSON.stringify({ runId: 'cf-run', args }, null, 2)}\n-->\n`)
-  return { dir, plan, argsPath: join(dir, '.work', 'cf-run', 'args.json'), args }
+  return { dir, plan, argsPath: join(dir, '.work', 'cf-run', 'args.preview.json'), args }
 }
 
 function dispatch(f: { dir: string; plan: string }) {

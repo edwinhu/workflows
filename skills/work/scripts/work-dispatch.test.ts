@@ -66,7 +66,7 @@ function fixture(opts: { redCommand: string; extraArgs?: Record<string, unknown>
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
     `<!-- work:dispatch\n${JSON.stringify({ runId: 'probe-run', args }, null, 2)}\n-->\n`)
-  return { dir, plan, runDir: join(dir, '.work', 'probe-run'), argsPath: join(dir, '.work', 'probe-run', 'args.json') }
+  return { dir, plan, runDir: join(dir, '.work', 'probe-run'), argsPath: join(dir, '.work', 'probe-run', 'args.preview.json') }
 }
 
 /** Dispatch, stopped short of the goal self-send and the farm-out. The probe still runs. */
@@ -721,7 +721,7 @@ describe('dispatch records the run baseline tree in args.json (runBaseline)', ()
     script(g.dir, 'check.sh', 'echo "1 failed"\nexit 1')
     git(g.dir, 'init', '-q')
     dispatch(g, '--run-dir', join(g.dir, 'ro-run'))
-    const ro = join(g.dir, 'ro-run', 'probe-run', 'args.json')
+    const ro = join(g.dir, 'ro-run', 'probe-run', 'args.preview.json')
     expect(existsSync(ro)).toBe(true)
     expect('runBaseline' in JSON.parse(readFileSync(ro, 'utf8'))).toBe(false)
   }, 900_000)
@@ -732,7 +732,7 @@ describe('dispatch records the run baseline tree in args.json (runBaseline)', ()
     git(g.dir, 'init', '-q'); git(g.dir, 'add', '-A'); git(g.dir, 'commit', '-qm', 'base')
     const before = git(g.dir, 'count-objects')
     dispatch(g, '--run-dir', join(g.dir, 'ro-run'))
-    const ro = join(g.dir, 'ro-run', 'probe-run', 'args.json')
+    const ro = join(g.dir, 'ro-run', 'probe-run', 'args.preview.json')
     expect(JSON.parse(readFileSync(ro, 'utf8')).readOnlyBaseline).toMatch(/^[0-9a-f]{40,64}$/)
     expect(existsSync(join(g.dir, 'ro-run', 'probe-run', 'readonly-objects'))).toBe(true)
     expect(git(g.dir, 'count-objects')).toBe(before)
@@ -1092,8 +1092,11 @@ describe('the workflow cursor (.planning/ACTIVE_WORKFLOW.md in projectDir)', () 
     script(f.dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
     mkdirSync(join(f.dir, '.planning'), { recursive: true })
     writeFileSync(join(f.dir, '.planning', 'ACTIVE_WORKFLOW.md'), '---\nworkflow: writing\nstyle: legal\n---\n\nScoping marker.\n')
-    const r = dispatch(f, '--no-red-probe', '--no-mech-probe', '--no-suite-lint')
-    expect(r.code, r.out).toBe(0)
+    const out = execFileSync('bash', [SCRIPT, '--provider', 'claude', '--no-red-probe', '--no-mech-probe', '--no-suite-lint', '--loops', '0', '--no-cron', f.plan], {
+      timeout: 120_000, encoding: 'utf8', cwd: f.dir,
+      env: { ...process.env, TMPDIR: f.dir, CLAUDE_CODE_SESSION_ID: '', WORK_NO_SCOPE: '1', WORK_ROUND: '/bin/true', WORK_FARM: '/bin/false' },
+    })
+    expect(out).toContain('workflow: work')
     // the fixture plan names no workflow, which is `work`
     expect(readFileSync(join(f.dir, '.planning', 'ACTIVE_WORKFLOW.md'), 'utf8')).toBe('---\nworkflow: work\nstyle: legal\n---\n\nScoping marker.\n')
   })
@@ -1106,3 +1109,35 @@ describe('the workflow cursor (.planning/ACTIVE_WORKFLOW.md in projectDir)', () 
     expect(existsSync(join(f.dir, '.planning', 'ACTIVE_WORKFLOW.md'))).toBe(false)
   })
 })
+
+describe('WORK_DISPATCH_DRYRUN writes args.preview.json and leaves no armed run state', () => {
+  test('dry run writes args.preview.json, never args.json, and leaves an absent ACTIVE_WORKFLOW.md absent', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh' })
+    script(f.dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
+    const r = dispatch(f, '--no-red-probe', '--no-mech-probe', '--no-suite-lint')
+    expect(r.code, r.out).toBe(0)
+    expect(existsSync(join(f.runDir, 'args.json'))).toBe(false)
+    const previewPath = join(f.runDir, 'args.preview.json')
+    expect(existsSync(previewPath)).toBe(true)
+    const built = JSON.parse(readFileSync(previewPath, 'utf8'))
+    expect(built.projectDir).toBe(f.dir)
+    expect(built.goal).toBe('make the thing correct')
+    expect(built.specHash).toMatch(/^[0-9a-f]{64}$/)
+    expect(existsSync(join(f.dir, '.planning', 'ACTIVE_WORKFLOW.md'))).toBe(false)
+  })
+
+  test('dry run leaves an existing ACTIVE_WORKFLOW.md byte-identical', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh' })
+    script(f.dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
+    mkdirSync(join(f.dir, '.planning'), { recursive: true })
+    const cursorPath = join(f.dir, '.planning', 'ACTIVE_WORKFLOW.md')
+    const before = '---\nworkflow: writing\nstyle: legal\n---\n\nScoping marker.\n'
+    writeFileSync(cursorPath, before)
+    const r = dispatch(f, '--no-red-probe', '--no-mech-probe', '--no-suite-lint')
+    expect(r.code, r.out).toBe(0)
+    expect(existsSync(join(f.runDir, 'args.json'))).toBe(false)
+    expect(existsSync(join(f.runDir, 'args.preview.json'))).toBe(true)
+    expect(readFileSync(cursorPath, 'utf8')).toBe(before)
+  })
+})
+

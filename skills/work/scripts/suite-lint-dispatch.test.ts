@@ -70,7 +70,7 @@ function fixture(opts: { redCommand?: string; suites?: Record<string, string> } 
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
     `<!-- work:dispatch\n${JSON.stringify({ runId: 'probe-run', args }, null, 2)}\n-->\n`)
-  return { dir, plan, argsPath: join(dir, '.work', 'probe-run', 'args.json') }
+  return { dir, plan, argsPath: join(dir, '.work', 'probe-run', 'args.preview.json') }
 }
 
 function dispatch(f: { dir: string; plan: string }, ...extra: string[]) {
@@ -322,7 +322,7 @@ describe('the --print and dryrun paths are unchanged', () => {
     expect(r.code).toBe(0)
     expect(r.out).toContain('--print: nothing dispatched.')
     expect(r.out).not.toContain(R3)
-    expect(existsSync(f.argsPath)).toBe(false)
+    expect(existsSync(join(f.dir, '.work', 'probe-run', 'args.json'))).toBe(false)
   })
 
   test('the dryrun path still ends where it always ended, after the tier has reported', () => {

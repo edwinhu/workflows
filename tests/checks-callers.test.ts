@@ -89,11 +89,14 @@ function planFor(opts: { workflow?: string; mech?: (dir: string) => string; rule
 }
 const dispatch = (f: { dir: string; plan: string }) =>
   sh('bash', [DISPATCH, '--provider', 'claude', '--no-red-probe', '--no-mech-probe', '--no-suite-lint', f.plan], { WORK_DISPATCH_DRYRUN: '1', WORKFLOW_CHECKS_PATH: ROOT }, f.dir)
+const realDispatch = (f: { dir: string; plan: string }) =>
+  sh('bash', [DISPATCH, '--provider', 'claude', '--no-red-probe', '--no-mech-probe', '--no-suite-lint', '--loops', '0', '--no-cron', f.plan],
+    { WORKFLOW_CHECKS_PATH: ROOT, TMPDIR: f.dir, CLAUDE_CODE_SESSION_ID: '', WORK_NO_SCOPE: '1', WORK_ROUND: '/bin/true', WORK_FARM: '/bin/false' }, f.dir)
 const DEV_CHECK = (dir: string) => `bash ${ROOT}/skills/dev/scripts/check.sh --project-dir ${dir} --no-plan --test-cmd "true" --no-lint-cmd --no-build-cmd`
 
 test('dispatch reads the plan\'s workflow:, writes ACTIVE_WORKFLOW.md and fills ruleChecks with workflow-check <wf> --rules-only itself', () => {
   const f = planFor({ workflow: 'dev', mech: DEV_CHECK })
-  const r = dispatch(f)
+  const r = realDispatch(f)
   expect(r.status, r.stdout + r.stderr).toBe(0)
   const args = JSON.parse(readFileSync(f.argsPath, 'utf8'))
   expect(args.ruleChecks?.cmd ?? '', 'ruleChecks is filled from workflow:').toMatch(/workflow-check\s+dev\s+--rules-only/)
@@ -125,7 +128,7 @@ test('plan-lint refuses mechanicalChecks that never reach workflow-check <wf>, a
 
 test('a plan with no workflow names workflow: work, which has no checks and says so', () => {
   const f = planFor({})
-  const r = dispatch(f)
+  const r = realDispatch(f)
   expect(r.status, r.stdout + r.stderr).toBe(0)
   expect(readFileSync(join(f.dir, '.planning', 'ACTIVE_WORKFLOW.md'), 'utf8')).toMatch(/^workflow:\s*work\s*$/m)
   const wc = wcheck(['work', '--project-dir', project({ 'src/a.ts': 'export {}\n' }), '--changed'])
