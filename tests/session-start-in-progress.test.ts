@@ -48,6 +48,14 @@ describe("buildInProgressSection", () => {
     expect(out).not.toContain("workflows:teaching");
   });
 
+  test("a workflow naming no skill of this plugin (a rule-set name like `authoring`) invokes nothing", () => {
+    const dir = project("authoring", "---\nworkflow: authoring\n---\n\n# Plan\n");
+    const out = buildInProgressSection(dir);
+    expect(out).toContain("(workflow `authoring`)");
+    expect(out).not.toContain("Skill(");
+    expect(out).not.toContain("workflows:authoring");
+  });
+
   test("a plan with no frontmatter yields the plain line and names no skill", () => {
     const dir = project("plain", "# Plan\n\nNo frontmatter here.\n");
     const out = buildInProgressSection(dir);
