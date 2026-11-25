@@ -302,9 +302,10 @@ function runWorkflowName(root: string, run: string, base = ".work"): string {
  * armed; a missing `result.json` means the round never landed. The plan is the authority, so it is
  * named rather than summarised — the session reads it.
  *
- * A plan that declares `workflow:` in its frontmatter also names the skill to invoke first: approval
- * with "clear context" wipes the conversation, and without that name the re-seeded session falls
- * back to generic work and loses the domain's result handling and human review.
+ * A plan that declares `workflow:` in its frontmatter also names the skill to invoke first (when
+ * plugin-qualified or backed by `skills/<name>/SKILL.md` in this plugin): approval with "clear
+ * context" wipes the conversation, and without that name the re-seeded session falls back to
+ * generic work and loses the domain's result handling and human review.
  */
 export function buildInProgressSection(root: string = process.cwd()): string {
   const pending = pendingWorkRuns(root);
@@ -313,11 +314,21 @@ export function buildInProgressSection(root: string = process.cwd()): string {
   for (const { run, base } of pending) {
     const name = runWorkflowName(root, run, base);
     if (name) {
-      const skill = name.includes(":") ? name : `workflows:${name}`;
-      lines.push(
-        `- work run \`${run}\` (workflow \`${name}\`) was dispatched and has no result.json yet — ` +
-          `invoke \`Skill(skill="${skill}")\` first; it owns the result handling and human review.`,
-      );
+      const skill = name.includes(":")
+        ? name
+        : existsSync(join(getPluginRoot(), "skills", name, "SKILL.md"))
+          ? `workflows:${name}`
+          : "";
+      if (skill) {
+        lines.push(
+          `- work run \`${run}\` (workflow \`${name}\`) was dispatched and has no result.json yet — ` +
+            `invoke \`Skill(skill="${skill}")\` first; it owns the result handling and human review.`,
+        );
+      } else {
+        lines.push(
+          `- work run \`${run}\` (workflow \`${name}\`) was dispatched and has no result.json yet.`,
+        );
+      }
     } else {
       lines.push(`- work run \`${run}\` was dispatched and has no result.json yet.`);
     }
