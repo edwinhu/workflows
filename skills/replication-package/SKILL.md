@@ -30,7 +30,7 @@ missing one is a gap the recipient discovers, not a simplification.
 ## Scope: only what the deliverable used
 
 **A production is not a repository dump, and nothing extra is owed.** Ship the runbook, the
-workbook, the notebook or script that IS the deliverable, and the data those read. Everything
+workbook, the notebook or script that IS the deliverable, and the processed data those read. Everything
 else is out — not withheld, just not part of this work.
 
 Compute the boundary, do not curate it. Walk the import graph from the deliverable's entry
@@ -55,12 +55,11 @@ where the answer costs time and the question was never asked.
 
 ## Iron rules
 
-**1. Two representations, never three.** The recipient has Excel, not pandas — but the answer
-is a WORKBOOK, not a CSV dump. Ship the data in the format the packaged code actually loads
-(parquet is fine, and is what keeps the quickstart runnable), plus one XLSX workbook that
-carries the analysis tables as tabs and recomputes every headline number from them. Do not
-also ship CSV: a third copy of the same numbers is a third thing that can disagree, and the
-workbook is the readable one. CSV only for a table with no workbook tab, and say why.
+**1. Processed data, never raw.** Ship the processed tables the packaged code produces or
+loads (CSV or parquet), plus one XLSX workbook that carries the analysis tables as tabs and
+recomputes every headline number from them. Raw source data — filings, downloaded corpora,
+vendor extracts — stays out; the runbook says how to retrieve it. Do not ship the same table
+twice in two formats: a second copy is a second thing that can disagree.
 
 **2. 7z, never zip.** Zip stores mtime at two-second resolution with no timezone, so every
 file's provenance is degraded on extraction — which is exactly what a production is supposed
@@ -175,18 +174,17 @@ all of these have happened. So the build ends with `ruff check` (or the project'
 the staged copy and an `ast.parse` of every packaged `.py`, and it refuses to archive on
 failure. Never rewrite a comment with a pattern that can consume its own line break.
 
-## Expert report or court production: ship a replay
+## Expert report or court production: final work product only
 
-A package for an expert report or court production also carries (a) `decisions.csv`, one row per override or exclusion
-(reason, verbatim quote, source, decided_by, decided_on); (b) a manifest dir (sample, figures, inputs with md5, code commit,
-output hash); (c) a replay command that rebuilds from the saved inputs with no model or network call and exits 0 only when
-the result matches the manifest after the decisions. Contract: `references/replay.md`.
-`ds` runs the command as its R1 check.
+Ship the final work product and nothing that records how it was reached. The replay set —
+`decisions.csv`, the manifest dir, the replay command (`references/replay.md`) — is internal:
+`ds` runs it as its R1 check, and it never goes in the package. Neither do drafts, prompt
+iterations, agent reports or any other deliberation.
 
 ## Contents
 
 Include: the source closure, the notebook or script that produces the deliverable, pinned
-environment (`pixi.lock`, `requirements.txt`), the data that code loads, the workbook, the
+environment (`pixi.lock`, `requirements.txt`), the processed data that code loads, the workbook, the
 runbook, and the figures the deliverable actually uses. Nothing else — see **Scope** above.
 
 **Strip the internal commentary from the shipped code.** Working comments explain decisions to
@@ -256,6 +254,19 @@ with the show-rule guard that keeps a document-level `raw` rule from drawing a s
 it. Not an executable-runbook app: the steps
 that need explaining are the manual ones no block can run, and the deliverable cannot depend on
 software the recipient must install.
+
+**Expert report or court production: a minimal, final runbook.** These override the transcript,
+invariant and symptom-table bullets above.
+
+- Ship it as a PDF only, metadata scrubbed like every other artifact; no `.md` or `.typ` copy.
+- State the method as it stands: per step one sentence of purpose, the command, the output file.
+  Counts only where they define a sample. No figures table; the README's provenance table has it.
+- No deliberation: no history, reruns, corrections, overrides or decision records, no batch or
+  job ids, no personal names. No validation scores or agreement rates, and no known-limits list;
+  a check the report mentions gets one sentence of method inside its step.
+- No comments in command blocks. Paths relative to the archive root, never a local home path.
+- Never cite the report's paragraph or footnote numbers anywhere in the package; they move
+  between drafts. Name a figure by what it measures.
 
 ## Rationalization table
 

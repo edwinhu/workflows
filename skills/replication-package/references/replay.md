@@ -1,7 +1,7 @@
 # Replay contract
 
-A package that backs an expert report or court production must let the recipient rebuild the reported numbers from the saved
-inputs and see, by an exit code, that they match. Three parts.
+The replay set lets the producing side rebuild the reported numbers from the saved inputs and see, by an exit code, that they
+match. It is internal (`ds` R1) and is never shipped in a production. Three parts.
 
 ## (a) decisions.csv
 
